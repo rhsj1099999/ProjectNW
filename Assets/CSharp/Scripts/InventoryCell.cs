@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public struct InventoryTransitionDesc
 {
@@ -28,7 +29,10 @@ public class InventoryCell : MonoBehaviour
 
     private void Awake()
     {
-        //Debug.Assert(_owner != null, "인벤Cell 의 Owner 는 null일 수 없다");
+        _imageComponent = GetComponent<Image>();
+        Debug.Assert(_imageComponent != null, "이미지 컴포넌트가 있어야하는 스크립트");
+        
+        _originalColor = _imageComponent.color;
     }
 
     public void Initialize(ref InventoryCellDesc desc)
@@ -36,30 +40,76 @@ public class InventoryCell : MonoBehaviour
         _owner = desc._owner;
     }
 
-    public void TryMoveItemToInventoryBoard(InventoryTransitionDesc transitionDesc)
+    public void TryMoveItemDropOnBoard(ItemStoreDesc storedDesc, ItemBase caller)
     {
         Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
 
-        //드래그 해서 인벤토리 위에 넣으면 이 함수가 호출된다.
-        //다음에 대해서 생각해봐야한다.
-        //1. 이미 동일 종류 아이템 키 위에 포개놓은 경우
-        //1.1 스택가능하다
-        //최대스택이 여분이 있다 ->수량을 증가시킨다
-        //최대스택이 여분이 없다 ->아무것도 안한다 (혹은 알아서 자리찾기 -> 이건 기획적요소)
-        //1.2 스택가능하지 않다
-        // ||여유공간 체크 후 넣기||
-        //2.
-
-
-        if (true)
+        int startX = -1;
+        int startY = -1;
+        if (_owner.CheckItemDragDrop(storedDesc, ref startX, ref startY, caller) == false)
         {
-            //체크 -> 된다 2개의 로직을 연이어서 실행
-            transitionDesc._from.DeleteItemUseForDragItem(transitionDesc);  //삭제하고
-            _owner.AddItemDragDrop(transitionDesc);                            //넣는다
+            return; //해당 마우스 포지션으로는 아이템을 넣을 수 없다.
         }
 
-
+        storedDesc._owner.DeleteItemUseForDragItem(storedDesc);         //삭제하고
+        _owner.AddItemUsingForcedIndex(storedDesc, startX, startY, caller.GetRotated());     //넣는다
     }
 
+
+    public void TryMoveItemDropOnItem(ItemStoreDesc storedDesc, ItemBase caller)
+    {
+        Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
+
+        /*
+        //1. 완벽한 자기 자신 위에 포개어 넣은경우
+            //그냥 실수거나
+            //회전을 시도한 경우다
+        //2. 동일 종류 위에 포개어 넣은 경우
+            //합치려고 한다 - 스택여분만큼 채워준다. 나머지는 원래대로 되돌려 놓는다.
+        */
+        //
+
+        GameObject itemUI = _owner.getItem(storedDesc._storedIndex);
+
+        ItemBase itemBaseComponent = itemUI.GetComponent<ItemBase>();
+
+        if (itemBaseComponent == caller) 
+        {
+            if (false /*회전이 다릅니까? ->회전이 다름*/)
+            {
+                //회전을 적용하는 작업들
+            }
+
+            return;
+        }
+
+        if (itemBaseComponent.getStoredDesc()._info._itemKey != storedDesc._info._itemKey)
+        {
+            /*---------------------------------------------------------------------------
+            |TODO|  나중에 아이템 스왑하거나 룬 끼우기 할거라면 여기를 수정해야한다.
+            ---------------------------------------------------------------------------*/
+            //동일종류가 아님.
+            return;
+        }
+
+        //동일 종류다. ->스택 가능한지 체크, 스택 가능한만큼만 수량 옮기기
+    }
+
+    public void TurnOn()
+    {
+        _imageComponent.color = Color.green;
+    }
+
+    public void TurnOff()
+    {
+        _imageComponent.color = _originalColor;
+    }
+
+
+
+    private Color _originalColor = Color.white;
+
+
     private InventoryBoard _owner = null;
+    private Image _imageComponent = null;
 }
