@@ -62,12 +62,19 @@ public class InventoryBoard : MonoBehaviour
     {
         EditorApplication.delayCall += () =>
         {
-            //if (this == null) // 오브젝트가 유효한지 확인
-            //{
-            //    return;
-            //}
+            if (this == null) // 오브젝트가 유효한지 확인
+            {
+                return;
+            }
 
-            //_myRectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
+            RectTransform rectTransform = GetComponent<RectTransform>();
+
+            if (rectTransform == null)
+            {
+                return;
+            }
+
+            rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
         };
     }
 
@@ -219,49 +226,9 @@ public class InventoryBoard : MonoBehaviour
             AddItemAutomatic(testItemInfo);
         }
 
-        if (Input.GetKeyDown(KeyCode.Q) == true)
-        {
-            List<RaycastResult> uiRayCastResult = new List<RaycastResult>();
-
-            RayCastManager.Instance.RayCastAll(ref uiRayCastResult, false);
-
-            if (uiRayCastResult.Count <= 1)
-            {
-                return; //일단은 원위치로
-            }
-
-            GameObject topObject = GetTopOfRaycastExceptMe(ref uiRayCastResult);
-
-            if (topObject == null)
-            {
-                return;
-            }
-
-            ItemBase itemBaseComponent = topObject.GetComponent<ItemBase>();
-            if (itemBaseComponent != null) //최상단이 ItemBase이다.
-            {
-                DeleteItemUseForDragItem(itemBaseComponent.getStoredDesc());         //삭제하고
-                return;
-            }
-        }
-
         DebugCells();
     }
 
-    private GameObject GetTopOfRaycastExceptMe(ref List<RaycastResult> result)
-    {
-        GameObject target = null;
-
-        foreach (RaycastResult raycastResult in result.AsEnumerable().Reverse())
-        {
-            if (raycastResult.gameObject != this.gameObject)
-            {
-                return raycastResult.gameObject;
-            }
-        }
-
-        return target;
-    }
 
     public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, ItemBase callerItem)
     {

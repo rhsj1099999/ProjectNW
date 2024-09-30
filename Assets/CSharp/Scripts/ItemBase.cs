@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using System.Linq;
 
 
-public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler
+public class ItemBase : MonoBehaviour, IDragHandler, IPointerUpHandler, IBeginDragHandler
 {
     public void Initialize(InventoryBoard inventoryBoard, ItemStoreDesc storeDesc)
     {
@@ -41,11 +41,6 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             RotateInGrab();
         }
     }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-    }
-
 
     public void OnPointerUp(PointerEventData eventData)
     {
@@ -89,9 +84,6 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             ItemBase itemBaseComponent = topObject.GetComponent<ItemBase>();
             if (itemBaseComponent != null) //최상단이 ItemBase이다.
             {
-                //GameObject cell = _inventoryBoard.getCell(_itemStoreDesc._storedIndex);
-                //cellComponent = cell.GetComponent<InventoryCell>();
-                //cellComponent.TryMoveItemDropOnItem(_itemStoreDesc, this);
                 _myRectTransform.anchoredPosition = _myPosition;
                 return;
             }

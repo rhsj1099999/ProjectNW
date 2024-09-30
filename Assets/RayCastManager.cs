@@ -8,8 +8,10 @@ using UnityEngine.UI;
 public class RayCastManager : MonoBehaviour
 {
     [SerializeField] private EventSystem _eventSystem = null;
+    [SerializeField] private GameObject _mainCanvas = null;
 
     private static RayCastManager _instance;
+
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -45,7 +47,12 @@ public class RayCastManager : MonoBehaviour
 
     public void RayCastAll(ref List<RaycastResult> results, bool isReverse = false)
     {
-        GameObject rootObject = transform.root.gameObject;
+        if (_mainCanvas == null) 
+        {
+            return;
+        }
+
+        GameObject rootObject = _mainCanvas;
 
         GraphicRaycaster[] raycasters = rootObject.GetComponentsInChildren<GraphicRaycaster>();
 
