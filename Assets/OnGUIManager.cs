@@ -18,9 +18,9 @@ public class OnGUIManager : MonoBehaviour
     {
         List<RaycastResult> raycastResults = new List<RaycastResult>();
 
-        if (RayCastManager.Instance != null)
+        if (UIManager.Instance != null)
         {
-            RayCastManager.Instance.RayCastAll(ref raycastResults);
+            UIManager.Instance.RayCastAll(ref raycastResults);
         }
         
 

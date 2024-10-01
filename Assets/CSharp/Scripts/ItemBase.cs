@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using System.Linq;
 
 
-public class ItemBase : MonoBehaviour, IDragHandler, IPointerUpHandler, IBeginDragHandler
+public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler
 {
     public void Initialize(InventoryBoard inventoryBoard, ItemStoreDesc storeDesc)
     {
@@ -42,6 +42,11 @@ public class ItemBase : MonoBehaviour, IDragHandler, IPointerUpHandler, IBeginDr
         }
     }
 
+    public void OnPointerDown(PointerEventData eventData)
+    {
+
+    }
+
     public void OnPointerUp(PointerEventData eventData)
     {
         _isDragging = false;
@@ -52,7 +57,7 @@ public class ItemBase : MonoBehaviour, IDragHandler, IPointerUpHandler, IBeginDr
         {
             List<RaycastResult> uiRayCastResult = new List<RaycastResult>();
 
-            RayCastManager.Instance.RayCastAll(ref uiRayCastResult, false);
+            UIManager.Instance.RayCastAll(ref uiRayCastResult, false);
 
             if (uiRayCastResult.Count <= 1) //마우스를 땠을때 아무것도 없다. = 바닥에 뿌리기
             {//1 = 아이템 유아이는 제외함... |TODO| 1이란 숫자를 제외할 수 있는 방법

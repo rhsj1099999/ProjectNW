@@ -32,6 +32,10 @@ public class CharacterMoveScript : MonoBehaviour
 
     void Update()
     {
+        if (_inputController.GetInventoryOpen() == true)
+        {
+            UIManager.Instance.TurnOnUI(_inventoryUIPrefab, this.gameObject);
+        }
         if (Input.GetKeyDown(KeyCode.LeftShift) == true)
         {
             _speed = 0.2f;
@@ -309,7 +313,7 @@ public class CharacterMoveScript : MonoBehaviour
     [SerializeField] private Vector2 _directionVelocity = new Vector2(1.0f,1.0f);
     [SerializeField] private AimState _aimState = AimState.eTPSAim;
     [SerializeField] private Gunscript _gunscript = null;
-
+    [SerializeField] private GameObject _inventoryUIPrefab = null;
 
     [SerializeField] private float _speed = 5.0f;
     [SerializeField] private float _rotatingSpeed_DEG = 90.0f;

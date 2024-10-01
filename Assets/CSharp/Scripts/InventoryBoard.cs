@@ -45,11 +45,10 @@ public class InventoryBoard : MonoBehaviour
     [SerializeField] private GameObject _itemUIPrefab = null;
 
     private RectTransform _myRectTransform = null;
-
+    private GameObject _inventoryOwner = null;
     /*-------------
     계속 바뀔 변수들
     -------------*/
-    private int _itemCount = 0; //ID로 같이 쓰일것
     private int _blank = 0;
     private bool[,] _blankDispaly;
     private List<GameObject> _cells = new List<GameObject>();
@@ -76,26 +75,6 @@ public class InventoryBoard : MonoBehaviour
 
             rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
         };
-    }
-
-    public GameObject getCell(int index)
-    {
-        if (index >= _cells.Count)
-        {
-            Debug.Assert(false, "getCell에서 인덱스를 벗어났다");
-            return null;
-        }
-        return _cells[index];
-    }
-
-    public GameObject getItem(int index)
-    {
-        if(index >= _itemUIs.Count)
-        {
-            Debug.Assert(false, "getItem에서 인덱스를 벗어났다");
-            return null;
-        }
-        return _itemUIs[index];
     }
 
     private void Awake()
@@ -161,73 +140,33 @@ public class InventoryBoard : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.U) == true)
-        {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 1;
-            testItemInfo._sizeX = 1;
-            testItemInfo._sizeY = 1;
-
-            AddItemAutomatic(testItemInfo);
-        }
-
-        if (Input.GetKeyDown(KeyCode.G) == true)
-        {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 2;
-            testItemInfo._sizeX = 1;
-            testItemInfo._sizeY = 3;
-
-            AddItemAutomatic(testItemInfo);
-        }
-
-        if (Input.GetKeyDown(KeyCode.P) == true)
-        {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 3;
-            testItemInfo._sizeX = 2;
-            testItemInfo._sizeY = 3;
-
-            AddItemAutomatic(testItemInfo);
-        }
-
-        if (Input.GetKeyDown(KeyCode.N) == true)
-        {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 4;
-            testItemInfo._sizeX = 2;
-            testItemInfo._sizeY = 2;
-
-            AddItemAutomatic(testItemInfo);
-        }
-
-        if (Input.GetKeyDown(KeyCode.M) == true)
-        {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 5;
-            testItemInfo._sizeX = 1;
-            testItemInfo._sizeY = 2;
-
-            AddItemAutomatic(testItemInfo);
-        }
+        TestCode();
 
         DebugCells();
     }
+
+
+
+    public GameObject getCell(int index)
+    {
+        if (index >= _cells.Count)
+        {
+            Debug.Assert(false, "getCell에서 인덱스를 벗어났다");
+            return null;
+        }
+        return _cells[index];
+    }
+
+    public GameObject getItem(int index)
+    {
+        if (index >= _itemUIs.Count)
+        {
+            Debug.Assert(false, "getItem에서 인덱스를 벗어났다");
+            return null;
+        }
+        return _itemUIs[index];
+    }
+
 
 
     public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, ItemBase callerItem)
@@ -243,20 +182,13 @@ public class InventoryBoard : MonoBehaviour
 
         int itemSizeX = (callerItem.GetRotated() == false) ? storedDesc._info._sizeX : storedDesc._info._sizeY;
         int itemSizeY = (callerItem.GetRotated() == false) ? storedDesc._info._sizeY : storedDesc._info._sizeX;
-        //마우스로 집은 상태에서 회전된 상태입니까?
-        //itemSizeX, itemSizeY 스왑
-
-        //그 칸을 기준으로 여백 검사 함수
-        if (IndexX + itemSizeX > _cols ||
-            IndexY + itemSizeY > _rows)
+        
+        if (IndexX + itemSizeX > _cols || IndexY + itemSizeY > _rows)
         {
             return false;
         }
 
 
-        /*---------------------------------------------------------------------------
-        |TODO|  CheckItemDragDrop에서 자기자신에 의한 칸은 넘겨야한다.
-        ---------------------------------------------------------------------------*/
         HashSet<int> sameItemIndex = new HashSet<int>();
 
         if (callerItem != null && storedDesc._owner == this && _itemUIs[storedDesc._storedIndex].GetComponent<ItemBase>() == callerItem)
@@ -363,8 +295,6 @@ public class InventoryBoard : MonoBehaviour
             {
                 itemUIRectTransform.position -= new Vector3(0, info._sizeX * 20 / 2);
             }
-            
-
         }
 
 
@@ -495,7 +425,6 @@ public class InventoryBoard : MonoBehaviour
         Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[info._itemKey];
 
         //둘중 하나의 경우다 1. 스택카운트가 넘어서 새롭게 넣어주던가, 2. 동일종류 템이 하나도 없고 최초였던가
-
         ItemStoreDesc storeDesc = new ItemStoreDesc();
         storeDesc._count = itemCount;
         storeDesc._storedIndex = inventoryIndex;
@@ -508,11 +437,6 @@ public class InventoryBoard : MonoBehaviour
         if (itemBaseComponent != null)
         {
             itemBaseComponent.Initialize(this, storeDesc);
-        }
-
-        if (_itemUIs.ContainsKey(inventoryIndex) == true)
-        {
-            int a = 10;
         }
 
         _itemUIs.Add(inventoryIndex, itemUI);
@@ -577,7 +501,6 @@ public class InventoryBoard : MonoBehaviour
     public bool CheckInventorySpace_MustOpt(ref ItemInfo itemInfo, ref int targetX, ref int targetY, ref bool isRotated, int startX = 0, int startY = 0)
     {
         //|TODO| = 너무 BruteForce다 최적화가 필요하다
-
         bool isFind = true;
 
         for (int i = 0; i < _rows; i++)
@@ -660,4 +583,73 @@ public class InventoryBoard : MonoBehaviour
 
         return false;
     }
+
+    private void TestCode()
+    {
+        if (Input.GetKeyDown(KeyCode.U) == true)
+        {
+            ItemInfo testItemInfo = new ItemInfo();
+
+            testItemInfo._sprite = null;
+            testItemInfo._isStackAble = true;
+            testItemInfo._itemKey = 1;
+            testItemInfo._sizeX = 1;
+            testItemInfo._sizeY = 1;
+
+            AddItemAutomatic(testItemInfo);
+        }
+
+        if (Input.GetKeyDown(KeyCode.G) == true)
+        {
+            ItemInfo testItemInfo = new ItemInfo();
+
+            testItemInfo._sprite = null;
+            testItemInfo._isStackAble = true;
+            testItemInfo._itemKey = 2;
+            testItemInfo._sizeX = 1;
+            testItemInfo._sizeY = 3;
+
+            AddItemAutomatic(testItemInfo);
+        }
+
+        if (Input.GetKeyDown(KeyCode.P) == true)
+        {
+            ItemInfo testItemInfo = new ItemInfo();
+
+            testItemInfo._sprite = null;
+            testItemInfo._isStackAble = true;
+            testItemInfo._itemKey = 3;
+            testItemInfo._sizeX = 2;
+            testItemInfo._sizeY = 3;
+
+            AddItemAutomatic(testItemInfo);
+        }
+
+        if (Input.GetKeyDown(KeyCode.N) == true)
+        {
+            ItemInfo testItemInfo = new ItemInfo();
+
+            testItemInfo._sprite = null;
+            testItemInfo._isStackAble = true;
+            testItemInfo._itemKey = 4;
+            testItemInfo._sizeX = 2;
+            testItemInfo._sizeY = 2;
+
+            AddItemAutomatic(testItemInfo);
+        }
+
+        if (Input.GetKeyDown(KeyCode.M) == true)
+        {
+            ItemInfo testItemInfo = new ItemInfo();
+
+            testItemInfo._sprite = null;
+            testItemInfo._isStackAble = true;
+            testItemInfo._itemKey = 5;
+            testItemInfo._sizeX = 1;
+            testItemInfo._sizeY = 2;
+
+            AddItemAutomatic(testItemInfo);
+        }
+    }
+
 }

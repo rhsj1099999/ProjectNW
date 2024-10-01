@@ -4,17 +4,21 @@ using UnityEngine;
 
 public class InputController : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
-
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //CharacterRotate();
-        //CharacterMove();
+        //if (Input.GetButton(_moveUpButton))
+        if (Input.GetKeyDown(KeyCode.I) == true)
+        {
+            _inventoryOpen = true;
+        }
+        else
+        {
+            _inventoryOpen = false;
+        }
     }
 
     private void FixedUpdate()
@@ -50,6 +54,7 @@ public class InputController : MonoBehaviour
     [SerializeField] private string _moveDownButton = "MoveDown";
     [SerializeField] private string _moveLeftButton = "MoveLeft";
     [SerializeField] private string _moveRightButton = "MoveRight";
+    [SerializeField] private string _inventoryOpenButton = "InventoryOpen";
 
     [SerializeField] private string _MouseMoveX = "Mouse X";
     [SerializeField] private string _MouseMoveY = "Mouse Y";
@@ -57,4 +62,8 @@ public class InputController : MonoBehaviour
     public Vector3 _pr_directionByInput { get; private set; }
     public Vector2 _pr_mouseMove { get; private set; }
     public float _pr_aimDegree { get;  set; }
+
+    private bool _inventoryOpen = false;
+    public bool GetInventoryOpen() { return _inventoryOpen; }
+
 }
