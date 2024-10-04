@@ -7,24 +7,6 @@ using UnityEngine.Experimental.Rendering;
 
 public class AnimContoller : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (_animator == null)
-        {
-            //Crash
-        }
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //_updator();
-
-    }
-
-
     public void UpdateParameter(string valName, int val)
     {
         _animator.SetInteger(valName, val);
@@ -39,7 +21,6 @@ public class AnimContoller : MonoBehaviour
     }
 
     public Animator GetAnimator() { return _animator; }
-
 
     [SerializeField] private Animator _animator = null;
 }

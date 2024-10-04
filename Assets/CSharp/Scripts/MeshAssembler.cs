@@ -19,9 +19,9 @@ public class MeshAssembler : MonoBehaviour
     public Animator characterAnimator; // 플레이어의 캐릭터의 Animator
     public Animator partsAnimator; // 플레이어의 캐릭터의 Animator
 
-    private bool isRecordReady = false;
-    private bool isRecorded = false;
-    private float ReadyTick = 5.0f;
+    //private bool isRecordReady = false;
+    //private bool isRecorded = false;
+    //private float ReadyTick = 5.0f;
 
     public void AttachGlove()
     {

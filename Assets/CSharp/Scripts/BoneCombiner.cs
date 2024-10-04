@@ -7,7 +7,7 @@ public class BoneCombiner : MonoBehaviour
 {
     private readonly Dictionary<int, Transform> _rootBoneDictionary = new Dictionary<int, Transform>();
     private readonly Transform[] _boneTransforms = new Transform[67];
-    private readonly Transform _transform;
+    private readonly Transform _transform = null;
 
     public BoneCombiner(GameObject rootObj)
     {

@@ -116,6 +116,4 @@ public class OnGUIManager : MonoBehaviour
     }
 
     private GUIStyle _style = null;
-    [SerializeField] GraphicRaycaster _rayCaster = null;
-    [SerializeField] EventSystem _eventSystem = null;
 }

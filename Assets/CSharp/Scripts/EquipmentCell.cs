@@ -19,8 +19,8 @@ public class EquipmentCell : MonoBehaviour
 
 
 
-    [SerializeField] private EquipType _equipType = EquipType.None;
-    private ItemInfo _equipItemInfo;
+    //[SerializeField] private EquipType _equipType = EquipType.None;
+    //private ItemInfo _equipItemInfo;
 
     //private ???? _LinkedMesh;
     //private ???? _LinkedMesh;

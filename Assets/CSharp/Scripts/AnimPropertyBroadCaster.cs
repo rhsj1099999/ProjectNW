@@ -10,16 +10,6 @@ public class AnimPropertyBroadCaster : MonoBehaviour
     [SerializeField] Animator _ownerAnimator;
     [SerializeField] GameObject _ownerSkeleton;
 
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-
     public void AddAnimator(GameObject caller)
     {
         Animator callerAnimator = caller.GetComponent<Animator>();

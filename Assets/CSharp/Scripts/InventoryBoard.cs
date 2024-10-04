@@ -45,7 +45,7 @@ public class InventoryBoard : MonoBehaviour
     [SerializeField] private GameObject _itemUIPrefab = null;
 
     private RectTransform _myRectTransform = null;
-    private GameObject _inventoryOwner = null;
+    //private GameObject _inventoryOwner = null;
     /*-------------
     계속 바뀔 변수들
     -------------*/

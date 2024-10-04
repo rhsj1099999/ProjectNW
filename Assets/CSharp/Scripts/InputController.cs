@@ -54,7 +54,6 @@ public class InputController : MonoBehaviour
     [SerializeField] private string _moveDownButton = "MoveDown";
     [SerializeField] private string _moveLeftButton = "MoveLeft";
     [SerializeField] private string _moveRightButton = "MoveRight";
-    [SerializeField] private string _inventoryOpenButton = "InventoryOpen";
 
     [SerializeField] private string _MouseMoveX = "Mouse X";
     [SerializeField] private string _MouseMoveY = "Mouse Y";
