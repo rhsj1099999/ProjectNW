@@ -5,6 +5,7 @@ using UnityEngine;
 using Cinemachine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Animations;
+using Unity.VisualScripting;
 
 public enum AimState
 {
@@ -32,6 +33,35 @@ public class CharacterMoveScript : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyUp(KeyCode.C) == true && _equipmentItemModelPrefab_MustDel != null)
+        {
+            //바지를 입은것과 동일한 효과를 내는 임시함수
+
+
+            //모델 생성단계
+            GameObject emptyGameObject = new GameObject("EquipmentModelDummy"); // "MyChildObject"는 생성된 오브젝트의 이름
+            emptyGameObject.transform.SetParent(this.transform);
+            emptyGameObject.transform.localPosition = Vector3.zero;
+
+            //애니메이터 세팅 단계
+            GameObject modelObject = Instantiate(_equipmentItemModelPrefab_MustDel, emptyGameObject.transform);
+            Animator modelAnimator = modelObject.GetComponent<Animator>();
+            if (modelAnimator == null)
+            {
+                modelAnimator = modelAnimator.AddComponent<Animator>();
+            }
+            RuntimeAnimatorController ownerController = _AnimController.GetAnimator().runtimeAnimatorController;
+            RuntimeAnimatorController newController = Instantiate<RuntimeAnimatorController>(ownerController);
+            modelAnimator.runtimeAnimatorController = newController;
+            modelAnimator.avatar = _equipmentItemModelAvatar_MustDel;
+
+            //브로드캐스터 연결단계
+            AnimPropertyBroadCaster animpropertyBroadCaster = GetComponent<AnimPropertyBroadCaster>();
+            animpropertyBroadCaster.AddAnimator(modelObject);
+        }
+
+
+
         if (_inputController.GetInventoryOpen() == true)
         {
             UIManager.Instance.TurnOnUI(_inventoryUIPrefab, this.gameObject);
@@ -54,8 +84,6 @@ public class CharacterMoveScript : MonoBehaviour
         bool isAimed = Input.GetButton(_aimKey);
         if (_isAim != isAimed)
         {
-            //_riggingWithAimTarget.AimCall();
-
             _aimOrbit.CallControlOn();
 
             if (_gunscript != null)
@@ -89,23 +117,6 @@ public class CharacterMoveScript : MonoBehaviour
                 _tpsCamera.enabled = false;
 
                 _freeRunCamera.enabled = true;
-
-
-                //Vector3 adsForward = _sightCamera.transform.forward;
-
-                //// y축(yaw) 회전값 계산 (Vector3의 방향을 기준으로 y축 회전값을 얻기)
-                //float targetYaw = Mathf.Atan2(adsForward.x, adsForward.z) * Mathf.Rad2Deg;
-
-                //// x축(pitch) 회전값 계산 (Vector3의 방향을 기준으로 x축 회전값을 얻기)
-                //float targetPitch = Vector3.Angle(Vector3.up, adsForward) - 90f; // 위를 바라볼 때 90도이므로 보정
-
-                //// TPS 카메라로 전환
-                //_sightCamera.Priority = 5;
-                //_mainTPSCamera.Priority = 10;
-
-                //// TPS FreeLook 카메라의 축 값을 정조준 카메라의 각도에 맞게 수정
-                //_mainTPSCamera.m_XAxis.Value = targetYaw;
-                //_mainTPSCamera.m_YAxis.Value = targetPitch / 180f + 0.5f; // m_YAxis는 0~1의 범위를 사용
             }
         }
         _isAim = isAimed;
@@ -231,6 +242,7 @@ public class CharacterMoveScript : MonoBehaviour
         {
             animDir = inputDirection;
         }
+
         _AnimController.UpdateParameter("RelativeMovingZ", animDir.z);
         _AnimController.UpdateParameter("RelativeMovingX", animDir.x);
     }
@@ -323,6 +335,12 @@ public class CharacterMoveScript : MonoBehaviour
     [SerializeField] private float _jumpForce = 3.0f;
     [SerializeField] private GameObject _aimTarget = null;
     [SerializeField] private AimOrbit _aimOrbit = null;
+
+
+    [SerializeField] private GameObject _equipmentItemModelPrefab_MustDel = null;
+    [SerializeField] private Avatar _equipmentItemModelAvatar_MustDel = null;
+
+
 
     private Vector2 _currentVector = Vector2.zero;
     private Vector2 _currentVectorRef = Vector2.zero;
