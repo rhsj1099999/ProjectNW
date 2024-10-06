@@ -36,8 +36,6 @@ public class RiggingPublisher : MonoBehaviour
     [SerializeField] private GameObject _ownerRig = null;
     [SerializeField] private Animator _ownerAnimator = null;
 
-    //private List<HumanBodyBones> _riggedBones = new List<HumanBodyBones>(); //---------기능 실행시, 이 인덱스에 해당하는 뼈를 바로 붙일것
-    //private List<HumanBodyBones> _riggedSocketBones = new List<HumanBodyBones>(); //---기능 실행시, 이 인덱스에 해당하는 뼈에 소켓을 만들어서 붙일것
     private List<RiggingDataDesc> _riggeds = new List<RiggingDataDesc>();
 
     private void Awake()
@@ -128,6 +126,10 @@ public class RiggingPublisher : MonoBehaviour
             createdEachRiggingObject.transform.SetParent(createChildRigObject.transform);
             MultiAimConstraint createdMultiAimConstaint = createdEachRiggingObject.AddComponent<MultiAimConstraint>();
 
+
+            /*---------------------------------------------------------------------
+             |TODO| 구조체를 대입하는 이 동작을 한꺼번에 할 수 없을까
+            ---------------------------------------------------------------------*/
             if (desc._isSocket == true)
             {
                 Transform socketParent = callerAnimator.GetBoneTransform(desc._boneIndex);
@@ -170,7 +172,15 @@ public class RiggingPublisher : MonoBehaviour
         createdRigBuilder.Build();
     }
 
-    Vector3 CalculateOffsetVector(
+
+
+
+
+
+
+
+
+    private Vector3 CalculateOffsetVector(
         MultiAimConstraintData.Axis originalAim,
         MultiAimConstraintData.Axis originalUp,
         MultiAimConstraintData.Axis targetAim,
@@ -196,6 +206,13 @@ public class RiggingPublisher : MonoBehaviour
 
         return rotation * originalOffset;
     }
+
+
+
+
+
+
+
 
 
     private MultiAimConstraintData.Axis CalculateClosetAxis(Vector3 worldTarget, Transform targetTransform)

@@ -51,7 +51,14 @@ public class InventoryCell : MonoBehaviour
             return; //해당 마우스 포지션으로는 아이템을 넣을 수 없다.
         }
 
-        storedDesc._owner.DeleteItemUseForDragItem(storedDesc);         //삭제하고
+
+        if (storedDesc._owner != null)
+        {
+            storedDesc._owner.DeleteOnMe(storedDesc);         //삭제하고
+            /*---------------------------------------------------------------------------
+            |TODO|  장비창 -> 인벤토리 창인경우 들고있던 출처가 null임(null이여야하는데 아님)
+            ---------------------------------------------------------------------------*/
+        }
         _owner.AddItemUsingForcedIndex(storedDesc, startX, startY, caller.GetRotated());     //넣는다
     }
 

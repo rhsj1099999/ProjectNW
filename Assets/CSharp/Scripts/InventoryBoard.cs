@@ -8,35 +8,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static UnityEditor.Progress;
 
-public struct ItemStoreDesc
-{
-    public ItemStoreDesc(ItemInfo info, int count, Vector2 position)
-    {
-        _info = info;
-        _count = count;
-        _position = position;
-        _storedIndex = 0;
-        _isRotated = false;
-        _owner = null;
-    }
 
-    public void PlusItem(int count = 1)
-    {
-        _count++;
-    }
-
-    public Vector2 _position;       //저장된 위치 
-    public ItemInfo _info;          //인포
-    public int _count;              //개수
-    public int _storedIndex;        //저장된 칸
-    public bool _isRotated;
-    public InventoryBoard _owner;
-
-}
-
-
-
-public class InventoryBoard : MonoBehaviour
+public class InventoryBoard : MonoBehaviour, IMoveItemStore
 {
 
     [SerializeField] private int _rows = 4;
@@ -145,8 +118,6 @@ public class InventoryBoard : MonoBehaviour
         DebugCells();
     }
 
-
-
     public GameObject getCell(int index)
     {
         if (index >= _cells.Count)
@@ -191,7 +162,7 @@ public class InventoryBoard : MonoBehaviour
 
         HashSet<int> sameItemIndex = new HashSet<int>();
 
-        if (callerItem != null && storedDesc._owner == this && _itemUIs[storedDesc._storedIndex].GetComponent<ItemBase>() == callerItem)
+        if (callerItem != null && storedDesc._owner == this && _itemUIs.Count > 0 &&_itemUIs[storedDesc._storedIndex].GetComponent<ItemBase>() == callerItem)
         {
             int existingSizeX = (storedDesc._isRotated == false) ? storedDesc._info._sizeX: storedDesc._info._sizeY;
             int existingSizeY = (storedDesc._isRotated == false) ? storedDesc._info._sizeY : storedDesc._info._sizeX;
@@ -235,27 +206,7 @@ public class InventoryBoard : MonoBehaviour
         return true;
     }
 
-    private void DebugCells()
-    {
-        for (int i = 0; i < _rows; i++)
-        {
-            for (int j = 0; j < _cols; j++)
-            {
-                int debuggingCellIndex = (i * _cols) + j;
 
-                InventoryCell cellComponent = _cells[debuggingCellIndex].GetComponent<InventoryCell>();
-
-                if (_blankDispaly[i,j] == true)
-                {
-                    cellComponent.TurnOn();
-                }
-                if (_blankDispaly[i, j] == false)
-                {
-                    cellComponent.TurnOff();
-                }
-            }
-        }
-    }
 
 
     private GameObject CreateInventoryItem(ItemInfo info, int targetX, int targetY, bool isAdditionalRotated = false)
@@ -404,8 +355,6 @@ public class InventoryBoard : MonoBehaviour
         //격자갱신
         int rows = (isRotated == true) ? info._sizeX : info._sizeY;
         int cols = (isRotated == true) ? info._sizeY : info._sizeX;
-        //int targetX_modified = (isRotated == true) ? targetX - 1 : targetX;
-        int targetX_modified = (isRotated == true) ? targetX - 1 : targetX;
         for (int y = 0; y < rows; y++)
         {
             for (int x = 0; x < cols; x++)
@@ -443,7 +392,7 @@ public class InventoryBoard : MonoBehaviour
     }
 
 
-    public void DeleteItemUseForDragItem(ItemStoreDesc storedDesc)
+    public void DeleteOnMe(ItemStoreDesc storedDesc) // : IMoveItemStore
     {
         //아이템을 드래그 드롭 했을때 한꺼번에 옮기는 함수 = 전부다 없앨것이다.
 
@@ -592,7 +541,7 @@ public class InventoryBoard : MonoBehaviour
 
             testItemInfo._sprite = null;
             testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 1;
+            testItemInfo._itemKey = 995;
             testItemInfo._sizeX = 1;
             testItemInfo._sizeY = 1;
 
@@ -605,7 +554,7 @@ public class InventoryBoard : MonoBehaviour
 
             testItemInfo._sprite = null;
             testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 2;
+            testItemInfo._itemKey = 996;
             testItemInfo._sizeX = 1;
             testItemInfo._sizeY = 3;
 
@@ -618,7 +567,7 @@ public class InventoryBoard : MonoBehaviour
 
             testItemInfo._sprite = null;
             testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 3;
+            testItemInfo._itemKey = 997;
             testItemInfo._sizeX = 2;
             testItemInfo._sizeY = 3;
 
@@ -631,7 +580,7 @@ public class InventoryBoard : MonoBehaviour
 
             testItemInfo._sprite = null;
             testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 4;
+            testItemInfo._itemKey = 998;
             testItemInfo._sizeX = 2;
             testItemInfo._sizeY = 2;
 
@@ -644,12 +593,38 @@ public class InventoryBoard : MonoBehaviour
 
             testItemInfo._sprite = null;
             testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 5;
+            testItemInfo._itemKey = 999;
             testItemInfo._sizeX = 1;
             testItemInfo._sizeY = 2;
 
             AddItemAutomatic(testItemInfo);
         }
-    }
 
+
+        if (Input.GetKeyDown(KeyCode.V) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32).Value);
+        }
+    }
+    private void DebugCells()
+    {
+        for (int i = 0; i < _rows; i++)
+        {
+            for (int j = 0; j < _cols; j++)
+            {
+                int debuggingCellIndex = (i * _cols) + j;
+
+                InventoryCell cellComponent = _cells[debuggingCellIndex].GetComponent<InventoryCell>();
+
+                if (_blankDispaly[i, j] == true)
+                {
+                    cellComponent.TurnOn();
+                }
+                if (_blankDispaly[i, j] == false)
+                {
+                    cellComponent.TurnOff();
+                }
+            }
+        }
+    }
 }

@@ -7,6 +7,8 @@ using UnityEngine.Animations.Rigging;
 using UnityEngine.Animations;
 using Unity.VisualScripting;
 
+
+
 public enum AimState
 {
     eTPSAim,
@@ -26,36 +28,41 @@ public class CharacterMoveScript : MonoBehaviour
     {
         //C키를 누르면 장비 장착을 위한 오브젝트 생성코드
         {
+            /*---------------------------------------------------------------------
+             |TODO| 가장먼저 해야할 단계 : 입으려는 아이템이 Skinned Mesh 일떄 뼈구조가 같은지 판별
+            ---------------------------------------------------------------------
+                1. 같은 뼈 구조인가? -> 간소화 된 단계를 실행
+                2. 다른 뼈 구조인가? -> 아래 단계를 실행
+            ---------------------------------------------------------------------*/
             if (Input.GetKeyUp(KeyCode.C) == true && _equipmentItemModelPrefab_MustDel != null)
             {
-                //1. 모델 생성단계
-                GameObject emptyGameObject = new GameObject("EquipmentModelDummy"); // "MyChildObject"는 생성된 오브젝트의 이름
-                emptyGameObject.transform.SetParent(this.transform);
-                emptyGameObject.transform.localPosition = Vector3.zero;
+                ////1. 모델 생성단계
+                //GameObject emptyGameObject = new GameObject("EquipmentModelDummy"); // "MyChildObject"는 생성된 오브젝트의 이름
+                //emptyGameObject.transform.SetParent(this.transform);
+                //emptyGameObject.transform.localPosition = Vector3.zero;
 
-                //2. 애니메이터 세팅 단계
-                GameObject modelObject = Instantiate(_equipmentItemModelPrefab_MustDel, emptyGameObject.transform);
-                Animator modelAnimator = modelObject.GetComponent<Animator>();
-                if (modelAnimator == null)
-                {
-                    modelAnimator = modelAnimator.AddComponent<Animator>();
-                }
-                RuntimeAnimatorController ownerController = _AnimController.GetAnimator().runtimeAnimatorController;
-                RuntimeAnimatorController newController = Instantiate<RuntimeAnimatorController>(ownerController);
-                modelAnimator.runtimeAnimatorController = newController;
-                modelAnimator.avatar = _equipmentItemModelAvatar_MustDel;
+                ////2. 애니메이터 세팅 단계
+                //GameObject modelObject = Instantiate(_equipmentItemModelPrefab_MustDel, emptyGameObject.transform);
+                //Animator modelAnimator = modelObject.GetComponent<Animator>();
+                //if (modelAnimator == null)
+                //{
+                //    modelAnimator = modelObject.AddComponent<Animator>();
+                //}
+                //RuntimeAnimatorController ownerController = _AnimController.GetAnimator().runtimeAnimatorController;
+                //RuntimeAnimatorController newController = Instantiate<RuntimeAnimatorController>(ownerController);
+                //modelAnimator.runtimeAnimatorController = newController;
+                //modelAnimator.avatar = _equipmentItemModelAvatar_MustDel;
 
-                //3. 브로드캐스터 연결단계
-                AnimPropertyBroadCaster animpropertyBroadCaster = GetComponent<AnimPropertyBroadCaster>();
-                animpropertyBroadCaster.AddAnimator(modelObject);
+                ////3. 브로드캐스터 연결단계
+                //AnimPropertyBroadCaster animpropertyBroadCaster = GetComponent<AnimPropertyBroadCaster>();
+                //animpropertyBroadCaster.AddAnimator(modelObject);
 
-                //4. 생성된 오브젝트의 리깅 단계
-                RiggingPublisher ownerRigPublisher = gameObject.GetComponent<RiggingPublisher>();
-                ownerRigPublisher.PublishRigging(modelObject, modelAnimator);
+                ////4. 생성된 오브젝트의 리깅 단계
+                //RiggingPublisher ownerRigPublisher = gameObject.GetComponent<RiggingPublisher>();
+                //ownerRigPublisher.PublishRigging(modelObject, modelAnimator);
 
-
-                //5. Skinned Mesh Renderer 비활성화 단계 (입은 장비만 보여주기 위함이다)
-
+                ////5. Skinned Mesh Renderer 비활성화 단계 (입은 장비만 보여주기 위함이다)
+                ////GameObject itemMeshObject = null;
             }
         }
 

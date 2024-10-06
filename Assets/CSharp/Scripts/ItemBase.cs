@@ -8,6 +8,22 @@ using System.Linq;
 
 public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler
 {
+    private RectTransform _myRectTransform = null;
+    private Canvas _myCanvas = null;
+    private GraphicRaycaster _myGraphicRaycaster = null;
+
+    /*-----------------
+    기능 실행마다 바뀔 변수들
+     ----------------*/
+    private Vector2 _mouseCatchingPosition = Vector2.zero;
+    private Vector2 _myPosition = Vector2.zero;
+    private ItemStoreDesc _itemStoreDesc;
+    private InventoryBoard _inventoryBoard = null;
+    private bool _isDragging = false;
+    private bool _isRotated = false;
+
+
+
     public void Initialize(InventoryBoard inventoryBoard, ItemStoreDesc storeDesc)
     {
         if (inventoryBoard == null)
@@ -83,6 +99,13 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             if (cellComponent != null) //최상단이 CellComponent이다
             {
                 cellComponent.TryMoveItemDropOnBoard(_itemStoreDesc, this);
+                return;
+            }
+
+            EquipmentCell equipmentCellComponent = topObject.GetComponent<EquipmentCell>();
+            if (equipmentCellComponent != null) //최상단이 EquipmentCell이다.
+            {
+                equipmentCellComponent.EquipItem(_itemStoreDesc);
                 return;
             }
 
@@ -189,18 +212,4 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     {
         return _itemStoreDesc;
     }
-
-    private RectTransform _myRectTransform = null;
-    private Canvas _myCanvas = null;
-    private GraphicRaycaster _myGraphicRaycaster = null;
-
-    /*-----------------
-    기능 실행마다 바뀔 변수들
-     ----------------*/
-    private Vector2 _mouseCatchingPosition = Vector2.zero;
-    private Vector2 _myPosition = Vector2.zero;
-    private ItemStoreDesc _itemStoreDesc;
-    private InventoryBoard _inventoryBoard = null;
-    private bool _isDragging = false;
-    private bool _isRotated = false;
 }
