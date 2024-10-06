@@ -3,13 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public struct InventoryTransitionDesc
-{
-    public InventoryBoard _from;
-    public int _fromIndex;
-    public ItemInfo _itemInfo;
-}
-
 public struct InventoryCellDesc
 {
     public InventoryBoard _owner;
@@ -17,15 +10,9 @@ public struct InventoryCellDesc
 
 public class InventoryCell : MonoBehaviour
 {
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
+    private Color _originalColor = Color.white;
+    private InventoryBoard _owner = null;
+    private Image _imageComponent = null;
 
     private void Awake()
     {
@@ -55,9 +42,6 @@ public class InventoryCell : MonoBehaviour
         if (storedDesc._owner != null)
         {
             storedDesc._owner.DeleteOnMe(storedDesc);         //삭제하고
-            /*---------------------------------------------------------------------------
-            |TODO|  장비창 -> 인벤토리 창인경우 들고있던 출처가 null임(null이여야하는데 아님)
-            ---------------------------------------------------------------------------*/
         }
         _owner.AddItemUsingForcedIndex(storedDesc, startX, startY, caller.GetRotated());     //넣는다
     }
@@ -66,15 +50,6 @@ public class InventoryCell : MonoBehaviour
     public void TryMoveItemDropOnItem(ItemStoreDesc storedDesc, ItemBase caller)
     {
         Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
-
-        /*
-        //1. 완벽한 자기 자신 위에 포개어 넣은경우
-            //그냥 실수거나
-            //회전을 시도한 경우다
-        //2. 동일 종류 위에 포개어 넣은 경우
-            //합치려고 한다 - 스택여분만큼 채워준다. 나머지는 원래대로 되돌려 놓는다.
-        */
-        //
 
         GameObject itemUI = _owner.getItem(storedDesc._storedIndex);
 
@@ -111,12 +86,4 @@ public class InventoryCell : MonoBehaviour
     {
         _imageComponent.color = _originalColor;
     }
-
-
-
-    private Color _originalColor = Color.white;
-
-
-    private InventoryBoard _owner = null;
-    private Image _imageComponent = null;
 }

@@ -17,7 +17,7 @@ public struct ItemInfo
         RifleWeapon,
         HandgunWeapon,
         End,
-        AllEquipment,
+        AllEquipment, //Àü½Å°©ºü
     }
 
 
@@ -60,7 +60,7 @@ public struct ItemStoreDesc
     public int _count;              //°³¼ö
     public int _storedIndex;        //ÀúÀåµÈ Ä­
     public bool _isRotated;
-    public InventoryBoard _owner;
+    public IMoveItemStore _owner;
 
 }
 
@@ -88,7 +88,9 @@ public class ItemInfoManager : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+
         _instance = this;
+
         DontDestroyOnLoad(_instance.gameObject);
 
         InitEquipments();
@@ -132,7 +134,7 @@ public class ItemInfoManager : MonoBehaviour
 
     private void InitEquipments()
     {
-        GameObject[] loadedPrefabs = Resources.LoadAll<GameObject>("IgnoreResources/EquipmentModels");
+        GameObject[] loadedPrefabs = Resources.LoadAll<GameObject>("EquipmentModels");
 
         foreach (GameObject prefab in loadedPrefabs)
         {
@@ -170,7 +172,8 @@ public class ItemInfoManager : MonoBehaviour
         testItemInfo._sizeY = 1;
         testItemInfo._equipType = ItemInfo.EquipType.HumanHead;
         testItemInfo._meshObjectName = "EquipTest";
-        testItemInfo._equipMeshIndicies = new List<int>(3);
+        testItemInfo._equipMeshIndicies = new List<int>();
+        testItemInfo._equipMeshIndicies.Add(3);
         _items.Add(testItemInfo._itemKey, testItemInfo);
 
 
@@ -183,7 +186,8 @@ public class ItemInfoManager : MonoBehaviour
         testItemInfo._sizeY = 2;
         testItemInfo._equipType = ItemInfo.EquipType.HumanArm;
         testItemInfo._meshObjectName = "EquipTest";
-        testItemInfo._equipMeshIndicies = new List<int>(6);
+        testItemInfo._equipMeshIndicies = new List<int>();
+        testItemInfo._equipMeshIndicies.Add(6);
         _items.Add(testItemInfo._itemKey, testItemInfo);
 
 
@@ -196,7 +200,25 @@ public class ItemInfoManager : MonoBehaviour
         testItemInfo._sizeY = 3;
         testItemInfo._equipType = ItemInfo.EquipType.HumanBody;
         testItemInfo._meshObjectName = "EquipTest";
-        testItemInfo._equipMeshIndicies = new List<int>(9);
+        testItemInfo._equipMeshIndicies = new List<int>();
+        testItemInfo._equipMeshIndicies.Add(9);
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "Àü½Å°©¿Ê1";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 33;
+        testItemInfo._sizeX = 5;
+        testItemInfo._sizeY = 7;
+        testItemInfo._equipType = ItemInfo.EquipType.AllEquipment;
+        testItemInfo._meshObjectName = "VanguardTest";
+        testItemInfo._equipMeshIndicies = new List<int>();
+        testItemInfo._equipMeshIndicies.Add(0);
+        testItemInfo._equipMeshIndicies.Add(1);
         _items.Add(testItemInfo._itemKey, testItemInfo);
     }
 }

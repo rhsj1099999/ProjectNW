@@ -18,19 +18,19 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     private Vector2 _mouseCatchingPosition = Vector2.zero;
     private Vector2 _myPosition = Vector2.zero;
     private ItemStoreDesc _itemStoreDesc;
-    private InventoryBoard _inventoryBoard = null;
+    private IMoveItemStore _itemStoreAbleInstance = null;
     private bool _isDragging = false;
     private bool _isRotated = false;
 
 
 
-    public void Initialize(InventoryBoard inventoryBoard, ItemStoreDesc storeDesc)
+    public void Initialize(IMoveItemStore inventoryBoard, ItemStoreDesc storeDesc)
     {
         if (inventoryBoard == null)
         {
             Debug.Assert(inventoryBoard != null, "인벤토리 보드가 널이다");
         }
-        _inventoryBoard = inventoryBoard;
+        _itemStoreAbleInstance = inventoryBoard;
         _itemStoreDesc = storeDesc;
     }
 
@@ -105,7 +105,7 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             EquipmentCell equipmentCellComponent = topObject.GetComponent<EquipmentCell>();
             if (equipmentCellComponent != null) //최상단이 EquipmentCell이다.
             {
-                equipmentCellComponent.EquipItem(_itemStoreDesc);
+                equipmentCellComponent.TryEquipItem(_itemStoreDesc);
                 return;
             }
 

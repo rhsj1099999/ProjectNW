@@ -18,7 +18,6 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     [SerializeField] private GameObject _itemUIPrefab = null;
 
     private RectTransform _myRectTransform = null;
-    //private GameObject _inventoryOwner = null;
     /*-------------
     계속 바뀔 변수들
     -------------*/
@@ -87,13 +86,6 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
         _blank = _cols * _rows;
         _blankDispaly = new bool[_rows, _cols];
-
-        /*-------------------
-        테스트용 미리 3칸 억지채우기
-        -------------------*/
-        //_blankDispaly[0,0] = true;
-        //_blankDispaly[0,1] = true;
-        //_blankDispaly[1, 0] = true;
     }
 
 
@@ -162,7 +154,17 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
         HashSet<int> sameItemIndex = new HashSet<int>();
 
-        if (callerItem != null && storedDesc._owner == this && _itemUIs.Count > 0 &&_itemUIs[storedDesc._storedIndex].GetComponent<ItemBase>() == callerItem)
+
+        /*---------------------------------------------------------------------------
+        |TODO|  비교조건 수정해라 (참일때 하는 일은 템옮기기일때 동일아이템이 움직였을때 겹친칸 continue용도
+        ---------------------------------------------------------------------------*/
+        if (
+            callerItem != null && 
+            (storedDesc._owner is InventoryBoard) && 
+            (InventoryBoard)storedDesc._owner == this &&
+            _itemUIs.Count > 0 &&
+            _itemUIs[storedDesc._storedIndex].GetComponent<ItemBase>() == callerItem
+            )
         {
             int existingSizeX = (storedDesc._isRotated == false) ? storedDesc._info._sizeX: storedDesc._info._sizeY;
             int existingSizeY = (storedDesc._isRotated == false) ? storedDesc._info._sizeY : storedDesc._info._sizeX;
@@ -604,6 +606,11 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         if (Input.GetKeyDown(KeyCode.V) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32).Value);
+        }
+
+        if (Input.GetKeyDown(KeyCode.C) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33).Value);
         }
     }
     private void DebugCells()
