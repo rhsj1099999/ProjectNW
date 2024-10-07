@@ -84,7 +84,7 @@ public class AnimPropertyBroadCaster : MonoBehaviour
             {
                 /*----------------------------------------------------------
                  |TODO| 애니메이션을 돌리면 돌릴수록 위치, 회전이 어긋남 ,이 if문을 주석처리하면 해당 현상 발생
-                   왜그런지 알아내야 한다.
+                   왜그런지 알아내야 한다 = 루트모션때문이었다.
                  ----------------------------------------------------------*/
                 eachAnimator.Value.gameObject.transform.position = _ownerSkeleton.transform.position;
                 eachAnimator.Value.gameObject.transform.rotation = _ownerSkeleton.transform.rotation;

@@ -134,7 +134,10 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
     public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, ItemBase callerItem)
     {
-        if ((storedDesc._info._sizeX * storedDesc._info._sizeY) > _blank) { return false; } //애초에 들어갈 공간이 없다
+        /*---------------------------------------------------------------------------
+        |TODO| 동일 아이템이면 겹친 칸만큼 보정해줘야한다
+        ---------------------------------------------------------------------------*/
+        //if ((storedDesc._info._sizeX * storedDesc._info._sizeY) > _blank) { return false; } //애초에 들어갈 공간이 없다
 
         Vector2 currPosition = Input.mousePosition;
         Vector2 boardSize = new Vector2(_myRectTransform.rect.width, _myRectTransform.rect.height);
@@ -240,14 +243,12 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         if (isAdditionalRotated == true)
         {
             int index = (targetY * _cols) + targetX;
-            Vector2 cellPosition = _cells[index].transform.position;
+            Vector2 cellPosition = new Vector2(_cells[index].transform.position.x, _cells[index].transform.position.y) + new Vector2(itemOffset.x, itemOffset.y);
             
 
             itemUIRectTransform.RotateAround(cellPosition, new Vector3(0.0f, 0.0f, 1.0f), 90);
-            if (info._sizeX > 1)
-            {
-                itemUIRectTransform.position -= new Vector3(0, info._sizeX * 20 / 2);
-            }
+
+            itemUIRectTransform.anchoredPosition -= new Vector2(0.0f, info._sizeX * 20);
         }
 
 
@@ -451,7 +452,9 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
     public bool CheckInventorySpace_MustOpt(ref ItemInfo itemInfo, ref int targetX, ref int targetY, ref bool isRotated, int startX = 0, int startY = 0)
     {
-        //|TODO| = 너무 BruteForce다 최적화가 필요하다
+        /*------------------------------------------
+        |TODO| = 너무 BruteForce다 최적화가 필요하다
+        ------------------------------------------*/
         bool isFind = true;
 
         for (int i = 0; i < _rows; i++)
@@ -522,7 +525,12 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
                         if (isFind == true)
                         {
-                            targetX = j + (itemInfo._sizeX - 1);
+                            //targetX = j + (itemInfo._sizeX - 1);
+                            //targetY = i;
+                            //isRotated = true;
+                            //return true;
+
+                            targetX = j;
                             targetY = i;
                             isRotated = true;
                             return true;
@@ -611,6 +619,16 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         if (Input.GetKeyDown(KeyCode.C) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33).Value);
+        }
+
+        if (Input.GetKeyDown(KeyCode.X) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31).Value);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Z) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30).Value);
         }
     }
     private void DebugCells()

@@ -1,25 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+
+
 public struct ItemInfo
 {
-    public enum EquipType
+    public enum EquipType //For BitShift
     {
         None = 0,
-        HumanHead,
-        HumanArm,
-        HumanLeg,
-        HumanBody,
-        HumanBackpack,
-        RifleWeapon,
-        HandgunWeapon,
-        End,
-        AllEquipment, //전신갑빠
+        HumanHead = 1 << 0,
+        HumanArm = 1 << 1,
+        HumanLeg = 1 << 2,
+        HumanBody = 1 << 3,
+        HumanBackpack = 1 << 4,
+        All = int.MaxValue
     }
-
 
     public int _itemKey;
     public string _itemName;
@@ -66,6 +65,10 @@ public struct ItemStoreDesc
 
 public class ItemInfoManager : MonoBehaviour
 {
+    Dictionary<string, GameObject>       _equipmentPrefabs = new Dictionary<string, GameObject>();
+    Dictionary<string, List<GameObject>> _equipmentObject = new Dictionary<string, List<GameObject>>();
+    Dictionary<int, ItemInfo> _items = new Dictionary<int, ItemInfo>();
+
     private static ItemInfoManager _instance = null;
 
     public static ItemInfoManager Instance
@@ -81,6 +84,7 @@ public class ItemInfoManager : MonoBehaviour
             return _instance;
         }
     }
+
 
     private void Awake()
     {
@@ -99,8 +103,14 @@ public class ItemInfoManager : MonoBehaviour
     }
 
 
-    Dictionary<string, List<GameObject>> _equipmentObject = new Dictionary<string, List<GameObject>>();
-    Dictionary<int, ItemInfo> _items = new Dictionary<int, ItemInfo>();
+
+
+
+    public GameObject GetModelMesh(ItemInfo itemInfo)
+    {
+        return null;
+    }
+
 
     public List<GameObject> GetMeshes(ItemInfo itemInfo) //전신장비들은 비트연산이 하나라도 있으면 세트템을 줄거다
     {
@@ -131,13 +141,28 @@ public class ItemInfoManager : MonoBehaviour
     }
 
 
+    public GameObject GetEquipmentPrefab(string prefabName)
+    {
+        Debug.Assert(_equipmentPrefabs.ContainsKey(prefabName) == true, "존재하지 않는 프리팹을 요청합니다. 리소스 변화가 있었습니까?");
+        return _equipmentPrefabs[prefabName];
+    }
+
+
 
     private void InitEquipments()
     {
+        //asset 폴더 내에 기존 메쉬들을 등록하는 함수 
+
+        //Dictionary<string, List<GameObject>> _equipmentObject
+
         GameObject[] loadedPrefabs = Resources.LoadAll<GameObject>("EquipmentModels");
 
         foreach (GameObject prefab in loadedPrefabs)
         {
+            Debug.Assert(_equipmentPrefabs.ContainsKey(prefab.name) == false, "프리팹 원본이 중복됩니다");
+
+            _equipmentPrefabs.Add(prefab.name, prefab);
+
             SkinnedMeshRenderer[] components = prefab.transform.GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
             if (_equipmentObject.ContainsKey(prefab.name) == false)
@@ -214,7 +239,7 @@ public class ItemInfoManager : MonoBehaviour
         testItemInfo._itemKey = 33;
         testItemInfo._sizeX = 5;
         testItemInfo._sizeY = 7;
-        testItemInfo._equipType = ItemInfo.EquipType.AllEquipment;
+        testItemInfo._equipType = ItemInfo.EquipType.All;
         testItemInfo._meshObjectName = "VanguardTest";
         testItemInfo._equipMeshIndicies = new List<int>();
         testItemInfo._equipMeshIndicies.Add(0);

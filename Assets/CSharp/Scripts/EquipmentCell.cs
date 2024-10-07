@@ -32,7 +32,8 @@ public class EquipmentCell : MonoBehaviour
     {
         Debug.Assert(_ownerEquipmentBoard != null, "Equipcell Owner가 제대로 설정되지 않았습니다");
 
-        if (storedDesc._info._equipType != _equipType)
+
+        if ((storedDesc._info._equipType & _equipType) == (int)EquipType.None)
         {
             //착용 부위가 다른템이다
             //이정도는 board 말고 cell 선에서 컷
@@ -46,75 +47,4 @@ public class EquipmentCell : MonoBehaviour
     {
         return _equipType;
     }
-
-
-
-
-    //public void DeleteOnMe(ItemStoreDesc storeDesc) // : IMoveItemStore
-    //{
-    //    Debug.Assert(_equippedItemUI != null, "장착하지 않았는데 장착해제합니다??");
-    //    Destroy(_equippedItemUI);
-    //    _equippedItemUI = null;
-
-    //    UnEquipMesh(storeDesc); //기존 메쉬를 해제한다
-    //}
-
-
-
-
-
-
-    //public void EquipItem(ItemStoreDesc storedDesc)
-    //{
-        //if (_equippedItemUI != null) 
-        //{
-        //    return;
-        //    //이미 해당칸에 장착하고 있으면 그냥 종료
-        //    /*---------------------------------------------------------------------------
-        //    |TODO|  나중에 아이템 스왑기능 구현시 이곳을 수정해야한다.
-        //    ---------------------------------------------------------------------------*/
-        //}
-
-        //if (storedDesc._info._equipType != _equipType)
-        //{
-        //    //착용 부위가 다른템이다
-        //    return;
-        //}
-
-        ////전에 있던 객체에서 아이템 삭제
-        //{
-        //    storedDesc._owner.DeleteOnMe(storedDesc);
-        //}
-
-        //나 자신(Cell)에게 정보 저장
-        //{
-        //    GameObject equipmentUIObject = Instantiate(_equipmentUIObjectPrefab, this.gameObject.transform);
-
-        //    RectTransform equipmentUIRectTransform = equipmentUIObject.GetComponent<RectTransform>();
-
-        //    RectTransform myRectTransform = GetComponent<RectTransform>();
-
-        //    equipmentUIRectTransform.sizeDelta = new Vector2(myRectTransform.rect.width, myRectTransform.rect.height);
-
-        //    equipmentUIRectTransform.position = myRectTransform.position;
-
-        //    ItemBase itemBaseComponent = equipmentUIObject.GetComponent<ItemBase>();
-
-        //    storedDesc._owner = this;
-
-        //    itemBaseComponent.Initialize(this, storedDesc);
-
-        //    _equippedItemUI = equipmentUIObject;
-        //}
-
-        ////메쉬 장착
-        //{
-        //    EquipItemMesh(storedDesc);
-        //}
-    //}
-
-
-
-
-
 }
