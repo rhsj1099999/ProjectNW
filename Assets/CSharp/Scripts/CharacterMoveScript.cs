@@ -19,6 +19,9 @@ public enum AimState
 
 public class CharacterMoveScript : MonoBehaviour
 {
+
+    private Vector3 _animDir = Vector3.zero;
+
     private void Awake()
     {
         Debug.Assert(_inputController != null, "인풋컨트롤러가 없다");
@@ -26,43 +29,18 @@ public class CharacterMoveScript : MonoBehaviour
 
     void Update()
     {
-        //C키를 누르면 장비 장착을 위한 오브젝트 생성코드
+        //타임디버깅
         {
-            /*---------------------------------------------------------------------
-             |TODO| 가장먼저 해야할 단계 : 입으려는 아이템이 Skinned Mesh 일떄 뼈구조가 같은지 판별
-            ---------------------------------------------------------------------
-                1. 같은 뼈 구조인가? -> 간소화 된 단계를 실행
-                2. 다른 뼈 구조인가? -> 아래 단계를 실행
-            ---------------------------------------------------------------------*/
-            if (Input.GetKeyUp(KeyCode.C) == true && _equipmentItemModelPrefab_MustDel != null)
+            if (Input.GetKeyDown(KeyCode.L))  // S키를 누르면 게임 속도를 느리게 함
             {
-                ////1. 모델 생성단계
-                //GameObject emptyGameObject = new GameObject("EquipmentModelDummy"); // "MyChildObject"는 생성된 오브젝트의 이름
-                //emptyGameObject.transform.SetParent(this.transform);
-                //emptyGameObject.transform.localPosition = Vector3.zero;
+                Time.timeScale = 0.1f;
+                Time.fixedDeltaTime = Time.timeScale * 0.02f;  // 물리적 시간 업데이트
+            }
 
-                ////2. 애니메이터 세팅 단계
-                //GameObject modelObject = Instantiate(_equipmentItemModelPrefab_MustDel, emptyGameObject.transform);
-                //Animator modelAnimator = modelObject.GetComponent<Animator>();
-                //if (modelAnimator == null)
-                //{
-                //    modelAnimator = modelObject.AddComponent<Animator>();
-                //}
-                //RuntimeAnimatorController ownerController = _AnimController.GetAnimator().runtimeAnimatorController;
-                //RuntimeAnimatorController newController = Instantiate<RuntimeAnimatorController>(ownerController);
-                //modelAnimator.runtimeAnimatorController = newController;
-                //modelAnimator.avatar = _equipmentItemModelAvatar_MustDel;
-
-                ////3. 브로드캐스터 연결단계
-                //AnimPropertyBroadCaster animpropertyBroadCaster = GetComponent<AnimPropertyBroadCaster>();
-                //animpropertyBroadCaster.AddAnimator(modelObject);
-
-                ////4. 생성된 오브젝트의 리깅 단계
-                //RiggingPublisher ownerRigPublisher = gameObject.GetComponent<RiggingPublisher>();
-                //ownerRigPublisher.PublishRigging(modelObject, modelAnimator);
-
-                ////5. Skinned Mesh Renderer 비활성화 단계 (입은 장비만 보여주기 위함이다)
-                ////GameObject itemMeshObject = null;
+            if (Input.GetKeyDown(KeyCode.O))  // R키를 누르면 게임 속도를 정상으로 복원
+            {
+                Time.timeScale = 1.0f;
+                Time.fixedDeltaTime = Time.timeScale * 0.02f;
             }
         }
 
@@ -75,14 +53,15 @@ public class CharacterMoveScript : MonoBehaviour
         }
 
         //달리기 코드
+        float speedRatio = 1.0f;
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) == true)
+            if (Input.GetKey(KeyCode.LeftShift) == true)
             {
-                _speed = 0.2f;
+                speedRatio = 2.0f;
             }
-            if (Input.GetKeyUp(KeyCode.LeftShift) == true)
+            if (Input.GetKey(KeyCode.LeftShift) == false)
             {
-                _speed = 0.1f;
+                speedRatio = 1.0f;
             }
         }
         
@@ -92,12 +71,8 @@ public class CharacterMoveScript : MonoBehaviour
             _isAim = isAimed;
         }
 
-        UpdateAnimation(_inputController._pr_directionByInput);
-    }
 
-    void FixedUpdate()
-    {
-        Vector3 inputDirection = _inputController._pr_directionByInput;
+        _animDir = _inputController._pr_directionByInput;
 
         if (_isAim == true)
         {
@@ -105,15 +80,21 @@ public class CharacterMoveScript : MonoBehaviour
         }
         else
         {
-            CharacterRotate(inputDirection);
+            CharacterRotate(_animDir);
         }
-        
-        CharacterMove(inputDirection); //누르면 이동하기
+
+        CharacterMove(_animDir, speedRatio); //누르면 이동하기
+
+    }
+
+    void FixedUpdate()
+    {
+
     }
 
 
 
-    private void CharacterMove(Vector3 inputDirection)
+    private void CharacterMove(Vector3 inputDirection, float ratio = 1.0f)
     {
         if (_physics.isGrounded == true)
         {
@@ -145,14 +126,11 @@ public class CharacterMoveScript : MonoBehaviour
             ? 1.0f
             : Mathf.Clamp(Vector3.Dot(transform.forward, inputDirection), 0.0f, 1.0f);
         
-        Vector3 desiredMove = inputDirection * _speed * Time.deltaTime * similarities;
+        Vector3 desiredMove = inputDirection * _speed * Time.deltaTime * similarities * ratio;
 
         desiredMove += Vector3.up * _verticalSpeedAcc * Time.deltaTime;
 
-        if (Mathf.Abs(desiredMove.y) <= float.Epsilon && _physics.isGrounded == true)
-        {
-            //Crash
-        }
+        Debug.Assert(Mathf.Abs(desiredMove.y) >= float.Epsilon, "부유하는 움직임입니다.");
 
         if (_physics != null)
         {
@@ -163,29 +141,34 @@ public class CharacterMoveScript : MonoBehaviour
             transform.position += desiredMove;
         }
 
-        //땅에 닿았는지 임시 디버깅
-        {
-            if (_physics.isGrounded == true)
-            {
-                Debug.Log("Grounded");
-            }
-            else
-            {
-                Debug.Log("Not Grounded");
-            }
-        }
+        ////땅에 닿았는지 임시 디버깅
+        //{
+        //    if (_physics.isGrounded == true)
+        //    {
+        //        Debug.Log("Grounded");
+        //    }
+        //    else
+        //    {
+        //        Debug.Log("Not Grounded");
+        //    }
+        //}
     }
 
-    private void UpdateAnimation(Vector3 inputDirection)
+    private void LateUpdate()
+    {
+        UpdateAnimation();
+    }
+
+    private void UpdateAnimation()
     {
         _AnimController.UpdateParameter("IsAim", _isAim);
         _AnimController.UpdateParameter("IsInAir", _isInAir);
         _AnimController.UpdateParameter("IsJump", _isJumping);
-        _AnimController.UpdateParameter("MovingSpeed", _physics.velocity.magnitude);
+        _AnimController.UpdateParameter("MovingSpeed", _physics.velocity.magnitude / _speed);
         Vector3 animDir = new Vector3(0.0f, 0.0f, 1.0f);
         if (_isAim == true)
         {
-            animDir = inputDirection;
+            animDir = _animDir;
         }
         _AnimController.UpdateParameter("RelativeMovingZ", animDir.z);
         _AnimController.UpdateParameter("RelativeMovingX", animDir.x);
@@ -196,7 +179,7 @@ public class CharacterMoveScript : MonoBehaviour
 
     }
 
-    private void CharacterRotate(Vector3 inputDirection)
+    private void CharacterRotate(Vector3 inputDirection, float ratio = 1.0f)
     {
         if (Camera.main != null)
         {
@@ -208,7 +191,12 @@ public class CharacterMoveScript : MonoBehaviour
 
         float deltaDEG = Vector3.Angle(transform.forward.normalized, inputDirection);
 
-        float nextDeltaDEG = _rotatingSpeed_DEG * Time.deltaTime;
+        if (deltaDEG > 180.0f)
+        {
+            deltaDEG -= 180.0f;
+        }
+
+        float nextDeltaDEG = _rotatingSpeed_DEG * Time.deltaTime * ratio;
 
         if (nextDeltaDEG >= deltaDEG)
         {
@@ -237,6 +225,10 @@ public class CharacterMoveScript : MonoBehaviour
     [SerializeField] private float _speed = 5.0f;
     [SerializeField] private float _rotatingSpeed_DEG = 90.0f;
     [SerializeField] private float _jumpForce = 3.0f;
+    private bool _isJumping = false;
+    private bool _isInAir = false;
+    private bool _isAim = false;
+    private float _verticalSpeedAcc = 0.0f;
 
     [SerializeField] private GameObject _inventoryUIPrefab = null;
 
@@ -244,8 +236,5 @@ public class CharacterMoveScript : MonoBehaviour
     [SerializeField] private Avatar _equipmentItemModelAvatar_MustDel = null;
 
 
-    private bool _isJumping = false;
-    private bool _isInAir = false;
-    private bool _isAim = false;
-    private float _verticalSpeedAcc = 0.0f;
+
 };

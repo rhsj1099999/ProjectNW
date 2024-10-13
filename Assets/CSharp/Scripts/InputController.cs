@@ -10,15 +10,18 @@ public class InputController : MonoBehaviour
 
     void Update()
     {
-        //if (Input.GetButton(_moveUpButton))
-        if (Input.GetKeyDown(KeyCode.I) == true)
+        //상자열기 체크
         {
-            _inventoryOpen = true;
+            if (Input.GetKeyDown(KeyCode.I) == true)
+            {
+                _inventoryOpen = true;
+            }
+            else
+            {
+                _inventoryOpen = false;
+            }
         }
-        else
-        {
-            _inventoryOpen = false;
-        }
+
     }
 
     private void FixedUpdate()

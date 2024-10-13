@@ -1,11 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEditorInternal;
 using UnityEngine;
 
-[System.Serializable]
 public class CameraManager : MonoBehaviour
 {
     // Start is called before the first frame update

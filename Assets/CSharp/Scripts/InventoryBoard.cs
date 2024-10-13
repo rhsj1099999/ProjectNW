@@ -1,12 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 
 public class InventoryBoard : MonoBehaviour, IMoveItemStore
@@ -29,25 +24,25 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     private Dictionary<int/*저장된 칸*/, GameObject>                                _itemUIs = new Dictionary<int, GameObject>();                   //실제로 들어있는 아이템 렌더링 담당
 
 
-    public void OnValidate()
-    {
-        EditorApplication.delayCall += () =>
-        {
-            if (this == null) // 오브젝트가 유효한지 확인
-            {
-                return;
-            }
+    //public void OnValidate()
+    //{
+    //    //EditorApplication.delayCall += () =>
+    //    //{
+    //    //    if (this == null) // 오브젝트가 유효한지 확인
+    //    //    {
+    //    //        return;
+    //    //    }
 
-            RectTransform rectTransform = GetComponent<RectTransform>();
+    //    //    RectTransform rectTransform = GetComponent<RectTransform>();
 
-            if (rectTransform == null)
-            {
-                return;
-            }
+    //    //    if (rectTransform == null)
+    //    //    {
+    //    //        return;
+    //    //    }
 
-            rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
-        };
-    }
+    //    //    rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
+    //    //};
+    //}
 
     private void Awake()
     {

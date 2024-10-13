@@ -20,6 +20,11 @@ public class AnimContoller : MonoBehaviour
         _animator.SetBool(valName, val);
     }
 
+    public void OnTrigger(string name)
+    {
+        _animator.SetTrigger(name);
+    }
+
     public Animator GetAnimator() { return _animator; }
 
     [SerializeField] private Animator _animator = null;
