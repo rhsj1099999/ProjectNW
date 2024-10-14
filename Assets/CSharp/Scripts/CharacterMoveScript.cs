@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
+using Unity.AI.Navigation;
 using Cinemachine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Animations;
@@ -19,6 +21,18 @@ public enum AimState
 
 public class CharacterMoveScript : MonoBehaviour
 {
+    [SerializeField] private GameObject _debuggingCornerSpherePrefab = null;
+    [SerializeField] private GameObject _debuggingCornerCapsulePrefab = null;
+    private List<GameObject> _createdDebuggingCornerSphere = new List<GameObject>();
+    private List<GameObject> _createdDebuggingCornerCapsule = new List<GameObject>();
+    private List<GameObject> _createdDebuggingCornerSphereReverse = new List<GameObject>();
+    private List<GameObject> _createdDebuggingCornerCapsuleReverse = new List<GameObject>();
+    private float _navModifier = 0.14f;
+    private NavMeshHit _navMeshHit;
+    private NavMeshPath _navMeshPath = null;
+    private List<Vector3> _passedNavPositions = new List<Vector3>();
+    private int _targetPathPositionIndex = 0;
+    private NavMeshAgent _navAgent = null;
 
     private Vector3 _animDir = Vector3.zero;
 
@@ -29,6 +43,18 @@ public class CharacterMoveScript : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Alpha5) == true)
+        {
+            FindClosetEdge();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha0) == true)
+        {
+            DeletePath();
+        }
+
+
+
         //타임디버깅
         {
             if (Input.GetKeyDown(KeyCode.L))  // S키를 누르면 게임 속도를 느리게 함
@@ -92,7 +118,45 @@ public class CharacterMoveScript : MonoBehaviour
 
     }
 
+    private void DeletePath()
+    {
+        foreach (var item in _createdDebuggingCornerSphere)
+        {
+            Destroy(item);
+        }
+        foreach (var item in _createdDebuggingCornerCapsule)
+        {
+            Destroy(item);
+        }
+        foreach (var item in _createdDebuggingCornerSphereReverse)
+        {
+            Destroy(item);
+        }
+        foreach (var item in _createdDebuggingCornerCapsuleReverse)
+        {
+            Destroy(item);
+        }
 
+        _createdDebuggingCornerSphere.Clear();
+        _createdDebuggingCornerCapsule.Clear();
+        _createdDebuggingCornerSphereReverse.Clear();
+        _createdDebuggingCornerCapsuleReverse.Clear();
+    }
+
+    private void FindClosetEdge()
+    {
+        NavMeshSurface shortestNav = NavigationManager.Instance.GetCurrStageNavMeshByPosition(transform.position);
+
+        NavigationManager.Instance.DeActiveAllNavMesh();
+
+        NavigationManager.Instance.ActiveNavMesh(shortestNav);
+        NavMesh.FindClosestEdge(transform.position, out _navMeshHit, NavMesh.AllAreas);
+
+
+        GameObject createdSphere = Instantiate(_debuggingCornerSpherePrefab);
+        createdSphere.transform.position = _navMeshHit.position;
+        _createdDebuggingCornerSphere.Add(createdSphere);
+    }
 
     private void CharacterMove(Vector3 inputDirection, float ratio = 1.0f)
     {
@@ -154,6 +218,10 @@ public class CharacterMoveScript : MonoBehaviour
         //}
     }
 
+
+
+
+
     private void LateUpdate()
     {
         UpdateAnimation();
@@ -164,7 +232,8 @@ public class CharacterMoveScript : MonoBehaviour
         _AnimController.UpdateParameter("IsAim", _isAim);
         _AnimController.UpdateParameter("IsInAir", _isInAir);
         _AnimController.UpdateParameter("IsJump", _isJumping);
-        _AnimController.UpdateParameter("MovingSpeed", _physics.velocity.magnitude / _speed);
+        Vector2 planeSpeed = new Vector2(_physics.velocity.x, _physics.velocity.z);
+        _AnimController.UpdateParameter("MovingSpeed", planeSpeed.magnitude / _speed);
         Vector3 animDir = new Vector3(0.0f, 0.0f, 1.0f);
         if (_isAim == true)
         {
