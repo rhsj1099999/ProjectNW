@@ -143,7 +143,7 @@ public class NavigationManager : MonoBehaviour
         mapNavMesh.Add(component);
 
         NavMeshDataInstance dataInstance = NavMesh.AddNavMeshData(component.navMeshData);
-
+        //OffMeshLink meshLink;
         _activatedNavMeshIsntances.Add(component, dataInstance);
     }
 

@@ -56,7 +56,8 @@ public class Gunscript : MonoBehaviour
     public void FireCheck()
     {
         //마우스를 클릭하면 총알 발사
-        if (Input.GetKey(KeyCode.Mouse0) == true && _coolTime < float.Epsilon)
+        //if (Input.GetKey(KeyCode.Mouse0) == true && _coolTime < float.Epsilon)
+        if (Input.GetKey(KeyCode.Alpha9) == true && _coolTime < float.Epsilon)
         {
             Fire();
 
@@ -79,7 +80,6 @@ public class Gunscript : MonoBehaviour
     {
 
         {
-
             _calculatedAimShakeForce = _absAimShakeForce;
 
             float randomDegree = Random.Range(0.0f, 3.14f);

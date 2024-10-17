@@ -68,16 +68,17 @@ public class ZombieStart : MonoBehaviour
 
     private float _navModifier = 0.14f;
     private NavMeshHit _navMeshHit;
+    private NavMeshHit _navMeshHitFindOffMesh;
     private NavMeshPath _navMeshPath = null;
     private List<Vector3> _passedNavPositions = new List<Vector3>();
     private int _targetPathPositionIndex = 0;
     private NavMeshAgent _navAgent = null;
+    private List<bool> _isOffMeshLinks = new List<bool>();
 
     private void Awake()
     {
         _navMeshPath = new NavMeshPath(); //모노 비해이비어보다 먼저하면 안된단다.
         _navAgent = GetComponentInChildren<NavMeshAgent>();
-        
     }
 
     void Update()
@@ -109,16 +110,23 @@ public class ZombieStart : MonoBehaviour
             DeletePath();
         }
 
-        if (_navAgent.isOnOffMeshLink == true)
-        {
-            _navAgent.isStopped = true;
-        }
+        //if (_navAgent.isOnOffMeshLink == true)
+        //{
+        //    _navAgent.isStopped = true;
+        //}
     }
 
     private void FindAndDrawPathOnlyJump()
     {
         NavMeshQueryFilter filter = new NavMeshQueryFilter();
-        filter.areaMask = 1 << _filterTarget;
+        if (_filterTarget == -1)
+        {
+            filter.areaMask = NavMesh.AllAreas;
+        }
+        else
+        {
+            filter.areaMask = 1 << _filterTarget;
+        }
 
         NavMeshSurface shortestNav = NavigationManager.Instance.GetCurrStageNavMeshByPosition(transform.position);
 
@@ -176,7 +184,14 @@ public class ZombieStart : MonoBehaviour
     private void FindClosetEdge()
     {
         NavMeshQueryFilter filter = new NavMeshQueryFilter();
-        filter.areaMask = 1 << _filterTarget;
+        if (_filterTarget == -1)
+        {
+            filter.areaMask = NavMesh.AllAreas;
+        }
+        else
+        {
+            filter.areaMask = 1 << _filterTarget;
+        }
 
         NavMeshSurface shortestNav = NavigationManager.Instance.GetCurrStageNavMeshByPosition(transform.position);
 
@@ -208,7 +223,14 @@ public class ZombieStart : MonoBehaviour
     private void FindAndDrawPathReverse()
     {
         NavMeshQueryFilter filter = new NavMeshQueryFilter();
-        filter.areaMask = 1 << _filterTarget;
+        if (_filterTarget == -1)
+        {
+            filter.areaMask = NavMesh.AllAreas;
+        }
+        else
+        {
+            filter.areaMask = 1 << _filterTarget;
+        }
 
         NavMeshSurface shortestNav = NavigationManager.Instance.GetCurrStageNavMeshByPosition(transform.position);
 
@@ -266,7 +288,15 @@ public class ZombieStart : MonoBehaviour
     private void FindAndDrawPath()
     {
         NavMeshQueryFilter filter = new NavMeshQueryFilter();
-        filter.areaMask = 1 << _filterTarget;
+        if (_filterTarget == -1)
+        {
+            filter.areaMask = NavMesh.AllAreas;
+        }
+        else 
+        {
+            filter.areaMask = 1 << _filterTarget;
+        }
+        
 
         //경로계산 -> 꼭지점마다 구 설치
         NavMeshSurface shortestNav = NavigationManager.Instance.GetCurrStageNavMeshByPosition(transform.position);
@@ -349,7 +379,7 @@ public class ZombieStart : MonoBehaviour
 
     private void LateUpdate()
     {
-        //GravityUpdate();
+        GravityUpdate();
 
         UpdateAnimation();
     }
@@ -575,15 +605,63 @@ public class ZombieStart : MonoBehaviour
             return true;
         }
 
+        NavMeshQueryFilter filter = new NavMeshQueryFilter();
+        if (_filterTarget == -1)
+        {
+            filter.areaMask = NavMesh.AllAreas;
+        }
+        else
+        {
+            filter.areaMask = 1 << _filterTarget;
+        }
+
         Vector3 randomedPosition = _debuggingPlayer.transform.position;
 
-        NavMesh.SamplePosition(randomedPosition, out _navMeshHit, 1.0f, NavMesh.AllAreas);
+        NavMesh.SamplePosition(randomedPosition, out _navMeshHit, 1.0f, filter);
 
         Vector3 patrolPosition = _navMeshHit.position;
 
-        NavMesh.CalculatePath(transform.position, patrolPosition, 1 << 1, _navMeshPath);
+        NavMesh.CalculatePath(transform.position, patrolPosition, filter, _navMeshPath);
 
-        _navAgent.SetDestination(patrolPosition);
+
+        //_navAgent.SetDestination(patrolPosition);
+        _navAgent.SetPath(_navMeshPath);
+        _navAgent.updatePosition = false;
+        _navAgent.updateRotation = false;
+
+        Vector3 betweenCorner = (_navMeshPath.corners[0] + _navMeshPath.corners[1]) / 2.0f;
+        bool isEmpty = NavMesh.SamplePosition(betweenCorner, out _navMeshHitFindOffMesh, 0.01f, NavMesh.AllAreas);
+        if (isEmpty == true) 
+        {
+            int a = 10;
+        }
+        betweenCorner = (_navMeshPath.corners[1] + _navMeshPath.corners[2]) / 2.0f;
+        isEmpty = NavMesh.SamplePosition(betweenCorner, out _navMeshHitFindOffMesh, 0.01f, NavMesh.AllAreas);
+        if (isEmpty == true)
+        {
+            int a = 10;
+        }
+        betweenCorner = (_navMeshPath.corners[2] + _navMeshPath.corners[3]) / 2.0f;
+        isEmpty = NavMesh.SamplePosition(betweenCorner, out _navMeshHitFindOffMesh, 0.01f, NavMesh.AllAreas);
+        if (isEmpty == true)
+        {
+            int a = 10;
+        }
+
+        for (int i = 0; i < _navMeshPath.corners.Length - 1; i++)
+        {
+            GameObject createdCapsule = Instantiate(_debuggingCornerCapsulePrefab);
+            Vector3 firstPosition = _navMeshPath.corners[i];
+            Vector3 secondPosition = _navMeshPath.corners[i + 1];
+            createdCapsule.transform.position = (firstPosition + secondPosition) / 2.0f;
+
+            Vector3 targetUp = (secondPosition - firstPosition).normalized;
+            createdCapsule.transform.up = targetUp;
+            Vector3 localScale = createdCapsule.transform.localScale;
+            localScale.y = Vector3.Distance(firstPosition, secondPosition) / 2.0f;
+            createdCapsule.transform.localScale = localScale;
+            _createdDebuggingCornerCapsule.Add(createdCapsule);
+        }
 
         if (_navMeshPath.status == NavMeshPathStatus.PathComplete)
         {
@@ -615,6 +693,10 @@ public class ZombieStart : MonoBehaviour
     }
 
 
+    private void CalculateOffMeshLinks()
+    {
+
+    }
 
 
 
@@ -636,6 +718,24 @@ public class ZombieStart : MonoBehaviour
             _targetPathPositionIndex++;
         }
 
+        //_navAgent.nextPosition = transform.position;
+
+        if (_navAgent.nextOffMeshLinkData.offMeshLink == null)
+        {
+            Debug.Log("OffMesh가 없읍이다");
+        }
+
+        if (_navAgent.nextOffMeshLinkData.offMeshLink == null)
+        {
+            Debug.Log("OffMesh가 있습니다");
+        }
+
+        if (_navAgent.isOnOffMeshLink == true)
+        {
+            Debug.Log("Link에 도달했습니다");
+        }
+
+        //return FSM_InPatrolMove();
         if ((_navMeshPath.corners.Length - 1) <= _targetPathPositionIndex)
         {
             Debug.Log("State Done_Patrol Move");//다 갔습니다

@@ -170,6 +170,10 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
                 GameObject equippedMesh = Instantiate(item, originalAnimatorGameObject.transform);
                 SkinnedMeshRenderer skinnedMeshRenderer = equippedMesh.GetComponent<SkinnedMeshRenderer>();
                 skinnedMeshRenderer.bones = _ownerCharacter.GetComponentInChildren<SkinnedMeshRenderer>().bones;
+                /*-------------------------------------------------------------
+                |TODO| 애당초 컬링이 되면 안되는데, 왜 되야하는지 알아내야한다.
+                -------------------------------------------------------------*/
+                skinnedMeshRenderer.updateWhenOffscreen = true;
                 _currEquippedMesh.Add(storeDesc._info._equipType, equippedMesh);
             }
         }

@@ -411,7 +411,7 @@ public class Monster1 : MonoBehaviour
 
         if (_navMeshPath.status != NavMeshPathStatus.PathComplete)
         {
-            Debug.Assert(_navMeshPath.status == NavMeshPathStatus.PathComplete, "경로찾기가 실패했습니다, 상태가 실패했습니다");
+            //Debug.Assert(_navMeshPath.status == NavMeshPathStatus.PathComplete, "경로찾기가 실패했습니다, 상태가 실패했습니다");
             _currState = MonstarState.Idle;
 
             {
@@ -430,7 +430,7 @@ public class Monster1 : MonoBehaviour
 
         if (_navMeshPath.corners.Length >= 0)
         {
-            Debug.Assert(_navMeshPath.status == NavMeshPathStatus.PathComplete, "경로찾기가 실패했습니다. 정점이 0개 입니다");
+            //Debug.Assert(_navMeshPath.status == NavMeshPathStatus.PathComplete, "경로찾기가 실패했습니다. 정점이 0개 입니다");
             _currState = MonstarState.Idle;
 
             {
