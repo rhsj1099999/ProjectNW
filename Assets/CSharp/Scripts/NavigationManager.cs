@@ -34,6 +34,10 @@ public class NavigationManager : MonoBehaviour
         _instance = this;
         DontDestroyOnLoad(gameObject);
 
+        OffMeshLink[] temp = FindObjectsOfType<OffMeshLink>();
+
+        int a = 10;
+
         NavMesh.RemoveAllNavMeshData();
     }
 
@@ -136,9 +140,13 @@ public class NavigationManager : MonoBehaviour
 
         HashSet<NavMeshSurface> mapNavMesh = _stageNavMeshes[sceneName];
 
-        Debug.Assert(mapNavMesh.Contains(component) == false, "이미 중복 네비게이션이 있습니다");
+        if (component.navMeshData == null)
+        {
+            return;
+        }
+        //Debug.Assert(component.navMeshData != null, "빌드되지 않은 네비게이션 컴포넌트입니다");
 
-        Debug.Assert(component.navMeshData != null, "빌드되지 않은 네비게이션 컴포넌트입니다");
+        Debug.Assert(mapNavMesh.Contains(component) == false, "이미 중복 네비게이션이 있습니다");
 
         mapNavMesh.Add(component);
 
