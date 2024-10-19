@@ -128,6 +128,11 @@ public class ZombieStart : MonoBehaviour
                 FindAndDrawPathOnlyJump();
             }
 
+            if (Input.GetKeyDown(KeyCode.Alpha6) == true)
+            {
+                FindAndDrawPathReverse();
+            }
+
             if (Input.GetKeyDown(KeyCode.Alpha0) == true)
             {
                 DeletePath();
@@ -770,28 +775,7 @@ public class ZombieStart : MonoBehaviour
         Vector3 patrolPosition = _navMeshHit.position;
         NavMesh.CalculatePath(transform.position, patrolPosition, filter, _navMeshPath);
 
-        if (_navMeshPath.status == NavMeshPathStatus.PathInvalid)
-        {
-            Debug.Log("경로찾기 실패");
-            return;
-        }
-
-        if (_navMeshPath.status == NavMeshPathStatus.PathComplete)
-        {
-            Debug.Log("경로찾기 성공");
-        }
-
-        if (_navMeshPath.status == NavMeshPathStatus.PathPartial)
-        {
-            Debug.Log("경로찾기 쪼개짐");
-        }
-
-        foreach (var item in _navMeshPath.corners)
-        {
-            GameObject createdSphere = Instantiate(_debuggingCornerSpherePrefab);
-            createdSphere.transform.position = item;
-            _createdDebuggingCornerSphere.Add(createdSphere);
-        }
+        DebugLog_PathFindingResult(true);
     }
 
     private void FindClosetEdge()
@@ -857,6 +841,11 @@ public class ZombieStart : MonoBehaviour
 
         NavMesh.CalculatePath(_debuggingPlayer.transform.position, patrolPosition, filter, _navMeshPath);
 
+        DebugLog_PathFindingResult(true, true);
+    }
+
+    private void DebugLog_PathFindingResult(bool drawRoute = false, bool color = false)
+    {
         if (_navMeshPath.status == NavMeshPathStatus.PathInvalid)
         {
             Debug.Log("경로찾기 실패");
@@ -873,9 +862,10 @@ public class ZombieStart : MonoBehaviour
             Debug.Log("경로찾기 쪼개짐");
         }
 
-
-
-        CreateDebugRoute();
+        if (drawRoute == true)
+        {
+            CreateDebugRoute(color);
+        }
     }
 
     private void FindAndDrawPath()
@@ -900,45 +890,28 @@ public class ZombieStart : MonoBehaviour
 
         Vector3 randomedPosition = _debuggingPlayer.transform.position;
 
-        NavMesh.SamplePosition(randomedPosition, out _navMeshHit, 1.0f, filter);
+        NavMesh.SamplePosition(randomedPosition, out _navMeshHit, 2.0f, filter);
 
         Vector3 patrolPosition = _navMeshHit.position;
 
         NavMesh.CalculatePath(transform.position, patrolPosition, filter, _navMeshPath);
 
-        if (_navMeshPath.status == NavMeshPathStatus.PathInvalid)
-        {
-            Debug.Log("경로찾기 실패");
-            return;
-        }
-
-        if (_navMeshPath.status == NavMeshPathStatus.PathComplete)
-        {
-            Debug.Log("경로찾기 성공");
-        }
-
-        if (_navMeshPath.status == NavMeshPathStatus.PathPartial)
-        {
-            Debug.Log("경로찾기 쪼개짐");
-        }
-
-        foreach (var item in _navMeshPath.corners)
-        {
-            GameObject createdSphere = Instantiate(_debuggingCornerSpherePrefab);
-            createdSphere.transform.position = item;
-            _createdDebuggingCornerSphere.Add(createdSphere);
-        }
-
-        CreateDebugRoute();
+        DebugLog_PathFindingResult(true);
     }
 
-    private void CreateDebugRoute()
+    private void CreateDebugRoute(bool color = false)
     {
         for (int i = 0; i < _navMeshPath.corners.Length; i++)
         {
             GameObject createdSphere = Instantiate(_debuggingCornerSpherePrefab);
             createdSphere.transform.position = _navMeshPath.corners[i];
             _createdDebuggingCornerSphere.Add(createdSphere);
+            MeshRenderer meshRenderer = createdSphere.GetComponent<MeshRenderer>();
+            if (color == true)
+            {
+                meshRenderer.material.color = Color.yellow;
+            }
+            
 
             if (i == _navMeshPath.corners.Length - 1)
             {
@@ -956,6 +929,11 @@ public class ZombieStart : MonoBehaviour
             localScale.y = Vector3.Distance(firstPosition, secondPosition) / 2.0f;
             createdCapsule.transform.localScale = localScale;
             _createdDebuggingCornerCapsule.Add(createdCapsule);
+            meshRenderer = createdCapsule.GetComponent<MeshRenderer>();
+            if (color == true)
+            {
+                meshRenderer.material.color = Color.yellow;
+            }
         }
     }
 
