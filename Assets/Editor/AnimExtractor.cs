@@ -12,6 +12,8 @@ public class AnimExtractor : EditorWindow
         // 선택한 FBX 파일들
         Object[] selectedObjects = Selection.objects;
 
+        int count = 0;
+
         foreach (Object obj in selectedObjects)
         {
             string assetPath = AssetDatabase.GetAssetPath(obj);
@@ -33,10 +35,11 @@ public class AnimExtractor : EditorWindow
                         }
 
                         // 애니메이션 클립 저장 경로
-                        string newAssetPath = Path.Combine(directory, asset.name + ".anim");
+                        string newAssetPath = Path.Combine(directory, asset.name + count + ".anim");
 
                         // 애니메이션 클립 복사
                         AssetDatabase.CreateAsset(Object.Instantiate(asset), newAssetPath);
+                        count++;
                     }
                 }
             }

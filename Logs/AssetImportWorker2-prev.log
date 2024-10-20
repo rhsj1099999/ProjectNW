@@ -1,0 +1,402 @@
+Using pre-set license
+Built from '2022.3/staging' branch; Version is '2022.3.4f1 (35713cd46cd7) revision 3502396'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 32469 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 1
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\2022.3.4f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker2
+-projectPath
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+-logFile
+Logs/AssetImportWorker2.log
+-srvPort
+51604
+Successfully changed project path to: C:/Users/rhsj/Desktop/Unity/ProjectNW
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [26700] Host "[IP] 192.168.0.106 [Port] 0 [Flags] 2 [Guid] 2953373754 [EditorId] 2953373754 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+
+Player connection [26700] Host "[IP] 192.168.0.106 [Port] 0 [Flags] 2 [Guid] 2953373754 [EditorId] 2953373754 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+
+Refreshing native plugins compatible for Editor in 7.81 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2022.3.4f1 (35713cd46cd7)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/rhsj/Desktop/Unity/ProjectNW/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   31.0.15.5244
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56660
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.008304 seconds.
+- Loaded All Assemblies, in  0.369 seconds
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.315 seconds
+Domain Reload Profiling: 683ms
+	BeginReloadAssembly (89ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (41ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (61ms)
+	LoadAllAssembliesAndSetupDomain (163ms)
+		LoadAssemblies (87ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (157ms)
+			TypeCache.Refresh (157ms)
+				TypeCache.ScanAssembly (147ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (316ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (248ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (12ms)
+			SetLoadedEditorAssemblies (9ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (3ms)
+			ProcessInitializeOnLoadAttributes (159ms)
+			ProcessInitializeOnLoadMethodAttributes (64ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.937 seconds
+Refreshing native plugins compatible for Editor in 5.55 ms, found 3 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Package Manager log level set to [2]
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.130 seconds
+Domain Reload Profiling: 2066ms
+	BeginReloadAssembly (167ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (7ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (31ms)
+	RebuildCommonClasses (41ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (37ms)
+	LoadAllAssembliesAndSetupDomain (679ms)
+		LoadAssemblies (351ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (397ms)
+			TypeCache.Refresh (340ms)
+				TypeCache.ScanAssembly (325ms)
+			ScanForSourceGeneratedMonoScriptInfo (41ms)
+			ResolveRequiredComponents (15ms)
+	FinalizeReload (1131ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (927ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (6ms)
+			SetLoadedEditorAssemblies (5ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (166ms)
+			ProcessInitializeOnLoadAttributes (677ms)
+			ProcessInitializeOnLoadMethodAttributes (65ms)
+			AfterProcessingInitializeOnLoad (8ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (7ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.03 seconds
+Refreshing native plugins compatible for Editor in 4.50 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5872 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 90 unused Assets / (423.8 KB). Loaded Objects now: 6341.
+Memory consumption went from 222.0 MB to 221.6 MB.
+Total: 4.327400 ms (FindLiveObjects: 0.422900 ms CreateObjectMapping: 0.232000 ms MarkObjects: 3.346400 ms  DeleteObjects: 0.325100 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 667362.491665 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx
+  artifactKey: Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx using Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b20a31877ab84aaf99b7243b3e721545') in 0.021517 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 141
+========================================================================
+Received Import Request.
+  Time since last request: 7.989932 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx
+  artifactKey: Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx using Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b134339901ecf384eae8eed1543ef37a') in 0.005369 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 141
+========================================================================
+Received Import Request.
+  Time since last request: 0.050827 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Diffuse.png
+  artifactKey: Guid(5c7765304f7c2294695bc6f4edfb84b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Diffuse.png using Guid(5c7765304f7c2294695bc6f4edfb84b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0a9933f78a6cafbcf36349748c32327a') in 0.006201 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Specular.png
+  artifactKey: Guid(8199c571640e61f4c9e8b0c0615de036) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Specular.png using Guid(8199c571640e61f4c9e8b0c0615de036) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6d02073ee9949f1fa7843a088f63b81b') in 0.003204 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Diffuse.png
+  artifactKey: Guid(87468648595ab0f4392684d2c6935cd5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Diffuse.png using Guid(87468648595ab0f4392684d2c6935cd5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '87c47994525b74a00c3b1d56d1610922') in 0.001741 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.930162 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx
+  artifactKey: Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx using Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8316b13843472acdbf6ab7f0c38309ec') in 0.003310 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 139
+========================================================================
+Received Import Request.
+  Time since last request: 0.132923 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_body.mat
+  artifactKey: Guid(910e3cfaab8f3db4e9d204d49926d8c3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_body.mat using Guid(910e3cfaab8f3db4e9d204d49926d8c3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '72724d6277bff44e938cd99830c77aaa') in 0.001442 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 17.667199 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx
+  artifactKey: Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx using Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a6eecdb1bb55c5a73f99701071fced24') in 0.003311 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 139
+========================================================================
+Received Import Request.
+  Time since last request: 4.088820 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx
+  artifactKey: Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx using Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '944dd81eea392417063a825babe56a67') in 0.003228 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 139
+========================================================================
+Received Import Request.
+  Time since last request: 11.379478 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx
+  artifactKey: Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx using Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5bdf59e8f5331e69e94a7fd121992f1a') in 0.003898 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 139
+========================================================================
+Received Import Request.
+  Time since last request: 0.021231 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Diffuse 1.png
+  artifactKey: Guid(ec4b5f809c31be84cbb50df35bab8cf4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Diffuse 1.png using Guid(ec4b5f809c31be84cbb50df35bab8cf4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ad93ae3adc08d2558cb1c2dbfae452c9') in 0.002752 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000014 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Diffuse 1.png
+  artifactKey: Guid(0c42e566c9bf6d74aa86f4bdc3625b9a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Diffuse 1.png using Guid(0c42e566c9bf6d74aa86f4bdc3625b9a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e99453f0389d85eb45afe0c31aec5448') in 0.002795 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 11.127355 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Normal.png
+  artifactKey: Guid(381db3f46c1b2c247b5085b433046d1b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Normal.png using Guid(381db3f46c1b2c247b5085b433046d1b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4eea01c98254b3bd7d672ee16d1ef887') in 0.005531 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 53.754784 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx
+  artifactKey: Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx using Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '99a222279d7a997cbd0c545b28f11b7d') in 0.003230 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 139
+========================================================================
+Received Import Request.
+  Time since last request: 0.032346 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Diffuse.png
+  artifactKey: Guid(938f3c866b0b4a74780d883d4358ab2a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Diffuse.png using Guid(938f3c866b0b4a74780d883d4358ab2a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c080f6c3f4ad5634bbbabe60ac14c3ee') in 0.002428 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Specular.png
+  artifactKey: Guid(d914244cff238984daa183f05b3d9b12) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Specular.png using Guid(d914244cff238984daa183f05b3d9b12) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0cbf35c7f019f5f7b922844494a4c0ca') in 0.001940 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png
+  artifactKey: Guid(c96982175393dfb4f84a82a6320fd6db) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png using Guid(c96982175393dfb4f84a82a6320fd6db) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b22c2e712bb569527f1d0092a521a69a') in 0.002146 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 51.607891 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1001_Glossiness.png
+  artifactKey: Guid(932094c38baacdb4c8842e3f1c51b3e5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1001_Glossiness.png using Guid(932094c38baacdb4c8842e3f1c51b3e5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9d3d32ed227756832cb5223f54998b96') in 0.002600 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1003_Glossiness.png
+  artifactKey: Guid(15094ba8f5651cb49a6a26c81544fd8d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1003_Glossiness.png using Guid(15094ba8f5651cb49a6a26c81544fd8d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c2caae054467f681db0c9563f93d876f') in 0.003575 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000014 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1003_Specular.png
+  artifactKey: Guid(3b5db35f2c52d58428f5a3ec4b0a3b2d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1003_Specular.png using Guid(3b5db35f2c52d58428f5a3ec4b0a3b2d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5a2b02e3b5e845a620e78788a3e1bfd8') in 0.002725 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.991929 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1002_Normal.png
+  artifactKey: Guid(f4de28d78c61aa249969aab9e087db1d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1002_Normal.png using Guid(f4de28d78c61aa249969aab9e087db1d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '10cc04e56a5ae273a19b9b12bf9fa3a1') in 0.005237 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 47.784509 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Glossiness.png
+  artifactKey: Guid(19bd7d50e3348504795af66cf9c938ca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Glossiness.png using Guid(19bd7d50e3348504795af66cf9c938ca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'eaa6543ce8869e632629d8bd95d482f1') in 0.002946 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png
+  artifactKey: Guid(283a63551fec4234f9b90b0725f8568a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png using Guid(283a63551fec4234f9b90b0725f8568a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '68a264ffef3ffea9819ccd0855e51a57') in 0.002697 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.542931 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png
+  artifactKey: Guid(283a63551fec4234f9b90b0725f8568a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png using Guid(283a63551fec4234f9b90b0725f8568a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b855586ebf7bcf35bd26df602122d524') in 0.006979 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 30.794786 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie attack.fbx
+  artifactKey: Guid(51e08baac7dfd634d8b0c30ecab9dba4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie attack.fbx using Guid(51e08baac7dfd634d8b0c30ecab9dba4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '46d7fbe045a4ba357853e5ff6fdcfa93') in 0.004190 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 136
+========================================================================
+Received Import Request.
+  Time since last request: 0.000014 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie dying.fbx
+  artifactKey: Guid(9f4bf62890e37cb4eb5af7cdcddcf23a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie dying.fbx using Guid(9f4bf62890e37cb4eb5af7cdcddcf23a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7b1eb8578a9e93d5f1a2362ecd4757e7') in 0.002774 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 136
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie neck bite.fbx
+  artifactKey: Guid(f5d4237ecd57e1c4cab0e08135847e47) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie neck bite.fbx using Guid(f5d4237ecd57e1c4cab0e08135847e47) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '04ab686f34687d92c36011c2c72ff915') in 0.002672 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 136
+Editor requested this worker to shutdown with reason: Scaling down because of idle timeout
+TcpMessagingSession - receive error: operation aborted. errorcode: 995, details: 스레드 종료 또는 응용 프로그램 요청 때문에 I/O 작업이 취소되었습니다.
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0

@@ -15,7 +15,7 @@ C:/Users/rhsj/Desktop/Unity/ProjectNW
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-52740
+51604
 Successfully changed project path to: C:/Users/rhsj/Desktop/Unity/ProjectNW
 C:/Users/rhsj/Desktop/Unity/ProjectNW
 [UnityMemory] Configuration Parameters - Can be set up in boot.config
@@ -49,11 +49,11 @@ C:/Users/rhsj/Desktop/Unity/ProjectNW
     "memorysetup-temp-allocator-size-cloud-worker=32768"
     "memorysetup-temp-allocator-size-gi-baking-worker=262144"
     "memorysetup-temp-allocator-size-gfx=262144"
-Player connection [14252] Host "[IP] 192.168.1.6 [Port] 0 [Flags] 2 [Guid] 4278581732 [EditorId] 4278581732 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+Player connection [18268] Host "[IP] 192.168.0.106 [Port] 0 [Flags] 2 [Guid] 825974634 [EditorId] 825974634 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
 
-Player connection [14252] Host "[IP] 192.168.1.6 [Port] 0 [Flags] 2 [Guid] 4278581732 [EditorId] 4278581732 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+Player connection [18268] Host "[IP] 192.168.0.106 [Port] 0 [Flags] 2 [Guid] 825974634 [EditorId] 825974634 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
 
-Refreshing native plugins compatible for Editor in 104.92 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 11.73 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2022.3.4f1 (35713cd46cd7)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Resources/UnitySubsystems
@@ -69,44 +69,44 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56180
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56728
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.005936 seconds.
-- Loaded All Assemblies, in  1.354 seconds
+Registered in 0.005737 seconds.
+- Loaded All Assemblies, in  0.316 seconds
 Native extension for WindowsStandalone target not found
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.301 seconds
-Domain Reload Profiling: 1654ms
-	BeginReloadAssembly (90ms)
+- Finished resetting the current domain, in  0.253 seconds
+Domain Reload Profiling: 568ms
+	BeginReloadAssembly (87ms)
 		ExecutionOrderSort (0ms)
 		DisableScriptedObjects (0ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
 		CreateAndSetChildDomain (1ms)
-	RebuildCommonClasses (350ms)
-	RebuildNativeTypeToScriptingClass (12ms)
-	initialDomainReloadingComplete (50ms)
-	LoadAllAssembliesAndSetupDomain (851ms)
-		LoadAssemblies (88ms)
+	RebuildCommonClasses (29ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (55ms)
+	LoadAllAssembliesAndSetupDomain (133ms)
+		LoadAssemblies (85ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (846ms)
-			TypeCache.Refresh (845ms)
-				TypeCache.ScanAssembly (572ms)
+		AnalyzeDomain (126ms)
+			TypeCache.Refresh (125ms)
+				TypeCache.ScanAssembly (114ms)
 			ScanForSourceGeneratedMonoScriptInfo (0ms)
 			ResolveRequiredComponents (1ms)
-	FinalizeReload (301ms)
+	FinalizeReload (254ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (226ms)
+		SetupLoadedEditorAssemblies (196ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (12ms)
-			SetLoadedEditorAssemblies (10ms)
+			InitializePlatformSupportModulesInManaged (10ms)
+			SetLoadedEditorAssemblies (8ms)
 			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (3ms)
-			ProcessInitializeOnLoadAttributes (142ms)
-			ProcessInitializeOnLoadMethodAttributes (59ms)
+			BeforeProcessingInitializeOnLoad (2ms)
+			ProcessInitializeOnLoadAttributes (127ms)
+			ProcessInitializeOnLoadMethodAttributes (48ms)
 			AfterProcessingInitializeOnLoad (0ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
@@ -114,9 +114,35 @@ Domain Reload Profiling: 1654ms
 ========================================================================
 Worker process is ready to serve import requests
 Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  2.838 seconds
-Refreshing native plugins compatible for Editor in 4.57 ms, found 3 plugins.
+- Loaded All Assemblies, in  0.795 seconds
+Refreshing native plugins compatible for Editor in 3.29 ms, found 3 plugins.
 Native extension for WindowsStandalone target not found
+Error saving file Library/StateCache/LayerSettings/9e/9ecc5c3c162a7aba29bafa64c8b94b7c.json. Error: System.IO.IOException: Sharing violation on path C:\Users\rhsj\Desktop\Unity\ProjectNW\Library\StateCache\LayerSettings\9e\9ecc5c3c162a7aba29bafa64c8b94b7c.json
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding, System.Int32 bufferSize) [0x00055] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamWriter..ctor(string,bool,System.Text.Encoding)
+  at System.IO.File.WriteAllText (System.String path, System.String contents, System.Text.Encoding encoding) [0x00034] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at UnityEditor.StateCache`1[T].SetState (UnityEngine.Hash128 key, T obj) [0x0004b] in <da771086bc2e4cfc9ad0a72e083a7f98>:0 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.StateCache`1<UnityEditor.Tools/LayerSettings>:SetState (UnityEngine.Hash128,UnityEditor.Tools/LayerSettings)
+UnityEditor.Tools:set_lockedLayers (int)
+UnityEditor.Tools:OnEnable ()
+UnityEngine.ScriptableObject:CreateInstance (System.Type)
+UnityEngine.ScriptableObject:CreateInstance<UnityEditor.Tools> ()
+UnityEditor.Tools:get_get ()
+UnityEditor.Tools:get_visibleLayers ()
+UnityEditor.Animations.Rigging.BoneRendererUtils:.cctor () (at ./Library/PackageCache/com.unity.animation.rigging@1.2.1/Editor/Utils/BoneRendererUtils.cs:121)
+System.Runtime.CompilerServices.RuntimeHelpers:RunClassConstructor (System.RuntimeTypeHandle)
+UnityEditor.EditorAssemblies:ProcessInitializeOnLoadAttributes (System.Type[])
+
+(Filename: ./Library/PackageCache/com.unity.animation.rigging@1.2.1/Editor/Utils/BoneRendererUtils.cs Line: 121)
+
 [MODES] ModeService[none].Initialize
 [MODES] ModeService[none].LoadModes
 [MODES] Loading mode Default (0) for mode-current-id-ProjectNW
@@ -125,420 +151,48 @@ Package Manager log level set to [2]
 [Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
 [Package Manager] Cannot connect to Unity Package Manager local server
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.132 seconds
-Domain Reload Profiling: 3967ms
-	BeginReloadAssembly (125ms)
-		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (7ms)
-		BackupInstance (0ms)
-		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (20ms)
-	RebuildCommonClasses (39ms)
-	RebuildNativeTypeToScriptingClass (15ms)
-	initialDomainReloadingComplete (34ms)
-	LoadAllAssembliesAndSetupDomain (2622ms)
-		LoadAssemblies (2262ms)
-		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (411ms)
-			TypeCache.Refresh (346ms)
-				TypeCache.ScanAssembly (331ms)
-			ScanForSourceGeneratedMonoScriptInfo (37ms)
-			ResolveRequiredComponents (28ms)
-	FinalizeReload (1132ms)
-		ReleaseScriptCaches (0ms)
-		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (892ms)
-			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (6ms)
-			SetLoadedEditorAssemblies (7ms)
-			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (168ms)
-			ProcessInitializeOnLoadAttributes (628ms)
-			ProcessInitializeOnLoadMethodAttributes (78ms)
-			AfterProcessingInitializeOnLoad (5ms)
-			EditorAssembliesLoaded (0ms)
-		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (6ms)
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.04 seconds
-Refreshing native plugins compatible for Editor in 4.62 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 5872 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 90 unused Assets / (423.4 KB). Loaded Objects now: 6341.
-Memory consumption went from 222.1 MB to 221.7 MB.
-Total: 5.659700 ms (FindLiveObjects: 0.574400 ms CreateObjectMapping: 0.462500 ms MarkObjects: 4.322200 ms  DeleteObjects: 0.299200 ms)
-
-AssetImportParameters requested are different than current active one (requested -> active):
-  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
-  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
-  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
-  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
-  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
-  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
-  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
-  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
-  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
-  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-========================================================================
-Received Import Request.
-  Time since last request: 446212.614942 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'da88c78643d3e40ebb7fc97a6e26697f') in 0.021412 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 38.952133 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e2733d7ee1f9e2cd9835d3c144e47457') in 0.001162 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 10.979517 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1aa9a49dff5abfd1794b449f57d2b299') in 0.000938 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 12.136577 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ca667ec74df6bd631b7127a569c727d9') in 0.000925 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 98.857001 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '517680628e597a877d43fedc9013a9f5') in 0.000996 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Prepare
-Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.856 seconds
-Refreshing native plugins compatible for Editor in 4.34 ms, found 3 plugins.
-Native extension for WindowsStandalone target not found
-[MODES] ModeService[none].Initialize
-[MODES] ModeService[none].LoadModes
-[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
-[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
-[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
-[Package Manager] Cannot connect to Unity Package Manager local server
-Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.293 seconds
-Domain Reload Profiling: 2145ms
-	BeginReloadAssembly (155ms)
-		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (4ms)
-		BackupInstance (0ms)
-		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (55ms)
-	RebuildCommonClasses (34ms)
-	RebuildNativeTypeToScriptingClass (11ms)
-	initialDomainReloadingComplete (43ms)
-	LoadAllAssembliesAndSetupDomain (609ms)
-		LoadAssemblies (343ms)
-		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (323ms)
-			TypeCache.Refresh (310ms)
-				TypeCache.ScanAssembly (298ms)
-			ScanForSourceGeneratedMonoScriptInfo (0ms)
-			ResolveRequiredComponents (13ms)
-	FinalizeReload (1294ms)
-		ReleaseScriptCaches (0ms)
-		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (723ms)
-			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (7ms)
-			SetLoadedEditorAssemblies (4ms)
-			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (138ms)
-			ProcessInitializeOnLoadAttributes (508ms)
-			ProcessInitializeOnLoadMethodAttributes (61ms)
-			AfterProcessingInitializeOnLoad (6ms)
-			EditorAssembliesLoaded (0ms)
-		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (17ms)
-Refreshing native plugins compatible for Editor in 4.38 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 5716 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 46 unused Assets / (390.9 KB). Loaded Objects now: 6359.
-Memory consumption went from 195.1 MB to 194.8 MB.
-Total: 4.495600 ms (FindLiveObjects: 0.440800 ms CreateObjectMapping: 0.293000 ms MarkObjects: 3.631200 ms  DeleteObjects: 0.129700 ms)
-
-Prepare: number of updated asset objects reloaded= 0
-AssetImportParameters requested are different than current active one (requested -> active):
-  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
-  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
-  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
-  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
-  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
-  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
-  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
-  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
-  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
-  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-========================================================================
-Received Prepare
-Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.889 seconds
-Refreshing native plugins compatible for Editor in 3.79 ms, found 3 plugins.
-Native extension for WindowsStandalone target not found
-[MODES] ModeService[none].Initialize
-[MODES] ModeService[none].LoadModes
-[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
-[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
-[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
-[Package Manager] Cannot connect to Unity Package Manager local server
-Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.268 seconds
-Domain Reload Profiling: 2153ms
-	BeginReloadAssembly (167ms)
-		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (5ms)
-		BackupInstance (0ms)
-		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (54ms)
-	RebuildCommonClasses (46ms)
-	RebuildNativeTypeToScriptingClass (18ms)
-	initialDomainReloadingComplete (33ms)
-	LoadAllAssembliesAndSetupDomain (620ms)
-		LoadAssemblies (322ms)
-		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (366ms)
-			TypeCache.Refresh (349ms)
-				TypeCache.ScanAssembly (334ms)
-			ScanForSourceGeneratedMonoScriptInfo (0ms)
-			ResolveRequiredComponents (17ms)
-	FinalizeReload (1269ms)
-		ReleaseScriptCaches (0ms)
-		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (686ms)
-			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (7ms)
-			SetLoadedEditorAssemblies (6ms)
-			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (144ms)
-			ProcessInitializeOnLoadAttributes (464ms)
-			ProcessInitializeOnLoadMethodAttributes (59ms)
-			AfterProcessingInitializeOnLoad (6ms)
-			EditorAssembliesLoaded (0ms)
-		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (16ms)
-Refreshing native plugins compatible for Editor in 3.83 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 5716 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 46 unused Assets / (391.3 KB). Loaded Objects now: 6376.
-Memory consumption went from 195.2 MB to 194.8 MB.
-Total: 3.654000 ms (FindLiveObjects: 0.446300 ms CreateObjectMapping: 0.270500 ms MarkObjects: 2.831900 ms  DeleteObjects: 0.104600 ms)
-
-Prepare: number of updated asset objects reloaded= 0
-AssetImportParameters requested are different than current active one (requested -> active):
-  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
-  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
-  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
-  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
-  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
-  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
-  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
-  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
-  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
-  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-========================================================================
-Received Prepare
-Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.899 seconds
-Refreshing native plugins compatible for Editor in 2.92 ms, found 3 plugins.
-Native extension for WindowsStandalone target not found
-[MODES] ModeService[none].Initialize
-[MODES] ModeService[none].LoadModes
-[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
-[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
-[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
-[Package Manager] Cannot connect to Unity Package Manager local server
-Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.259 seconds
-Domain Reload Profiling: 2154ms
-	BeginReloadAssembly (148ms)
-		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (4ms)
-		BackupInstance (0ms)
-		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (48ms)
-	RebuildCommonClasses (35ms)
-	RebuildNativeTypeToScriptingClass (14ms)
-	initialDomainReloadingComplete (34ms)
-	LoadAllAssembliesAndSetupDomain (664ms)
-		LoadAssemblies (312ms)
-		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (411ms)
-			TypeCache.Refresh (395ms)
-				TypeCache.ScanAssembly (380ms)
-			ScanForSourceGeneratedMonoScriptInfo (0ms)
-			ResolveRequiredComponents (16ms)
-	FinalizeReload (1259ms)
-		ReleaseScriptCaches (0ms)
-		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (697ms)
-			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (5ms)
-			SetLoadedEditorAssemblies (5ms)
-			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (136ms)
-			ProcessInitializeOnLoadAttributes (489ms)
-			ProcessInitializeOnLoadMethodAttributes (58ms)
-			AfterProcessingInitializeOnLoad (5ms)
-			EditorAssembliesLoaded (0ms)
-		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (18ms)
-Refreshing native plugins compatible for Editor in 3.84 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 5716 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 46 unused Assets / (391.3 KB). Loaded Objects now: 6393.
-Memory consumption went from 195.2 MB to 194.8 MB.
-Total: 4.233800 ms (FindLiveObjects: 0.447500 ms CreateObjectMapping: 0.276500 ms MarkObjects: 3.399700 ms  DeleteObjects: 0.109300 ms)
-
-Prepare: number of updated asset objects reloaded= 0
-AssetImportParameters requested are different than current active one (requested -> active):
-  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
-  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
-  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
-  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
-  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
-  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
-  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
-  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
-  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
-  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-========================================================================
-Received Import Request.
-  Time since last request: 537.080451 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4eb878ca9e492914208d527c476f7dce') in 0.024423 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 6.152387 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8533891c6f50ac44b5a5f6eb0a8d5b50') in 0.001296 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 9.506784 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7c57de747a9c58729431a2d88cb194cf') in 0.001044 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 14.050040 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7aab12876717bcfba62afdd8bd3f7332') in 0.001137 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 36.089217 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7e67a32d3d0e4c92674314af9e3dc013') in 0.001160 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 22.180521 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'abd68d6dae3baf678cd24e45133cebcc') in 0.001277 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 15.237476 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '15906dc02958dc09cd6dc8db92048d69') in 0.000900 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Import Request.
-  Time since last request: 27.472697 seconds.
-  path: Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset
-  artifactKey: Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/IgnoreResources/Scenes/SampleScene/NavMesh-Sector3 1.asset using Guid(e06776dbe41a9ca4e8031a02fb926b27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '62b62482cf240afa7b00b42480ed03a0') in 0.000972 seconds
-Number of updated asset objects reloaded before import = 0
-Number of asset objects unloaded after import = 1
-========================================================================
-Received Prepare
-Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.868 seconds
-Refreshing native plugins compatible for Editor in 4.00 ms, found 3 plugins.
-Native extension for WindowsStandalone target not found
-[MODES] ModeService[none].Initialize
-[MODES] ModeService[none].LoadModes
-[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
-[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
-[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
-[Package Manager] Cannot connect to Unity Package Manager local server
-Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.260 seconds
-Domain Reload Profiling: 2124ms
-	BeginReloadAssembly (168ms)
+- Finished resetting the current domain, in  0.927 seconds
+Domain Reload Profiling: 1720ms
+	BeginReloadAssembly (126ms)
 		ExecutionOrderSort (0ms)
 		DisableScriptedObjects (6ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (50ms)
-	RebuildCommonClasses (32ms)
+		CreateAndSetChildDomain (23ms)
+	RebuildCommonClasses (29ms)
 	RebuildNativeTypeToScriptingClass (11ms)
-	initialDomainReloadingComplete (37ms)
-	LoadAllAssembliesAndSetupDomain (615ms)
-		LoadAssemblies (343ms)
+	initialDomainReloadingComplete (33ms)
+	LoadAllAssembliesAndSetupDomain (593ms)
+		LoadAssemblies (311ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
 		AnalyzeDomain (336ms)
-			TypeCache.Refresh (325ms)
-				TypeCache.ScanAssembly (312ms)
-			ScanForSourceGeneratedMonoScriptInfo (0ms)
-			ResolveRequiredComponents (10ms)
-	FinalizeReload (1261ms)
+			TypeCache.Refresh (298ms)
+				TypeCache.ScanAssembly (285ms)
+			ScanForSourceGeneratedMonoScriptInfo (27ms)
+			ResolveRequiredComponents (11ms)
+	FinalizeReload (927ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (686ms)
+		SetupLoadedEditorAssemblies (751ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (5ms)
+			InitializePlatformSupportModulesInManaged (6ms)
 			SetLoadedEditorAssemblies (4ms)
 			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (128ms)
-			ProcessInitializeOnLoadAttributes (486ms)
-			ProcessInitializeOnLoadMethodAttributes (58ms)
-			AfterProcessingInitializeOnLoad (5ms)
+			BeforeProcessingInitializeOnLoad (130ms)
+			ProcessInitializeOnLoadAttributes (543ms)
+			ProcessInitializeOnLoadMethodAttributes (62ms)
+			AfterProcessingInitializeOnLoad (6ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (18ms)
-Refreshing native plugins compatible for Editor in 3.75 ms, found 3 plugins.
+		AwakeInstancesAfterBackupRestoration (5ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.03 seconds
+Refreshing native plugins compatible for Editor in 3.40 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 5716 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 46 unused Assets / (391.1 KB). Loaded Objects now: 6410.
-Memory consumption went from 195.2 MB to 194.8 MB.
-Total: 3.960300 ms (FindLiveObjects: 0.689100 ms CreateObjectMapping: 0.304200 ms MarkObjects: 2.863200 ms  DeleteObjects: 0.103000 ms)
+Unloading 5872 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 90 unused Assets / (423.7 KB). Loaded Objects now: 6341.
+Memory consumption went from 222.2 MB to 221.8 MB.
+Total: 4.833900 ms (FindLiveObjects: 0.413000 ms CreateObjectMapping: 0.242700 ms MarkObjects: 3.901600 ms  DeleteObjects: 0.275700 ms)
 
-Prepare: number of updated asset objects reloaded= 0
 AssetImportParameters requested are different than current active one (requested -> active):
   custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
   custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
@@ -551,3 +205,240 @@ AssetImportParameters requested are different than current active one (requested
   custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
   custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
   custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 666814.447999 seconds.
+  path: Assets/IgnoreResources/External/Start/Zombie Clips/Zombie Idle.anim
+  artifactKey: Guid(9c9ac29e30e4d42c2993cc5472073146) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/External/Start/Zombie Clips/Zombie Idle.anim using Guid(9c9ac29e30e4d42c2993cc5472073146) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5f7b4cd7566682ccaa9b3234e7fbea84') in 0.053850 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.347380 seconds.
+  path: Assets/IgnoreResources/External/Start/Zombie Animator.controller
+  artifactKey: Guid(8eebe7519312a5c4eaeed6cd5ebb0411) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/External/Start/Zombie Animator.controller using Guid(8eebe7519312a5c4eaeed6cd5ebb0411) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '464ff7f1b9af42a083c191b553c9d1a6') in 0.139179 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 6.767825 seconds.
+  path: Assets/IgnoreResources/External/Start/Zombie Clips/HumanoidRun.anim
+  artifactKey: Guid(76115eee3c7fa440b926e14b63d73f5b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/External/Start/Zombie Clips/HumanoidRun.anim using Guid(76115eee3c7fa440b926e14b63d73f5b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd16db87aee10925d8fb8e3f984061cc3') in 0.007785 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 13.728217 seconds.
+  path: Assets/IgnoreResources/External/Start/Zombie Clips/Human Death.anim
+  artifactKey: Guid(85e9d7cbab6dbe74eb1b9b4ff8bf34d8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/External/Start/Zombie Clips/Human Death.anim using Guid(85e9d7cbab6dbe74eb1b9b4ff8bf34d8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd297dc3af7f4f6f242e15d3d68eba286') in 0.020718 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 491.482706 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack
+  artifactKey: Guid(f72c025dd32fa1a4f922421da39ee48d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack using Guid(f72c025dd32fa1a4f922421da39ee48d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'af2a3b7cf124f3881ead49aa25df6676') in 0.000706 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 0.070352 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx
+  artifactKey: Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/2.fbx using Guid(105f89208e9a72642ace1955ad388e65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c2e6b8f4b3e3b2c7aa3f09ca7f6f0c10') in 0.008784 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 140
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/running crawl.fbx
+  artifactKey: Guid(e3e9291498c88914f80270497a6cafaf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/running crawl.fbx using Guid(e3e9291498c88914f80270497a6cafaf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'af897ab05973e103945b02b1d6cfbc5e') in 0.003106 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 134
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie scream.fbx
+  artifactKey: Guid(35349b51d54a911489b9cf62c142ef84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie scream.fbx using Guid(35349b51d54a911489b9cf62c142ef84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'dec25fb0a4f21822bfa096e8ee644807') in 0.003028 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 134
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie dying.fbx
+  artifactKey: Guid(9f4bf62890e37cb4eb5af7cdcddcf23a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie dying.fbx using Guid(9f4bf62890e37cb4eb5af7cdcddcf23a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '56fd36010916119ec9fda614a3286a64') in 0.002994 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 134
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie neck bite.fbx
+  artifactKey: Guid(f5d4237ecd57e1c4cab0e08135847e47) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie neck bite.fbx using Guid(f5d4237ecd57e1c4cab0e08135847e47) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3eadc8161866f7f73ef4d95d015f86cb') in 0.002359 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 134
+========================================================================
+Received Import Request.
+  Time since last request: 0.000011 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie biting (2).fbx
+  artifactKey: Guid(d859d5979dec2944499e298509210919) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie biting (2).fbx using Guid(d859d5979dec2944499e298509210919) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bd18a91ec3450716721825eda6c46210') in 0.002272 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 134
+========================================================================
+Received Import Request.
+  Time since last request: 0.000014 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie idle.fbx
+  artifactKey: Guid(2e31c911045f620499dc1d1e7d267cc6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie idle.fbx using Guid(2e31c911045f620499dc1d1e7d267cc6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '712f9ea684620ce19bd19eed022ea4a9') in 0.001959 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 134
+========================================================================
+Received Import Request.
+  Time since last request: 41.382549 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Glossiness.png
+  artifactKey: Guid(8ce3c5c59c6ebeb428fbfc2b51dcaa8c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Glossiness.png using Guid(8ce3c5c59c6ebeb428fbfc2b51dcaa8c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e443b56df825a328d4a48b81404fdca8') in 0.005905 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000013 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png
+  artifactKey: Guid(0a2b0b3ece0ac454281bf0d0a5eabefa) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png using Guid(0a2b0b3ece0ac454281bf0d0a5eabefa) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7358be7b7d54320c013926fcbea9dbd8') in 0.007471 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 3.079900 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_body1.mat
+  artifactKey: Guid(a3ec2df9c977a63459e3e8e5bcc00b89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_body1.mat using Guid(a3ec2df9c977a63459e3e8e5bcc00b89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '189022b5b342707bc784014eba39c9e4') in 0.001438 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 33.189246 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Glossiness 1.png
+  artifactKey: Guid(b870b393606289640af3c430ae4ff2b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Glossiness 1.png using Guid(b870b393606289640af3c430ae4ff2b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b9656a3e1868d84cc18642740a49c668') in 0.002073 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Glossiness 1.png
+  artifactKey: Guid(22be15572343af941874ca972912d70a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Glossiness 1.png using Guid(22be15572343af941874ca972912d70a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '681bd352dfd07d6df27b91a4ee716107') in 0.002757 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 11.129795 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png
+  artifactKey: Guid(0a2b0b3ece0ac454281bf0d0a5eabefa) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Normal.png using Guid(0a2b0b3ece0ac454281bf0d0a5eabefa) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '132fd30ac8ce210d316684f0fb786907') in 0.008518 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 53.795608 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Glossiness.png
+  artifactKey: Guid(ccac55099f227ec4494543f48dbe7607) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Glossiness.png using Guid(ccac55099f227ec4494543f48dbe7607) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9de0acfbf4d3ffb631cc42eacc036037') in 0.004970 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000013 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Diffuse.png
+  artifactKey: Guid(a4081ca02f89fbf45afb91b5c11e7150) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Diffuse.png using Guid(a4081ca02f89fbf45afb91b5c11e7150) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f1a054911720c50fc43534d06430cadd') in 0.002587 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Glossiness.png
+  artifactKey: Guid(86169744038ee4f459ead13c91b28fc3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Glossiness.png using Guid(86169744038ee4f459ead13c91b28fc3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ff7b155a1cb242363986627a29ec871d') in 0.002438 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 51.604466 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1001_Normal.png
+  artifactKey: Guid(eff54364f76f95d4c8b9397c43e30a5f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1001_Normal.png using Guid(eff54364f76f95d4c8b9397c43e30a5f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8130ade4bbf5a6c87864e048129a9501') in 0.002717 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1002_Normal.png
+  artifactKey: Guid(f4de28d78c61aa249969aab9e087db1d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1002_Normal.png using Guid(f4de28d78c61aa249969aab9e087db1d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f3a29897b76eaaf4ce60c81a4990958b') in 0.003315 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000013 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1002_Specular.png
+  artifactKey: Guid(348ee34342601cc40a0d95cebe233b0c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1002_Specular.png using Guid(348ee34342601cc40a0d95cebe233b0c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '04cafb4a9b16250d5de9090923013c26') in 0.002474 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.994217 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1003_Normal.png
+  artifactKey: Guid(662345930a83b8b488f8888f7ec8503b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch35_1003_Normal.png using Guid(662345930a83b8b488f8888f7ec8503b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e1f7b666b81a39628f6c2cc40754f87a') in 0.004639 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 47.785337 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Normal.png
+  artifactKey: Guid(89c572dfb1fc2c9489c0020c2d81ffeb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1001_Normal.png using Guid(89c572dfb1fc2c9489c0020c2d81ffeb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '679adf50da91f6c4b902421a2ac25fb8') in 0.002927 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000051 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Glossiness.png
+  artifactKey: Guid(a73fea2c5e1f261488abddb41bebef3a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/Ch10_1002_Glossiness.png using Guid(a73fea2c5e1f261488abddb41bebef3a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7645ddc6a905f5693d3aeeea6d2dfe51') in 0.002561 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 33.350982 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie biting.fbx
+  artifactKey: Guid(5e5dafceb9d5a84409b1aa150fb71fb8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie biting.fbx using Guid(5e5dafceb9d5a84409b1aa150fb71fb8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2dd6a10ea3441f80f930d53003bd5ab1') in 0.004283 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 136
+========================================================================
+Received Import Request.
+  Time since last request: 0.000014 seconds.
+  path: Assets/IgnoreResources/Model/Scary Zombie Pack/zombie death.fbx
+  artifactKey: Guid(ec86da3caf747784ea8fac7d99eede00) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Model/Scary Zombie Pack/zombie death.fbx using Guid(ec86da3caf747784ea8fac7d99eede00) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b41cd4c0ae70ce374343855a87ce82b2') in 0.003545 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 136
+Editor requested this worker to shutdown with reason: Scaling down because of idle timeout
+TcpMessagingSession - receive error: operation aborted. errorcode: 995, details: 스레드 종료 또는 응용 프로그램 요청 때문에 I/O 작업이 취소되었습니다.
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0

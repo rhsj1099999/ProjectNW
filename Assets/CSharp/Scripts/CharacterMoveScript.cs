@@ -162,6 +162,7 @@ public class CharacterMoveScript : MonoBehaviour
     {
         if (_physics.isGrounded == true)
         {
+            _physics.stepOffset = 0.3f;
             _verticalSpeedAcc = 0.0f;
 
             _isJumping = false;
@@ -174,6 +175,7 @@ public class CharacterMoveScript : MonoBehaviour
         {//점프 시도
             if (_physics.isGrounded == true)
             {
+                _physics.stepOffset = 0.0f;
                 _verticalSpeedAcc = _jumpForce;
 
                 _isJumping = true;

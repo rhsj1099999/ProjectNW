@@ -103,9 +103,10 @@ public class NavigationManager : MonoBehaviour
     private Dictionary<NavMeshSurface, NavMeshDataInstance> _activatedNavMeshIsntances = new Dictionary<NavMeshSurface, NavMeshDataInstance>();
 
     //NavTriangleDebuggingSection ... 하나의 NavComponent에서만 동작하게 돼 있다 고칠것
-    [SerializeField] private GameObject _debuggingPlayer = null;
-    [SerializeField] private GameObject _debuggingCornerSpherePrefab = null;
-    [SerializeField] private GameObject _debuggingCornerCapsulePrefab = null;
+    [SerializeField] private GameObject _debuggingPlayer;
+    [SerializeField] private GameObject _debuggingCornerSpherePrefab;
+    [SerializeField] private GameObject _debuggingCornerCapsulePrefab;
+
     private List<GameObject> _createdDebuggingCornerSphere = new List<GameObject>();
     private List<GameObject> _createdDebuggingCornerCapsule = new List<GameObject>();
     private List<GameObject> _createdDebuggingCornerSphereReverse = new List<GameObject>();
@@ -347,26 +348,26 @@ public class NavigationManager : MonoBehaviour
 
 
 
-        NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
-        for (int i = 0; i < tri.vertices.Length; i++)
-        {
-            tri.vertices[i].y += 0.05f;
-        }
+        //NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
+        //for (int i = 0; i < tri.vertices.Length; i++)
+        //{
+        //    tri.vertices[i].y += 0.05f;
+        //}
 
-        CreateTriangleMesh(tri, _debuggingTriangleCount);
+        //CreateTriangleMesh(tri, _debuggingTriangleCount);
 
-        for (int i = 0; i < tri.vertices.Length; i++)
-        {
-            GameObject createdSphere = Instantiate(_debuggingCornerSpherePrefab);
-            createdSphere.transform.position = tri.vertices[i];
-            _createdDebuggingCornerSphere.Add(createdSphere);
-            MeshRenderer meshRenderer = createdSphere.GetComponent<MeshRenderer>();
-            meshRenderer.material.color = Color.red;
-        }
+        //for (int i = 0; i < tri.vertices.Length; i++)
+        //{
+        //    GameObject createdSphere = Instantiate(_debuggingCornerSpherePrefab);
+        //    createdSphere.transform.position = tri.vertices[i];
+        //    _createdDebuggingCornerSphere.Add(createdSphere);
+        //    MeshRenderer meshRenderer = createdSphere.GetComponent<MeshRenderer>();
+        //    meshRenderer.material.color = Color.red;
+        //}
 
-        SplitMesh(tri);
+        //SplitMesh(tri);
 
-        PlaceDebuggingPlaneVector();
+        //PlaceDebuggingPlaneVector();
     }
 
 

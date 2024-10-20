@@ -27,13 +27,18 @@ public class StaticNavMeshScript : MonoBehaviour
     [SerializeField] private List<int> _additionalAgents = new List<int>();
     private HashSet<int> _additionalAgentsSet = new HashSet<int>();
 
-    private void Awake()
+    private void Start()
     {
         NavigationManager navManager = NavigationManager.Instance;
 
         NavMeshSurface originalComponent = GetComponent<NavMeshSurface>();
 
         navManager.AddStaticNavMesh(gameObject, originalComponent);
+    }
+
+    private void Awake()
+    {
+
 
         //foreach (var type in _additionalAgents)
         //{
