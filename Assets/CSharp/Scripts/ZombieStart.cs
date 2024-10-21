@@ -9,6 +9,7 @@ using static UnityEditor.Progress;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine.UIElements;
+using UnityEngine.XR;
 
 public class ZombieStart : MonoBehaviour
 {
@@ -59,6 +60,7 @@ public class ZombieStart : MonoBehaviour
     [SerializeField] private AnimationClip Clip_Run = null;
     [SerializeField] private AnimationClip Clip_Punch = null;
     [SerializeField] string targetClipName = "UseThisToChange";
+    private float _crossFadeTime = 0.1f;
 
 
 
@@ -222,10 +224,6 @@ public class ZombieStart : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
-    {
-        UpdateAnimation();
-    }
 
     private void CheckJumpPosition()
     {
@@ -275,31 +273,30 @@ public class ZombieStart : MonoBehaviour
         }
     }
 
+    
+
     private void FSM_InDetected()
     {
-        //쳐다보면서 소리지르기. 소리지르는 애니메이션이 다 끝나면 추적으로 가기
-
-        float currentRatio = _animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-
-        if (currentRatio >= 1.0f)
-        {
-            _currState = MonstarState.Chase;
-            _stateEndWithoutInterCept = true;
-        }
-
+        Vector3 targetPosition = _battleTarget.transform.position;
+        targetPosition.y = transform.position.y;
+        transform.LookAt(targetPosition);
     }
 
     private bool DiffState_Detected()
     {
-        //내 애니메이션을 강제로 소리지르기로 바꾸기
+        ChangeAnimation(Clip_Scream);
 
-        string nextNode = (_currAnimNode == true) ? "State2" : "State1";
-        _currAnimNode = !_currAnimNode;
-        _overrideController[targetClipName] = Clip_Scream;
-        targetClipName = _animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
-        _animator.CrossFadeInFixedTime(nextNode, 0.25f);
+        float delay = Clip_Scream.length;
+
+        StartCoroutine(ChangeStateCoroutine(delay, MonstarState.Chase));
 
         return true;
+    }
+
+    IEnumerator ChangeStateCoroutine(float delay, MonstarState state)
+    {
+        yield return new WaitForSeconds(delay);
+        _currState = state;
     }
 
     private void GravityUpdate()
@@ -325,10 +322,6 @@ public class ZombieStart : MonoBehaviour
     {
         float similarity = Mathf.Clamp(Vector3.Dot(transform.forward.normalized, direction.normalized), 0.0f, 1.0f);
 
-        //  float similarities = (_isAim == true)
-        //? 1.0f
-        //: Mathf.Clamp(Vector3.Dot(transform.forward, inputDirection), 0.0f, 1.0f);
-
         Vector3 desiredMove = direction * _movingSpeed * Time.deltaTime * similarity * ratio;
 
         if (_characterController != null)
@@ -340,23 +333,6 @@ public class ZombieStart : MonoBehaviour
             transform.position += desiredMove;
         }
     }
-
-    private void UpdateAnimation()
-    {
-        _AnimController.UpdateParameter("IsAim", _isAim);
-        _AnimController.UpdateParameter("IsInAir", _isInAir);
-        _AnimController.UpdateParameter("IsJump", _isJumping);
-        Vector2 characterControllerVelocity = new Vector2(_characterController.velocity.x, _characterController.velocity.z);
-        _AnimController.UpdateParameter("MovingSpeed", characterControllerVelocity.magnitude);
-        Vector3 animDir = new Vector3(0.0f, 0.0f, 1.0f);
-        if (_isAim == true)
-        {
-            //animDir = _animDir;
-        }
-        _AnimController.UpdateParameter("RelativeMovingZ", animDir.z);
-        _AnimController.UpdateParameter("RelativeMovingX", animDir.x);
-    }
-
 
     private void MonsterFSM()
     {
@@ -423,7 +399,7 @@ public class ZombieStart : MonoBehaviour
         switch (_currState)
         {
             case MonstarState.Idle:
-                return true;
+                return DiffState_Idle();
             case MonstarState.PatrolMove:
                 return DiffState_Patrol();
             case MonstarState.Detected:
@@ -500,35 +476,45 @@ public class ZombieStart : MonoBehaviour
     private void ChooseRandomState_NoBattle()
     {
         _stateAcc = 0.0f;
-        int random = Random.Range(0, (int)MonstarState.PatrolMove);
+        int random = Random.Range(0, (int)MonstarState.Detected);
         _currState = (MonstarState)random;
+    }
+
+    private void ChangeAnimation(AnimationClip targetClip)
+    {
+        AnimatorClipInfo[] currentClipInfos = _animator.GetCurrentAnimatorClipInfo(0);
+
+        AnimatorClipInfo currentClipInfo = currentClipInfos[0];
+
+        AnimationClip currentClip = currentClipInfo.clip;
+
+        if (currentClip == targetClip)
+        {
+            return;
+        }
+
+        string nextNode = (_currAnimNode == true) ? "State2" : "State1";
+        _currAnimNode = !_currAnimNode;
+        _overrideController[targetClipName] = targetClip;
+        targetClipName = currentClip.name;
+        _animator.CrossFade(nextNode, _crossFadeTime);
+    }
+
+    private bool DiffState_Idle()
+    {
+        ChangeAnimation(Clip_Idle);
+        return true;
     }
 
     private bool DiffState_Chase2()
     {
-        string nextNode = (_currAnimNode == true) ? "State2" : "State1";
-        _currAnimNode = !_currAnimNode;
-        _overrideController[targetClipName] = Clip_Run;
-        targetClipName = _animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
-        _animator.CrossFadeInFixedTime(nextNode, 0.25f);
+        ChangeAnimation(Clip_Run);
 
         if (_battleTarget == null)
         {
             _battleTarget = _debuggingPlayer;
             _currState = MonstarState.Idle;
             return true;
-        }
-
-        {
-            //Change Animation
-            Animator component = GetComponentInChildren<Animator>();
-
-            
-        }
-
-        {
-            //Change Animation Node
-            
         }
 
         Vector3 startPosition = transform.position;
@@ -581,73 +567,6 @@ public class ZombieStart : MonoBehaviour
         return true;
     }
 
-    private bool DiffState_Chase()
-    {
-        _targetPathPositionIndex = 0;
-
-        NavMeshSurface shortestNav = NavigationManager.Instance.GetCurrStageNavMeshByPosition(transform.position);
-
-        NavigationManager.Instance.DeActiveAllNavMesh();
-
-        NavigationManager.Instance.ActiveNavMesh(shortestNav);
-
-        if (shortestNav == null)
-        {
-            Debug.Assert(shortestNav != null, "맵에 네비게이션이 없을수도 있습니다. 아직 해당로직을 처리하지 않았습니다");
-            _currState = MonstarState.Idle;
-            return true;
-        }
-
-        NavMeshQueryFilter filter = new NavMeshQueryFilter();
-        if (_filterTarget == -1)
-        {
-            filter.areaMask = NavMesh.AllAreas;
-        }
-        else
-        {
-            filter.areaMask = 1 << _filterTarget;
-        }
-
-        Vector3 randomedPosition = _debuggingPlayer.transform.position;
-
-        NavMesh.SamplePosition(randomedPosition, out _navMeshHit, 1.0f, filter);
-
-        Vector3 patrolPosition = _navMeshHit.position;
-
-        NavMesh.CalculatePath(transform.position, patrolPosition, filter, _navMeshPath);
-
-        CalculateOffMeshLinks();
-
-        CreateDebugRoute();
-
-        if (_navMeshPath.status == NavMeshPathStatus.PathComplete)
-        {
-            return true;
-        }
-
-        if (_navMeshPath.status == NavMeshPathStatus.PathPartial)
-        {
-            Debug.Log("경로찾기가 실패했습니다, 경로가 쪼개졌습니다");
-            return true;
-        }
-
-        if (_navMeshPath.status == NavMeshPathStatus.PathInvalid)
-        {
-            Debug.Log("경로찾기가 실패했습니다, 상태가 실패했습니다");
-            _currState = MonstarState.Idle;
-            return true;
-        }
-
-        if (_navMeshPath.corners.Length >= 0)
-        {
-            Debug.Log("경로찾기가 실패했습니다. 정점이 0개 입니다");
-            _currState = MonstarState.Idle;
-            return true;
-        }
-
-        return false;
-    }
-
     private void FindPath(Vector3 startPosition, Vector3 endPosition, NavMeshQueryFilter filter)
     {
         _targetPathPositionIndex = 0;
@@ -665,8 +584,6 @@ public class ZombieStart : MonoBehaviour
         }
 
         NavMesh.SamplePosition(endPosition, out _navMeshHit, 1.0f, filter);
-
-        Vector3 targetPosition = _navMeshHit.position;
 
         NavMesh.CalculatePath(startPosition, endPosition, filter, _navMeshPath);
     }
@@ -702,10 +619,8 @@ public class ZombieStart : MonoBehaviour
             //}
 
 
-            //양 끝이 OffMeshLink이기에 2개를 추가합니다
-            //true true true 3연속 true는 있을수 없다고 가정합니다. 그냥 코너가 그래
-            _isOffMeshLinks.Add(true);
-            _isOffMeshLinks.Add(true);
+            //양 끝이 OffMeshLink이기에 2개를 추가합니다 //true true true 3연속 true는 있을수 없다고 가정합니다. 그냥 코너가 그래
+            _isOffMeshLinks.Add(true); _isOffMeshLinks.Add(true);
             i++;
         }
 
@@ -721,6 +636,10 @@ public class ZombieStart : MonoBehaviour
         FSM_InPatrolMove();
     }
 
+
+
+
+
     private void FSM_InIdle()
     {
         _stateAcc += Time.deltaTime;
@@ -730,14 +649,16 @@ public class ZombieStart : MonoBehaviour
             _stateEndWithoutInterCept = true;
         }
 
+        if (InBattleCheck() == true)
         {
-            if (InBattleCheck())
-            {
-                _currState = MonstarState.Detected;
-                _stateEndWithoutInterCept = true;
-            }
+            _currState = MonstarState.Detected;
+            _stateEndWithoutInterCept = true;
         }
     }
+
+
+
+
 
     private void FSM_InPatrolRotate()
     {
@@ -757,13 +678,35 @@ public class ZombieStart : MonoBehaviour
         Rotate(rotateDirection, _patrolRotateSpeedRatio);
     }
 
+
+    private void FSM_InNormalAttack()
+    {
+
+    }
+
+
+
     private void FSM_InPatrolMove()
     {
+        if (InBattleCheck() == true && _currState == MonstarState.PatrolMove) //두번째 MonstarState.PatrolMove 이게 있으면 안된다 일단 귀찮아서 같이 쓰는거임
+        {
+            _currState = MonstarState.Detected;
+            _stateEndWithoutInterCept = true;
+            return;
+        }
+
         FSM_InPatrolRotate(); //회전을 수행했다.
 
         for (int i = 0; i < _navMeshPath.corners.Length - 1; i++)
         {
             Debug.DrawLine(_navMeshPath.corners[i], _navMeshPath.corners[i + 1], Color.green);
+        }
+
+        if ((_navMeshPath.corners.Length - 1) <= _targetPathPositionIndex)
+        {
+            Debug.Log("State Done_Patrol Move");//다 갔습니다
+            _stateEndWithoutInterCept = true;
+            return;
         }
 
         Vector3 targetPosition = _navMeshPath.corners[_targetPathPositionIndex + 1];
@@ -796,7 +739,6 @@ public class ZombieStart : MonoBehaviour
             }
 
             _stateEndWithoutInterCept = true;
-            
         }
 
         Move(pathDirection, _patrolSpeedRatio);
@@ -811,19 +753,11 @@ public class ZombieStart : MonoBehaviour
 
     private bool DiffState_Patrol()
     {
+        ChangeAnimation(Clip_Walk);
+
         _targetPathPositionIndex = 0;
 
-        {
-            /*---------------------------------------------------------------------------
-           |TODO| return 할때마다 끄고 켜야하는데 이거 수정할것
-           ---------------------------------------------------------------------------*/
-            //자기 자신에게 NavObstacle Component가 달려있다면 잠시 비활성화 로직
-            NavMeshObstacle navMeshObstacleComponent = gameObject.GetComponentInChildren<NavMeshObstacle>();
-            if (navMeshObstacleComponent != null)
-            {
-                navMeshObstacleComponent.enabled = false;
-            }
-        }
+        Vector3 startPosition = transform.position;
 
         NavMeshSurface shortestNav = NavigationManager.Instance.GetCurrStageNavMeshByPosition(transform.position);
 
@@ -848,74 +782,52 @@ public class ZombieStart : MonoBehaviour
 
         NavMesh.SamplePosition(randomedPosition, out _navMeshHit, 1.0f, NavMesh.AllAreas);
 
-        Vector3 patrolPosition = _navMeshHit.position;
+        Vector3 endPosition = _navMeshHit.position;
 
-        NavMesh.CalculatePath(transform.position, patrolPosition, NavMesh.AllAreas, _navMeshPath);
+        NavMeshQueryFilter filter = new NavMeshQueryFilter();
+        filter.areaMask = (_filterTarget == -1) ? NavMesh.AllAreas : 1 << _filterTarget;
+        filter.agentTypeID = 0;
+
+        FindPath(startPosition, endPosition, filter);
+
+        switch (_navMeshPath.status)
+        {
+            case NavMeshPathStatus.PathComplete:
+                break;
+
+            case NavMeshPathStatus.PathPartial: //거꾸로 뒤집어서 한번 더 찾아본다
+                {
+                    NavMeshPath temp = _navMeshPath;
+                    FindPath(endPosition, startPosition, filter);
+
+                    switch (_navMeshPath.status)
+                    {
+                        case NavMeshPathStatus.PathComplete:
+                            System.Array.Reverse(_navMeshPath.corners);
+                            break;
+                        case NavMeshPathStatus.PathPartial:
+                            _navMeshPath = temp;
+                            break;
+                        case NavMeshPathStatus.PathInvalid:
+                            _currState = MonstarState.Idle;
+                            return true;
+                        default:
+                            break;
+                    }
+                }
+                break;
+            case NavMeshPathStatus.PathInvalid:
+                _currState = MonstarState.Idle;
+                return true;
+
+            default:
+                break;
+        }
 
         CalculateOffMeshLinks();
 
-        if (_navMeshPath.status == NavMeshPathStatus.PathComplete)
-        {
-            {
-                /*---------------------------------------------------------------------------
-                |TODO| return 할때마다 끄고 켜야하는데 이거 수정할것
-                ---------------------------------------------------------------------------*/
-                NavMeshObstacle navMeshObstacleComponent = gameObject.GetComponentInChildren<NavMeshObstacle>();
-                if (navMeshObstacleComponent != null)
-                {
-                    navMeshObstacleComponent.enabled = true;
-                }
-            }
-            return true;
-        }
+        CreateDebugRoute();
 
-        if (_navMeshPath.status != NavMeshPathStatus.PathComplete)
-        {
-            Debug.Assert(_navMeshPath.status == NavMeshPathStatus.PathComplete, "경로찾기가 실패했습니다, 상태가 실패했습니다");
-            _currState = MonstarState.Idle;
-
-            {
-                /*---------------------------------------------------------------------------
-                |TODO| return 할때마다 끄고 켜야하는데 이거 수정할것
-                ---------------------------------------------------------------------------*/
-                NavMeshObstacle navMeshObstacleComponent = gameObject.GetComponentInChildren<NavMeshObstacle>();
-                if (navMeshObstacleComponent != null)
-                {
-                    navMeshObstacleComponent.enabled = true;
-                }
-            }
-            return true;
-        }
-
-
-        if (_navMeshPath.corners.Length >= 0)
-        {
-            Debug.Assert(_navMeshPath.status == NavMeshPathStatus.PathComplete, "경로찾기가 실패했습니다. 정점이 0개 입니다");
-            _currState = MonstarState.Idle;
-
-            {
-                /*---------------------------------------------------------------------------
-                |TODO| return 할때마다 끄고 켜야하는데 이거 수정할것
-                ---------------------------------------------------------------------------*/
-                NavMeshObstacle navMeshObstacleComponent = gameObject.GetComponentInChildren<NavMeshObstacle>();
-                if (navMeshObstacleComponent != null)
-                {
-                    navMeshObstacleComponent.enabled = true;
-                }
-            }
-            return true;
-        }
-
-        {
-            /*---------------------------------------------------------------------------
-            |TODO| return 할때마다 끄고 켜야하는데 이거 수정할것
-            ---------------------------------------------------------------------------*/
-            NavMeshObstacle navMeshObstacleComponent = gameObject.GetComponentInChildren<NavMeshObstacle>();
-            if (navMeshObstacleComponent != null)
-            {
-                navMeshObstacleComponent.enabled = true;
-            }
-        }
         return true;
     }
 
@@ -946,6 +858,7 @@ public class ZombieStart : MonoBehaviour
     /*-----------------------------------
      * Debugging Section
     -----------------------------------*/
+
     private void Debug_ChangeState(MonstarState state)
     {
         _currState = state;
@@ -1164,4 +1077,41 @@ public class ZombieStart : MonoBehaviour
         _createdDebuggingCornerCapsuleReverse.Clear();
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*-----------------------------------
+     * Trash
+    -----------------------------------*/
+
+    //private void UpdateAnimation()
+    //{
+    //    _AnimController.UpdateParameter("IsAim", _isAim);
+    //    _AnimController.UpdateParameter("IsInAir", _isInAir);
+    //    _AnimController.UpdateParameter("IsJump", _isJumping);
+    //    Vector2 characterControllerVelocity = new Vector2(_characterController.velocity.x, _characterController.velocity.z);
+    //    _AnimController.UpdateParameter("MovingSpeed", characterControllerVelocity.magnitude);
+    //    Vector3 animDir = new Vector3(0.0f, 0.0f, 1.0f);
+    //    if (_isAim == true)
+    //    {
+    //        //animDir = _animDir;
+    //    }
+    //    _AnimController.UpdateParameter("RelativeMovingZ", animDir.z);
+    //    _AnimController.UpdateParameter("RelativeMovingX", animDir.x);
+    //}
 }
