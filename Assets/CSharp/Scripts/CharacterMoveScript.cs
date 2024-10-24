@@ -53,10 +53,6 @@ public class CharacterMoveScript : MonoBehaviour
     private float _verticalSpeedAcc = 0.0f;
 
     [SerializeField] private GameObject _inventoryUIPrefab = null;
-
-    [SerializeField] private GameObject _equipmentItemModelPrefab_MustDel = null;
-    [SerializeField] private Avatar _equipmentItemModelAvatar_MustDel = null;
-
     private void Awake()
     {
         Debug.Assert(_inputController != null, "인풋컨트롤러가 없다");

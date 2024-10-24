@@ -34,9 +34,7 @@ public class ZombieStart : MonoBehaviour, IHitable
     [SerializeField] private float _detectRayCastTick = 1.0f;
     [SerializeField] private float _detectHorizontalDeg = 60.0f;
     [SerializeField] private float _stateAcc = 0.0f;
-    private Animator _animator = null;
-    private AnimatorOverrideController _overrideController = null;
-    private bool _currAnimNode = true; //true = State1;
+
     //--------------IdleState Vars
     [SerializeField] private float _idleStateTarget = 3.0f;
     //--------------PatrolState Vars
@@ -79,11 +77,16 @@ public class ZombieStart : MonoBehaviour, IHitable
 
 
     //--------------Anim Vars |TODO|이거 다른 클래스로 빼라
+    private Animator _animator = null;
+    private AnimatorOverrideController _overrideController = null;
+    private bool _currAnimNode = true; //true = State1;
     [SerializeField] private AnimContoller _AnimController = null;
     [SerializeField] private List<string> _enemyTags =  new List<string>();
     private float _crossFadeTime = 0.1f;
     private string _targetName1 = "Zombie Idle";
     private string _targetName2 = "UseThisToChange";
+    private AnimationClip _currAnimClip = null;
+    private AnimationClip _prevAnimClip = null;
 
     [SerializeField] private AnimationClip Clip_Idle = null;
     [SerializeField] private AnimationClip Clip_Walk = null;
@@ -95,8 +98,7 @@ public class ZombieStart : MonoBehaviour, IHitable
     [SerializeField] private AnimationClip Clip_jump = null;
     [SerializeField] private AnimationClip Clip_InAir = null;
     [SerializeField] private AnimationClip Clip_Dead = null;
-    private AnimationClip _currAnimClip = null;
-    private AnimationClip _prevAnimClip = null;
+
     //그냥 착지하면 서로 뒤바꾸는걸로
 
     //--------------Navigation Section

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
+  m_Name: State_Move
+  m_EditorClassIdentifier: 
+  _myState:
+    _stataName: Move
+    _stateAnimationClip: {fileID: 7400000, guid: d6cb1cbe422413547b1ede5c752b60ef,
+      type: 2}
+    _EnterStateActions: 
+    _inStateActions: 00000000
+    _ExitStateActions: 
+    _linkedStates:
+    - _conditionAsset: {fileID: 11400000, guid: 6ec3cf0a91e345d4589acdaf0df8274a,
+        type: 2}
+      _stateAsset: {fileID: 11400000, guid: c8159052495618847a0af51e70fb7a91, type: 2}
+    - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
+        type: 2}
+      _stateAsset: {fileID: 11400000, guid: 88fe78e2280462842bc01117a2902772, type: 2}
