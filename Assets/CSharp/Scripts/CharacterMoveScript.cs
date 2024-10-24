@@ -36,6 +36,27 @@ public class CharacterMoveScript : MonoBehaviour
 
     private Vector3 _animDir = Vector3.zero;
 
+
+    [SerializeField] private InputController _inputController = null;
+    [SerializeField] private AnimContoller _AnimController = null;
+    [SerializeField] private CharacterController _physics = null;
+
+    [SerializeField] private string _aimKey = "Fire2";
+    [SerializeField] private float _mass = 30.0f;
+    [SerializeField] private float _speed = 5.0f;
+    [SerializeField] private float _rotatingSpeed_DEG = 90.0f;
+    [SerializeField] private float _jumpForce = 3.0f;
+    private bool _isJumping = false;
+    private bool _isInAir = false;
+    private bool _isAim = false;
+    private bool _mouseLocked = false;
+    private float _verticalSpeedAcc = 0.0f;
+
+    [SerializeField] private GameObject _inventoryUIPrefab = null;
+
+    [SerializeField] private GameObject _equipmentItemModelPrefab_MustDel = null;
+    [SerializeField] private Avatar _equipmentItemModelAvatar_MustDel = null;
+
     private void Awake()
     {
         Debug.Assert(_inputController != null, "인풋컨트롤러가 없다");
@@ -53,6 +74,24 @@ public class CharacterMoveScript : MonoBehaviour
             DeletePath();
         }
 
+        //마우스 디버깅
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha8) == true)
+            {
+                _mouseLocked = !_mouseLocked;
+
+                if (_mouseLocked == true)
+                {
+                    Cursor.lockState = CursorLockMode.Locked;  // 커서 고정을 해제
+                }
+                else
+                {
+                    Cursor.lockState = CursorLockMode.None;  // 커서 고정을 해제
+                }
+
+                Cursor.visible = _mouseLocked;
+            }
+        }
 
 
         //타임디버깅
@@ -287,24 +326,7 @@ public class CharacterMoveScript : MonoBehaviour
     }
 
 
-    [SerializeField] private InputController _inputController = null;
-    [SerializeField] private AnimContoller _AnimController = null;
-    [SerializeField] private CharacterController _physics = null;
 
-    [SerializeField] private string _aimKey = "Fire2";
-    [SerializeField] private float _mass = 30.0f;
-    [SerializeField] private float _speed = 5.0f;
-    [SerializeField] private float _rotatingSpeed_DEG = 90.0f;
-    [SerializeField] private float _jumpForce = 3.0f;
-    private bool _isJumping = false;
-    private bool _isInAir = false;
-    private bool _isAim = false;
-    private float _verticalSpeedAcc = 0.0f;
-
-    [SerializeField] private GameObject _inventoryUIPrefab = null;
-
-    [SerializeField] private GameObject _equipmentItemModelPrefab_MustDel = null;
-    [SerializeField] private Avatar _equipmentItemModelAvatar_MustDel = null;
 
 
 

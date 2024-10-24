@@ -1,0 +1,1915 @@
+Using pre-set license
+Built from '2022.3/staging' branch; Version is '2022.3.4f1 (35713cd46cd7) revision 3502396'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 32469 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 1
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\2022.3.4f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker9
+-projectPath
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+-logFile
+Logs/AssetImportWorker9.log
+-srvPort
+51623
+Successfully changed project path to: C:/Users/rhsj/Desktop/Unity/ProjectNW
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [20664] Host "[IP] 192.168.200.183 [Port] 0 [Flags] 2 [Guid] 3952393487 [EditorId] 3952393487 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+
+Player connection [20664] Host "[IP] 192.168.200.183 [Port] 0 [Flags] 2 [Guid] 3952393487 [EditorId] 3952393487 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+
+Refreshing native plugins compatible for Editor in 26.39 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2022.3.4f1 (35713cd46cd7)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/rhsj/Desktop/Unity/ProjectNW/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   31.0.15.5244
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56392
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.012322 seconds.
+- Loaded All Assemblies, in  0.649 seconds
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.499 seconds
+Domain Reload Profiling: 1145ms
+	BeginReloadAssembly (158ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (73ms)
+	RebuildNativeTypeToScriptingClass (22ms)
+	initialDomainReloadingComplete (120ms)
+	LoadAllAssembliesAndSetupDomain (272ms)
+		LoadAssemblies (155ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (262ms)
+			TypeCache.Refresh (261ms)
+				TypeCache.ScanAssembly (240ms)
+			ScanForSourceGeneratedMonoScriptInfo (1ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (500ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (385ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (17ms)
+			SetLoadedEditorAssemblies (16ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (5ms)
+			ProcessInitializeOnLoadAttributes (257ms)
+			ProcessInitializeOnLoadMethodAttributes (90ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  1.586 seconds
+Refreshing native plugins compatible for Editor in 6.85 ms, found 3 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Package Manager log level set to [2]
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.870 seconds
+Domain Reload Profiling: 3451ms
+	BeginReloadAssembly (249ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (15ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (39ms)
+	RebuildCommonClasses (76ms)
+	RebuildNativeTypeToScriptingClass (24ms)
+	initialDomainReloadingComplete (64ms)
+	LoadAllAssembliesAndSetupDomain (1167ms)
+		LoadAssemblies (600ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (674ms)
+			TypeCache.Refresh (597ms)
+				TypeCache.ScanAssembly (568ms)
+			ScanForSourceGeneratedMonoScriptInfo (54ms)
+			ResolveRequiredComponents (22ms)
+	FinalizeReload (1870ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1529ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (12ms)
+			SetLoadedEditorAssemblies (12ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (298ms)
+			ProcessInitializeOnLoadAttributes (1073ms)
+			ProcessInitializeOnLoadMethodAttributes (123ms)
+			AfterProcessingInitializeOnLoad (11ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (10ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.06 seconds
+Refreshing native plugins compatible for Editor in 127.35 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5871 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 90 unused Assets / (424.3 KB). Loaded Objects now: 6341.
+Memory consumption went from 223.3 MB to 222.9 MB.
+Total: 8.542800 ms (FindLiveObjects: 0.784100 ms CreateObjectMapping: 0.721900 ms MarkObjects: 6.641500 ms  DeleteObjects: 0.393700 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/GlowBehaviour.cs: ca861d3f49951074594e88435ffd8088 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:scripting/monoscript/fileName/SceneSwitchManager.cs: df50a3d24c80308d26bc2a745fb42676 -> 58e5eb0dea83ab8edb1f1f60a746cc8e
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/FlyCameraBehaviour.cs: 65bfad318fd0822acedc5d4d128a4cf1 -> 447eed16c19bf671b669789534e75370
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/InterfaceManager.cs: c212f60bf200697ee7be245421e1e623 -> 21cfdf8fde856ed3df1d4355b35ce7d5
+========================================================================
+Received Import Request.
+  Time since last request: 792189.818724 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Bottom/T_Military_Boots3_Skin2_color.png
+  artifactKey: Guid(2fedf03944127ff4d8b35f934fda910a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Bottom/T_Military_Boots3_Skin2_color.png using Guid(2fedf03944127ff4d8b35f934fda910a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '055d56c3cc182cdaf7cadf89e305c069') in 2.779534 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000065 seconds.
+  path: Assets/IgnoreResources/Military/Materials URP/URP_Boots3_Skin2.mat
+  artifactKey: Guid(0a330e6eee7c9d745b76b538da6b35c8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Materials URP/URP_Boots3_Skin2.mat using Guid(0a330e6eee7c9d745b76b538da6b35c8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'da00892ede58989da205217095b43ad8') in 0.147229 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 6
+========================================================================
+Received Import Request.
+  Time since last request: 0.010735 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Top/T_Military_Caps1_rough.png
+  artifactKey: Guid(c4277ae4e7f98be41a8e5407b80e77b0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Top/T_Military_Caps1_rough.png using Guid(c4277ae4e7f98be41a8e5407b80e77b0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '262e380cb1fe319738aae091c5081204') in 0.060379 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/IgnoreResources/Military/Prefab/URP
+  artifactKey: Guid(8e752086bb028c4489ca85219ef6f6ba) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Prefab/URP using Guid(8e752086bb028c4489ca85219ef6f6ba) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e4b1830f98fecbf52c20790cadece524') in 0.015570 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000041 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Body/T_Military_Hands1_nmap.png
+  artifactKey: Guid(aa70f76a88dd0714ba00aafa81e6af20) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Body/T_Military_Hands1_nmap.png using Guid(aa70f76a88dd0714ba00aafa81e6af20) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ca03ceeb0fdc455d3eb0bb99c3c2e1c9') in 0.048724 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000201 seconds.
+  path: Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Animations/Locomotion--Walk_N_Land.anim.fbx
+  artifactKey: Guid(325a26d62b61fa94cb3c97c435efebc5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Animations/Locomotion--Walk_N_Land.anim.fbx using Guid(325a26d62b61fa94cb3c97c435efebc5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '815cd7b5ecfaba227be664d2728ae2b5') in 0.123182 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 0.000034 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Bottom/T_Military_Boots3_nmap.png
+  artifactKey: Guid(3a346a2e3e92ea340a87855fc9d44b1c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Bottom/T_Military_Boots3_nmap.png using Guid(3a346a2e3e92ea340a87855fc9d44b1c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '23f7cfb54d67fa927d2232ff8ff6e050') in 0.064493 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000031 seconds.
+  path: Assets/IgnoreResources/Prefabs/ChestV2.prefab
+  artifactKey: Guid(a4e34a86eb69d034aa2fe30ec63d10d5) Importer(2089858483,3d70f49cd1c2eb9ae422958d1c652c6b)
+Start importing Assets/IgnoreResources/Prefabs/ChestV2.prefab using Guid(a4e34a86eb69d034aa2fe30ec63d10d5) Importer(2089858483,3d70f49cd1c2eb9ae422958d1c652c6b) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd278f107c248a10b14ef74705d5b91b4') in 0.043894 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 24
+========================================================================
+Received Import Request.
+  Time since last request: 0.000035 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/Pistols/Pistol1/pistol_1.prefab
+  artifactKey: Guid(b8472c75b2bc2ee4b98e87869dace24f) Importer(2089858483,3d70f49cd1c2eb9ae422958d1c652c6b)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/Pistols/Pistol1/pistol_1.prefab using Guid(b8472c75b2bc2ee4b98e87869dace24f) Importer(2089858483,3d70f49cd1c2eb9ae422958d1c652c6b) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '1afa3e6a976d58b662ab5f2cfadc7f36') in 0.021859 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/IgnoreResources/StarterAssets/ThirdPersonController/Prefabs/NestedParentCapsule_Unpack.prefab
+  artifactKey: Guid(212907312655a4443a025a304442c17c) Importer(2089858483,3d70f49cd1c2eb9ae422958d1c652c6b)
+Start importing Assets/IgnoreResources/StarterAssets/ThirdPersonController/Prefabs/NestedParentCapsule_Unpack.prefab using Guid(212907312655a4443a025a304442c17c) Importer(2089858483,3d70f49cd1c2eb9ae422958d1c652c6b) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'a6bfedee31b12257314a18ce98bbcdf8') in 0.111406 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 229
+========================================================================
+Received Import Request.
+  Time since last request: 0.413140 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Environment/Art/Models
+  artifactKey: Guid(a725de072e7eb4d449d782a7c86fd0bf) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Environment/Art/Models using Guid(a725de072e7eb4d449d782a7c86fd0bf) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'def0d58b08edfe2cb55a12051b0a9ff3') in 0.017706 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Environment/RenderPipelineProfiles/StarterAssetsHDRPVolumeProfile.asset
+  artifactKey: Guid(fe05288aca2f31443877a786e771100f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Environment/RenderPipelineProfiles/StarterAssetsHDRPVolumeProfile.asset using Guid(fe05288aca2f31443877a786e771100f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '53406367298e806597761f1380e23e9d') in 0.053802 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 0.000034 seconds.
+  path: Assets/IgnoreResources/Military/Materials/Boots3_Skin1.mat
+  artifactKey: Guid(b4968c47c65a7f04d838250af66552f0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Materials/Boots3_Skin1.mat using Guid(b4968c47c65a7f04d838250af66552f0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '539d815c035a923bd97e62a116f517db') in 0.034750 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 6
+========================================================================
+Received Import Request.
+  Time since last request: 0.000037 seconds.
+  path: Assets/IgnoreResources/Military/Materials/Eyes1.mat
+  artifactKey: Guid(38b71884de7d2094587df9ab6c870d4b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Materials/Eyes1.mat using Guid(38b71884de7d2094587df9ab6c870d4b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '87e143da37cf69d2a7a2bbd2142efebc') in 0.032734 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000032 seconds.
+  path: Assets/IgnoreResources/Military/Prefab/PlayerArmature.prefab
+  artifactKey: Guid(f269b47f315e0284f8824a9e948a3f60) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Prefab/PlayerArmature.prefab using Guid(f269b47f315e0284f8824a9e948a3f60) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '015efe5689f9dc49e3cad594b41630cb') in 0.386455 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 369
+========================================================================
+Received Import Request.
+  Time since last request: 0.292938 seconds.
+  path: Assets/CSharp/Scripts/AimScript.cs
+  artifactKey: Guid(c3d69b221ac029b478bfe2b01f12f453) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/CSharp/Scripts/AimScript.cs using Guid(c3d69b221ac029b478bfe2b01f12f453) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4884ad6b718766fc8dceed606dda9154') in 0.020412 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Mobile/Prefabs/VirtualInputs
+  artifactKey: Guid(7f242e43338822940a6223675e92f05d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Mobile/Prefabs/VirtualInputs using Guid(7f242e43338822940a6223675e92f05d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '85e80c8ebd7ac8c248c7ed7feaca5d1f') in 0.016244 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Resources/Textures/Materials/Vanguard_VisorMat.mat
+  artifactKey: Guid(18f6bcefc92054b448a977fc89aff6a2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Textures/Materials/Vanguard_VisorMat.mat using Guid(18f6bcefc92054b448a977fc89aff6a2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'f1003d998e891fc17f8da631cedd3c2e') in 0.034348 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/IgnoreResources/StarterAssets/TutorialInfo/Scripts/Editor
+  artifactKey: Guid(254f8f69c2bb6464cbd208f418928aab) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/TutorialInfo/Scripts/Editor using Guid(254f8f69c2bb6464cbd208f418928aab) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '771fbbb6e4a60d5103e22458e5f980ce') in 0.015834 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000032 seconds.
+  path: Assets/CSharp/Scripts/SightAttachScript.cs
+  artifactKey: Guid(aaefff6c836d2a7478f101df31b85c22) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/CSharp/Scripts/SightAttachScript.cs using Guid(aaefff6c836d2a7478f101df31b85c22) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '0975db9c3767d7a538dc7ab54187c0bc') in 0.022814 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000037 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Environment/Art/Skybox/SkyboxLite.mat
+  artifactKey: Guid(f6c51332ac7d92541a38fb263b09d2a8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Environment/Art/Skybox/SkyboxLite.mat using Guid(f6c51332ac7d92541a38fb263b09d2a8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '19fb75a143ae96c9d5e7a007cfaa6177') in 0.025518 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Textures/Armature_Body_MetallicSmoothness.tif
+  artifactKey: Guid(e73adacd5e8f6fc45a491dbd62e71ead) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Textures/Armature_Body_MetallicSmoothness.tif using Guid(e73adacd5e8f6fc45a491dbd62e71ead) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '2d5448d15145b2688027c6881f53fc61') in 0.067536 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Mobile/Scripts/CanvasInputs
+  artifactKey: Guid(0777899404b4b2b4696f1032f3231697) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Mobile/Scripts/CanvasInputs using Guid(0777899404b4b2b4696f1032f3231697) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '79920ba136f3d37692cb49d525bdca88') in 0.015919 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000083 seconds.
+  path: Assets/CSharp/Scripts/EquipmentDataManager.cs
+  artifactKey: Guid(d383b1f8d9381e5499ed80adb2f67fc8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/CSharp/Scripts/EquipmentDataManager.cs using Guid(d383b1f8d9381e5499ed80adb2f67fc8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '9d57c01bee8db3bc2f77226ce95f3426') in 0.018096 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Sfx/Player_Footstep_01.wav
+  artifactKey: Guid(72f526a6a9890f643a88e85a61c86c8a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Sfx/Player_Footstep_01.wav using Guid(72f526a6a9890f643a88e85a61c86c8a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '067ef208164f5648e91c9f21ab334a76') in 0.109468 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Environment/Prefabs/Box_350x250x200_Prefab.prefab
+  artifactKey: Guid(7b846d8f536f007498c941069487ce81) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Environment/Prefabs/Box_350x250x200_Prefab.prefab using Guid(7b846d8f536f007498c941069487ce81) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd75e3b9294840b8a454d35032e132605') in 0.032661 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 0.000039 seconds.
+  path: Assets/IgnoreResources/StarterAssets/ThirdPersonController/Scenes/Playground/LightingData.asset
+  artifactKey: Guid(51e8050f26ab504469d218c927558c5e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/ThirdPersonController/Scenes/Playground/LightingData.asset using Guid(51e8050f26ab504469d218c927558c5e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '870993e0ca7a4c8718180c39ee545972') in 0.017774 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Mobile/Scripts/CanvasInputs/UICanvasControllerInput.cs
+  artifactKey: Guid(4a300d010f57451488aa99000126fbd5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Mobile/Scripts/CanvasInputs/UICanvasControllerInput.cs using Guid(4a300d010f57451488aa99000126fbd5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '2efa51cff648bb5c0353b1d4c4084c62') in 0.018309 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Environment/Prefabs/Stairs_200x100x200_Prefab.prefab
+  artifactKey: Guid(466621a4836aa504c87c15d88722d465) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Environment/Prefabs/Stairs_200x100x200_Prefab.prefab using Guid(466621a4836aa504c87c15d88722d465) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7985ecf066678d4af61470d562ff3ee3') in 0.037369 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 0.126799 seconds.
+  path: Assets/Resources/Textures/Materials/Ch35_1001_Glossiness.png
+  artifactKey: Guid(932094c38baacdb4c8842e3f1c51b3e5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Textures/Materials/Ch35_1001_Glossiness.png using Guid(932094c38baacdb4c8842e3f1c51b3e5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '9a226618259b79b432b80ecbd5108448') in 0.061826 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000215 seconds.
+  path: Assets/ExtractedAnimations/mixamo.com5.anim
+  artifactKey: Guid(07ba4fad5e0da6d459951ca63b80638b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/ExtractedAnimations/mixamo.com5.anim using Guid(07ba4fad5e0da6d459951ca63b80638b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '895c54567b4551a6c32a0f200a25d1bf') in 0.051761 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/Shotguns/Shotgun3/shotgun_3.prefab
+  artifactKey: Guid(01d77fd69396c614ea4a371d26316452) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/Shotguns/Shotgun3/shotgun_3.prefab using Guid(01d77fd69396c614ea4a371d26316452) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'fd1b1647cbc70edf3fdc2f7c01d2085d') in 0.026288 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000030 seconds.
+  path: Assets/Resources/Anims/Zombie/ZombieWalkLaterUse.anim
+  artifactKey: Guid(d4d5759ccb57d2f4b80fe6d213be1d07) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Anims/Zombie/ZombieWalkLaterUse.anim using Guid(d4d5759ccb57d2f4b80fe6d213be1d07) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '3ba09799d9c6f7ccf4d623c4ba8db639') in 0.061297 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000742 seconds.
+  path: Assets/IgnoreResources/Prefabs/CapsuleCollider.prefab
+  artifactKey: Guid(8af4dce24e1ea514ba8bad319df5824d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Prefabs/CapsuleCollider.prefab using Guid(8af4dce24e1ea514ba8bad319df5824d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8bb343a2de7d82f670902edefb5293fa') in 0.031171 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 6
+========================================================================
+Received Import Request.
+  Time since last request: 0.001409 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Axes/Axe1/axe_1.prefab
+  artifactKey: Guid(e744fd25fcbd93940b6e31c65992e56a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Axes/Axe1/axe_1.prefab using Guid(e744fd25fcbd93940b6e31c65992e56a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '21b4a25ea7815bc588065b8103b69ff5') in 0.031582 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/Resources/Avatars/Mask
+  artifactKey: Guid(a9cfaff6d3856b3448e895694e1918c1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Avatars/Mask using Guid(a9cfaff6d3856b3448e895694e1918c1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '2718b19cf364f0754f63b343c547e614') in 0.015599 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Resources/Textures/Materials/Ch10_1002_Diffuse.png
+  artifactKey: Guid(8113d3e2fd3838b498ad47f92c88d7c0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Textures/Materials/Ch10_1002_Diffuse.png using Guid(8113d3e2fd3838b498ad47f92c88d7c0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b769eb89d516615d00e399e50f8f22e8') in 0.054967 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/ExtractedAnimations/mixamo.com2.anim
+  artifactKey: Guid(a5c034bf52625b2498ae99903500e725) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/ExtractedAnimations/mixamo.com2.anim using Guid(a5c034bf52625b2498ae99903500e725) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'a2146a53a50df9a58b9d3e96934d685f') in 0.040452 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/Resources/Anims/Zombie
+  artifactKey: Guid(0b8a99486e922984c84a791572267d5c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Anims/Zombie using Guid(0b8a99486e922984c84a791572267d5c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'f824b003525ef728adaa8958b1f6cf24') in 0.014259 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000035 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Materials/atlass_1_3.mat
+  artifactKey: Guid(d5f1b57b28f6e954191330b9ba92aaa2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Materials/atlass_1_3.mat using Guid(d5f1b57b28f6e954191330b9ba92aaa2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7d01c7561c87eb4985ebd73d14e0ae83') in 0.021974 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Resources/Textures/Materials/Ch10_1001_Normal.png
+  artifactKey: Guid(89c572dfb1fc2c9489c0020c2d81ffeb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Textures/Materials/Ch10_1001_Normal.png using Guid(89c572dfb1fc2c9489c0020c2d81ffeb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '69bf8e289985dd92b1c79e92081f05b4') in 0.047893 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.007195 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Scope4
+  artifactKey: Guid(d7db1a9bdc40a6d44907f33cad4de4cc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Scope4 using Guid(d7db1a9bdc40a6d44907f33cad4de4cc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'fbcd765800965d5f5c91747a73591baa') in 0.014837 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs
+  artifactKey: Guid(3abecaa5ab9bf574fa66539d84945f2e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs using Guid(3abecaa5ab9bf574fa66539d84945f2e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'bec43eee1b3d39a9fe05bbc85d181373') in 0.015946 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun3/submachine_gun_3.fbx
+  artifactKey: Guid(47b8788e59a044e4997ac4e401e289f7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun3/submachine_gun_3.fbx using Guid(47b8788e59a044e4997ac4e401e289f7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b3b3223fddad419ca7266aa0bac35818') in 0.057399 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Attachments/Accessories/Light_A_Right.fbx
+  artifactKey: Guid(653bed4e3960d2a4889eaf241a73794e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Attachments/Accessories/Light_A_Right.fbx using Guid(653bed4e3960d2a4889eaf241a73794e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8fc09b1d4a469706ea69fa2922578540') in 0.094011 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000040 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/Shotguns
+  artifactKey: Guid(29613ee9852fd9f4dbd1f42d2875a3f7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/Shotguns using Guid(29613ee9852fd9f4dbd1f42d2875a3f7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '0e4e526fc8328daba059ea85c8c68b4b') in 0.031226 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models
+  artifactKey: Guid(ad0bbff285685f348bf2687e1ec199ed) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models using Guid(ad0bbff285685f348bf2687e1ec199ed) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '318c58d8ca012a0387f0b01420641a23') in 0.015700 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000044 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Explosives/Explosive3
+  artifactKey: Guid(fe839b8d5f0e80c43a463318f917411a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Explosives/Explosive3 using Guid(fe839b8d5f0e80c43a463318f917411a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '6a02c95a0ac01755a1b103098e6e19e8') in 0.025418 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.001154 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs/Attachments/Barrels/Muzzle_ShotGun_Flash Hider_A.prefab
+  artifactKey: Guid(4cc3aa7f53398424797f42b9ba3c3542) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs/Attachments/Barrels/Muzzle_ShotGun_Flash Hider_A.prefab using Guid(4cc3aa7f53398424797f42b9ba3c3542) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'f3ea929523347dad7d9e06d1c57e66ea') in 0.027635 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000031 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/Shotguns/Shotgun2/shotgun_2.prefab
+  artifactKey: Guid(35dabb9981038864a8e9ac66b7f61773) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/Shotguns/Shotgun2/shotgun_2.prefab using Guid(35dabb9981038864a8e9ac66b7f61773) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'fd53e4d6eb34e014ce5e390f4c8c7994') in 0.027161 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun1
+  artifactKey: Guid(916c9e0d4dd611e47a966a98acd2bafb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun1 using Guid(916c9e0d4dd611e47a966a98acd2bafb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8cc99214da8c0541311bb949ea9b745a') in 0.014621 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000043 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Silencer1/silencer_1.prefab
+  artifactKey: Guid(89b883e5675ec2a4bb7c8d3fd78e4460) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Silencer1/silencer_1.prefab using Guid(89b883e5675ec2a4bb7c8d3fd78e4460) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '29352a4536038d8becf03ff61658c725') in 0.025105 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Compensator1/compensator_1.prefab
+  artifactKey: Guid(83594cfb2155fef48b008a819994c194) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Compensator1/compensator_1.prefab using Guid(83594cfb2155fef48b008a819994c194) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7385a3a65fcd47ca5af5540db12bc778') in 0.032943 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes
+  artifactKey: Guid(4f704ae4b4f98ae41a0bce26658850c1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes using Guid(4f704ae4b4f98ae41a0bce26658850c1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'c60684bf65c247cd2cc6192e768db0c7') in 0.013287 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Shaders/Diffuse.shader
+  artifactKey: Guid(f52b933c3edc98048a47bbfae5f9edf4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Shaders/Diffuse.shader using Guid(f52b933c3edc98048a47bbfae5f9edf4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'cc3439a4ef3e7d19612d081baf551bcc') in 0.029672 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Sight4/sight_4.prefab
+  artifactKey: Guid(fa3d069a55c5c2744af63f4bd2c0d78c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Sight4/sight_4.prefab using Guid(fa3d069a55c5c2744af63f4bd2c0d78c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '3251b5c22b1dc56b9a18c498b4215f52') in 0.023536 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shotgun1
+  artifactKey: Guid(8e96acec3fb1b084b94cd1d36e17edc5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shotgun1 using Guid(8e96acec3fb1b084b94cd1d36e17edc5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '13c6bc5398b55c7a4ea99032735362e8') in 0.014379 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000074 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Pistol4/pistol_4.prefab
+  artifactKey: Guid(3331f06e9a605294997cc0de0e46a72d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Pistol4/pistol_4.prefab using Guid(3331f06e9a605294997cc0de0e46a72d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e53b548b8664010c081ef1237df954fd') in 0.039284 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000644 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shell2/shell_2.fbx
+  artifactKey: Guid(cd62c1edead446c449281953070b9b62) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shell2/shell_2.fbx using Guid(cd62c1edead446c449281953070b9b62) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd81ce1c03cefedcf03a1015725c9ce51') in 0.053199 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Explosive1
+  artifactKey: Guid(40553991a2df35747a133815047051eb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Explosive1 using Guid(40553991a2df35747a133815047051eb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '9224729d2ff1e1a9a993d0afb5080dda') in 0.019032 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun4
+  artifactKey: Guid(789ec50fd789642418fe6460049c2e1d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun4 using Guid(789ec50fd789642418fe6460049c2e1d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ee6d6cebdb8b4c4141cb77622b054363') in 0.014710 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs/Weapons/ShotGun_C.prefab
+  artifactKey: Guid(f475b5186f2b3c6448307ac083af8cdd) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs/Weapons/ShotGun_C.prefab using Guid(f475b5186f2b3c6448307ac083af8cdd) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '6a0618aef7c3450e8733961983bd544b') in 0.020196 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 64
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun5/submachine_gun_5.fbx
+  artifactKey: Guid(fa8e9785efedee544a0c3e82aa3c8fb0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun5/submachine_gun_5.fbx using Guid(fa8e9785efedee544a0c3e82aa3c8fb0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e80fbe7b36c74c6d19dcad77683363cc') in 0.044769 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000041 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/SubmachineGun3/submachine_gun_3.prefab
+  artifactKey: Guid(a643437da84c77f4f80a496063513f67) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/SubmachineGun3/submachine_gun_3.prefab using Guid(a643437da84c77f4f80a496063513f67) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e2cdaeb5177e7925b0b4d5a58f6852a5') in 0.026537 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Rifle1
+  artifactKey: Guid(12986e4e8407381439fded24a52aea41) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Rifle1 using Guid(12986e4e8407381439fded24a52aea41) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b7753e2bf6d5c276943965b9a47d4a26') in 0.025115 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000170 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shotgun3/shotgun_3.fbx
+  artifactKey: Guid(62d496ba9b122404189e03a2bcc02632) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shotgun3/shotgun_3.fbx using Guid(62d496ba9b122404189e03a2bcc02632) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '3f431172ad579760997b0c6a5fc3f2d0') in 0.051166 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientDarkGrey_Reflective.mat
+  artifactKey: Guid(f82f3f19259b16048b14572656c32c9f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientDarkGrey_Reflective.mat using Guid(f82f3f19259b16048b14572656c32c9f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'c64d994818d878f49d58dd341225ee82') in 0.026228 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientDarkGrey_reflective.png
+  artifactKey: Guid(43bcb02b6eb8f3242829469ee8e9df42) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientDarkGrey_reflective.png using Guid(43bcb02b6eb8f3242829469ee8e9df42) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '2e3058d06900705f501e571ef352d310') in 0.048367 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000097 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Models/(Msh)LongSword.fbx
+  artifactKey: Guid(8defcba0da712e24f8be11cc7ca2a322) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Models/(Msh)LongSword.fbx using Guid(8defcba0da712e24f8be11cc7ca2a322) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '9adebdcf98a902c779aca9585c889d5b') in 0.045712 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 0.000189 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientWhite.png
+  artifactKey: Guid(36c71792f46707a40ae2ff58b69c4f27) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientWhite.png using Guid(36c71792f46707a40ae2ff58b69c4f27) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4048c4d912895b6326a0aeb60e067006') in 0.047283 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Knife2
+  artifactKey: Guid(1d5f8332d98ffc64d853482005ca92f9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Knife2 using Guid(1d5f8332d98ffc64d853482005ca92f9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '40f9136eeeb2776d8c06c420c48b7811') in 0.016377 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000656 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientDarkBrown.png
+  artifactKey: Guid(5992598217bde6b4b97b78ef78fc6cce) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientDarkBrown.png using Guid(5992598217bde6b4b97b78ef78fc6cce) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7e5c47a0457fe1b5a6f2999c0c0bb2fc') in 0.057600 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientDirtyGreen.png
+  artifactKey: Guid(e25daa050e2895e4bb040343af3fc97f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientDirtyGreen.png using Guid(e25daa050e2895e4bb040343af3fc97f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '468d6d0f82310e19003ce107c87ea679') in 0.048201 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000238 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)ShortSword.prefab
+  artifactKey: Guid(a3c18c766914cf74d9b6ab02f3a41bd1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)ShortSword.prefab using Guid(a3c18c766914cf74d9b6ab02f3a41bd1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '62d7dc2cac5bb1d9dc2cbd580ceb1bcb') in 0.018612 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes/DemonstrationNight/ReflectionProbe-5.exr
+  artifactKey: Guid(784a60c9c6b210e428c6c8c69ade9477) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes/DemonstrationNight/ReflectionProbe-5.exr using Guid(784a60c9c6b210e428c6c8c69ade9477) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '79ae1c6abb4aea638408ef49c0098871') in 0.061128 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Knive/Knive1
+  artifactKey: Guid(daf07636db739514299ab91b8bae03e2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Knive/Knive1 using Guid(daf07636db739514299ab91b8bae03e2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'db633070792fd5cae71a16082a2a70f2') in 0.013961 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes/DemonstrationDay/ReflectionProbe-6.exr
+  artifactKey: Guid(5142d50ea0c6b22419e40b24bea30fe9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes/DemonstrationDay/ReflectionProbe-6.exr using Guid(5142d50ea0c6b22419e40b24bea30fe9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '286f66e38ea2615622cabbd8ad53449e') in 0.046275 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientWaterLightGreen.png
+  artifactKey: Guid(0cef9a28551e1bd43bdcb06e1e4e7b6b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Textures/(Txt)GradientWaterLightGreen.png using Guid(0cef9a28551e1bd43bdcb06e1e4e7b6b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b917cbf0e6dce4b98902e61e62e7f5ef') in 0.050096 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 67.103392 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Weapons/ShotGun_B.fbx
+  artifactKey: Guid(898fe8c2441755247a1e6be6b64b38a3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Weapons/ShotGun_B.fbx using Guid(898fe8c2441755247a1e6be6b64b38a3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd4859d759fe9955ee3c15e968cc758d7') in 0.005948 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 48
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Weapons/ShotGun_E.fbx
+  artifactKey: Guid(d897ee1b378a49a4eb708ecb878aae41) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Weapons/ShotGun_E.fbx using Guid(d897ee1b378a49a4eb708ecb878aae41) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '06fab2af4c1a8f00634a7142f691aff7') in 0.002814 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 38
+========================================================================
+Received Import Request.
+  Time since last request: 0.000015 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Weapons/ShotGun_C.fbx
+  artifactKey: Guid(4b5a0236e3180964c9218d8d99b57ba4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Weapons/ShotGun_C.fbx using Guid(4b5a0236e3180964c9218d8d99b57ba4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2a786f05307cb0878b4f47246eb2e994') in 0.003489 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 63
+========================================================================
+Received Import Request.
+  Time since last request: 38.697543 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Arrow2.prefab
+  artifactKey: Guid(cd907d319c002664cb315c701ae33052) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Arrow2.prefab using Guid(cd907d319c002664cb315c701ae33052) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '235c565f3b1c60ece0eccaadb27ed58a') in 0.001837 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Chainsaw.prefab
+  artifactKey: Guid(9277a84a7c45f6b489ca3d73791ad93d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Chainsaw.prefab using Guid(9277a84a7c45f6b489ca3d73791ad93d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e0204c22cb810a0bcac66eb15d7a3b38') in 0.002005 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Granade.prefab
+  artifactKey: Guid(8227a0d72b778944d86c560e73d42060) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Granade.prefab using Guid(8227a0d72b778944d86c560e73d42060) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8a5af67e3724521fdcb5b3d30eba9b1e') in 0.001527 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 17
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Hook.prefab
+  artifactKey: Guid(a7af342757e4ee74cbe316004abd7667) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Hook.prefab using Guid(a7af342757e4ee74cbe316004abd7667) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9c203affa664acd1c1f05529fa1c98eb') in 0.001996 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Bow.prefab
+  artifactKey: Guid(4ee6022004f122c48b1da157bfeb468f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Bow.prefab using Guid(4ee6022004f122c48b1da157bfeb468f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c3a0d8d143fdddd2a93f97efd29e7b04') in 0.001634 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 3.230745 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)KnucklesTrenchKnife.prefab
+  artifactKey: Guid(6978afd4292a83140a63e908bac0ed19) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)KnucklesTrenchKnife.prefab using Guid(6978afd4292a83140a63e908bac0ed19) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4674f5b15bfda8e1d1d84c4a5b46f24b') in 0.002543 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 1.199423 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Pickaxe.prefab
+  artifactKey: Guid(bf08c89e2666753449525c806b94e242) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Pickaxe.prefab using Guid(bf08c89e2666753449525c806b94e242) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b4fa7ef6f7d4f21b737fe44219ab5091') in 0.001856 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 0.028807 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Rifle.prefab
+  artifactKey: Guid(0700a1febd747e54bb6d6907712c182e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Rifle.prefab using Guid(0700a1febd747e54bb6d6907712c182e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '726ba7698843d46595230f5cc1424025') in 0.002151 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 23
+========================================================================
+Received Import Request.
+  Time since last request: 1.456013 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)ShortSword.prefab
+  artifactKey: Guid(a3c18c766914cf74d9b6ab02f3a41bd1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)ShortSword.prefab using Guid(a3c18c766914cf74d9b6ab02f3a41bd1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5c17a23cf746bbb707116bc9176fc317') in 0.001672 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 0.049573 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)WaterGun.prefab
+  artifactKey: Guid(aa72c3fe73cce624b9d57e35e4260aae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)WaterGun.prefab using Guid(aa72c3fe73cce624b9d57e35e4260aae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a21aa113f50d173eab5d08b93fe9bbc5') in 0.002117 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 23
+========================================================================
+Received Import Request.
+  Time since last request: 594.120456 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientPurple_Reflective.mat
+  artifactKey: Guid(45a792c11e8be4f45897cb0dfb8668e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientPurple_Reflective.mat using Guid(45a792c11e8be4f45897cb0dfb8668e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '310b899fe8ae38210f6d62770990abde') in 0.021809 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientDarkGrey.mat
+  artifactKey: Guid(e3a271b418b58e24da5fd449cbc9359f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientDarkGrey.mat using Guid(e3a271b418b58e24da5fd449cbc9359f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '87253f87fa045e06209db6e60d27fe1d') in 0.019605 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientGrey_Reflective.mat
+  artifactKey: Guid(5b36e1532797fb64489ace3b236ef9fa) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientGrey_Reflective.mat using Guid(5b36e1532797fb64489ace3b236ef9fa) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'bb976aea4caccbdb5e4c805c88fd0b06') in 0.013644 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientDarkGrey_Reflective.mat
+  artifactKey: Guid(f82f3f19259b16048b14572656c32c9f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientDarkGrey_Reflective.mat using Guid(f82f3f19259b16048b14572656c32c9f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8e53bdac1d3af096fcac40de0ae9eb7d') in 0.016530 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000036 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientPink_Reflective.mat
+  artifactKey: Guid(3a91ca0619448e3439f00da7d45cf80b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientPink_Reflective.mat using Guid(3a91ca0619448e3439f00da7d45cf80b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '17b5aea2c03230d594b258dd04dd78d5') in 0.016341 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000039 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientPurple.mat
+  artifactKey: Guid(db2e91fdaa4f3244c9d1d589e93c2537) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientPurple.mat using Guid(db2e91fdaa4f3244c9d1d589e93c2537) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '92ecfe6b55c62ebe70bf4731eb2a7a8a') in 0.016325 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientBlack.mat
+  artifactKey: Guid(b83c3ae74a1c5294ab80bd939990f562) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientBlack.mat using Guid(b83c3ae74a1c5294ab80bd939990f562) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'f5180aafdb69c543c274759331ebf32f') in 0.016433 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000031 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)DeepBlack.mat
+  artifactKey: Guid(3930d9ec8c44ef94eabe41ec10d041c8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)DeepBlack.mat using Guid(3930d9ec8c44ef94eabe41ec10d041c8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '515de8674895ed207749ac8b28e67d20') in 0.018707 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientBlue.mat
+  artifactKey: Guid(f5bb4d45bda905f428fc97c3ff5ba569) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientBlue.mat using Guid(f5bb4d45bda905f428fc97c3ff5ba569) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'a05d2fc1e48426368a1d1202a74e4bdd') in 0.016404 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientYellow.mat
+  artifactKey: Guid(6bf9f62666c770c4dae1c5cb7442bfaa) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientYellow.mat using Guid(6bf9f62666c770c4dae1c5cb7442bfaa) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '259b23ddb3f4175dad67402334519431') in 0.018086 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientWhite_Reflective.mat
+  artifactKey: Guid(79c5b4c5b4b1d7b438ba184a185904c7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientWhite_Reflective.mat using Guid(79c5b4c5b4b1d7b438ba184a185904c7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b64ed3d36fc516a00616c87eaf6db250') in 0.016379 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientWhite.mat
+  artifactKey: Guid(949228b839eae764d9c7c5452fab706a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientWhite.mat using Guid(949228b839eae764d9c7c5452fab706a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '84cf52d3f8895669e25fa1dcdfc7c0f8') in 0.018829 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientBlack_Reflective.mat
+  artifactKey: Guid(be7c047c679fa8d4db2a2e2cd0adf14e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientBlack_Reflective.mat using Guid(be7c047c679fa8d4db2a2e2cd0adf14e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'cda37faaa7a6f9e39ef4ee0923f4b459') in 0.017943 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000045 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientGreen_Reflective.mat
+  artifactKey: Guid(9966b945f9a00ec4baff903f9e22d156) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientGreen_Reflective.mat using Guid(9966b945f9a00ec4baff903f9e22d156) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'cb962aa79b3ba7eafa4681d478598917') in 0.020041 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientDirtyGreen.mat
+  artifactKey: Guid(b83ad303755fdf04e95b1ffaacc7525a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientDirtyGreen.mat using Guid(b83ad303755fdf04e95b1ffaacc7525a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'cbd9c0a5ecfcf51708e9b5cb9f25e75b') in 0.014873 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientBrown.mat
+  artifactKey: Guid(c5bd058df219490499ea8999662e1ef2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientBrown.mat using Guid(c5bd058df219490499ea8999662e1ef2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8e4a003d0fe446125899a4361932e7e7') in 0.017590 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 7.479376 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Recon/Optic_Recon_F.prefab
+  artifactKey: Guid(2eb6c6ffdeb5e2f4e975442fd1cf40e9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Recon/Optic_Recon_F.prefab using Guid(2eb6c6ffdeb5e2f4e975442fd1cf40e9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '9457b1fdaefc71efe922b0ae73d4aea5') in 0.016772 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles_Pistol/Muzzle_Pistol_Flash Hider_A.fbx
+  artifactKey: Guid(28300c8e59582e349b5e6d96ecc40437) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles_Pistol/Muzzle_Pistol_Flash Hider_A.fbx using Guid(28300c8e59582e349b5e6d96ecc40437) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8a1a92155994c0bc73f894d32bc06fce') in 0.030061 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000059 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lights/Light_D_Left.prefab
+  artifactKey: Guid(0780bcdb91a5d9f4ea016c150f0c788b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lights/Light_D_Left.prefab using Guid(0780bcdb91a5d9f4ea016c150f0c788b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd2be021f8e4987d4ccfec67eb71f4567') in 0.016869 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Rails/Rail_Up.prefab
+  artifactKey: Guid(cfd701838bc943c418661f29dffee824) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Rails/Rail_Up.prefab using Guid(cfd701838bc943c418661f29dffee824) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ca40be36dd00149f3206e939d1ab495f') in 0.021549 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lasers/Laser_B_Left.prefab
+  artifactKey: Guid(709130968ebd00348b2c0093d0bb32e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lasers/Laser_B_Left.prefab using Guid(709130968ebd00348b2c0093d0bb32e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'f5386fe845a89a424ae93080a3729bf3') in 0.013877 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles/Muzzle_Flash Hider_B.prefab
+  artifactKey: Guid(e2c62a42cb13e9f4bb8983719f88cc0a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles/Muzzle_Flash Hider_B.prefab using Guid(e2c62a42cb13e9f4bb8983719f88cc0a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7084793f041522eb9c7477c77ea50c4b') in 0.017279 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Suppressor_E.fbx
+  artifactKey: Guid(7e9409912815ca448aa8a8570e0bca53) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Suppressor_E.fbx using Guid(7e9409912815ca448aa8a8570e0bca53) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '57584b70f560864b5740bfe3af1efe40') in 0.036187 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Rails/Rail_Up.fbx
+  artifactKey: Guid(09ab0626adb0ae444bc5a31199a6bd36) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Rails/Rail_Up.fbx using Guid(09ab0626adb0ae444bc5a31199a6bd36) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ed46cdab20111d6914ee0056cc76c95b') in 0.032646 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000032 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_D.prefab
+  artifactKey: Guid(03347f1c711bd25498f45ebd42c59dd5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_D.prefab using Guid(03347f1c711bd25498f45ebd42c59dd5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '2b67a6e3065a62315094f984a08cd406') in 0.016832 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Materials/Plane.mat
+  artifactKey: Guid(8e135300f9a98cc4fb3baa56735df7d8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Materials/Plane.mat using Guid(8e135300f9a98cc4fb3baa56735df7d8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '32b9ad6e79f8ee5d6de9d7eb60052df1') in 0.016158 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000054 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Bullets/Bullets_SMG/Bullet_SMG_A.prefab
+  artifactKey: Guid(8c21c3fbcbe278f49b29c3d77452c4fa) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Bullets/Bullets_SMG/Bullet_SMG_A.prefab using Guid(8c21c3fbcbe278f49b29c3d77452c4fa) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '01726d87b7277d07f81dbdad3ee0c780') in 0.014495 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Accessories_Pistol
+  artifactKey: Guid(ec47bb3d87f65f6468b19dbf5b2d4221) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Accessories_Pistol using Guid(ec47bb3d87f65f6468b19dbf5b2d4221) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '601a36cfd563822668d7ee9f5c149abb') in 0.013606 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lights/Light_C_Left.fbx
+  artifactKey: Guid(37c7e5d7a1dc85c4e8df295f5ecdc289) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lights/Light_C_Left.fbx using Guid(37c7e5d7a1dc85c4e8df295f5ecdc289) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '366f319ac89a6911eb3aa48f12bfee4c') in 0.034476 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics/Optic_K.prefab
+  artifactKey: Guid(adb0148d2cf87fb4aa5b1c08c06c1082) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics/Optic_K.prefab using Guid(adb0148d2cf87fb4aa5b1c08c06c1082) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e77d9f290f190285df65589a238db7f3') in 0.017779 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics/Optic_D.prefab
+  artifactKey: Guid(d583db8bc7abcba44950bed40ee2c41c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics/Optic_D.prefab using Guid(d583db8bc7abcba44950bed40ee2c41c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '09adf8f047532582078c82dc7eb398ac') in 0.013600 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Suppressor_B.fbx
+  artifactKey: Guid(cd40ba925ba149a4fa954247153bc3c2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Suppressor_B.fbx using Guid(cd40ba925ba149a4fa954247153bc3c2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'bcc59cc006c12ac540f43ea92cdfbe89') in 0.031010 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000032 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lights
+  artifactKey: Guid(ded56d32b66b42147ae170f89e1ad73e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lights using Guid(ded56d32b66b42147ae170f89e1ad73e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '75144c5d44a40902b625607ce867b560') in 0.010637 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Pistol/Optic_Pistol_B.prefab
+  artifactKey: Guid(b1db50c7bb496bc439d34aed44ab9389) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Pistol/Optic_Pistol_B.prefab using Guid(b1db50c7bb496bc439d34aed44ab9389) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '5be3016ccd97f06b0ff07e7d96b59f66') in 0.019100 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_H.prefab
+  artifactKey: Guid(5f5a98a62afe6364193e5a475d813863) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_H.prefab using Guid(5f5a98a62afe6364193e5a475d813863) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '36ca71999e30a5b7b1dbefa43cc66e95') in 0.014453 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics/Optic_F.prefab
+  artifactKey: Guid(dad55a3b7f17d8a4c8b1fab51e8a0c96) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics/Optic_F.prefab using Guid(dad55a3b7f17d8a4c8b1fab51e8a0c96) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '85b87c14c0c37f87482efeed1440b236') in 0.020658 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Optics/Optics/Optic_D.fbx
+  artifactKey: Guid(47c76751d26dcea45a78ae85af48f16e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Optics/Optics/Optic_D.fbx using Guid(47c76751d26dcea45a78ae85af48f16e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '3d4c0cd4b05eac8b4bbcddfcaf2187c5') in 0.034742 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_SMG/Bullet_SMG_B.fbx
+  artifactKey: Guid(9bc132f0ea24c4240805f8a8619a2e02) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_SMG/Bullet_SMG_B.fbx using Guid(9bc132f0ea24c4240805f8a8619a2e02) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '90bff352eb8e950b62776e90a546cad6') in 0.033121 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Brake_A.fbx
+  artifactKey: Guid(f01d2e26d2a7c2f4da00346c2161b058) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Brake_A.fbx using Guid(f01d2e26d2a7c2f4da00346c2161b058) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ce4a566b43e51881797f9634823ebd01') in 0.043570 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles_ShotGun/Muzzle_ShotGun_Flash Hider_A.prefab
+  artifactKey: Guid(2d882c00b740a5c4f897c7e3a5aca7a6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles_ShotGun/Muzzle_ShotGun_Flash Hider_A.prefab using Guid(2d882c00b740a5c4f897c7e3a5aca7a6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '17ac0c491f354b60718faf7a4564eb39') in 0.019031 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics/Optic_A.prefab
+  artifactKey: Guid(16cfd4f02c8e48146b8af744d7c61331) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics/Optic_A.prefab using Guid(16cfd4f02c8e48146b8af744d7c61331) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '64c80c49ef4422cf0500e07b8b22b196') in 0.016507 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/Recon Weapons/Recon_D.fbx
+  artifactKey: Guid(bc10cdd75850b594bad0c0de9bcaacb0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/Recon Weapons/Recon_D.fbx using Guid(bc10cdd75850b594bad0c0de9bcaacb0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '3438cd03abd24d75ef4a3788af5da30d') in 0.050648 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 69
+========================================================================
+Received Import Request.
+  Time since last request: 0.000045 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Materials/Low Poly Weapon.mat
+  artifactKey: Guid(cc0f91b45ac837e408b89bf87b3119a7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Materials/Low Poly Weapon.mat using Guid(cc0f91b45ac837e408b89bf87b3119a7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '6f11f6fc1c41b35294ca8937f0c07b3d') in 0.016477 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/SMG Weapons/SMG_E.fbx
+  artifactKey: Guid(d09d3b13f2abcc64cb2f27012f0db0e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/SMG Weapons/SMG_E.fbx using Guid(d09d3b13f2abcc64cb2f27012f0db0e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '43bbcd5cb0760522dff47e0bb22d3fd9') in 0.044124 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 44
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/AR Weapons
+  artifactKey: Guid(23aed117ce734a240ae332cbefe7043f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/AR Weapons using Guid(23aed117ce734a240ae332cbefe7043f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7eaa25e75932e9d6604b56a6eecb57e4') in 0.009445 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Recon/Optic_Recon_B.prefab
+  artifactKey: Guid(681edaadaf15356499cfd333f78b527d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Recon/Optic_Recon_B.prefab using Guid(681edaadaf15356499cfd333f78b527d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '5a31e8c17cc7229ca706e15bfe739f64') in 0.020561 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Bullets/Bullets_Recon
+  artifactKey: Guid(f0bc5aea86db8e6498dd50b125f80a94) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Bullets/Bullets_Recon using Guid(f0bc5aea86db8e6498dd50b125f80a94) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8cb0e985e33b15f09883e0afefd9266b') in 0.011241 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000014 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_G.prefab
+  artifactKey: Guid(a4871dae17d3af34dbfe2db1ebc52c86) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_G.prefab using Guid(a4871dae17d3af34dbfe2db1ebc52c86) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4f8f66d65e33d5121f89b431f7482475') in 0.018884 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles_Recon
+  artifactKey: Guid(49e8f5869a907ad4fa0dfb6ca6b2eb08) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles_Recon using Guid(49e8f5869a907ad4fa0dfb6ca6b2eb08) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e8a51e5d53fef57157e1d7b12387b791') in 0.008628 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Pistol
+  artifactKey: Guid(0bc432976a8eae4438903bb3848e5de1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Pistol using Guid(0bc432976a8eae4438903bb3848e5de1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ae69ad1832c924b47c4e9f0c56a774e5') in 0.012306 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles_ShotGun/Muzzle_ShotGun_Flash Hider_A.fbx
+  artifactKey: Guid(6dd12c9e83b316b4bb200cfcabcc1169) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles_ShotGun/Muzzle_ShotGun_Flash Hider_A.fbx using Guid(6dd12c9e83b316b4bb200cfcabcc1169) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4fd65b28a6425dbd493094d09c1bf05f') in 0.036483 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000034 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_A.prefab
+  artifactKey: Guid(e763a64c3455ae6449e2ae50ea2224a3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_A.prefab using Guid(e763a64c3455ae6449e2ae50ea2224a3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '52b4fb8e254e7cbd281e7b529de0f9d5') in 0.020700 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_Recon/Bullet_Recon_B.fbx
+  artifactKey: Guid(3b02f023bee884d49849f887d91b52e8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_Recon/Bullet_Recon_B.fbx using Guid(3b02f023bee884d49849f887d91b52e8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'dc6ef2abcd8ba5e1322da5f4d5fbdc60') in 0.032712 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Recon/Optic_Recon_C.prefab
+  artifactKey: Guid(fad009f10759dca4c93d8e9559980437) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Optics/Optics_Recon/Optic_Recon_C.prefab using Guid(fad009f10759dca4c93d8e9559980437) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e7f68398ee28dc7ab76dd812f5462070') in 0.018195 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lasers/Laser_C_Right.prefab
+  artifactKey: Guid(dc4762d1a19052f47904dd616ba00897) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lasers/Laser_C_Right.prefab using Guid(dc4762d1a19052f47904dd616ba00897) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'dc354383e55c8b296b178fee3ebbf77f') in 0.019163 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles_Recon/Muzzle_Recon_Suppressor_A.prefab
+  artifactKey: Guid(4b3334579c0dc914399242735266cc52) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles_Recon/Muzzle_Recon_Suppressor_A.prefab using Guid(4b3334579c0dc914399242735266cc52) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '2ae1188aa407a5a7d0a2652ba6b607fc') in 0.015407 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000015 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/DMR Weapons
+  artifactKey: Guid(16cfad4f7e6bfc04797c3019a3e81853) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/DMR Weapons using Guid(16cfad4f7e6bfc04797c3019a3e81853) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd94ae5e5c8b5dc6bd84e2f2c9591cff0') in 0.011983 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Rails/Rail_Down.prefab
+  artifactKey: Guid(24c1e0fd9b9e8c2479c796f3478c9cb0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Rails/Rail_Down.prefab using Guid(24c1e0fd9b9e8c2479c796f3478c9cb0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e26eb1e30aebdf7b134c6203ab2048b2') in 0.023034 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000034 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_ShotGun/Bullet_ShotGun_B.fbx
+  artifactKey: Guid(cf9b4c5491f91e540b54fbcb9def0889) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_ShotGun/Bullet_ShotGun_B.fbx using Guid(cf9b4c5491f91e540b54fbcb9def0889) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'c3df0898ebbb4ee076592b49a5520ee2') in 0.038068 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000075 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lights/Light_B_Right.fbx
+  artifactKey: Guid(88c543e6d2325ee498d780b0080ccced) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lights/Light_B_Right.fbx using Guid(88c543e6d2325ee498d780b0080ccced) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '5e2916988977dca7e81a3f7a16dad6c8') in 0.035784 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/AR Weapons/AR_D.prefab
+  artifactKey: Guid(38e52995e1014a849a11ba8834eca21d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/AR Weapons/AR_D.prefab using Guid(38e52995e1014a849a11ba8834eca21d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7edde3bd4ef49b0db795d9677ceeac38') in 0.018946 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 64
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/LMG Weapons/LMG_D.prefab
+  artifactKey: Guid(adf49329757cc6a45b773acdcb96adb3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/LMG Weapons/LMG_D.prefab using Guid(adf49329757cc6a45b773acdcb96adb3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '44a477111d6f01a7221e753a54176b84') in 0.018966 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 39
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Rails/Rail_Right.prefab
+  artifactKey: Guid(63b9ca0ee85a8ab4680eab5dc54be456) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Rails/Rail_Right.prefab using Guid(63b9ca0ee85a8ab4680eab5dc54be456) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '210bfb1224dca2016ed9038b921ac655') in 0.023219 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_B.prefab
+  artifactKey: Guid(cc187bd0a69b36848bfb9eeb7fc34098) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_B.prefab using Guid(cc187bd0a69b36848bfb9eeb7fc34098) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '9cd11e4a5dcc5fbbf5e35479664379cc') in 0.020765 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lasers/Laser_D_Right.fbx
+  artifactKey: Guid(c5e74d1d85831a04b95159e19cba40f0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lasers/Laser_D_Right.fbx using Guid(c5e74d1d85831a04b95159e19cba40f0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '358b82290835cc077e2073d815825850') in 0.030922 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles
+  artifactKey: Guid(345ceb9fd3f1f5347b358cc69bfab60c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles using Guid(345ceb9fd3f1f5347b358cc69bfab60c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4046923509a8c10944d4534b0eb8d699') in 0.012546 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000032 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lasers/Laser_D_Right.prefab
+  artifactKey: Guid(b5af1deba488e24468c0c353ff99118e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lasers/Laser_D_Right.prefab using Guid(b5af1deba488e24468c0c353ff99118e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '18f11ed106355f4c114da1a1bbe824ab') in 0.020714 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1
+  artifactKey: Guid(56b526021a5e2a346b94d9cf7e2c2b53) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1 using Guid(56b526021a5e2a346b94d9cf7e2c2b53) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '78b6300da3e55c573e4886422c07eb3d') in 0.010723 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000047 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/AR Weapons/AR_C.fbx
+  artifactKey: Guid(fb78b118b96bc3141aeae690bb58b2c7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/AR Weapons/AR_C.fbx using Guid(fb78b118b96bc3141aeae690bb58b2c7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '95f0f7bf67ad3607f6d08fc48317528f') in 0.053008 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 64
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/Recon Weapons/Recon_C.prefab
+  artifactKey: Guid(83c91d02c9af6844d8dc78f7469f561c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/Recon Weapons/Recon_C.prefab using Guid(83c91d02c9af6844d8dc78f7469f561c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '955943eced69466eaa5f26d79ba00cb0') in 0.013984 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 79
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Accessories_Pistol/Light_Pistol_A.fbx
+  artifactKey: Guid(1d2705e60d632b445b0e681da7c1b571) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Accessories_Pistol/Light_Pistol_A.fbx using Guid(1d2705e60d632b445b0e681da7c1b571) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '43c7d0eb53f419c0da1b41a175c87f75') in 0.036353 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Suppressor_D.fbx
+  artifactKey: Guid(6ff4ac0c485ddb04d9ae993236c89b55) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Suppressor_D.fbx using Guid(6ff4ac0c485ddb04d9ae993236c89b55) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '5e52a4852a06bb91d2c2ae1634e4a72c') in 0.038991 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000034 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Bullets/Bullets_ShotGun/Bullet_ShotGun_B.prefab
+  artifactKey: Guid(684119306d7cfb841a959f0b7958aa5a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Bullets/Bullets_ShotGun/Bullet_ShotGun_B.prefab using Guid(684119306d7cfb841a959f0b7958aa5a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '09e82e78ebc1a35db2bba688bbb54c24') in 0.017478 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Flash Hider_C.fbx
+  artifactKey: Guid(d08c19e54ade6a24092d6be54f2d712f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Flash Hider_C.fbx using Guid(d08c19e54ade6a24092d6be54f2d712f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '95940f7d0720c39a4ad1fe25c439b335') in 0.037979 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles/Muzzle_Suppressor_E.prefab
+  artifactKey: Guid(d540364389df24d4d9375e4d4c7afc42) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles/Muzzle_Suppressor_E.prefab using Guid(d540364389df24d4d9375e4d4c7afc42) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ecfa309745d26d18d7bb7a951930fa02') in 0.019519 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles_Recon/Muzzle_Recon_Brake_B.fbx
+  artifactKey: Guid(8445433ef5474e845bfa789dd078d8e5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles_Recon/Muzzle_Recon_Brake_B.fbx using Guid(8445433ef5474e845bfa789dd078d8e5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '0758f3e3b8b09941c407d06a234d223c') in 0.037859 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets/Bullet_B.fbx
+  artifactKey: Guid(e55907e56ced4a3429a9a9a2a800de19) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets/Bullet_B.fbx using Guid(e55907e56ced4a3429a9a9a2a800de19) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '24eb104a097506da47793ac110002097') in 0.033796 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Optics/Optics/Optic_I.fbx
+  artifactKey: Guid(b90ebfe903068dc4486a2e2aa5330c09) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Optics/Optics/Optic_I.fbx using Guid(b90ebfe903068dc4486a2e2aa5330c09) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'fffe737a6059d842dbd8c8a854bb67c4') in 0.040170 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/Recon Weapons/Recon_B.prefab
+  artifactKey: Guid(613f0b4fa251b35498421a088fa12416) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/Recon Weapons/Recon_B.prefab using Guid(613f0b4fa251b35498421a088fa12416) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8eb05a6c496afab47e2bf738e1b9aac2') in 0.018688 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 64
+========================================================================
+Received Import Request.
+  Time since last request: 0.000036 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lights/Light_C_Right.fbx
+  artifactKey: Guid(465e6a694c6b08447962b352aaf94ad9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Accessories/Lights/Light_C_Right.fbx using Guid(465e6a694c6b08447962b352aaf94ad9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '1752ccdf0e4974007c4d70ff3fc09035') in 0.034366 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_SMG/Bullet_SMG_C.fbx
+  artifactKey: Guid(063589c2de92624469fe0cfa61b20538) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_SMG/Bullet_SMG_C.fbx using Guid(063589c2de92624469fe0cfa61b20538) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '015b1a3f9799382953ad2cfea698f95b') in 0.031276 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/Pistol Weapons/Pistol_C.fbx
+  artifactKey: Guid(9f467dd39802bc749858382f386547d6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/Pistol Weapons/Pistol_C.fbx using Guid(9f467dd39802bc749858382f386547d6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ada5ec17026ff611ba699d646d97e356') in 0.043601 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 34
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/LMG Weapons/LMG_C.prefab
+  artifactKey: Guid(eac9660ddf40e6445998a382e3cdc663) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/LMG Weapons/LMG_C.prefab using Guid(eac9660ddf40e6445998a382e3cdc663) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '5f608fd68c8d769a0a6e75e17c90e563') in 0.015653 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 64
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Optics/Optics_Pistol/Optic_Pistol_B.fbx
+  artifactKey: Guid(4dc23913052a2004f9af961b8e898a33) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Optics/Optics_Pistol/Optic_Pistol_B.fbx using Guid(4dc23913052a2004f9af961b8e898a33) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b6d601f0606a268e8ba0a15dea5b4e65') in 0.055076 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles/Muzzle_Brake_B.prefab
+  artifactKey: Guid(62f4c35356aa3ca49b7b335590b16b25) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles/Muzzle_Brake_B.prefab using Guid(62f4c35356aa3ca49b7b335590b16b25) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'efbc71ecab6bffda1be93a4cc986a9cf') in 0.017707 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lights/Light_B_Right.prefab
+  artifactKey: Guid(593635fd44bac694f8ba23e51be2c6be) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lights/Light_B_Right.prefab using Guid(593635fd44bac694f8ba23e51be2c6be) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'fb31d8f93dabe44ad5279df5af806335') in 0.022346 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Flash Hider_A.fbx
+  artifactKey: Guid(9cc79d3e268e35a49a533848a9bf7b5b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles/Muzzle_Flash Hider_A.fbx using Guid(9cc79d3e268e35a49a533848a9bf7b5b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '947d6c4605c720badea809f2ec768a73') in 0.038068 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/UnderBarrels/ForwardGrip_F.fbx
+  artifactKey: Guid(7494c2e2e5a64d0498003e5bd9416126) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/UnderBarrels/ForwardGrip_F.fbx using Guid(7494c2e2e5a64d0498003e5bd9416126) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7f15bd19b944f48c8e54f6b891ea2f9a') in 0.038695 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_ShotGun/Bullet_ShotGun_A.fbx
+  artifactKey: Guid(fb38227bf4d21974097efb43d04d7fca) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Bullets/Bullets_ShotGun/Bullet_ShotGun_A.fbx using Guid(fb38227bf4d21974097efb43d04d7fca) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'dcff8fa2dd0a84bdc9790982575018a3') in 0.038578 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/DMR Weapons/DMR_A.prefab
+  artifactKey: Guid(f1b18801e55ef4f4880a900c3fa0d5ac) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/DMR Weapons/DMR_A.prefab using Guid(f1b18801e55ef4f4880a900c3fa0d5ac) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4ac451579257330ffc19ef29ed98e6bf') in 0.016480 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 69
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/SMG Weapons/SMG_A.prefab
+  artifactKey: Guid(2dbdd65e7a4d13f46b25cf92974abee3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/SMG Weapons/SMG_A.prefab using Guid(2dbdd65e7a4d13f46b25cf92974abee3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '54c994a5ebeb2a498dc0f53504d2bc17') in 0.017923 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 54
+========================================================================
+Received Import Request.
+  Time since last request: 0.000062 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/LMG Weapons/LMG_D.fbx
+  artifactKey: Guid(86778a77de102a744bc52667e95d3f81) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/LMG Weapons/LMG_D.fbx using Guid(86778a77de102a744bc52667e95d3f81) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'c9260fb58cde6cffcf519b5922ba836d') in 0.050004 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 39
+========================================================================
+Received Import Request.
+  Time since last request: 0.000039 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles
+  artifactKey: Guid(3393b9d8d57fc8c47b975929ea2675e7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Muzzles/Muzzles using Guid(3393b9d8d57fc8c47b975929ea2675e7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b5a5f96f820c2e099bedc63c16a6dd1a') in 0.014820 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000032 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/ShotGun Weapons/ShotGun_C.prefab
+  artifactKey: Guid(fe26a96149707bc4d93b7954556dac31) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/ShotGun Weapons/ShotGun_C.prefab using Guid(fe26a96149707bc4d93b7954556dac31) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'a72141fb4f7dfd600e73f73c8df9e857') in 0.015287 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 64
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/ShotGun Weapons/ShotGun_E.prefab
+  artifactKey: Guid(e785777f5a31bf24a9f1c76d1e906ead) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/ShotGun Weapons/ShotGun_E.prefab using Guid(e785777f5a31bf24a9f1c76d1e906ead) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '6a44113b8c653e4853bf95895f043990') in 0.013886 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 34
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Textures/Low Poly Weapon.png
+  artifactKey: Guid(ea6e93aa55f2ff0428e4ccc75d9efbc2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Textures/Low Poly Weapon.png using Guid(ea6e93aa55f2ff0428e4ccc75d9efbc2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd833f32daa31a2d8694f6c0cb1cb5483') in 0.034157 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000090 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/Recon Weapons/Recon_A.fbx
+  artifactKey: Guid(0808065a62135fc4db157470776782c6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/Recon Weapons/Recon_A.fbx using Guid(0808065a62135fc4db157470776782c6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '6ed6d2fc25e456e9dfb5149d0c93be02') in 0.059303 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 64
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/SMG Weapons/SMG_D.prefab
+  artifactKey: Guid(8188b4162c7a5084cac7fb70b2242720) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Weapons/SMG Weapons/SMG_D.prefab using Guid(8188b4162c7a5084cac7fb70b2242720) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '24b1a2c4c2e036bc0dc55fec39889e43') in 0.013844 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 29
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles_ShotGun/Muzzle_ShotGun_Shoke_A.fbx
+  artifactKey: Guid(ad1abc9dcb047d0469aaba51c22e8ba1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Muzzles/Muzzles_ShotGun/Muzzle_ShotGun_Shoke_A.fbx using Guid(ad1abc9dcb047d0469aaba51c22e8ba1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '85c941622970dcab7bc82eef33b52752') in 0.045151 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lights/Light_A_Right.prefab
+  artifactKey: Guid(03ec54fcd970fe44fa3b250a10af09cc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Prefabs/Attachments/Accessories/Lights/Light_A_Right.prefab using Guid(03ec54fcd970fe44fa3b250a10af09cc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ac7d9405468268145170c1910eaa11e3') in 0.021008 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Optics/Optics/Optic_F.fbx
+  artifactKey: Guid(ca8a838dd1e7c314b8a243cf81834b9b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Attachments/Optics/Optics/Optic_F.fbx using Guid(ca8a838dd1e7c314b8a243cf81834b9b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '02ea9836a9f9cff814dca3b14be8a1b0') in 0.036805 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/LMG Weapons/LMG_C.fbx
+  artifactKey: Guid(679933df05653154b91fd839902cdca9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Low Poly Weapon Bundle Pack 1/Models/Weapons/LMG Weapons/LMG_C.fbx using Guid(679933df05653154b91fd839902cdca9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'dd8cd2ec2e34e3557ce421b315327c03') in 0.057290 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 64
+Editor requested this worker to shutdown with reason: Scaling down because of idle timeout
+TcpMessagingSession - receive error
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0

@@ -10,8 +10,9 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine.UIElements;
 using UnityEngine.XR;
+using System.Runtime.InteropServices;
 
-public class ZombieStart : MonoBehaviour
+public class ZombieStart : MonoBehaviour, IHitable
 {
     public enum MonstarState
     {
@@ -47,20 +48,21 @@ public class ZombieStart : MonoBehaviour
     [SerializeField] private GameObject _debuggingCornerCapsulePrefab = null;
     [SerializeField] private int _filterTarget = 0;
     [SerializeField] private float _maxChasingDistance = 20.0f;
+    [SerializeField] private float _chaseSpeedRatio = 2.0f;
+    [SerializeField] private float _chaseRotateSpeedRatio = 2.0f;
+    //--------------NormalAttack Vars
+    [SerializeField] private float _normalAttackRange = 1.0f;
 
+    //--------------Battle Vars
     private List<GameObject> _enemies = new List<GameObject>();
     [SerializeField] private GameObject _battleTarget = null;
 
-    //--------------ChaseState Vars |TODO|이거 다른 클래스로 빼라
-    [SerializeField] private AnimationClip Clip_Idle = null;
-    [SerializeField] private AnimationClip Clip_Walk = null;
-    [SerializeField] private AnimationClip Clip_Chase = null;
-    [SerializeField] private AnimationClip Clip_Scream = null;
-    [SerializeField] private AnimationClip Clip_turn = null;
-    [SerializeField] private AnimationClip Clip_Run = null;
-    [SerializeField] private AnimationClip Clip_Punch = null;
-    [SerializeField] string targetClipName = "UseThisToChange";
-    private float _crossFadeTime = 0.1f;
+
+    int _hp = 10;
+
+
+
+
 
 
 
@@ -76,9 +78,26 @@ public class ZombieStart : MonoBehaviour
     [SerializeField] private float _mass = 30.0f;
 
 
-    //Animator Section
+    //--------------Anim Vars |TODO|이거 다른 클래스로 빼라
     [SerializeField] private AnimContoller _AnimController = null;
     [SerializeField] private List<string> _enemyTags =  new List<string>();
+    private float _crossFadeTime = 0.1f;
+    private string _targetName1 = "Zombie Idle";
+    private string _targetName2 = "UseThisToChange";
+
+    [SerializeField] private AnimationClip Clip_Idle = null;
+    [SerializeField] private AnimationClip Clip_Walk = null;
+    [SerializeField] private AnimationClip Clip_Chase = null;
+    [SerializeField] private AnimationClip Clip_Scream = null;
+    [SerializeField] private AnimationClip Clip_turn = null;
+    [SerializeField] private AnimationClip Clip_Run = null;
+    [SerializeField] private AnimationClip Clip_Punch = null;
+    [SerializeField] private AnimationClip Clip_jump = null;
+    [SerializeField] private AnimationClip Clip_InAir = null;
+    [SerializeField] private AnimationClip Clip_Dead = null;
+    private AnimationClip _currAnimClip = null;
+    private AnimationClip _prevAnimClip = null;
+    //그냥 착지하면 서로 뒤바꾸는걸로
 
     //--------------Navigation Section
     private float _minOffMeshSampleRadius = 0.05f;
@@ -93,8 +112,6 @@ public class ZombieStart : MonoBehaviour
     private List<GameObject> _createdDebuggingCornerSphereReverse = new List<GameObject>();
     private List<GameObject> _createdDebuggingCornerCapsuleReverse = new List<GameObject>();
 
-
-
     private void Start()
     {
         if (_enemyTags.Count > 0)
@@ -106,74 +123,12 @@ public class ZombieStart : MonoBehaviour
         Debug.Assert(_animator != null, "애니메이터가 없습니다");
         _overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
         _animator.runtimeAnimatorController = _overrideController;
-
-    }
-
-
-    private void InitEnemy()
-    {
-        //매 프레임마다 오브젝트를 하이라키에서 찾고 거리를 비교하는게 아니라.
-        //미리 자기가 적대적으로 생각하는 오브젝트를 캐싱합니다. //Destory(Object) 호출시 자동으로 null참조입니다 (댕글링 포인터가 아니라네?)
-        //|TODO| 이와 관련하여 Alias 매니저를 만들자. 런타임중 추가로 몬스터나 동료가 생성되면 enemy설정을 해주는 매니저
-        foreach (var tag in _enemyTags)
-        {
-            foreach (var enemy in GameObject.FindGameObjectsWithTag(tag))
-            {
-                _enemies.Add(enemy);
-            }
-        }
     }
 
     private void Awake()
     {
         _navMeshPath = new NavMeshPath(); //모노 비해이비어보다 먼저하면 안된단다.
     }
-
-    private bool InBattleCheck()
-    {
-        for (int i = 0; i < _enemies.Count; i++)
-        {
-            if (_enemies[i] == null) //런타임중 Destroy 된 놈
-            {
-                _enemies.RemoveAt(i); i--;
-                continue;
-            }
-
-            //1차. 거리가 감지거리 내에 있나
-            if (Vector3.Distance(_enemies[i].transform.position, transform.position) > _detectRange)
-            {
-                continue;
-            }
-
-            //2차. 수평 감지 각도 내에 존재하는가
-            Vector3 dirToEnemy = (_enemies[i].transform.position - transform.position);
-            dirToEnemy.y = 0.0f;
-            float deltaDeg = Vector3.Angle(transform.forward, dirToEnemy.normalized);
-            if (deltaDeg > 180)
-            {
-                deltaDeg -= 180.0f;
-            }
-
-            if (Mathf.Abs(deltaDeg) > _detectHorizontalDeg)
-            {
-                continue;
-            }
-
-            //3차. 수직 감지 각도 내에 존재하는가
-            //if (false)
-            //{
-            //    continue;
-            //}
-            
-            //이때, null일 수도 있는 적이 List에서 사라지지 않는다. 다음 순회시에 삭제하기로 한다.
-            _battleTarget = _enemies[i];
-            return true;
-        }
-
-        return false;
-    }
-
-
 
     void Update()
     {
@@ -224,6 +179,127 @@ public class ZombieStart : MonoBehaviour
         }
     }
 
+    private void InitEnemy()
+    {
+        //매 프레임마다 오브젝트를 하이라키에서 찾고 거리를 비교하는게 아니라.
+        //미리 자기가 적대적으로 생각하는 오브젝트를 캐싱합니다. //Destory(Object) 호출시 자동으로 null참조입니다 (댕글링 포인터가 아니라네?)
+        //|TODO| 이와 관련하여 Alias 매니저를 만들자. 런타임중 추가로 몬스터나 동료가 생성되면 enemy설정을 해주는 매니저
+        foreach (var tag in _enemyTags)
+        {
+            foreach (var enemy in GameObject.FindGameObjectsWithTag(tag))
+            {
+                _enemies.Add(enemy);
+            }
+        }
+    }
+
+    private bool InAttackRangeCheck(float range, float height)
+    {
+        if (_battleTarget == null)
+        {
+            return false;
+        }
+
+        if (Vector3.Distance(_battleTarget.transform.position, transform.position) > range)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool InBattleCheck()
+    {
+        for (int i = 0; i < _enemies.Count; i++)
+        {
+            if (_enemies[i] == null) //런타임중 Destroy 된 놈
+            {
+                _enemies.RemoveAt(i); i--;
+                continue;
+            }
+
+            //1차. 거리가 감지거리 내에 있나
+            if (Vector3.Distance(_enemies[i].transform.position, transform.position) > _detectRange)
+            {
+                continue;
+            }
+
+            //2차. 수평 감지 각도 내에 존재하는가
+            Vector3 dirToEnemy = (_enemies[i].transform.position - transform.position);
+            dirToEnemy.y = 0.0f;
+            float deltaDeg = Vector3.Angle(transform.forward, dirToEnemy.normalized);
+            if (deltaDeg > 180)
+            {
+                deltaDeg -= 180.0f;
+            }
+
+            if (Mathf.Abs(deltaDeg) > _detectHorizontalDeg)
+            {
+                continue;
+            }
+
+            //3차. 수직 감지 각도 내에 존재하는가
+            //if (false)
+            //{
+            //    continue;
+            //}
+            
+            //이때, null일 수도 있는 적이 List에서 사라지지 않는다. 다음 순회시에 삭제하기로 한다.
+            _battleTarget = _enemies[i];
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+
+
+
+
+    public void DealMe(int damage, GameObject caller)
+    {
+        if (_hp <= 0)
+        {
+            return; //이미 죽었다.
+        }
+
+        _hp -= damage;
+
+        if (_hp <= 0)
+        {
+            _hp = 0; //죽었다
+
+            Dead();
+        }
+    }
+
+
+
+
+
+
+    private void Dead()
+    {
+        _currState = MonstarState.Dead;
+        //애니메이션 연출
+
+        //디졸브하면서 사라지거나
+
+        //랙돌로 변신, 모든 연산을 off
+    }
+
+
+
+
+    private bool DiffState_Dead()
+    {
+        ChangeAnimation(Clip_Dead);
+        return true;
+    }
+
+
 
     private void CheckJumpPosition()
     {
@@ -240,6 +316,7 @@ public class ZombieStart : MonoBehaviour
         _verticalSpeedAcc = _jumpForce;
         _isJumping = true;
         _isInAir = true;
+        ChangeAnimation(Clip_jump);
 
         Vector3 desiredMove = Vector3.up * _verticalSpeedAcc * Time.deltaTime;
 
@@ -275,12 +352,7 @@ public class ZombieStart : MonoBehaviour
 
     
 
-    private void FSM_InDetected()
-    {
-        Vector3 targetPosition = _battleTarget.transform.position;
-        targetPosition.y = transform.position.y;
-        transform.LookAt(targetPosition);
-    }
+
 
     private bool DiffState_Detected()
     {
@@ -303,6 +375,11 @@ public class ZombieStart : MonoBehaviour
     {
         if (_characterController.isGrounded == true)
         {
+            if (_isInAir == true)
+            {
+                //직전에 점프를 하고 있었습니다.
+                ChangeAnimation(_prevAnimClip);
+            }
             _verticalSpeedAcc = 0.0f;
 
             _isJumping = false;
@@ -370,13 +447,16 @@ public class ZombieStart : MonoBehaviour
                 FSM_InIdle();
                 break;
             case MonstarState.PatrolMove:
-                FSM_InPatrolMove();
+                FSM_InPatrol();
                 break;
             case MonstarState.Detected:
                 FSM_InDetected();
                 break;
             case MonstarState.Chase:
                 FSM_InChase();
+                break;
+            case MonstarState.Attack:
+                FSM_InNormalAttack();
                 break;
             case MonstarState.Shoot:
                 break;
@@ -405,11 +485,13 @@ public class ZombieStart : MonoBehaviour
             case MonstarState.Detected:
                 return DiffState_Detected();
             case MonstarState.Chase:
-                return DiffState_Chase2();
+                return DiffState_Chase();
+            case MonstarState.Attack:
+                return DiffState_NormalAttack();
             case MonstarState.Shoot:
                 return true;
             case MonstarState.Dead:
-                return true;
+                return DiffState_Dead();
             case MonstarState.End:
                 return true;
             default:
@@ -495,9 +577,19 @@ public class ZombieStart : MonoBehaviour
 
         string nextNode = (_currAnimNode == true) ? "State2" : "State1";
         _currAnimNode = !_currAnimNode;
-        _overrideController[targetClipName] = targetClip;
-        targetClipName = currentClip.name;
+        if (_currAnimNode == true)
+        {
+            _overrideController[_targetName1] = targetClip;
+        }
+        else
+        {
+            _overrideController[_targetName2] = targetClip;
+        }
+        
         _animator.CrossFade(nextNode, _crossFadeTime);
+
+        _prevAnimClip = currentClip;
+        _currAnimClip = targetClip;
     }
 
     private bool DiffState_Idle()
@@ -506,7 +598,7 @@ public class ZombieStart : MonoBehaviour
         return true;
     }
 
-    private bool DiffState_Chase2()
+    private bool DiffState_Chase()
     {
         ChangeAnimation(Clip_Run);
 
@@ -629,14 +721,14 @@ public class ZombieStart : MonoBehaviour
 
 
 
-    private void FSM_InChase()
+
+
+    private void FSM_InDetected()
     {
-        FSM_InPatrolRotate();
-
-        FSM_InPatrolMove();
+        Vector3 targetPosition = _battleTarget.transform.position;
+        targetPosition.y = transform.position.y;
+        transform.LookAt(targetPosition);
     }
-
-
 
 
 
@@ -659,97 +751,69 @@ public class ZombieStart : MonoBehaviour
 
 
 
-
-    private void FSM_InPatrolRotate()
+    private void FSM_InNormalAttack()
     {
-        if ((_navMeshPath.corners.Length - 1) <= _targetPathPositionIndex)
+        Vector3 targetPosition = _battleTarget.transform.position;
+        targetPosition.y = transform.position.y;
+        transform.LookAt(targetPosition);
+    }
+
+
+
+
+    private bool DiffState_NormalAttack()
+    {
+        ChangeAnimation(Clip_Punch);
+
+        float delay = Clip_Punch.length;
+
+        StartCoroutine(ChangeStateCoroutine(delay, MonstarState.Chase));
+
+        return true;
+    }
+
+
+
+
+    private void FSM_InChase()
+    {
+        if (InAttackRangeCheck(_normalAttackRange, 1.0f) == true)
         {
-            Debug.Log("State Done_Patrol Move");//다 갔습니다
+            _currState = MonstarState.Attack;
+            _stateEndWithoutInterCept = true;
             return;
         }
 
-        Vector3 targetPosition = _navMeshPath.corners[_targetPathPositionIndex + 1];
-        targetPosition.y = transform.position.y;
+        NavPathRotate(_chaseRotateSpeedRatio);
 
-        Vector3 rotateDirection = (targetPosition - transform.position);
-        rotateDirection.y = 0.0f;
-        rotateDirection = rotateDirection.normalized;
-
-        Rotate(rotateDirection, _patrolRotateSpeedRatio);
-    }
-
-
-    private void FSM_InNormalAttack()
-    {
-
+        if (NavPathMove(_chaseSpeedRatio) == true)
+        {
+            DiffState_Chase();
+        }
     }
 
 
 
-    private void FSM_InPatrolMove()
+
+    private void FSM_InPatrol()
     {
-        if (InBattleCheck() == true && _currState == MonstarState.PatrolMove) //두번째 MonstarState.PatrolMove 이게 있으면 안된다 일단 귀찮아서 같이 쓰는거임
+        if (InBattleCheck() == true)
         {
             _currState = MonstarState.Detected;
             _stateEndWithoutInterCept = true;
             return;
         }
 
-        FSM_InPatrolRotate(); //회전을 수행했다.
+        NavPathRotate(_patrolRotateSpeedRatio);
 
-        for (int i = 0; i < _navMeshPath.corners.Length - 1; i++)
+        if (NavPathMove(_patrolSpeedRatio) == true)
         {
-            Debug.DrawLine(_navMeshPath.corners[i], _navMeshPath.corners[i + 1], Color.green);
-        }
-
-        if ((_navMeshPath.corners.Length - 1) <= _targetPathPositionIndex)
-        {
-            Debug.Log("State Done_Patrol Move");//다 갔습니다
-            _stateEndWithoutInterCept = true;
-            return;
-        }
-
-        Vector3 targetPosition = _navMeshPath.corners[_targetPathPositionIndex + 1];
-        targetPosition.y = transform.position.y;
-
-        Vector3 pathDirection = (targetPosition - transform.position).normalized; // = 내가 진행해야 할 방향
-
-        float similarity = Mathf.Clamp(Vector3.Dot(pathDirection, transform.forward.normalized), 0.0f, 1.0f);
-
-        float deltaDistance = _movingSpeed * similarity * Time.deltaTime * _patrolRotateSpeedRatio; //다음 프레임엔 이만큼 움직일 것이다
-
-        float targetDistance = Vector3.Distance(targetPosition, transform.position);
-
-        if (targetDistance <= deltaDistance)
-        {
-            _targetPathPositionIndex++;
-        }
-
-        CheckJumpPosition();
-
-        if ((_navMeshPath.corners.Length - 1) <= _targetPathPositionIndex)
-        {
-            Debug.Log("State Done_Patrol Move");//다 갔습니다
-            Vector3 lastPosition = _navMeshPath.corners[_navMeshPath.corners.Length - 1];
-            lastPosition.y = transform.position.y;
-            float distance = Vector3.Distance(lastPosition, transform.position);
-            if (distance > 0.5f)
-            {
-                Debug.Log("패트롤을 종료했는데 거리가 너무 멀다. 거리 : " + distance);
-            }
-
             _stateEndWithoutInterCept = true;
         }
-
-        Move(pathDirection, _patrolSpeedRatio);
-
-        if (_characterController.velocity.magnitude <= float.Epsilon && similarity > float.Epsilon)
-        {
-            //Debug.Log("벡터의 내적이 존재함에도 불구하고 안움직이고 있다");
-        }
-
-        _stateEndWithoutInterCept = false;
     }
+
+
+
 
     private bool DiffState_Patrol()
     {
@@ -833,7 +897,78 @@ public class ZombieStart : MonoBehaviour
 
 
 
+    private void NavPathRotate(float speedRatio = 1.0f)
+    {
+        if ((_navMeshPath.corners.Length - 1) <= _targetPathPositionIndex)
+        {
+            Debug.Log("Nav End");//다 갔습니다
+            return;
+        }
 
+        Vector3 targetPosition = _navMeshPath.corners[_targetPathPositionIndex + 1];
+        targetPosition.y = transform.position.y;
+
+        Vector3 rotateDirection = (targetPosition - transform.position);
+        rotateDirection.y = 0.0f;
+        rotateDirection = rotateDirection.normalized;
+
+        Rotate(rotateDirection, speedRatio);
+    }
+
+    private bool NavPathMove(float speedRatio = 1.0f)
+    {
+        for (int i = 0; i < _navMeshPath.corners.Length - 1; i++)
+        {
+            Debug.DrawLine(_navMeshPath.corners[i], _navMeshPath.corners[i + 1], Color.green);
+        }
+
+        if ((_navMeshPath.corners.Length - 1) <= _targetPathPositionIndex)
+        {
+            Debug.Log("Nav End");//다 갔습니다
+            return true;
+        }
+
+        Vector3 targetPosition = _navMeshPath.corners[_targetPathPositionIndex + 1];
+        targetPosition.y = transform.position.y;
+
+        Vector3 pathDirection = (targetPosition - transform.position).normalized; // = 내가 진행해야 할 방향
+
+        float similarity = Mathf.Clamp(Vector3.Dot(pathDirection, transform.forward.normalized), 0.0f, 1.0f);
+
+        float deltaDistance = _movingSpeed * similarity * Time.deltaTime * _patrolRotateSpeedRatio; //다음 프레임엔 이만큼 움직일 것이다
+
+        float targetDistance = Vector3.Distance(targetPosition, transform.position);
+
+        if (targetDistance <= deltaDistance)
+        {
+            _targetPathPositionIndex++;
+        }
+
+        CheckJumpPosition();
+
+        if ((_navMeshPath.corners.Length - 1) <= _targetPathPositionIndex)
+        {
+            Debug.Log("Nav End");//다 갔습니다
+            Vector3 lastPosition = _navMeshPath.corners[_navMeshPath.corners.Length - 1];
+            lastPosition.y = transform.position.y;
+            float distance = Vector3.Distance(lastPosition, transform.position);
+            if (distance > 0.5f)
+            {
+                Debug.Log("패트롤을 종료했는데 거리가 너무 멀다. 거리 : " + distance);
+            }
+
+            return true;
+        }
+
+        Move(pathDirection, speedRatio);
+
+        if (_characterController.velocity.magnitude <= float.Epsilon && similarity > float.Epsilon)
+        {
+            //Debug.Log("벡터의 내적이 존재함에도 불구하고 안움직이고 있다");
+        }
+
+        return false;
+    }
 
 
 

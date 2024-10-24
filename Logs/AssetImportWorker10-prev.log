@@ -1,0 +1,919 @@
+Using pre-set license
+Built from '2022.3/staging' branch; Version is '2022.3.4f1 (35713cd46cd7) revision 3502396'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 32469 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 1
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\2022.3.4f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker10
+-projectPath
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+-logFile
+Logs/AssetImportWorker10.log
+-srvPort
+51623
+Successfully changed project path to: C:/Users/rhsj/Desktop/Unity/ProjectNW
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [17904] Host "[IP] 192.168.200.183 [Port] 0 [Flags] 2 [Guid] 468387081 [EditorId] 468387081 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+
+Player connection [17904] Host "[IP] 192.168.200.183 [Port] 0 [Flags] 2 [Guid] 468387081 [EditorId] 468387081 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+
+Refreshing native plugins compatible for Editor in 78.29 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2022.3.4f1 (35713cd46cd7)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/rhsj/Desktop/Unity/ProjectNW/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   31.0.15.5244
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56476
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.019411 seconds.
+- Loaded All Assemblies, in  0.644 seconds
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.483 seconds
+Domain Reload Profiling: 1124ms
+	BeginReloadAssembly (157ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (66ms)
+	RebuildNativeTypeToScriptingClass (22ms)
+	initialDomainReloadingComplete (141ms)
+	LoadAllAssembliesAndSetupDomain (254ms)
+		LoadAssemblies (153ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (244ms)
+			TypeCache.Refresh (242ms)
+				TypeCache.ScanAssembly (222ms)
+			ScanForSourceGeneratedMonoScriptInfo (1ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (484ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (372ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (18ms)
+			SetLoadedEditorAssemblies (20ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (4ms)
+			ProcessInitializeOnLoadAttributes (243ms)
+			ProcessInitializeOnLoadMethodAttributes (86ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  1.599 seconds
+Refreshing native plugins compatible for Editor in 6.29 ms, found 3 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Package Manager log level set to [2]
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.858 seconds
+Domain Reload Profiling: 3451ms
+	BeginReloadAssembly (269ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (11ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (38ms)
+	RebuildCommonClasses (74ms)
+	RebuildNativeTypeToScriptingClass (23ms)
+	initialDomainReloadingComplete (71ms)
+	LoadAllAssembliesAndSetupDomain (1154ms)
+		LoadAssemblies (600ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (687ms)
+			TypeCache.Refresh (610ms)
+				TypeCache.ScanAssembly (585ms)
+			ScanForSourceGeneratedMonoScriptInfo (51ms)
+			ResolveRequiredComponents (26ms)
+	FinalizeReload (1859ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1508ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (12ms)
+			SetLoadedEditorAssemblies (10ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (290ms)
+			ProcessInitializeOnLoadAttributes (1064ms)
+			ProcessInitializeOnLoadMethodAttributes (119ms)
+			AfterProcessingInitializeOnLoad (11ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (10ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.45 seconds
+Refreshing native plugins compatible for Editor in 7.25 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5871 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 90 unused Assets / (424.2 KB). Loaded Objects now: 6341.
+Memory consumption went from 223.2 MB to 222.8 MB.
+Total: 12.254100 ms (FindLiveObjects: 0.845800 ms CreateObjectMapping: 0.704300 ms MarkObjects: 10.288000 ms  DeleteObjects: 0.411500 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/GlowBehaviour.cs: ca861d3f49951074594e88435ffd8088 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:scripting/monoscript/fileName/SceneSwitchManager.cs: df50a3d24c80308d26bc2a745fb42676 -> 58e5eb0dea83ab8edb1f1f60a746cc8e
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/FlyCameraBehaviour.cs: 65bfad318fd0822acedc5d4d128a4cf1 -> 447eed16c19bf671b669789534e75370
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/InterfaceManager.cs: c212f60bf200697ee7be245421e1e623 -> 21cfdf8fde856ed3df1d4355b35ce7d5
+========================================================================
+Received Import Request.
+  Time since last request: 792191.116425 seconds.
+  path: Assets/IgnoreResources/Military/Prefab/SK_Military_FPS_Survivalist (1).prefab
+  artifactKey: Guid(832f2f1b5403b4a4ca05861efdc7e86b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Prefab/SK_Military_FPS_Survivalist (1).prefab using Guid(832f2f1b5403b4a4ca05861efdc7e86b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '619a1c7ab056c4d86510e47b28c2f948') in 1.650659 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 186
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Top/T_Military_Shirt3_nmap.png
+  artifactKey: Guid(1a3ea8934e559ea4982ac9445abce0f9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Top/T_Military_Shirt3_nmap.png using Guid(1a3ea8934e559ea4982ac9445abce0f9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '752bef2b8c49c5393554a1ead4820f4e') in 0.154144 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000036 seconds.
+  path: Assets/IgnoreResources/Military/Prefab/URP/SK_Military_Survivalist (12).prefab
+  artifactKey: Guid(ac23f03ab2778ad479d54a67552ff9ec) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Prefab/URP/SK_Military_Survivalist (12).prefab using Guid(ac23f03ab2778ad479d54a67552ff9ec) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '63bc758a368e6fcf4f27f037d46b41c6') in 0.045298 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 186
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/Military/Floor/MAT_Floor.mat
+  artifactKey: Guid(877b27d923ebe5b41bd16025541c777b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Floor/MAT_Floor.mat using Guid(877b27d923ebe5b41bd16025541c777b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '45ec72f4b9dd2d5a14cc2fa7fb9669d0') in 0.060030 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Equip/T_Military_Backpack1_ao.png
+  artifactKey: Guid(1f2f5033c35c4e54b9103180985dd9c5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Equip/T_Military_Backpack1_ao.png using Guid(1f2f5033c35c4e54b9103180985dd9c5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'da41466391db886c2fd77e3f0bc1d0bc') in 0.052821 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000069 seconds.
+  path: Assets/CSharp/Scripts/EquipmentCell.cs
+  artifactKey: Guid(be6bc56d117afe74c884dfb56e72711a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/CSharp/Scripts/EquipmentCell.cs using Guid(be6bc56d117afe74c884dfb56e72711a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7a06031b229616993a05982bbb963fab') in 0.021042 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Claymore1/claymore_1.prefab
+  artifactKey: Guid(d58fe383d2228a94dae88721114e3281) Importer(2089858483,3d70f49cd1c2eb9ae422958d1c652c6b)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Claymore1/claymore_1.prefab using Guid(d58fe383d2228a94dae88721114e3281) Importer(2089858483,3d70f49cd1c2eb9ae422958d1c652c6b) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '53ad94bf6a4809ddc42a7385d7af72a3') in 0.025383 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 0.000040 seconds.
+  path: Assets/IgnoreResources/Basic Motions/Textures/DummyType01/BasicMotions_DummyType01-Metallic.png
+  artifactKey: Guid(04f2549d8ac495d4a8840510be7182c4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Basic Motions/Textures/DummyType01/BasicMotions_DummyType01-Metallic.png using Guid(04f2549d8ac495d4a8840510be7182c4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '72ace2a967f001d67ee19007c0a3c2b4') in 0.048868 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/IgnoreResources/Basic Motions/Animations/Movement/Sprint/Human@Sprint02_Forward.fbx
+  artifactKey: Guid(8e86aed4685f43b4f8fb6a9b306ea786) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Basic Motions/Animations/Movement/Sprint/Human@Sprint02_Forward.fbx using Guid(8e86aed4685f43b4f8fb6a9b306ea786) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7a912769b8fdf9f7a752f95bedea6026') in 0.090837 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 114
+========================================================================
+Received Import Request.
+  Time since last request: 0.353447 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Equip/T_Military_Pouches1_nmap.png
+  artifactKey: Guid(d3c5436e41195be45bbb82c2fc25e3ad) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Equip/T_Military_Pouches1_nmap.png using Guid(d3c5436e41195be45bbb82c2fc25e3ad) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8324867613c19a8163745a76f066e92a') in 0.079890 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Bottom/T_Military_Pants2_ao.png
+  artifactKey: Guid(7a55a9b144055da46bbed7ba5a0ba2c4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Bottom/T_Military_Pants2_ao.png using Guid(7a55a9b144055da46bbed7ba5a0ba2c4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '75a31d5719f398375925adc140f6c15a') in 0.065427 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000416 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Body/T_Military_Eyes1_normal.png
+  artifactKey: Guid(ed5c12b1f978c20458b008a0820c5f7d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Body/T_Military_Eyes1_normal.png using Guid(ed5c12b1f978c20458b008a0820c5f7d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '33b38f41748fa55915ed8bdf27083b12') in 0.062737 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.001299 seconds.
+  path: Assets/IgnoreResources/Military/Materials URP/URP_Gloves1_Skin2.mat
+  artifactKey: Guid(246bdadbf19ef27498ed6bb60ce05e75) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Materials URP/URP_Gloves1_Skin2.mat using Guid(246bdadbf19ef27498ed6bb60ce05e75) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4af84a38db91a8660d130b7df2a8ccae') in 0.055230 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 0.000578 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Equip
+  artifactKey: Guid(6858f042d294af54b8d121a5d6c0aedd) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Equip using Guid(6858f042d294af54b8d121a5d6c0aedd) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ac551f5699378affb3e0f7a26e654d45') in 0.014891 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Top/T_Military_Shirt3_Skin1_color.png
+  artifactKey: Guid(f6fb9df16e157804590e9c7b8b63df84) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Top/T_Military_Shirt3_Skin1_color.png using Guid(f6fb9df16e157804590e9c7b8b63df84) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b18949d3b0b723d1f8e69a0d211f7105') in 0.046746 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000483 seconds.
+  path: Assets/IgnoreResources/Military/Texture/Equip/T_Military_Backpack1_nmap.png
+  artifactKey: Guid(86be675eda5dd074cb0ac76cf0766822) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Military/Texture/Equip/T_Military_Backpack1_nmap.png using Guid(86be675eda5dd074cb0ac76cf0766822) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '723193cbaa5e3144b8679a7d290350c9') in 0.061367 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.388650 seconds.
+  path: Assets/IgnoreResources/Mesh/Character/MazeLowMan_Common.fbx
+  artifactKey: Guid(b049b756f75ab6d4d9974a07f9f1cec1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Mesh/Character/MazeLowMan_Common.fbx using Guid(b049b756f75ab6d4d9974a07f9f1cec1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'c35c7fedd8cad60f32141a53bf5ac15c') in 0.078506 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 68
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Environment/Prefabs
+  artifactKey: Guid(93bb3603ed019014a98e7c62df54135e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Environment/Prefabs using Guid(93bb3603ed019014a98e7c62df54135e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'fbeff09826ca335a1ac49c17eeb9fe55') in 0.013057 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/IgnoreResources/StarterAssets/ThirdPersonController/Scripts/NavPathFinder.cs
+  artifactKey: Guid(2e5935a800adef34e80f5b361fe7f350) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/ThirdPersonController/Scripts/NavPathFinder.cs using Guid(2e5935a800adef34e80f5b361fe7f350) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '980915e8f7fa08f17b1b147a6b6e33da') in 0.023024 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/CSharp/Scripts/RiggingPublisher.cs
+  artifactKey: Guid(6b26c1769719ebd40a6b45ba78008f8c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/CSharp/Scripts/RiggingPublisher.cs using Guid(6b26c1769719ebd40a6b45ba78008f8c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '54d677a7e59b9fdeb96fe27185c57773') in 0.016931 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000030 seconds.
+  path: Assets/Resources/ModelOriginal/Banana Man.fbx
+  artifactKey: Guid(81bb9eea30387e442899949a80011e55) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/ModelOriginal/Banana Man.fbx using Guid(81bb9eea30387e442899949a80011e55) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '799c8a0a1254f877a8f42d4df0610404') in 0.086788 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 148
+========================================================================
+Received Import Request.
+  Time since last request: 0.000039 seconds.
+  path: Assets/Resources/Textures/Materials/Paladin_diffuse.png
+  artifactKey: Guid(d64a6a3241dd49648a2c79dad69d5f5f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Textures/Materials/Paladin_diffuse.png using Guid(d64a6a3241dd49648a2c79dad69d5f5f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '429156c63de6b6f43ffd8eee4a6f459f') in 0.059693 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000270 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Mobile/UI/UI_Icon_Look.png
+  artifactKey: Guid(af0ae2dbf3d1efb4f82af377950704a2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Mobile/UI/UI_Icon_Look.png using Guid(af0ae2dbf3d1efb4f82af377950704a2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e8857e9a19249ec3632b83262e0c074d') in 0.065444 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Mobile/Prefabs/CanvasInputs
+  artifactKey: Guid(6ac91ba6d254abc4c98c1a8868673b28) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Mobile/Prefabs/CanvasInputs using Guid(6ac91ba6d254abc4c98c1a8868673b28) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b1259f415175d31d13e06a36e0de84be') in 0.014935 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/StarterAssets/Environment/Prefabs/Box_100x100x100_Prefab.prefab
+  artifactKey: Guid(e5f4daf24146ee040b5a2d7a73b30aa0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/Environment/Prefabs/Box_100x100x100_Prefab.prefab using Guid(e5f4daf24146ee040b5a2d7a73b30aa0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'cbb2fb81517ab4efd3bbe429a0d4d6c8') in 0.038470 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/CSharp/Scripts/ItemInfoManager.cs
+  artifactKey: Guid(7e6ba0910d34a3f4e91a61b6539eb59b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/CSharp/Scripts/ItemInfoManager.cs using Guid(7e6ba0910d34a3f4e91a61b6539eb59b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '77a17246b9ee10eb8c24e6f58ff43d18') in 0.020062 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000042 seconds.
+  path: Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Textures/Armature_Body_RGB.tif
+  artifactKey: Guid(a95378e0fd5828442a6ed903fb3b0bf7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Textures/Armature_Body_RGB.tif using Guid(a95378e0fd5828442a6ed903fb3b0bf7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd96b88faa0e126ca26b842cf5a275df1') in 0.070037 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Sfx/Player_Footstep_05.wav
+  artifactKey: Guid(14e8a8d2158bec840b56c54f5266e692) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/StarterAssets/ThirdPersonController/Character/Sfx/Player_Footstep_05.wav using Guid(14e8a8d2158bec840b56c54f5266e692) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '352d9c855bb0b7617024795bb31602be') in 0.081612 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.047376 seconds.
+  path: Assets/Resources/Textures/Materials/Ch35_1002_Diffuse.png
+  artifactKey: Guid(1ca385aa56e2ca843a08134eeb3def5d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Textures/Materials/Ch35_1002_Diffuse.png using Guid(1ca385aa56e2ca843a08134eeb3def5d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '5b0452d527aa779071df250bd57c48ae') in 0.055119 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Resources/Textures/Materials/Ch10_1002_Specular.png
+  artifactKey: Guid(284797bfd2cbee0439fffb4b6728ef24) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Textures/Materials/Ch10_1002_Specular.png using Guid(284797bfd2cbee0439fffb4b6728ef24) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '5483e962b533063d071f2a135991c55d') in 0.065379 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package
+  artifactKey: Guid(a6c8cd64cff0a8047b667dbccc2dc472) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package using Guid(a6c8cd64cff0a8047b667dbccc2dc472) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'af42073d9537696720b3f2ab21f5a783') in 0.019760 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000548 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/MachineGuns/MachineGun2
+  artifactKey: Guid(ea79b30d7ada74c43964a091b2dc3bc9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/MachineGuns/MachineGun2 using Guid(ea79b30d7ada74c43964a091b2dc3bc9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '10b54a5a4d62151da5962292bcf7961d') in 0.018963 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000043 seconds.
+  path: Assets/Resources/Textures/Materials/Ch10_1001_Diffuse.png
+  artifactKey: Guid(5df8205af648d4046b20ddfa0c5cc22b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Textures/Materials/Ch10_1001_Diffuse.png using Guid(5df8205af648d4046b20ddfa0c5cc22b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '8ffef7ebf94b19f80019f7fd97b1938e') in 0.057591 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000038 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Profiles
+  artifactKey: Guid(e92f7d2f8593e9345bd4f953fb43ada2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Profiles using Guid(e92f7d2f8593e9345bd4f953fb43ada2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd50e84a6079cced65a7cf84e31c25b7a') in 0.018267 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun3
+  artifactKey: Guid(c3c4575132b1846408b57ff868291061) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Guns/SubmachineGuns/SubmachineGun3 using Guid(c3c4575132b1846408b57ff868291061) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '0b75f87e9644c55f90295371434bc130') in 0.013491 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000747 seconds.
+  path: Assets/Resources/Anims
+  artifactKey: Guid(90f5be9fab39e924990bdff976a9dc07) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Anims using Guid(90f5be9fab39e924990bdff976a9dc07) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '5cdc67c4ab5eed203332130812b9ee73') in 0.016307 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Scenes/DemonstrationNight.unity
+  artifactKey: Guid(326e392a08e808e4e80828700e095280) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Scenes/DemonstrationNight.unity using Guid(326e392a08e808e4e80828700e095280) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'a14a41583fa6f3b6a1b3a75ba8133b44') in 0.014961 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/Resources/Textures/Materials/Ch35_1001_Diffuse.png
+  artifactKey: Guid(48a835566938f734b8e7398c91f4be7b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Textures/Materials/Ch35_1001_Diffuse.png using Guid(48a835566938f734b8e7398c91f4be7b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4d04526cbd49c1d939326f7c1177e153') in 0.057345 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000035 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models
+  artifactKey: Guid(7583015b8bf57cc438f9b7feb5f6e5ff) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models using Guid(7583015b8bf57cc438f9b7feb5f6e5ff) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4f94762ba53b3060714b4063de287a3a') in 0.015881 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/CSharp/Scripts/OnAlphaChange.cs
+  artifactKey: Guid(7889085327ee7c4479108257fe45a99a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/CSharp/Scripts/OnAlphaChange.cs using Guid(7889085327ee7c4479108257fe45a99a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'a89b2d1762798c6b54caa3c5091f672d') in 0.025166 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000033 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Flashlight1
+  artifactKey: Guid(a3b9fb61a8a873047945775f1b54292d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Flashlight1 using Guid(a3b9fb61a8a873047945775f1b54292d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd16acf13e8d005c136bee52acb523e1a') in 0.016574 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Resources/Anims/Zombie/Zombie Walk.anim
+  artifactKey: Guid(159a1835a6b501042890afe9f13965e6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Resources/Anims/Zombie/Zombie Walk.anim using Guid(159a1835a6b501042890afe9f13965e6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '844ff7b37d6a5b991875b5f7e0c05b1e') in 0.035829 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.007134 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Hammers/Hammer1
+  artifactKey: Guid(244870fe0bb55c64a9dcfb78474a0c05) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Hammers/Hammer1 using Guid(244870fe0bb55c64a9dcfb78474a0c05) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '577a87c63be990f789deaf69498cc50a') in 0.015461 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Materials/Plane.mat
+  artifactKey: Guid(1923b71ab91f0f544ad844376a3d5f2b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Materials/Plane.mat using Guid(1923b71ab91f0f544ad844376a3d5f2b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ae6f0438d012d6d25dc41c45042a1ef9') in 0.021222 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Scope2/scope_2.prefab
+  artifactKey: Guid(a823b2e3dd61bf54dac27ce80b43029b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Attachments/Scope2/scope_2.prefab using Guid(a823b2e3dd61bf54dac27ce80b43029b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '7e03ba8bc24f825c8859afc794792a6b') in 0.027811 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Bats/Bat2/bat_2.fbx
+  artifactKey: Guid(a74d6dd8a69948e4cb08b8b491ca6d7e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Bats/Bat2/bat_2.fbx using Guid(a74d6dd8a69948e4cb08b8b491ca6d7e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '35637b3bffb8afd7694899509c46efcf') in 0.065127 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000374 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes/DemonstrationDay/LightingData.asset
+  artifactKey: Guid(43285b6ce93e35b4da8db0dd7b694b94) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes/DemonstrationDay/LightingData.asset using Guid(43285b6ce93e35b4da8db0dd7b694b94) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '32f58509861f21e3423ae3ecdf577207') in 0.036776 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000565 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Bullet/Bullet_ShotGun.fbx
+  artifactKey: Guid(e9623462cfb84b64d850712d377f073f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Bullet/Bullet_ShotGun.fbx using Guid(e9623462cfb84b64d850712d377f073f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '637e07eb679c0690f5b54564948c7b0b') in 0.068688 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Attachments/Optics/Optic_A.fbx
+  artifactKey: Guid(2e3628699331b10458733298da894096) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Models/Attachments/Optics/Optic_A.fbx using Guid(2e3628699331b10458733298da894096) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'f01063b7e65bd2078b5895342061d636') in 0.079537 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000186 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Skyboxes/DefaultNight/DefaultNight.mat
+  artifactKey: Guid(8d7659dea3adcd849ae55a053d71424a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Skyboxes/DefaultNight/DefaultNight.mat using Guid(8d7659dea3adcd849ae55a053d71424a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '743aee05daf261fd92e42808ff3ef63a') in 0.026683 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000230 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_A.prefab
+  artifactKey: Guid(247a277f77d944745a739b062aa4c263) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs/Attachments/UnderBarrels/ForwardGrip_A.prefab using Guid(247a277f77d944745a739b062aa4c263) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '5d1dbe4fe03dc427a75fa85435529358') in 0.026698 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs/Attachments/Barrels/Muzzle_ShotGun_Suppresor_A.prefab
+  artifactKey: Guid(1c9418ba10c467e458a0fb62858a0676) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Low Poly ShotGun Weapon Pack 1/Prefabs/Attachments/Barrels/Muzzle_ShotGun_Suppresor_A.prefab using Guid(1c9418ba10c467e458a0fb62858a0676) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'b8b8974fb8857a2165dd1de0b5b55664') in 0.028190 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Sight3/sight_3.prefab
+  artifactKey: Guid(924869b67d550264e899c65b29433833) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Sight3/sight_3.prefab using Guid(924869b67d550264e899c65b29433833) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '6be587224245bbcf9cc3e146389a1c45') in 0.025568 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Axe1/axe_1.prefab
+  artifactKey: Guid(5a823a6ff6dd122438e8f6ddd92892f3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Axe1/axe_1.prefab using Guid(5a823a6ff6dd122438e8f6ddd92892f3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'c7060b24c57e95c858c6ff2ef4cddeb4') in 0.023653 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scripts
+  artifactKey: Guid(07ef1ea683f79e648ab6fbe3b3ba617d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scripts using Guid(07ef1ea683f79e648ab6fbe3b3ba617d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '3307f50c60a97b21a99775a010a0ee51') in 0.013185 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000038 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Pick1/pick_1.fbx
+  artifactKey: Guid(56642ed227da8164bb0cb62706d1a41f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Pick1/pick_1.fbx using Guid(56642ed227da8164bb0cb62706d1a41f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '53981983bdb77ea945baccfe16daa67c') in 0.049059 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/MachineGun8
+  artifactKey: Guid(dfb73c48bccc17540994559236daa897) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/MachineGun8 using Guid(dfb73c48bccc17540994559236daa897) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'da01731df3e0b3c95a8a3fafecfdc04b') in 0.016590 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shell1/shell_1.prefab
+  artifactKey: Guid(4f0d8ebeb04beb540bc89197b61171b7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shell1/shell_1.prefab using Guid(4f0d8ebeb04beb540bc89197b61171b7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ad7dc69634862b0505475b1d999fa06f') in 0.026832 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000031 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Hammer2/hammer_2.prefab
+  artifactKey: Guid(b2de34f12f1400047bc0ccbfc9986055) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Hammer2/hammer_2.prefab using Guid(b2de34f12f1400047bc0ccbfc9986055) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '0de544eb02c2233f17b22478f27cc61e') in 0.031874 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shotgun2/shotgun_2.prefab
+  artifactKey: Guid(9ee3bbb6564c2c54fb0d65ba9e7f5d8c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shotgun2/shotgun_2.prefab using Guid(9ee3bbb6564c2c54fb0d65ba9e7f5d8c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '0b30321a8a2094255e5ae08202029ab9') in 0.023657 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000031 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Spade1/spade_1.prefab
+  artifactKey: Guid(0866e1684c12b074694674dd407f4a69) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Spade1/spade_1.prefab using Guid(0866e1684c12b074694674dd407f4a69) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'fcd8c46b32468f31cbda4c5b71dfbd80') in 0.024129 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000329 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes/DemonstrationNight/NavMesh.asset
+  artifactKey: Guid(60df55efae4b87540b29935ae1c7f03e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Scenes/DemonstrationNight/NavMesh.asset using Guid(60df55efae4b87540b29935ae1c7f03e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '0fd1a1efc72b6c2bbf79ea49d46f99bb') in 0.033035 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Hammers
+  artifactKey: Guid(f02f99e788aa533468a5a5a70515effb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Hammers using Guid(f02f99e788aa533468a5a5a70515effb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'd328f77cf0628d3646301bb23cfe15b3') in 0.013394 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Scenes
+  artifactKey: Guid(a1858117bd2d7a34b9fecf275f9f74e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Scenes using Guid(a1858117bd2d7a34b9fecf275f9f74e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'de1cc530949757a1397a62abf8363559') in 0.013874 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Muzzleflash1
+  artifactKey: Guid(6e99aae78f4c02548803c4c7507f1508) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Muzzleflash1 using Guid(6e99aae78f4c02548803c4c7507f1508) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '773220612ef3d2b447587569d9bcc92e') in 0.019257 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Knive/Knive2
+  artifactKey: Guid(a7e565d8bb46a834689cd5921ad9ad59) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Melee/Knive/Knive2 using Guid(a7e565d8bb46a834689cd5921ad9ad59) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '6d1bdec2e1d09045a8cbc91ed8a2b65f') in 0.015554 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Bat.prefab
+  artifactKey: Guid(6437256eb2bca0442b03718d0c8df9d6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Prefabs/(Prb)Bat.prefab using Guid(6437256eb2bca0442b03718d0c8df9d6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '0c72dedecd1addd41e54f861fa54433a') in 0.017460 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientGrey_Reflective.mat
+  artifactKey: Guid(5b36e1532797fb64489ace3b236ef9fa) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientGrey_Reflective.mat using Guid(5b36e1532797fb64489ace3b236ef9fa) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '68ac69478daba9342dec75d3af068b00') in 0.024638 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Models/(Msh)RocketLauncher.fbx
+  artifactKey: Guid(72a471f939b58d740bf132cda99d92c9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Models/(Msh)RocketLauncher.fbx using Guid(72a471f939b58d740bf132cda99d92c9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'de35c8782014afb563debe99b6cfe2bd') in 0.042472 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 16
+========================================================================
+Received Import Request.
+  Time since last request: 0.000039 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Models/(Msh)Cutlass1.fbx
+  artifactKey: Guid(b85edf3cf83d26c43be27b96132b463e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Models/(Msh)Cutlass1.fbx using Guid(b85edf3cf83d26c43be27b96132b463e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ed6f7c9358fb8d43d770f8bfcc29d8e1') in 0.051791 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 9
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientYellow_Reflective.mat
+  artifactKey: Guid(4488d962013f5114983941b7944cd931) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)GradientYellow_Reflective.mat using Guid(4488d962013f5114983941b7944cd931) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e72dd6e16ce51c2f8b582fe4e70a53b7') in 0.028583 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Models/(Msh)AlienGun.fbx
+  artifactKey: Guid(f4a48a67a3f74c841b7790f607b0788d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Models/(Msh)AlienGun.fbx using Guid(f4a48a67a3f74c841b7790f607b0788d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '4d220271198afda9db93f12e7390a931') in 0.048858 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 16
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials
+  artifactKey: Guid(8346b0716c35bf246987d3dd20022f13) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials using Guid(8346b0716c35bf246987d3dd20022f13) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '81166bbc32ed3bb44e5cb5efc3c94cae') in 0.016862 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/MachineGun3
+  artifactKey: Guid(bf8274acf06d3024ba9c0d61808ff4e9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/MachineGun3 using Guid(bf8274acf06d3024ba9c0d61808ff4e9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'e0c874be022ca121bc52620ddd2fc6e4') in 0.015556 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)Floor.mat
+  artifactKey: Guid(d06cbe6bddb870d438765bf1f774411d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/nappin/Weapon Props Softpack/Materials/(Mat)Floor.mat using Guid(d06cbe6bddb870d438765bf1f774411d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ff2cc026759f2688bdb6668ee3a4f5fb') in 0.022478 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000247 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shell3/shell_3.prefab
+  artifactKey: Guid(03b290235d24de442bf1760c7f88f517) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Shell3/shell_3.prefab using Guid(03b290235d24de442bf1760c7f88f517) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'cec9815c7eb312ee863614eee126ef31') in 0.024439 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Ammunition/RifleBullet1/rifle_bullet_1.fbx
+  artifactKey: Guid(c5e333f528c016846878d8a5c199bd00) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Ammunition/RifleBullet1/rifle_bullet_1.fbx using Guid(c5e333f528c016846878d8a5c199bd00) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '2a87511c808e493a6f1857f4ec589680') in 0.049139 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Pistol5/pistol_5.fbx
+  artifactKey: Guid(82ab4d20fc0438e448348d93a51e0e9a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Pistol5/pistol_5.fbx using Guid(82ab4d20fc0438e448348d93a51e0e9a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'f5de01f1fe41c6d301bbd576e97fef1d') in 0.042943 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/MachineGun7/machine_gun_7.fbx
+  artifactKey: Guid(be09a48267980764eaab5b40a1ceba3a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/MachineGun7/machine_gun_7.fbx using Guid(be09a48267980764eaab5b40a1ceba3a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '01f725055149703bdca15c959213bde3') in 0.046945 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000031 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Ammunition/Rocket1
+  artifactKey: Guid(ee0b83701a272564d924a3b5b8c5c0d6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 1 Asset Package/Models/Ammunition/Rocket1 using Guid(ee0b83701a272564d924a3b5b8c5c0d6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: '977e04be76cbbb301f1f83411cbbc9b6') in 0.014024 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000042 seconds.
+  path: Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Sight4/sight_4.fbx
+  artifactKey: Guid(d5facc243ee75d441a49ddabe0f71f37) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/IgnoreResources/Aligned Games/Polygonal Modern Weapons Collection 2 Asset Package/Models/Sight4/sight_4.fbx using Guid(d5facc243ee75d441a49ddabe0f71f37) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) Generated GUIDs only implemented for interfaces!
+ -> (artifact id: 'ccc15f611070e94c6ebda4d4bda6100f') in 0.038159 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+Editor requested this worker to shutdown with reason: balancing worker count downwards
+TcpMessagingSession - receive error: operation aborted. errorcode: 995, details: 스레드 종료 또는 응용 프로그램 요청 때문에 I/O 작업이 취소되었습니다.
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0

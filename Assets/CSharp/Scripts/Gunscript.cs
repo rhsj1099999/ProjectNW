@@ -35,6 +35,7 @@ public class Gunscript : MonoBehaviour
     [SerializeField] private float _aimShakeDuration = 0.0f;
     [SerializeField] private float _aimDampingForce = 0.0f;
     [SerializeField] private float _aimShakeDurationOriginal = 0.1f;
+    [SerializeField] private GameObject _firePosition = null;
     [SerializeField] UnityEvent _whenShootEvent = null;
 
     private Vector2 _calculatedAimShakeForce = new Vector2();
@@ -46,6 +47,7 @@ public class Gunscript : MonoBehaviour
     {
         _aimScript = _aimObject.GetComponent<AimScript>();
         Debug.Assert( _aimScript != null, "Gun은 AimScrip가 반드시 있어야만 한다");
+        Debug.Assert(_firePosition != null, "발사할곳이 없는데 이게 총입니까?");
     }
     public void Fire()
     {
@@ -57,9 +59,11 @@ public class Gunscript : MonoBehaviour
     {
         //마우스를 클릭하면 총알 발사
         //if (Input.GetKey(KeyCode.Mouse0) == true && _coolTime < float.Epsilon)
-        if (Input.GetKey(KeyCode.Alpha9) == true && _coolTime < float.Epsilon)
+        if (Input.GetKey(KeyCode.Mouse0) == true && _coolTime < float.Epsilon)
         {
             Fire();
+
+            RayCheck();
 
             _coolTime = _coolTimeOriginal;
             
@@ -69,6 +73,29 @@ public class Gunscript : MonoBehaviour
 
             _whenShootEvent.Invoke();
         }
+    }
+
+    private void RayCheck()
+    {
+        RaycastHit hit;
+
+        int targetLayer = 
+            (1 << LayerMask.NameToLayer("StaticNavMeshLayer")) |
+            (1 << LayerMask.NameToLayer("HitCollider"));
+
+        if (Physics.Raycast(_firePosition.transform.position, _firePosition.transform.forward, out hit, Mathf.Infinity, targetLayer) == false)
+        {
+            return;
+        }
+
+        IHitable hitable = hit.collider.gameObject.GetComponentInParent<IHitable>();
+
+        if (hitable == null)
+        {
+            return;
+        }
+
+        hitable.DealMe(1, this.gameObject);
     }
 
     public IEnumerator AimRestoreCoroutine()
