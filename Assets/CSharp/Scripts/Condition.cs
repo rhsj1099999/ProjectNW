@@ -2,25 +2,42 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
-public enum Conditions
+public enum ConditionType
 {
-    KeyInput, //방향키가 입력이 됐나?
+    MoveDesired, //방향키가 입력이 됐나?
     AnimationEnd,
-    GroundLoss,
+    InAir,
+    KeyInput,
 }
 
 [Serializable]
 public struct ConditionPair
 {
-    public Conditions _condition;
+    public ConditionType _conditionType;
+}
+
+[Serializable]
+public struct KeyInputConditionDesc
+{
+    public enum KeyPressType
+    {
+        Pressed,
+        Hold,
+        Released,
+    };
+
+    public KeyCode _targetKeyCode;
+    public KeyPressType _targetState;
     public bool _goal;
 }
 
 [Serializable]
 public struct ConditionDesc
 {
-    public List<ConditionPair> _conditions;
+    public ConditionPair _singleCondition; //SingleCondition
+    public List<KeyInputConditionDesc> _keyInputConditionTarget;
 }
 
 public struct ConditionInitDesc
@@ -28,40 +45,52 @@ public struct ConditionInitDesc
     public CharacterController _ownerCharacterComponent;
     public Animator _ownerAnimator;
     public InputController _ownerInputController;
+    public CharacterMoveScript2 _ownerMoveScript;
 }
+
+
 
 public class Condition
 {
+    public Condition(ConditionAsset conditionAsset)
+    {
+        _conditionDesc = conditionAsset._myCondition; //복사 완료
+    }
+
     private ConditionDesc _conditionDesc; //Copy From ScriptableObject
     private ConditionInitDesc _ownerChecker;
+    
 
     public void Initialize(PlayerScript owner)
     {
         _ownerChecker = new ConditionInitDesc();
 
-        foreach (var conditions in _conditionDesc._conditions)
+
+        switch (_conditionDesc._singleCondition._conditionType)
         {
-            switch (conditions._condition)
-            {
-                case Conditions.KeyInput:
-                    _ownerChecker._ownerInputController = owner.GetComponent<InputController>();
-                    Debug.Assert(_ownerChecker._ownerInputController != null, "Input조건이 있는데 이 컴포넌트가 없습니다");
-                    break;
+            case ConditionType.MoveDesired:
+                _ownerChecker._ownerInputController = owner.GetComponent<InputController>();
+                Debug.Assert(_ownerChecker._ownerInputController != null, "Input조건이 있는데 이 컴포넌트가 없습니다");
+                break;
 
-                case Conditions.AnimationEnd:
-                    _ownerChecker._ownerAnimator = owner.GetComponent<Animator>();
-                    Debug.Assert(_ownerChecker._ownerAnimator != null, "Animation조건이 있는데 이 컴포넌트가 없습니다");
-                    break;
+            case ConditionType.AnimationEnd:
+                _ownerChecker._ownerAnimator = owner.GetComponent<Animator>();
+                Debug.Assert(_ownerChecker._ownerAnimator != null, "Animation조건이 있는데 이 컴포넌트가 없습니다");
+                break;
 
-                case Conditions.GroundLoss:
-                    _ownerChecker._ownerCharacterComponent = owner.GetComponent<CharacterController>();
-                    Debug.Assert(_ownerChecker._ownerCharacterComponent != null, "GroundLoss조건이 있는데 이 컴포넌트가 없습니다");
-                    break;
+            case ConditionType.InAir:
+                _ownerChecker._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                Debug.Assert(_ownerChecker._ownerMoveScript != null, "GroundLoss조건이 있는데 이 컴포넌트가 없습니다");
+                break;
 
-                default:
-                    Debug.Assert(false, "데이터가 추가됐습니까?");
-                    break;
-            }
+            case ConditionType.KeyInput:
+                _ownerChecker._ownerInputController = owner.GetComponent<InputController>();
+                Debug.Assert(_ownerChecker._ownerInputController != null, "Jump조건이 있는데 이 컴포넌트가 없습니다");
+                break;
+
+            default:
+                Debug.Assert(false, "데이터가 추가됐습니까?");
+                break;
         }
     }
 
@@ -70,58 +99,81 @@ public class Condition
         return _conditionDesc;
     }
 
-    public Condition(ConditionAsset conditionAsset)
+    public bool CheckCondition(bool goal)
     {
-        _conditionDesc = conditionAsset._myCondition; //복사 완료
-    }
+        bool ret = false;
 
-    public bool CheckCondition()
-    {
-        foreach (var actions in _conditionDesc._conditions)
+        switch (_conditionDesc._singleCondition._conditionType)
         {
-            bool ret = false;
-
-            switch (actions._condition)
-            {
-                case Conditions.KeyInput:
+            case ConditionType.MoveDesired:
+                {
+                    Vector3 desiredMoved = _ownerChecker._ownerInputController._pr_directionByInput;
+                    if (desiredMoved != Vector3.zero)
                     {
+                        ret = true;
+                    }
 
-                        Vector3 desiredMoved = _ownerChecker._ownerInputController._pr_directionByInput;
-                        if (desiredMoved != Vector3.zero) 
+                    return (ret == goal);
+                }
+
+            case ConditionType.AnimationEnd:
+                {
+                    return false;
+                }
+
+            case ConditionType.InAir:
+                {
+                    if (_ownerChecker._ownerMoveScript.GetIsInAir() == true)
+                    {
+                        ret = true;
+                    }
+
+                    return (ret == goal);
+                }
+
+            case ConditionType.KeyInput:
+                {
+                    bool isSuccess = true;
+                    for (int i = 0; i < _conditionDesc._keyInputConditionTarget.Count; ++i)
+                    {
+                        switch (_conditionDesc._keyInputConditionTarget[i]._targetState)
                         {
-                            ret = true;
+                            case KeyInputConditionDesc.KeyPressType.Pressed:
+                                if (Input.GetKeyDown(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._goal)
+                                {
+                                    isSuccess = false;
+                                }
+                                break;
+
+                            case KeyInputConditionDesc.KeyPressType.Hold:
+                                if (Input.GetKey(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._goal)
+                                {
+                                    isSuccess = false;
+                                }
+                                break;
+
+                            case KeyInputConditionDesc.KeyPressType.Released:
+                                if (Input.GetKeyUp(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._goal)
+                                {
+                                    isSuccess = false;
+                                }
+                                break;
+
+                            default:
+                                Debug.Log("KeyState목표값이 없습니다.");
+                                break;
                         }
 
-                        return (ret == actions._goal);
+                        if (isSuccess == false) { return false; }
                     }
+                    return isSuccess;
+                }
 
-                case Conditions.AnimationEnd:
-                    {
-                        //_ownerChecker._ownerAnimator -> DoSomething
-                        return false;
-                    }
-
-
-
-                case Conditions.GroundLoss:
-                    {
-                        if (_ownerChecker._ownerCharacterComponent.isGrounded == false)
-                        {
-                            ret = true;
-                        }
-
-                        return (ret == actions._goal);
-                    }
-
-
-
-                default:
-                    Debug.Assert(false, "데이터가 추가됐습니까?");
-                    break;
-            }
+            default:
+                Debug.Assert(false, "데이터가 추가됐습니까?");
+                break;
         }
 
         return false;
-
     }
 }

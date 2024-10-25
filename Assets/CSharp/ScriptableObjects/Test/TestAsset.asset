@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3172b3879607b484db00242c8af3e1d1, type: 3}
-  m_Name: Condition_Idle
+  m_Script: {fileID: 11500000, guid: 455fd5bb6afe5ec419fe976ad0d73aae, type: 3}
+  m_Name: TestAsset
   m_EditorClassIdentifier: 
-  _myCondition:
-    _conditions:
-    - _condition: 0
-      _goal: 0
+  testVar1: 1
+  testVar2: 2
+  testVar3: 3
+  testVar4: 4
+  testVar5: 5

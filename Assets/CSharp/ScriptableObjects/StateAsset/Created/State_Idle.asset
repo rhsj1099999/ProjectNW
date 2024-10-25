@@ -16,13 +16,19 @@ MonoBehaviour:
     _stataName: Idle
     _stateAnimationClip: {fileID: 3094330708855449807, guid: ebf6d636f0bdc7642bca3e831800df09,
       type: 3}
-    _EnterStateActions: 
-    _inStateActions: 
-    _ExitStateActions: 
+    _EnterStateActionTypes: 
+    _inStateActionTypes: 
+    _ExitStateActionTypes: 
     _linkedStates:
-    - _conditionAsset: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298,
-        type: 2}
+    - _multiConditionAsset:
+      - _condition: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298, type: 2}
+        _goal: 1
       _stateAsset: {fileID: 11400000, guid: dd3d314bd19ab0c4bb5ca14f7ddee8ca, type: 2}
-    - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
-        type: 2}
+    - _multiConditionAsset:
+      - _condition: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde, type: 2}
+        _goal: 1
       _stateAsset: {fileID: 11400000, guid: 88fe78e2280462842bc01117a2902772, type: 2}
+    - _multiConditionAsset:
+      - _condition: {fileID: 11400000, guid: 15d0f73e69e152c4da8c2fd350ea9771, type: 2}
+        _goal: 1
+      _stateAsset: {fileID: 11400000, guid: d88f711dc5f252741aa18d52f1cddb43, type: 2}

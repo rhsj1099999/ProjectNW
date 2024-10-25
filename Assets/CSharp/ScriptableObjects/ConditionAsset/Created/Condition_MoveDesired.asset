@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3172b3879607b484db00242c8af3e1d1, type: 3}
-  m_Name: Condition_InAir
+  m_Name: Condition_MoveDesired
   m_EditorClassIdentifier: 
   _myCondition:
-    _singleCondition:
-      _conditionType: 2
-    _keyInputConditionTarget: []
+    _conditions:
+    - _condition: 0
+      _goal: 1

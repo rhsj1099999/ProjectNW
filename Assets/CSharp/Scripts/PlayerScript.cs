@@ -5,12 +5,9 @@ using UnityEngine;
 public class PlayerScript : MonoBehaviour
 {
     //대표 컴포넌트
-
     private InputController _inputController = null;
     private CharacterMoveScript2 _characterMoveScript2 = null;
     private StateContoller _stateContoller = null;
-
-
 
     private Animator _animator = null;
     private AnimatorOverrideController _overrideController = null;
@@ -46,26 +43,26 @@ public class PlayerScript : MonoBehaviour
 
     private void Update()
     {
+        {//상태 업데이트
+            _stateContoller.DoWork();
+            State currState = _stateContoller.GetCurrState();
+        }
+
         {//기본적으로 중력은 계속 업데이트 한다
-
+            _characterMoveScript2.GravityUpdate();
         }
 
-        _stateContoller.DoWork();
-        State currState = _stateContoller.GetCurrState();
+        _characterMoveScript2.ClearLatestVelocity();
 
-        AnimationClip currAnimationClip = currState.GetStateDesc().Value._stateAnimationClip;
-        if (_currAnimClip != currAnimationClip) 
-        {
-            ChangeAnimation(currAnimationClip);
+        {//애니메이션 업데이트
+            State currState = _stateContoller.GetCurrState();
+            AnimationClip currAnimationClip = currState.GetStateDesc().Value._stateAnimationClip;
+            if (_currAnimClip != currAnimationClip)
+            {
+                ChangeAnimation(currAnimationClip);
+            }
         }
-
-
-
-
     }
-
-
-
 
     private void ChangeAnimation(AnimationClip targetClip)
     {
@@ -96,5 +93,4 @@ public class PlayerScript : MonoBehaviour
         _prevAnimClip = currentClip;
         _currAnimClip = targetClip;
     }
-
 }

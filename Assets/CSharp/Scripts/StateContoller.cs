@@ -62,12 +62,12 @@ public class StateContoller : MonoBehaviour
                 Debug.Log(nextState.GetStateDesc().Value._stataName);
 
                 //상태가 달라졌다.
-                _currState.DoActions(_currState.GetStateDesc().Value._ExitStateActions);
+                _currState.DoActions(_currState.GetStateDesc().Value._ExitStateActionTypes);
                 _currState = nextState;
-                _currState.DoActions(_currState.GetStateDesc().Value._EnterStateActions);
+                _currState.DoActions(_currState.GetStateDesc().Value._EnterStateActionTypes);
             }
 
-            _currState.DoActions(_currState.GetStateDesc().Value._inStateActions);
+            _currState.DoActions(_currState.GetStateDesc().Value._inStateActionTypes);
         }
     }
 }

@@ -20,13 +20,16 @@ public class CharacterMoveScript2 : MonoBehaviour
     [SerializeField] private float _speed = 5.0f;
     [SerializeField] private float _rotatingSpeed_DEG = 90.0f;
     [SerializeField] private float _jumpForce = 3.0f;
+    
 
-    private Vector3 _animDir = Vector3.zero;
+    private Vector3 _latestPlaneVelocityDontUseY = Vector3.zero;
+
     private bool _isJumping = false;
     private bool _isInAir = false;
-    private bool _isAim = false;
-    private bool _mouseLocked = false;
     private float _verticalSpeedAcc = 0.0f;
+    private bool _moveTriggerd = false;
+
+
 
     private void Awake()
     {
@@ -34,8 +37,30 @@ public class CharacterMoveScript2 : MonoBehaviour
         Debug.Assert(_characterController != null, "_characterController 없다");
     }
 
-    public void CharacterMove(Vector3 inputDirection, float ratio = 1.0f)
+    public bool GetIsJumping() { return _isJumping; }
+    public bool GetIsInAir() { return _isInAir; }
+    public Vector3 GetLatestVelocity() { return _latestPlaneVelocityDontUseY; }
+    public void ResetLatestVelocity() { _latestPlaneVelocityDontUseY = Vector3.zero; }
+
+    public void ClearLatestVelocity()
     {
+        if (_moveTriggerd == false)
+        {
+            _latestPlaneVelocityDontUseY = Vector3.zero;
+        }
+        _moveTriggerd = false;
+    }
+
+    public void GravityUpdate() //매 프레임마다 호출될 함수니까
+    {
+        _verticalSpeedAcc += Time.deltaTime * Physics.gravity.y;
+
+        Vector3 gravityMove = Vector3.up * _verticalSpeedAcc * Time.deltaTime;
+
+        Debug.Assert(Mathf.Abs(gravityMove.y) >= float.Epsilon, "부유하는 움직임입니다.");
+
+        _characterController.Move(gravityMove);
+
         if (_characterController.isGrounded == true)
         {
             _characterController.stepOffset = 0.3f;
@@ -44,37 +69,41 @@ public class CharacterMoveScript2 : MonoBehaviour
             _isJumping = false;
             _isInAir = false;
         }
+    }
 
-        _verticalSpeedAcc += Physics.gravity.y * _mass * Time.deltaTime;
+    public void DoJump()
+    {
+        if (_characterController.isGrounded == true)
+        {
+            _characterController.stepOffset = 0.0f;
+            _verticalSpeedAcc = _jumpForce;
 
-        if (Input.GetKeyDown(KeyCode.Space) == true)
-        {//점프 시도
-            if (_characterController.isGrounded == true)
-            {
-                _characterController.stepOffset = 0.0f;
-                _verticalSpeedAcc = _jumpForce;
-
-                _isJumping = true;
-                _isInAir = true;
-            }
+            _isJumping = true;
+            _isInAir = true;
         }
+    }
 
+    public void CharacterMove(Vector3 inputDirection, float ratio = 1.0f)
+    {
         Vector3 cameraLook = Camera.main.transform.forward;
         cameraLook.y = 0.0f;
         cameraLook = cameraLook.normalized;
         inputDirection = (Quaternion.LookRotation(cameraLook) * inputDirection);
 
-        float similarities = (_isAim == true) 
-            ? 1.0f
-            : Mathf.Clamp(Vector3.Dot(transform.forward, inputDirection), 0.0f, 1.0f);
-        
+        float similarities = Mathf.Clamp(Vector3.Dot(transform.forward, inputDirection), 0.0f, 1.0f);
+
         Vector3 desiredMove = inputDirection * _speed * Time.deltaTime * similarities * ratio;
 
-        desiredMove += Vector3.up * _verticalSpeedAcc * Time.deltaTime;
-
-        Debug.Assert(Mathf.Abs(desiredMove.y) >= float.Epsilon, "부유하는 움직임입니다.");
-
         _characterController.Move(desiredMove);
+        _moveTriggerd = true;
+
+        _latestPlaneVelocityDontUseY = _characterController.velocity;
+    }
+
+    public void CharacterForcedMove(Vector3 latestDelta, float ratio = 1.0f)
+    {
+        _characterController.Move(latestDelta * ratio * Time.deltaTime);
+        _moveTriggerd = true;
     }
 
 
