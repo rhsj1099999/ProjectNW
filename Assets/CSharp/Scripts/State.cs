@@ -14,30 +14,47 @@ public enum StateActionType
     ForcedMove,
     ResetLatestVelocity,
 }
-
-[Serializable]
-public struct ConditionAssetPair
+public enum ConditionType
 {
-    public ConditionAsset _condition;
-    public bool _goal;
+    MoveDesired,
+    AnimationEnd,
+    InAir,
+    KeyInput,
 }
 
 [Serializable]
-public struct ConditionSet
+public class KeyInputConditionDesc
 {
-    public Condition _condition;
-    public bool _goal;
+    public enum KeyPressType
+    {
+        Pressed,
+        Hold,
+        Released,
+        None,
+    };
+
+    public KeyCode _targetKeyCode;
+    public KeyPressType _targetState;
+    public bool _keyInpuyGoal;
 }
 
 [Serializable]
-public struct StateLinkDesc
+public class ConditionDesc
 {
-    public List<ConditionAssetPair> _multiConditionAsset; //MultiCondition
+    public ConditionType _singleConditionType;
+    public bool _componentConditionGoal;
+    public List<KeyInputConditionDesc> _keyInputConditionTarget;
+}
+
+[Serializable]
+public class StateLinkDesc
+{
+    public List<ConditionDesc> _multiConditionAsset; //MultiCondition
     public StateAsset _stateAsset;
 }
 
 [Serializable]
-public struct StateDesc
+public class StateDesc
 {
     public string _stataName;
     public AnimationClip _stateAnimationClip;
@@ -49,23 +66,30 @@ public struct StateDesc
     public List<StateLinkDesc> _linkedStates;
 }
 
-
-public struct StateInitDesc
-{
-    public CharacterMoveScript2 _ownerMoveScript;
-    public CharacterController _ownerCharacterController;
-    public InputController _ownerInputController;
-    public Animator _ownerAnimator;
-}
-
-
-
 public class State
 {
+    public State(StateAsset stateAsset)
+    {
+        _stateDesc = stateAsset._myState; //복사 완료
+        _stateAssetCreateFrom = stateAsset;
+    }
+
+    public class StateInitDesc
+    {
+        public CharacterMoveScript2 _ownerMoveScript;
+        public CharacterController _ownerCharacterController;
+        public InputController _ownerInputController;
+        public Animator _ownerAnimator;
+    }
+
+
     private StateDesc _stateDesc; //Copy From ScriptableObject
     private StateAsset _stateAssetCreateFrom = null;
-    private Dictionary<State/*Another State*/, List<ConditionSet>> _linkedState = new Dictionary<State , List<ConditionSet>>();
-    StateInitDesc _ownerActionComponent;
+    private Dictionary<State/*Another State*/, List<Condition>> _linkedState = new Dictionary<State , List<Condition>>();
+    private StateInitDesc _ownerActionComponent;
+
+    public StateDesc GetStateDesc() {return _stateDesc;}
+    public StateAsset GetStateAssetFrom() {return _stateAssetCreateFrom;}
 
 
     public void Initialize(PlayerScript owner)
@@ -76,6 +100,115 @@ public class State
         InitPartial(ref _ownerActionComponent, _stateDesc._inStateActionTypes, owner);
         InitPartial(ref _ownerActionComponent, _stateDesc._ExitStateActionTypes, owner);
     }
+
+    public void LinkingStates(/*컨트롤러가 사용하는 스테이트들*/ref List<State> allStates /*딕셔너리로 바꾸세요*/, PlayerScript owner)
+    {
+        foreach (var linked in _stateDesc._linkedStates)
+        {
+            State targetState = null;
+
+            foreach (var state in allStates)
+            {
+                if (state == this)
+                {
+                    continue; //나 자신이다
+                }
+
+                if (state.GetStateAssetFrom() == linked._stateAsset)
+                {
+                    targetState = state;
+                    break;
+                }
+                //Debug.Assert(false, "없는 상태로 넘어가려 하는 조건이 있습니다");
+            }
+
+            if (targetState == null) //연결된 상태가 플레이어(혹은몬스터)가 사용하지 않는 상태다
+            {
+                continue;
+            }
+
+            
+            if (_linkedState.ContainsKey(targetState) == false)
+            {
+                _linkedState.Add(targetState, new List<Condition>());
+            }
+
+            List<Condition> existConditions = _linkedState[targetState];
+
+            for (int i = 0; i < linked._multiConditionAsset.Count; i++)
+            {
+                Condition newCondition = new Condition(linked._multiConditionAsset[i]);
+                newCondition.Initialize(owner);
+                existConditions.Add(newCondition);
+            }
+        }
+    }
+
+    public State CheckChangeState()
+    {
+        foreach(KeyValuePair<State, List<Condition>> pair in _linkedState)
+        {
+            bool isSuccess = true;
+
+            foreach (Condition condition in pair.Value) 
+            {
+                if (condition.CheckCondition() == false)
+                {
+                    isSuccess = false;
+                    break; //멀티컨디션에서 하나라도 삑났다.
+                }
+            }
+
+            if (isSuccess == true)
+            {
+                return pair.Key; //전부다 만족했다.
+            }
+        }
+
+        return null; //만족한게 하나도 없다.
+    }
+
+
+    public void DoActions(List<StateActionType> actions)
+    {
+        foreach(var action in actions)
+        {
+            switch(action)
+            {
+                case StateActionType.Move:
+                    _ownerActionComponent._ownerMoveScript.CharacterRotate(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
+                    _ownerActionComponent._ownerMoveScript.CharacterMove(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
+                    break;
+
+                case StateActionType.Attack:
+                    break;
+
+                case StateActionType.SaveLatestVelocity:
+                    break;
+
+                case StateActionType.Jump:
+                    _ownerActionComponent._ownerMoveScript.DoJump();
+                    break;
+
+                case StateActionType.ForcedMove:
+                    Vector3 planeVelocity = _ownerActionComponent._ownerMoveScript.GetLatestVelocity();
+                    planeVelocity.y = 0.0f;
+                    _ownerActionComponent._ownerMoveScript.CharacterForcedMove(planeVelocity, 1.0f);
+                    break;
+
+                case StateActionType.ResetLatestVelocity:
+                    //_ownerActionComponent._ownerMoveScript.ResetLatestVelocity();
+                    break;
+
+                default:
+                    Debug.Assert(false, "데이터가 추가됐습니까?");
+                    break;
+            }
+        }
+    }
+
+
+
 
     private void InitPartial(ref StateInitDesc _ownerActionComponent, List<StateActionType> list, PlayerScript owner)
     {
@@ -149,133 +282,6 @@ public class State
                             Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "ResetLatestVelocity행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
-                    break;
-
-                default:
-                    Debug.Assert(false, "데이터가 추가됐습니까?");
-                    break;
-            }
-        }
-    }
-
-
-    public void LinkingStates(/*컨트롤러가 사용하는 스테이트들*/ref List<State> allStates /*딕셔너리로 바꾸세요*/, PlayerScript owner)
-    {
-        foreach (var linked in _stateDesc._linkedStates)
-        {
-            State targetState = null;
-            foreach (var state in allStates)
-            {
-                if (state == this)
-                {
-                    continue; //나 자신이다
-                }
-
-                if (state.GetStateAssetFrom() == linked._stateAsset)
-                {
-                    targetState = state;
-                    break;
-                }
-                //Debug.Assert(false, "없는 상태로 넘어가려 하는 조건이 있습니다");
-            }
-
-            if (targetState == null) //연결된 상태가 플레이어(혹은몬스터)가 사용하지 않는 상태다
-            {
-                return;
-            }
-
-            
-            if (_linkedState.ContainsKey(targetState) == false)
-            {
-                _linkedState.Add(targetState, new List<ConditionSet>());
-            }
-
-            List<ConditionSet> exists = _linkedState[targetState];
-
-            foreach (var condition in linked._multiConditionAsset)
-            {
-                Condition newCondition = new Condition(condition._condition);
-                newCondition.Initialize(owner);
-
-                ConditionSet newConditionSet = new ConditionSet();
-                newConditionSet._condition = newCondition;
-                newConditionSet._goal = condition._goal;
-                exists.Add(newConditionSet);
-            }
-        }
-    }
-
-
-    public StateDesc? GetStateDesc() //구조체 커질수도 있으니까 참조로 줍시다
-    {
-        return _stateDesc;
-    }
-
-    public StateAsset GetStateAssetFrom()
-    {
-        return _stateAssetCreateFrom;
-    }
-
-    public State(StateAsset stateAsset)
-    {
-        _stateDesc = stateAsset._myState; //복사 완료
-        _stateAssetCreateFrom = stateAsset;
-    }
-
-    public State CheckChangeState()
-    {
-        foreach(KeyValuePair<State, List<ConditionSet>> pair in _linkedState)
-        {
-            bool isSuccess = true;
-
-            foreach (ConditionSet? condition in pair.Value) 
-            {
-                if (condition.Value._condition.CheckCondition(condition.Value._goal) == false)
-                {
-                    isSuccess = false;
-                    break; //멀티컨디션에서 하나라도 삑났다.
-                }
-            }
-
-            if (isSuccess == true)
-            {
-                return pair.Key; //전부다 만족했다.
-            }
-        }
-
-        return null; //만족한게 하나도 없다.
-    }
-
-
-    public void DoActions(List<StateActionType> actions)
-    {
-        foreach(var action in actions)
-        {
-            switch(action)
-            {
-                case StateActionType.Move:
-                    _ownerActionComponent._ownerMoveScript.CharacterRotate(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
-                    _ownerActionComponent._ownerMoveScript.CharacterMove(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
-                    break;
-
-                case StateActionType.Attack:
-                    break;
-
-                case StateActionType.SaveLatestVelocity:
-                    break;
-
-                case StateActionType.Jump:
-                    _ownerActionComponent._ownerMoveScript.DoJump();
-                    break;
-
-                case StateActionType.ForcedMove:
-                    Vector3 planeVelocity = _ownerActionComponent._ownerMoveScript.GetLatestVelocity();
-                    planeVelocity.y = 0.0f;
-                    _ownerActionComponent._ownerMoveScript.CharacterForcedMove(planeVelocity, 1.0f);
-                    break;
-
-                case StateActionType.ResetLatestVelocity:
-                    //_ownerActionComponent._ownerMoveScript.ResetLatestVelocity();
                     break;
 
                 default:

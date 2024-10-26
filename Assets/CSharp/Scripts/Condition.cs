@@ -4,88 +4,55 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
-public enum ConditionType
-{
-    MoveDesired, //방향키가 입력이 됐나?
-    AnimationEnd,
-    InAir,
-    KeyInput,
-}
-
-[Serializable]
-public struct ConditionPair
-{
-    public ConditionType _conditionType;
-}
-
-[Serializable]
-public struct KeyInputConditionDesc
-{
-    public enum KeyPressType
-    {
-        Pressed,
-        Hold,
-        Released,
-    };
-
-    public KeyCode _targetKeyCode;
-    public KeyPressType _targetState;
-    public bool _goal;
-}
-
-[Serializable]
-public struct ConditionDesc
-{
-    public ConditionPair _singleCondition; //SingleCondition
-    public List<KeyInputConditionDesc> _keyInputConditionTarget;
-}
-
-public struct ConditionInitDesc
-{
-    public CharacterController _ownerCharacterComponent;
-    public Animator _ownerAnimator;
-    public InputController _ownerInputController;
-    public CharacterMoveScript2 _ownerMoveScript;
-}
-
-
-
 public class Condition
 {
-    public Condition(ConditionAsset conditionAsset)
+    public class ConditionComponentDesc
     {
-        _conditionDesc = conditionAsset._myCondition; //복사 완료
+        public CharacterController _ownerCharacterComponent;
+        public Animator _ownerAnimator;
+        public InputController _ownerInputController;
+        public CharacterMoveScript2 _ownerMoveScript;
+    }
+    public Condition(ConditionDesc descRef)
+    {
+        _conditionDesc = descRef;
     }
 
     private ConditionDesc _conditionDesc; //Copy From ScriptableObject
-    private ConditionInitDesc _ownerChecker;
-    
+
+    private ConditionComponentDesc _ownerComponents;
+
+    public ConditionDesc GetConditionDesc() { return _conditionDesc; }
 
     public void Initialize(PlayerScript owner)
     {
-        _ownerChecker = new ConditionInitDesc();
+        _ownerComponents = new ConditionComponentDesc();
 
+        if (_conditionDesc._singleConditionType == ConditionType.KeyInput)
+        {
+            Debug.Assert(_conditionDesc._keyInputConditionTarget.Count != 0, "키인풋인데 정보가 없다");
+        }
 
-        switch (_conditionDesc._singleCondition._conditionType)
+        switch (_conditionDesc._singleConditionType)
         {
             case ConditionType.MoveDesired:
-                _ownerChecker._ownerInputController = owner.GetComponent<InputController>();
-                Debug.Assert(_ownerChecker._ownerInputController != null, "Input조건이 있는데 이 컴포넌트가 없습니다");
+                _ownerComponents._ownerInputController = owner.GetComponent<InputController>();
+                Debug.Assert(_ownerComponents._ownerInputController != null, "Input조건이 있는데 이 컴포넌트가 없습니다");
                 break;
 
             case ConditionType.AnimationEnd:
-                _ownerChecker._ownerAnimator = owner.GetComponent<Animator>();
-                Debug.Assert(_ownerChecker._ownerAnimator != null, "Animation조건이 있는데 이 컴포넌트가 없습니다");
+                _ownerComponents._ownerAnimator = owner.GetComponent<Animator>();
+                Debug.Assert(_ownerComponents._ownerAnimator != null, "Animation조건이 있는데 이 컴포넌트가 없습니다");
                 break;
 
             case ConditionType.InAir:
-                _ownerChecker._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                Debug.Assert(_ownerChecker._ownerMoveScript != null, "GroundLoss조건이 있는데 이 컴포넌트가 없습니다");
+                _ownerComponents._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                Debug.Assert(_ownerComponents._ownerMoveScript != null, "GroundLoss조건이 있는데 이 컴포넌트가 없습니다");
                 break;
 
             case ConditionType.KeyInput:
-                _ownerChecker._ownerInputController = owner.GetComponent<InputController>();
-                Debug.Assert(_ownerChecker._ownerInputController != null, "Jump조건이 있는데 이 컴포넌트가 없습니다");
+                _ownerComponents._ownerInputController = owner.GetComponent<InputController>();
+                Debug.Assert(_ownerComponents._ownerInputController != null, "Jump조건이 있는데 이 컴포넌트가 없습니다");
                 break;
 
             default:
@@ -94,26 +61,22 @@ public class Condition
         }
     }
 
-    public ConditionDesc? GetConditionDesc() //구조체 커질수도 있으니까 참조로 줍시다
-    {
-        return _conditionDesc;
-    }
 
-    public bool CheckCondition(bool goal)
+    public bool CheckCondition()
     {
         bool ret = false;
 
-        switch (_conditionDesc._singleCondition._conditionType)
+        switch (_conditionDesc._singleConditionType)
         {
             case ConditionType.MoveDesired:
                 {
-                    Vector3 desiredMoved = _ownerChecker._ownerInputController._pr_directionByInput;
+                    Vector3 desiredMoved = _ownerComponents._ownerInputController._pr_directionByInput;
                     if (desiredMoved != Vector3.zero)
                     {
                         ret = true;
                     }
 
-                    return (ret == goal);
+                    return (ret == _conditionDesc._componentConditionGoal);
                 }
 
             case ConditionType.AnimationEnd:
@@ -123,37 +86,38 @@ public class Condition
 
             case ConditionType.InAir:
                 {
-                    if (_ownerChecker._ownerMoveScript.GetIsInAir() == true)
+                    if (_ownerComponents._ownerMoveScript.GetIsInAir() == true)
                     {
                         ret = true;
                     }
 
-                    return (ret == goal);
+                    return (ret == _conditionDesc._componentConditionGoal);
                 }
 
             case ConditionType.KeyInput:
                 {
                     bool isSuccess = true;
+
                     for (int i = 0; i < _conditionDesc._keyInputConditionTarget.Count; ++i)
                     {
                         switch (_conditionDesc._keyInputConditionTarget[i]._targetState)
                         {
                             case KeyInputConditionDesc.KeyPressType.Pressed:
-                                if (Input.GetKeyDown(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._goal)
+                                if (Input.GetKeyDown(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal)
                                 {
                                     isSuccess = false;
                                 }
                                 break;
 
                             case KeyInputConditionDesc.KeyPressType.Hold:
-                                if (Input.GetKey(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._goal)
+                                if (Input.GetKey(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal)
                                 {
                                     isSuccess = false;
                                 }
                                 break;
 
                             case KeyInputConditionDesc.KeyPressType.Released:
-                                if (Input.GetKeyUp(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._goal)
+                                if (Input.GetKeyUp(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal)
                                 {
                                     isSuccess = false;
                                 }
@@ -166,6 +130,7 @@ public class Condition
 
                         if (isSuccess == false) { return false; }
                     }
+
                     return isSuccess;
                 }
 

@@ -56,7 +56,7 @@ public class PlayerScript : MonoBehaviour
 
         {//애니메이션 업데이트
             State currState = _stateContoller.GetCurrState();
-            AnimationClip currAnimationClip = currState.GetStateDesc().Value._stateAnimationClip;
+            AnimationClip currAnimationClip = currState.GetStateDesc()._stateAnimationClip;
             if (_currAnimClip != currAnimationClip)
             {
                 ChangeAnimation(currAnimationClip);
