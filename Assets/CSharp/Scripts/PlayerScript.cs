@@ -15,7 +15,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private AnimContoller _AnimController = null;
     [SerializeField] private List<string> _enemyTags = new List<string>();
     private float _crossFadeTime = 0.1f;
-    private string _targetName1 = "Zombie Idle";
+    private string _targetName1 = "Human@Idle01";
     private string _targetName2 = "UseThisToChange";
     private AnimationClip _currAnimClip = null;
     private AnimationClip _prevAnimClip = null;

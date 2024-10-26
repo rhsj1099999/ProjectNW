@@ -29,7 +29,18 @@ public class CharacterMoveScript2 : MonoBehaviour
     private float _verticalSpeedAcc = 0.0f;
     private bool _moveTriggerd = false;
 
-
+    private void Update()
+    {
+        if(_characterController.isGrounded == true)
+        {
+            Debug.Log("Grounded");
+        }
+        else
+        {
+            Debug.Log("Not Grounded");
+        }
+        
+    }
 
     private void Awake()
     {
@@ -73,14 +84,24 @@ public class CharacterMoveScript2 : MonoBehaviour
 
     public void DoJump()
     {
-        if (_characterController.isGrounded == true)
-        {
-            _characterController.stepOffset = 0.0f;
-            _verticalSpeedAcc = _jumpForce;
+        //if (_characterController.isGrounded == true)
+        //{
+        //    _characterController.stepOffset = 0.0f;
+        //    _verticalSpeedAcc = _jumpForce;
 
-            _isJumping = true;
-            _isInAir = true;
-        }
+        //    _isJumping = true;
+        //    _isInAir = true;
+        //}
+        //else
+        //{
+        //    Debug.Log("Á¡ÇÁ°¡ ¾ÃÇû´Ù");
+        //}
+
+        _characterController.stepOffset = 0.0f;
+        _verticalSpeedAcc = _jumpForce;
+
+        _isJumping = true;
+        _isInAir = true;
     }
 
     public void CharacterMove(Vector3 inputDirection, float ratio = 1.0f)
