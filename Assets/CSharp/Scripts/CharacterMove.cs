@@ -31,14 +31,14 @@ public class CharacterMoveScript2 : MonoBehaviour
 
     private void Update()
     {
-        if(_characterController.isGrounded == true)
-        {
-            Debug.Log("Grounded");
-        }
-        else
-        {
-            Debug.Log("Not Grounded");
-        }
+        //if(_characterController.isGrounded == true)
+        //{
+        //    Debug.Log("Grounded");
+        //}
+        //else
+        //{
+        //    Debug.Log("Not Grounded");
+        //}
         
     }
 

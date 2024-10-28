@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
@@ -19,6 +20,7 @@ public class StateContoller : MonoBehaviour
     public State GetCurrState(){return _currState;}
 
     //private HashSet<Condition> _createdCondition = new HashSet<Condition>(); //이거 언젠간 써야합니다
+
 
 
 
@@ -45,7 +47,31 @@ public class StateContoller : MonoBehaviour
             //state.LinkingStates(ref _states, playerScript, _createdCondition);
         }
 
-        _currState = _states[0]; //가장 앞에껄 Idle로 설정하세요
+        ChangeState(_states[0]);
+    }
+
+    private void ChangeState(State nextState)
+    {
+        if (nextState == null)
+        {
+            return;
+        }
+
+        //Weapon에 따른 작업 끼워넣기
+
+        if (nextState != _currState)
+        {
+            //상태가 달라졌다.
+
+            //Debug.Log(nextState.GetStateDesc()._stataName);
+            if (_currState != null) 
+            {
+                _currState.DoActions(_currState.GetStateDesc()._ExitStateActionTypes);
+            }
+
+            _currState = nextState;
+            _currState.DoActions(_currState.GetStateDesc()._EnterStateActionTypes);
+        }
     }
 
 
@@ -56,15 +82,7 @@ public class StateContoller : MonoBehaviour
         {
             State nextState = _currState.CheckChangeState();
 
-            if (nextState != null && nextState != _currState) 
-            {
-                Debug.Log(nextState.GetStateDesc()._stataName);
-
-                //상태가 달라졌다.
-                _currState.DoActions(_currState.GetStateDesc()._ExitStateActionTypes);
-                _currState = nextState;
-                _currState.DoActions(_currState.GetStateDesc()._EnterStateActionTypes);
-            }
+            ChangeState(nextState);
 
             _currState.DoActions(_currState.GetStateDesc()._inStateActionTypes);
         }

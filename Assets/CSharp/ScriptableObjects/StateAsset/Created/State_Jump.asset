@@ -27,12 +27,26 @@ MonoBehaviour:
       - _singleConditionType: 0
         _componentConditionGoal: 1
         _keyInputConditionTarget: []
+      - _singleConditionType: 3
+        _componentConditionGoal: 0
+        _keyInputConditionTarget:
+        - _targetKeyCode: 304
+          _targetState: 1
+          _keyInpuyGoal: 1
+      _stateAsset: {fileID: 11400000, guid: 0f8c3ddadefc2e045b3f3f1f542ef6ef, type: 2}
+    - _multiConditionAsset:
+      - _singleConditionType: 2
+        _componentConditionGoal: 0
+        _keyInputConditionTarget: []
+      - _singleConditionType: 0
+        _componentConditionGoal: 1
+        _keyInputConditionTarget: []
       _stateAsset: {fileID: 11400000, guid: dd3d314bd19ab0c4bb5ca14f7ddee8ca, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 2
         _componentConditionGoal: 0
         _keyInputConditionTarget: []
       - _singleConditionType: 0
-        _componentConditionGoal: 0
+        _componentConditionGoal: 1
         _keyInputConditionTarget: []
-      _stateAsset: {fileID: 11400000, guid: c8159052495618847a0af51e70fb7a91, type: 2}
+      _stateAsset: {fileID: 11400000, guid: dd3d314bd19ab0c4bb5ca14f7ddee8ca, type: 2}
