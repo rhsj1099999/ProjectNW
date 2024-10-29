@@ -16,7 +16,7 @@ public class ItemInfo
         All = int.MaxValue
     }
 
-    public enum WeaponType
+    public enum WeaponType //캐릭터마다 무기 파지법이 달라질 수 있으니 구체화 해놓지는 않는다
     {
         NotWeapon = 0,
 
@@ -27,7 +27,7 @@ public class ItemInfo
         MediumGun,
         LargeGun,
     }
-    //캐릭터마다 무기 파지법이 달라질 수 있으니 구체화 해놓지는 않는다
+    
 
     public int _itemKey;
     public string _itemName;

@@ -5,16 +5,17 @@ using UnityEngine;
 
 public class AimScript : MonoBehaviour
 {
-    [SerializeField] private AimState _aimState = AimState.eTPSAim;
+    private InputController _inputController = null;
+    private GameObject _aimmingCharacter = null;
+
     [SerializeField] private Vector2 _aimSpeed = new Vector2(1.0f, 1.0f);
-    [SerializeField] private InputController _inputController = null;
     [SerializeField] private string _aimKey = "Fire2";
-    [SerializeField] private GameObject _aimmingCharacter = null;
     [SerializeField] private Vector2 smoothTime = new Vector2(0.05f, 0.05f); // 부드럽게 회전할 시간
 
     public CinemachineVirtualCameraBase _sightCamera = null;
     public CinemachineVirtualCameraBase _freeRunCamera = null;
     public CinemachineVirtualCameraBase _tpsCamera = null;
+    private AimState _aimState = AimState.eTPSAim;
 
     private float _calaculatedValX = 0.0f;
     private float _calaculatedValY = 0.0f;
@@ -24,15 +25,10 @@ public class AimScript : MonoBehaviour
 
     private bool _isAim = false;
 
-
     private void Awake()
     {
+        _inputController = GetComponentInParent<InputController>();
         Debug.Assert(_inputController != null, "인풋컨트롤러가 없다");
-    }
-
-    public void AimRotation()
-    {
-
     }
 
     public void OffAimState()
@@ -53,14 +49,14 @@ public class AimScript : MonoBehaviour
 
         switch (_aimState)
         {
-            default:
-                Debug.Assert(false, "이러면 안됀다");
-                break;
             case AimState.eSightAim:
                 _sightCamera.enabled = true;
                 break;
             case AimState.eTPSAim:
                 _tpsCamera.enabled = true;
+                break;
+            default:
+                Debug.Assert(false, "데이터가 추가됐습니까?");
                 break;
         }
     }
@@ -68,6 +64,7 @@ public class AimScript : MonoBehaviour
     void Update()
     {
         bool isAimed = Input.GetButton(_aimKey);
+
         if (isAimed != _isAim) 
         {
             if (isAimed == true)
@@ -80,8 +77,6 @@ public class AimScript : MonoBehaviour
             }
         }
         _isAim = isAimed;
-
-
 
         if (Input.GetKeyDown(KeyCode.K) == true)
         {
@@ -103,20 +98,16 @@ public class AimScript : MonoBehaviour
 
     public void AimRotation(Vector2 rotatedValue) //인자값 = 마우스가 움직였으니 움직여야 할 값
     {
+        //캐릭터 y축 회전 (수평회전)
         {
-            //캐릭터 y축 회전 (수평회전)
-            //타겟값이 갱신됐다.
             _calaculatedValY += rotatedValue.x; 
-            //따라서 적용할 값을 댐핑한다
             currentAimRotation.y = Mathf.SmoothDamp(currentAimRotation.y, _calaculatedValY, ref currentVelocity.y, smoothTime.x);
             _aimmingCharacter.transform.rotation = Quaternion.Euler(_aimmingCharacter.transform.rotation.x, currentAimRotation.y, 0f);
         }
 
+        //캐릭터 x축 회전 (수평회전)
         {
-            //캐릭터 x축 회전 (수평회전)
-            //타겟값이 갱신됐다.
             _calaculatedValX += rotatedValue.y;
-            //따라서 적용할 값을 댐핑한다
             currentAimRotation.x = Mathf.SmoothDamp(currentAimRotation.x, _calaculatedValX, ref currentVelocity.x, smoothTime.y);
             transform.localRotation = Quaternion.Euler(-currentAimRotation.x, transform.rotation.y, 0f);
         }

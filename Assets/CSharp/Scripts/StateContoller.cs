@@ -15,21 +15,17 @@ public class StateContoller : MonoBehaviour
     [SerializeField] private List<StateAsset> _stateInitial = new List<StateAsset>(); //그냥 여기에 들어있는거만큼 어디선가 복사해오면 좋겠다
     private List<State> _states = new List<State>();
 
-
     private State _currState;
+    public State GetCurrState() { return _currState; }
+
     private PlayerScript _owner = null;
-    public State GetCurrState(){return _currState;}
 
     //private HashSet<Condition> _createdCondition = new HashSet<Condition>(); //이거 언젠간 써야합니다
 
-
-
-
     private void Awake()
     {
-        //Debug.Assert(_stateInitial.Count < 0, "계획된 상태들이 없습니다");
-
         PlayerScript playerScript = GetComponent<PlayerScript>();
+
         _owner = playerScript;
 
         for (int i = 0; i < _stateInitial.Count; ++i)
@@ -60,12 +56,7 @@ public class StateContoller : MonoBehaviour
         {
             return;
         }
-
-        //Weapon에 따른 작업 끼워넣기
-        {
-            //Weapon --> ???
-        }
-            
+        
         if (nextState != _currState)  //상태가 달라졌다.
         {
             Debug.Log(nextState.GetStateDesc()._stataName);

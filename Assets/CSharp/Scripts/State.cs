@@ -138,8 +138,9 @@ public class State
                     targetState = state;
                     break;
                 }
-                //Debug.Assert(false, "없는 상태로 넘어가려 하는 조건이 있습니다");
             }
+
+            Debug.Log("없는 상태로 넘어가려 하는 조건이 있습니다. 오류는 아닐수도 있지만 실수일수도 있습니다.");
 
             if (targetState == null) //연결된 상태가 플레이어(혹은몬스터)가 사용하지 않는 상태다
             {

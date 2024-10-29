@@ -16,6 +16,7 @@ public class Condition
         public CharacterMoveScript2 _ownerMoveScript;
         public WeaponScript _ownerCurrWeapon;
     }
+
     public Condition(ConditionDesc descRef)
     {
         _conditionDesc = descRef;

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
@@ -15,6 +17,19 @@ public class PlayerScript : MonoBehaviour
     private ItemInfo _currEquipWeaponItem = null;
     public WeaponScript GetWeapon() { return _currEquipWeapon; }
     public ItemInfo GetWeaponItem() { return _currEquipWeaponItem; }
+    private WeaponScript[] _tempLeftWeapons;
+    private int _currLeftWeaponIndex = 0;
+    private WeaponScript _tempCurrLeftWeapon = null;
+    private WeaponScript[] _tempRightWeapons;
+    private int _currRightWeaponIndex = 0;
+    private WeaponScript _tempCurrTightWeapon = null;
+    //현재는 캐릭터메쉬가 애니메이터를 갖고있기 때문에 애니메이터를 갖고있는 게임오브젝트가 캐릭터 메쉬다
+    private GameObject _characterModelObject = null; 
+
+
+
+    //Aim System
+    private AimScript2 _aimScript = null;
 
 
 
@@ -51,6 +66,27 @@ public class PlayerScript : MonoBehaviour
         Debug.Assert(_animator != null, "StateController가 없다");
         _overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
         _animator.runtimeAnimatorController = _overrideController;
+        _characterModelObject = _animator.gameObject;
+
+        /*------------------------
+        |TODO| 임시코드이다. 지워라
+        --------------------------*/
+        {
+            _tempLeftWeapons = new WeaponScript[3];
+            _tempLeftWeapons[0] = null;
+            _tempLeftWeapons[1] = null;
+            _tempLeftWeapons[2] = null;
+
+            _tempRightWeapons = new WeaponScript[3];
+
+            _tempRightWeapons[0] = new WeaponScript();
+            _tempRightWeapons[0]._weaponType = ItemInfo.WeaponType.LargeSword;
+
+            _tempRightWeapons[1] = new WeaponScript();
+            _tempRightWeapons[1]._weaponType = ItemInfo.WeaponType.MediumGun;
+
+            _tempRightWeapons[2] = null;
+        }
     }
 
     private void Start()
@@ -67,6 +103,15 @@ public class PlayerScript : MonoBehaviour
         -----------------------------------------------------------------------------------------*/
         _currAnimationSeconds = 0.0f;
         _currAnimationLoopCount = 0;
+    }
+
+    private void ReadyAimSystem()
+    {
+        if (_aimScript == null)
+        {
+            _aimScript = transform.gameObject.AddComponent<AimScript2>();
+        }
+        _aimScript.enabled = true;
     }
 
     private void Update()
@@ -86,9 +131,118 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
-        {//상태 업데이트
-            _stateContoller.DoWork();
+        /*-----------------------------------------------------------------------------------------------------------------
+        |TODO| 이 섹션이 있어야 하나? 공통적으로 쓰이는 스테이트에 대해서, 만들어져있는 스테이트들에게 이어붙이는게 귀찮아서 빼긴했음
+        -----------------------------------------------------------------------------------------------------------------*/
+        //Weapon Change Check
+        {
+            WeaponScript nextWeapon = null;
+
+            bool weaponChangeTry = false;
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                //왼손 무기 다음으로 전환
+                weaponChangeTry = true;
+
+                _currLeftWeaponIndex++;
+                if (_currLeftWeaponIndex >= 3)
+                {
+                    _currLeftWeaponIndex = _currLeftWeaponIndex % 3;
+                }
+                nextWeapon = _tempLeftWeapons[_currLeftWeaponIndex];
+            }
+            else if (Input.GetKeyDown(KeyCode.T))
+            {
+                //오른손 무기 다음으로 전환
+                weaponChangeTry = true;
+
+                _currRightWeaponIndex++;
+                if (_currRightWeaponIndex >= 3)
+                {
+                    _currRightWeaponIndex = _currRightWeaponIndex % 3;
+                }
+                nextWeapon = _tempRightWeapons[_currRightWeaponIndex];
+            }
+
+            //무기 전환을 시도했다
+            if (weaponChangeTry == true) 
+            {
+                //다음 무기가 없다.
+                if (nextWeapon == null)
+                {
+                    if (_aimScript != null)
+                    {
+                        _aimScript.enabled = false;
+                    }
+                }
+                else
+                {
+                    //다음 무기가 있다.
+
+                    //1. 조준 시스템 활성/비활성화
+                    {
+                        if (nextWeapon._weaponType >= ItemInfo.WeaponType.NotWeapon && nextWeapon._weaponType <= ItemInfo.WeaponType.LargeSword)
+                        {
+                            if (_aimScript != null)
+                            {
+                                _aimScript.enabled = false;
+                            }
+                        }
+
+                        if (nextWeapon._weaponType >= ItemInfo.WeaponType.SmallGun && nextWeapon._weaponType <= ItemInfo.WeaponType.LargeGun)
+                        {
+                            ReadyAimSystem();
+                        }
+                    }
+
+                    //2. 아이템 소켓 장착(메쉬 붙이기) -> 필요하다면 IK 까지
+                    {
+                        //아이템 프리팹 생성
+                        {
+                            GameObject prefab = Resources.Load<GameObject>(nextWeapon._itemPrefabRoute);
+                            GameObject newObject = Instantiate(prefab);
+                        }
+
+                        //소켓 찾기
+                        {
+                            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+                            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+
+                            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+                            foreach (var socketComponent in weaponSockets)
+                            {
+
+                            }
+
+                            Transform correctSocket = null;
+                        }
+
+
+                        
+
+                        //newObject.transform.position = _aimSatellite.transform.position;
+                        //newObject.transform.SetParent(_aimSatellite.transform);
+                    }
+
+
+                }
+            }
         }
+
+
+        /*-----------------------------------------------------------------------------------------------------------------
+        |TODO| 현재는 이 컴포넌트가 사용할 상태를 전부 들고있다. 공격상태의 경우에는 무기가 상태를 들고있어야 하지 않을까?
+        -----------------------------------------------------------------------------------------------------------------*/
+        //Weapon Change Check
+        {
+            //여기서 상태전환을 시도했으면 -----|
+        }                                   //|
+        {//상태 업데이트                     //|
+            _stateContoller.DoWork(); // <----| 이걸 씹어야한다
+        }
+
 
         {//기본적으로 중력은 계속 업데이트 한다
             _characterMoveScript2.GravityUpdate();
