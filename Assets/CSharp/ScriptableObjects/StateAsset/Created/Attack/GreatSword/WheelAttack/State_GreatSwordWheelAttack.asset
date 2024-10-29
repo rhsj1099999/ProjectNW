@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
+  m_Name: State_GreatSwordWheelAttack
+  m_EditorClassIdentifier: 
+  _myState:
+    _stataName: GreatSwordWheelAttack
+    _stateAnimationClip: {fileID: 7400000, guid: a3295f88922b4b8469d9add00c5e415a,
+      type: 2}
+    _EnterStateActionTypes: 
+    _inStateActionTypes: 00000000
+    _ExitStateActionTypes: 
+    _linkedStates:
+    - _multiConditionAsset:
+      - _singleConditionType: 3
+        _componentConditionGoal: 0
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget:
+        - _targetKeyCode: 113
+          _targetState: 1
+          _keyInpuyGoal: 0
+          _keyHoldGoal: 0
+        _animationFrameUpGoal: 0
+        _animationFrameUnderGoal: 0
+      _stateAsset: {fileID: 11400000, guid: 770b22d7cb891404d822504a890d0f86, type: 2}

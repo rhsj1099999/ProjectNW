@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
@@ -8,10 +9,12 @@ public class Condition
 {
     public class ConditionComponentDesc
     {
+        public PlayerScript _owner;
         public CharacterController _ownerCharacterComponent;
         public Animator _ownerAnimator;
         public InputController _ownerInputController;
         public CharacterMoveScript2 _ownerMoveScript;
+        public WeaponScript _ownerCurrWeapon;
     }
     public Condition(ConditionDesc descRef)
     {
@@ -28,9 +31,27 @@ public class Condition
     {
         _ownerComponents = new ConditionComponentDesc();
 
-        if (_conditionDesc._singleConditionType == ConditionType.KeyInput)
+        _ownerComponents._owner = owner;
+
+        //오류검사
+        switch (_conditionDesc._singleConditionType)
         {
-            Debug.Assert(_conditionDesc._keyInputConditionTarget.Count != 0, "키인풋인데 정보가 없다");
+            case ConditionType.KeyInput:
+                Debug.Assert(_conditionDesc._keyInputConditionTarget.Count != 0, "키인풋인데 정보가 없다");
+                break;
+            case ConditionType.EquipWeaponByType:
+                Debug.Assert(_conditionDesc._weaponTypeGoal != ItemInfo.WeaponType.NotWeapon, "WeaponType인데 Goal이 None이다. 오류는 아닐수도 있다");
+                break;
+            case ConditionType.AnimationFrameUp:
+                Debug.Assert(_conditionDesc._animationFrameUpGoal > float.Epsilon, "AnimSecondType인데 Goal이 0.0이다. 오류는 아닐수도 있다");
+                break;
+
+            case ConditionType.AnimationFrameUnder:
+                Debug.Assert(_conditionDesc._animationFrameUnderGoal > float.Epsilon, "AnimSecondType인데 Goal이 0.0이다. 오류는 아닐수도 있다");
+                break;
+
+            default:
+                break;
         }
 
         switch (_conditionDesc._singleConditionType)
@@ -41,7 +62,7 @@ public class Condition
                 break;
 
             case ConditionType.AnimationEnd:
-                _ownerComponents._ownerAnimator = owner.GetComponent<Animator>();
+                _ownerComponents._ownerAnimator = owner.GetComponentInChildren<Animator>();
                 Debug.Assert(_ownerComponents._ownerAnimator != null, "Animation조건이 있는데 이 컴포넌트가 없습니다");
                 break;
 
@@ -53,6 +74,20 @@ public class Condition
             case ConditionType.KeyInput:
                 _ownerComponents._ownerInputController = owner.GetComponent<InputController>();
                 Debug.Assert(_ownerComponents._ownerInputController != null, "Jump조건이 있는데 이 컴포넌트가 없습니다");
+                break;
+
+            case ConditionType.EquipWeaponByType:
+                //|TODO| 실시간으로 무기 장착 정보를 알 수 있는 인벤토리 컴포넌트를 알아야합니다.
+                _ownerComponents._ownerCurrWeapon = owner.GetComponent<WeaponScript>();
+                Debug.Assert(_ownerComponents._ownerCurrWeapon != null, "Jump조건이 있는데 이 컴포넌트가 없습니다");
+                break;
+
+            case ConditionType.AnimationFrameUp:
+                //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
+                break;
+
+            case ConditionType.AnimationFrameUnder:
+                //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
                 break;
 
             default:
@@ -81,6 +116,10 @@ public class Condition
 
             case ConditionType.AnimationEnd:
                 {
+                    if (_ownerComponents._owner.GetCurrAnimationLoopCount() >= 1)
+                    {
+                        return true;
+                    }
                     return false;
                 }
 
@@ -102,21 +141,22 @@ public class Condition
                     {
                         switch (_conditionDesc._keyInputConditionTarget[i]._targetState)
                         {
-                            case KeyInputConditionDesc.KeyPressType.Pressed:
+                            case KeyPressType.Pressed:
                                 if (Input.GetKeyDown(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal)
                                 {
                                     isSuccess = false;
                                 }
                                 break;
 
-                            case KeyInputConditionDesc.KeyPressType.Hold:
-                                if (Input.GetKey(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal)
+                            case KeyPressType.Hold:
+                                if (Input.GetKey(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal ||
+                                    CustomKeyManager.Instance.GetKeyInputDesc(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode)._holdedSecond < _conditionDesc._keyInputConditionTarget[i]._keyHoldGoal)
                                 {
                                     isSuccess = false;
                                 }
                                 break;
 
-                            case KeyInputConditionDesc.KeyPressType.Released:
+                            case KeyPressType.Released:
                                 if (Input.GetKeyUp(_conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != _conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal)
                                 {
                                     isSuccess = false;
@@ -132,6 +172,37 @@ public class Condition
                     }
 
                     return isSuccess;
+                }
+
+            case ConditionType.EquipWeaponByType:
+                {
+                    ItemInfo ownerCurrWeapon = _ownerComponents._owner.GetWeaponItem();
+
+                    if (ownerCurrWeapon == null)
+                    { return false; } //무기를 끼고있지 않습니다.
+
+                    if (ownerCurrWeapon._weaponType == _conditionDesc._weaponTypeGoal)
+                    { return false; } //끼고있는 무기가 목표값과 다릅니다.
+
+                    return true;
+                }
+
+            case ConditionType.AnimationFrameUp:
+                {
+                    //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
+                    if (_ownerComponents._owner.GetCurrAnimationClipFrame() < _conditionDesc._animationFrameUpGoal)
+                    {return false;}
+
+                    return true;
+                }
+
+            case ConditionType.AnimationFrameUnder:
+                {
+                    //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
+                    if (_ownerComponents._owner.GetCurrAnimationClipFrame() > _conditionDesc._animationFrameUnderGoal)
+                    { return false; }
+
+                    return true;
                 }
 
             default:

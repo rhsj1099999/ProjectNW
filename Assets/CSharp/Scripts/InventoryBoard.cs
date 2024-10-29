@@ -608,22 +608,22 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
         if (Input.GetKeyDown(KeyCode.V) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32).Value);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32));
         }
 
         if (Input.GetKeyDown(KeyCode.C) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33).Value);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33));
         }
 
         if (Input.GetKeyDown(KeyCode.X) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31).Value);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31));
         }
 
         if (Input.GetKeyDown(KeyCode.Z) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30).Value);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30));
         }
     }
     private void DebugCells()

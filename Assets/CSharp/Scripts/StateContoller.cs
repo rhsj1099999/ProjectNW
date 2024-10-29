@@ -17,6 +17,7 @@ public class StateContoller : MonoBehaviour
 
 
     private State _currState;
+    private PlayerScript _owner = null;
     public State GetCurrState(){return _currState;}
 
     //private HashSet<Condition> _createdCondition = new HashSet<Condition>(); //이거 언젠간 써야합니다
@@ -29,6 +30,7 @@ public class StateContoller : MonoBehaviour
         //Debug.Assert(_stateInitial.Count < 0, "계획된 상태들이 없습니다");
 
         PlayerScript playerScript = GetComponent<PlayerScript>();
+        _owner = playerScript;
 
         for (int i = 0; i < _stateInitial.Count; ++i)
         {
@@ -43,7 +45,9 @@ public class StateContoller : MonoBehaviour
         {
             state.LinkingStates(ref _states, playerScript);
 
-            //아래줄과 같은 구조가 되게 바꿔야한다. 같은 컨디션은 같은 캐릭터 내에서 돌려쓸 수 있으니까
+            /*----------------------------------------------------------------------------------------------------------
+            |TODO| 아래줄과 같은 구조가 되게 바꿔야한다. 같은 컨디션은 같은 캐릭터 내에서 돌려쓸 수 있으니까
+            ----------------------------------------------------------------------------------------------------------*/
             //state.LinkingStates(ref _states, playerScript, _createdCondition);
         }
 
@@ -58,18 +62,23 @@ public class StateContoller : MonoBehaviour
         }
 
         //Weapon에 따른 작업 끼워넣기
-
-        if (nextState != _currState)
         {
-            //상태가 달라졌다.
+            //Weapon --> ???
+        }
+            
+        if (nextState != _currState)  //상태가 달라졌다.
+        {
+            Debug.Log(nextState.GetStateDesc()._stataName);
 
-            //Debug.Log(nextState.GetStateDesc()._stataName);
+            _owner.StateChanged();
+
             if (_currState != null) 
             {
                 _currState.DoActions(_currState.GetStateDesc()._ExitStateActionTypes);
             }
 
             _currState = nextState;
+
             _currState.DoActions(_currState.GetStateDesc()._EnterStateActionTypes);
         }
     }

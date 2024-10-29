@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 
-public struct ItemInfo
+public class ItemInfo
 {
     public enum EquipType //For BitShift
     {
@@ -16,6 +16,19 @@ public struct ItemInfo
         All = int.MaxValue
     }
 
+    public enum WeaponType
+    {
+        NotWeapon = 0,
+
+        SmallSword, //단검같은거
+        MediumSword, //한손검류
+        LargeSword, //대검같은거
+        SmallGun,
+        MediumGun,
+        LargeGun,
+    }
+    //캐릭터마다 무기 파지법이 달라질 수 있으니 구체화 해놓지는 않는다
+
     public int _itemKey;
     public string _itemName;
     public int _sizeX;
@@ -26,6 +39,7 @@ public struct ItemInfo
 
     public Sprite _sprite;
 
+    public WeaponType _weaponType;
     public EquipType _equipType;
     public string _meshObjectName;
     public List<int> _equipMeshIndicies;

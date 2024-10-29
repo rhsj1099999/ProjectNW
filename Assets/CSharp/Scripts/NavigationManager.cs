@@ -183,10 +183,6 @@ public class NavigationManager : MonoBehaviour
         }
     }
 
-    private void DrawSplittedNav()
-    {
-    }
-
     private void DrawPlaneVectorCapsules()
     {
         if (Input.GetKeyDown(KeyCode.Slash) == true)

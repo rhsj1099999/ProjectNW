@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public enum StateActionType
@@ -10,29 +11,30 @@ public enum StateActionType
     Jump,
     ForcedMove,
     ResetLatestVelocity,
+    RootMove,
+    RotateWithoutInterpolate,
 }
+
 public enum ConditionType
 {
     MoveDesired,
     AnimationEnd,
     InAir,
     KeyInput,
+    EquipWeaponByType,
+    AnimationFrameUp, //~~초 이상으로 재생 됐습니다. -> Animator가 지원하는 normalizedTime을 쓰지 않습니다.
+    AnimationFrameUnder, //~~초 이하로 재생 됐습니다. -> Animator가 지원하는 normalizedTime을 쓰지 않습니다.
 }
 
 [Serializable]
 public class KeyInputConditionDesc
 {
-    public enum KeyPressType
-    {
-        Pressed,
-        Hold,
-        Released,
-        None,
-    };
+
 
     public KeyCode _targetKeyCode;
     public KeyPressType _targetState;
     public bool _keyInpuyGoal;
+    public float _keyHoldGoal = 0.0f; //n초 이상 이 키를 눌렀다 근데 어디 저장하냐
 }
 
 [Serializable]
@@ -40,7 +42,10 @@ public class ConditionDesc
 {
     public ConditionType _singleConditionType;
     public bool _componentConditionGoal;
+    public ItemInfo.WeaponType _weaponTypeGoal;
     public List<KeyInputConditionDesc> _keyInputConditionTarget;
+    public float _animationFrameUpGoal;
+    public float _animationFrameUnderGoal;
 }
 
 [Serializable]
@@ -73,10 +78,19 @@ public class State
 
     public class StateInitDesc
     {
-        public CharacterMoveScript2 _ownerMoveScript;
-        public CharacterController _ownerCharacterController;
-        public InputController _ownerInputController;
-        public Animator _ownerAnimator;
+        public PlayerScript _owner = null;
+        public CharacterMoveScript2 _ownerMoveScript = null;
+        public CharacterController _ownerCharacterController = null;
+        public InputController _ownerInputController = null;
+        public Animator _ownerAnimator = null;
+
+        public AnimationCurve _animationHipCurveX = null;
+        public AnimationCurve _animationHipCurveY = null;
+        public AnimationCurve _animationHipCurveZ = null;
+
+        public float _currStateSecond = 0.0f;
+        public float _prevStateSecond = 0.0f;
+        public float _prevReadedSecond = 0.0f;
     }
 
 
@@ -84,14 +98,22 @@ public class State
     private StateAsset _stateAssetCreateFrom = null;
     private Dictionary<State/*Another State*/, List<Condition>> _linkedState = new Dictionary<State , List<Condition>>();
     private StateInitDesc _ownerActionComponent;
+    private string _unityName_HipBone = "Hips";
+    private string _unityName_HipBoneLocalPositionX = "RootT.x";
+    private string _unityName_HipBoneLocalPositionY = "RootT.y";
+    private string _unityName_HipBoneLocalPositionZ = "RootT.z";
+
 
     public StateDesc GetStateDesc() {return _stateDesc;}
     public StateAsset GetStateAssetFrom() {return _stateAssetCreateFrom;}
+    
 
 
     public void Initialize(PlayerScript owner)
     {
         _ownerActionComponent = new StateInitDesc();
+
+        _ownerActionComponent._owner = owner;
 
         InitPartial(ref _ownerActionComponent, _stateDesc._EnterStateActionTypes, owner);
         InitPartial(ref _ownerActionComponent, _stateDesc._inStateActionTypes, owner);
@@ -168,13 +190,18 @@ public class State
 
     public void DoActions(List<StateActionType> actions)
     {
-        foreach(var action in actions)
+        _ownerActionComponent._currStateSecond += Time.deltaTime;
+
+        foreach (var action in actions)
         {
             switch(action)
             {
                 case StateActionType.Move:
-                    _ownerActionComponent._ownerMoveScript.CharacterRotate(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
-                    _ownerActionComponent._ownerMoveScript.CharacterMove(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
+                    {
+                        _ownerActionComponent._ownerMoveScript.CharacterRotate(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
+                        _ownerActionComponent._ownerMoveScript.CharacterMove(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
+                    }
+
                     break;
 
                 case StateActionType.Attack:
@@ -184,17 +211,64 @@ public class State
                     break;
 
                 case StateActionType.Jump:
-                    _ownerActionComponent._ownerMoveScript.DoJump();
+                    {
+                        _ownerActionComponent._ownerMoveScript.DoJump();
+                    }
+                    
                     break;
 
                 case StateActionType.ForcedMove:
-                    Vector3 planeVelocity = _ownerActionComponent._ownerMoveScript.GetLatestVelocity();
-                    planeVelocity.y = 0.0f;
-                    _ownerActionComponent._ownerMoveScript.CharacterForcedMove(planeVelocity, 1.0f);
+                    {
+                        Vector3 planeVelocity = _ownerActionComponent._ownerMoveScript.GetLatestVelocity();
+                        planeVelocity.y = 0.0f;
+                        _ownerActionComponent._ownerMoveScript.CharacterForcedMove(planeVelocity, 1.0f);
+                    }
+
                     break;
 
                 case StateActionType.ResetLatestVelocity:
-                    //_ownerActionComponent._ownerMoveScript.ResetLatestVelocity();
+                    break;
+
+                case StateActionType.RootMove:
+                    {
+                        float currentSecond = _ownerActionComponent._owner.GetCurrAnimationClipSecond();
+                        //float currentSecond = _ownerActionComponent._currStateSecond;
+
+                        Vector3 currentUnityLocalHip = new Vector3
+                            (
+                            _ownerActionComponent._animationHipCurveX.Evaluate(currentSecond),
+                            _ownerActionComponent._animationHipCurveY.Evaluate(currentSecond),
+                            _ownerActionComponent._animationHipCurveZ.Evaluate(currentSecond)
+                            );
+
+                        float prevSecond = _ownerActionComponent._prevReadedSecond;
+                        //float prevSecond = _ownerActionComponent._prevStateSecond;
+
+                        if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
+                        {
+                            prevSecond = 0.0f;
+                        }
+
+                        Vector3 prevUnityLocalHip = new Vector3
+                            (
+                            _ownerActionComponent._animationHipCurveX.Evaluate(prevSecond),
+                            _ownerActionComponent._animationHipCurveY.Evaluate(prevSecond),
+                            _ownerActionComponent._animationHipCurveZ.Evaluate(prevSecond)
+                            );
+
+                        Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
+                        Vector3 worldDelta = _ownerActionComponent._ownerCharacterController.transform.localToWorldMatrix * deltaLocalHip;
+                        _ownerActionComponent._ownerCharacterController.Move(worldDelta);
+
+                        //_ownerActionComponent._prevStateSecond = currentSecond;
+                        _ownerActionComponent._prevReadedSecond = currentSecond;
+                    }
+                    break;
+
+                case StateActionType.RotateWithoutInterpolate:
+                    {
+
+                    }
                     break;
 
                 default:
@@ -277,6 +351,66 @@ public class State
                         {
                             _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
                             Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "ResetLatestVelocity행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.RootMove:
+                    {
+                        if (_ownerActionComponent._ownerAnimator == null)
+                        {
+                            _ownerActionComponent._ownerAnimator = owner.GetComponentInChildren<Animator>();
+                            Debug.Assert(_ownerActionComponent._ownerAnimator != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerCharacterController == null)
+                        {
+                            _ownerActionComponent._ownerCharacterController = owner.GetComponentInChildren<CharacterController>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterController != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        //애니메이션 커브 찾아놓기
+                        {
+                            EditorCurveBinding[] bindings = AnimationUtility.GetCurveBindings(_stateDesc._stateAnimationClip);
+
+                            bool curveXFind = false, curveYFind = false, curveZFind = false;
+
+                            foreach (var binding in bindings)
+                            {
+                                if (curveXFind == true && curveYFind == true && curveZFind == true)
+                                { break; } //다 찾았습니다.
+
+                                //if (binding.path == _unityName_HipBone && binding.propertyName == _unityName_HipBoneLocalPositionX)
+                                //{_ownerActionComponent._animationHipCurveX = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveXFind = true; }
+
+                                //if (binding.path == _unityName_HipBone && binding.propertyName == _unityName_HipBoneLocalPositionY)
+                                //{_ownerActionComponent._animationHipCurveY = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveYFind = true; }
+
+                                //if (binding.path == _unityName_HipBone && binding.propertyName == _unityName_HipBoneLocalPositionZ)
+                                //{_ownerActionComponent._animationHipCurveZ = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveZFind = true; }
+
+                                if (binding.propertyName == _unityName_HipBoneLocalPositionX)
+                                { _ownerActionComponent._animationHipCurveX = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveXFind = true; }
+
+                                if (binding.propertyName == _unityName_HipBoneLocalPositionY)
+                                { _ownerActionComponent._animationHipCurveY = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveYFind = true; }
+
+                                if (binding.propertyName == _unityName_HipBoneLocalPositionZ)
+                                { _ownerActionComponent._animationHipCurveZ = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveZFind = true; }
+                            }
+
+                            Debug.Assert((curveXFind == true && curveYFind == true && curveZFind == true), "커브가 존재하지 않습니다");
+                        }
+
+                    }
+                    break;
+
+                case StateActionType.RotateWithoutInterpolate:
+                    {
+                        if (_ownerActionComponent._ownerCharacterController == null)
+                        {
+                            _ownerActionComponent._ownerCharacterController = owner.GetComponentInChildren<CharacterController>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterController != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
                     break;

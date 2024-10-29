@@ -9,6 +9,16 @@ public class PlayerScript : MonoBehaviour
     private CharacterMoveScript2 _characterMoveScript2 = null;
     private StateContoller _stateContoller = null;
 
+
+    //Weapon Section -> 이거 다른 컴포넌트로 빼세요(현재 만들어져있는건 EquipmentBoard 혹은 Inventory)
+    private WeaponScript _currEquipWeapon = null;
+    private ItemInfo _currEquipWeaponItem = null;
+    public WeaponScript GetWeapon() { return _currEquipWeapon; }
+    public ItemInfo GetWeaponItem() { return _currEquipWeaponItem; }
+
+
+
+
     //Animator Secton -> 이거 다른 컴포넌트로 빼세요
     private Animator _animator = null;
     private AnimatorOverrideController _overrideController = null;
@@ -20,6 +30,11 @@ public class PlayerScript : MonoBehaviour
     private int _maxLayer = 2;
     private AnimationClip _currAnimClip = null;
     [SerializeField] private float _transitionSpeed = 10.0f;
+    private float _currAnimationSeconds = 0.0f;
+    private int _currAnimationLoopCount = 0;
+    public float GetCurrAnimationClipFrame() { return _currAnimClip.frameRate * _currAnimationSeconds; }
+    public float GetCurrAnimationClipSecond() { return _currAnimationSeconds; }
+    public int GetCurrAnimationLoopCount() { return _currAnimationLoopCount; }
 
     private void Awake()
     {
@@ -45,6 +60,15 @@ public class PlayerScript : MonoBehaviour
         _currAnimClip = currAnimationClip;
     }
 
+    public void StateChanged()
+    {
+        /*-----------------------------------------------------------------------------------------
+        |TODO| 굳이 이 코드를 따로 빼야되나? Root 모션은 Late Tick 이 지나야 계산되서 필요하긴 한데
+        -----------------------------------------------------------------------------------------*/
+        _currAnimationSeconds = 0.0f;
+        _currAnimationLoopCount = 0;
+    }
+
     private void Update()
     {
         //타임디버깅
@@ -64,8 +88,6 @@ public class PlayerScript : MonoBehaviour
 
         {//상태 업데이트
             _stateContoller.DoWork();
-            State currState = _stateContoller.GetCurrState();
-            //Debug.Log("CurrState : " + currState.GetStateDesc()._stataName);
         }
 
         {//기본적으로 중력은 계속 업데이트 한다
@@ -80,16 +102,26 @@ public class PlayerScript : MonoBehaviour
         {//애니메이션 업데이트
             State currState = _stateContoller.GetCurrState();
             AnimationClip currAnimationClip = currState.GetStateDesc()._stateAnimationClip;
+
             if (_currAnimClip != currAnimationClip)
             {
                 _currAnimClip = currAnimationClip;
                 ChangeAnimation(currAnimationClip);
+            }
+
+            _currAnimationSeconds += Time.deltaTime * _animator.speed;
+
+            if (_currAnimationSeconds > currAnimationClip.length)
+            {
+                _currAnimationSeconds -= currAnimationClip.length;
+                _currAnimationLoopCount++;
             }
         }
     }
 
     private IEnumerator SwitchingBlendCoroutine()
     {
+        //Layer 인덱스 변경
         while (true)
         {
             float blendDelta = (_currentLayerIndex == 0) //0번 레이어를 재생해야하나
@@ -98,18 +130,24 @@ public class PlayerScript : MonoBehaviour
 
             _blendTarget += blendDelta;
 
-            _animator.SetFloat("Blend", _blendTarget);
+            /*-----------------------------------------------------------------
+            |TODO| 이 코드는 뭐야
+            -----------------------------------------------------------------*/
 
-            if (_blendTarget >= 1.0f)
+            if (_blendTarget > 1.0f)
             {
-                _blendTarget = 1.0f;
+                _blendTarget = 1.0f - float.Epsilon;
+                _animator.SetLayerWeight(1, _blendTarget);
                 break;
             }
-            else if (_blendTarget <= 0.0f)
+            else if (_blendTarget < 0.0f)
             {
                 _blendTarget = 0.0f;
+                _animator.SetLayerWeight(1, _blendTarget);
                 break;
             }
+
+            _animator.SetLayerWeight(1, _blendTarget);
 
             yield return null;
         }
@@ -137,14 +175,20 @@ public class PlayerScript : MonoBehaviour
             _currentLayerIndex = _currentLayerIndex % _maxLayer;
         }
 
+        string nextNodeName = "None";
+
         if (_currentLayerIndex == 0)
         {
             _overrideController[_targetName1] = targetClip;
+            nextNodeName = "State1";
         }
         else
         {
             _overrideController[_targetName2] = targetClip;
+            nextNodeName = "State2";
         }
+
+        _animator.Play(nextNodeName, _currentLayerIndex, 0.0f);
 
         //Start Coroutine
         if (_corutineStarted == false)
