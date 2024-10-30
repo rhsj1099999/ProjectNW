@@ -9,7 +9,10 @@ public class AimScript2 : MonoBehaviour
 {
     private InputController _inputController = null;
     private GameObject _aimOribit = null; //x축 회전 조종 오브젝트임
+    public GameObject GetAimOrbit() { return _aimOribit; }
     private GameObject _aimSatellite = null; //x축 회전 조종 오브젝트에 의해 상대회전하는 오브젝트. 카메라는 이것을 쳐다본다
+    public GameObject GetAimSatellite() { return _aimSatellite; }
+
     private float _aimSatelliteZOffset = 1000.0f;
     
 

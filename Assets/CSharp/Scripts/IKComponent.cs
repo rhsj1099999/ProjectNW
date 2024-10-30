@@ -4,17 +4,14 @@ using UnityEngine;
 
 public class IKComponent : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private Transform _targetTransform = null;
+    [SerializeField] private Animator _ikAnimator = null;
+    [SerializeField] private AvatarIKGoal _ikGoal = AvatarIKGoal.RightHand;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public bool _isRotationIK = false;
+    public bool _isPositionIK = false;
+    public float _positionIKWeight = 1.0f;
+    public float _rotationIKWeight = 1.0f;
 
     public void OnAnimatorIK(int layerIndex)
     {
@@ -36,12 +33,5 @@ public class IKComponent : MonoBehaviour
         }
     }
 
-    [SerializeField] private Transform _targetTransform = null;
-    [SerializeField] private Animator _ikAnimator = null;
-    [SerializeField] private AvatarIKGoal _ikGoal = AvatarIKGoal.RightHand;
 
-    public bool _isRotationIK = false;
-    public bool _isPositionIK = false;
-    public float _positionIKWeight = 1.0f;
-    public float _rotationIKWeight = 1.0f;
 }

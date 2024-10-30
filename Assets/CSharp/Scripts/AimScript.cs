@@ -33,6 +33,14 @@ public class AimScript : MonoBehaviour
 
     public void OffAimState()
     {
+        bool currAim = false;
+        if (_isAim == currAim)
+        {
+            return;
+        }
+        
+        _isAim = currAim;
+
         _sightCamera.enabled = false;
         _freeRunCamera.enabled = false;
         _tpsCamera.enabled = false;
@@ -43,6 +51,14 @@ public class AimScript : MonoBehaviour
 
     public void OnAimState()
     {
+        bool currAim = true;
+        if (_isAim == currAim)
+        {
+            return;
+        }
+
+        _isAim = currAim;
+
         _sightCamera.enabled = false;
         _freeRunCamera.enabled = false;
         _tpsCamera.enabled = false;
@@ -63,30 +79,6 @@ public class AimScript : MonoBehaviour
 
     void Update()
     {
-        bool isAimed = Input.GetButton(_aimKey);
-
-        if (isAimed != _isAim) 
-        {
-            if (isAimed == true)
-            {
-                OnAimState();
-            }
-            else
-            {
-                OffAimState();
-            }
-        }
-        _isAim = isAimed;
-
-        if (Input.GetKeyDown(KeyCode.K) == true)
-        {
-            _aimState += 1;
-            _aimState = (AimState)((int)_aimState % (int)AimState.ENEND); //Aim상태 = AimScript가 관리하도록
-        }
-    }
-
-    public void LateUpdate()
-    {
         if (_isAim == true)
         {
             Vector2 mouseMove = _inputController._pr_mouseMove;
@@ -94,6 +86,32 @@ public class AimScript : MonoBehaviour
 
             AimRotation(desiredAimRotation);
         }
+
+        //bool isAimed = Input.GetButton(_aimKey);
+
+        //if (isAimed != _isAim) 
+        //{
+        //    if (isAimed == true)
+        //    {
+        //        OnAimState();
+        //    }
+        //    else
+        //    {
+        //        OffAimState();
+        //    }
+        //}
+        //_isAim = isAimed;
+
+        //if (Input.GetKeyDown(KeyCode.K) == true)
+        //{
+        //    _aimState += 1;
+        //    _aimState = (AimState)((int)_aimState % (int)AimState.ENEND); //Aim상태 = AimScript가 관리하도록
+        //}
+    }
+
+    public void LateUpdate()
+    {
+
     }
 
     public void AimRotation(Vector2 rotatedValue) //인자값 = 마우스가 움직였으니 움직여야 할 값

@@ -49,6 +49,7 @@ public class Gunscript : MonoBehaviour
         Debug.Assert( _aimScript != null, "Gun은 AimScrip가 반드시 있어야만 한다");
         Debug.Assert(_firePosition != null, "발사할곳이 없는데 이게 총입니까?");
     }
+
     public void Fire()
     {
         //Do RayCast

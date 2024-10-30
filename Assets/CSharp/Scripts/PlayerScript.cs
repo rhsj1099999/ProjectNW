@@ -17,20 +17,20 @@ public class PlayerScript : MonoBehaviour
     private ItemInfo _currEquipWeaponItem = null;
     public WeaponScript GetWeapon() { return _currEquipWeapon; }
     public ItemInfo GetWeaponItem() { return _currEquipWeaponItem; }
-    private WeaponScript[] _tempLeftWeapons;
+    private List<WeaponScript> _tempLeftWeapons = new List<WeaponScript>();
     private int _currLeftWeaponIndex = 0;
     private WeaponScript _tempCurrLeftWeapon = null;
-    private WeaponScript[] _tempRightWeapons;
+    private List<WeaponScript> _tempRightWeapons = new List<WeaponScript>();
     private int _currRightWeaponIndex = 0;
     private WeaponScript _tempCurrTightWeapon = null;
     //현재는 캐릭터메쉬가 애니메이터를 갖고있기 때문에 애니메이터를 갖고있는 게임오브젝트가 캐릭터 메쉬다
-    private GameObject _characterModelObject = null; 
-
+    private GameObject _characterModelObject = null; //애니메이터는 얘가 갖고있다
+    public Animator GetAnimator() { return _animator; }
 
 
     //Aim System
     private AimScript2 _aimScript = null;
-
+    private bool _isAim = false;
 
 
 
@@ -72,20 +72,27 @@ public class PlayerScript : MonoBehaviour
         |TODO| 임시코드이다. 지워라
         --------------------------*/
         {
-            _tempLeftWeapons = new WeaponScript[3];
-            _tempLeftWeapons[0] = null;
-            _tempLeftWeapons[1] = null;
-            _tempLeftWeapons[2] = null;
+            _tempLeftWeapons.Add(gameObject.AddComponent<WeaponScript>());
+            _tempLeftWeapons.Add(gameObject.AddComponent<WeaponScript>());
+            _tempLeftWeapons.Add(gameObject.AddComponent<WeaponScript>());
 
-            _tempRightWeapons = new WeaponScript[3];
-
-            _tempRightWeapons[0] = new WeaponScript();
+            _tempRightWeapons.Add(gameObject.AddComponent<WeaponScript>());
             _tempRightWeapons[0]._weaponType = ItemInfo.WeaponType.LargeSword;
 
-            _tempRightWeapons[1] = new WeaponScript();
-            _tempRightWeapons[1]._weaponType = ItemInfo.WeaponType.MediumGun;
+            _tempRightWeapons.Add(gameObject.AddComponent<Gunscript2>());
+            //_tempRightWeapons[1]._weaponType = ItemInfo.WeaponType.MediumGun;
+            _tempRightWeapons[1]._weaponType = ItemInfo.WeaponType.LargeSword;
+            //어깨에 붙인다는 이론은 더이상 쓰지 않는다
+            //어깨는 IK를 통해 따라간다.
+            _tempRightWeapons[1]._itemPrefabRoute = "RuntimePrefab/Weapon/GunPivot";
 
-            _tempRightWeapons[2] = null;
+            _tempRightWeapons.Add(gameObject.AddComponent<WeaponScript>());
+
+            for (int i = 0; i < 3; i++)
+            {
+                _tempLeftWeapons[i].enabled = false;
+                _tempRightWeapons[i].enabled = false;
+            }
         }
     }
 
@@ -179,58 +186,118 @@ public class PlayerScript : MonoBehaviour
                 else
                 {
                     //다음 무기가 있다.
-
+                    //nextWeapon.enabled = true;
                     //1. 조준 시스템 활성/비활성화
                     {
-                        if (nextWeapon._weaponType >= ItemInfo.WeaponType.NotWeapon && nextWeapon._weaponType <= ItemInfo.WeaponType.LargeSword)
-                        {
-                            if (_aimScript != null)
-                            {
-                                _aimScript.enabled = false;
-                            }
-                        }
+                        //if (nextWeapon._weaponType >= ItemInfo.WeaponType.NotWeapon && nextWeapon._weaponType <= ItemInfo.WeaponType.LargeSword)
+                        //{
+                        //    if (_aimScript != null)
+                        //    {
+                        //        _aimScript.enabled = false;
+                        //    }
+                        //}
 
-                        if (nextWeapon._weaponType >= ItemInfo.WeaponType.SmallGun && nextWeapon._weaponType <= ItemInfo.WeaponType.LargeGun)
-                        {
-                            ReadyAimSystem();
-                        }
+                        //if (nextWeapon._weaponType >= ItemInfo.WeaponType.SmallGun && nextWeapon._weaponType <= ItemInfo.WeaponType.LargeGun)
+                        //{
+                        //    ReadyAimSystem();
+                        //}
+
+                        ReadyAimSystem();
                     }
 
                     //2. 아이템 소켓 장착(메쉬 붙이기) -> 필요하다면 IK 까지
+                    GameObject prefab = Resources.Load<GameObject>(nextWeapon._itemPrefabRoute);
+                    if (prefab != null)
                     {
-                        //아이템 프리팹 생성
-                        {
-                            GameObject prefab = Resources.Load<GameObject>(nextWeapon._itemPrefabRoute);
-                            GameObject newObject = Instantiate(prefab);
-                        }
 
+
+                        Transform correctSocket = null;
                         //소켓 찾기
                         {
                             Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
-                            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
 
+                            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
                             Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+                            ItemInfo.WeaponType targetType = nextWeapon._weaponType;
 
                             foreach (var socketComponent in weaponSockets)
                             {
-
+                                foreach (var type in socketComponent._equippableWeaponTypes)
+                                {
+                                    if (type == targetType)
+                                    {
+                                        correctSocket = socketComponent.gameObject.transform;
+                                        break;
+                                    }
+                                }
                             }
 
-                            Transform correctSocket = null;
+                            Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
                         }
 
+                        //아이템 프리팹 생성
+                        GameObject newObject = null;
+                        {
+                            newObject = Instantiate(prefab);
+                            WeaponScript component = newObject.GetComponent<WeaponScript>();
+                            component.Equip(this, correctSocket);
+                            _tempRightWeapons[1] = component;
 
-                        
+                            //조종자의 자식으로 부모를 설정해야한다
+                            //움직임은 WeaponScript의 Follow를 호출해 직접 움직인다
+                            newObject.transform.SetParent(transform);
+                            newObject.transform.localPosition = Vector3.zero;
+                        }
 
-                        //newObject.transform.position = _aimSatellite.transform.position;
-                        //newObject.transform.SetParent(_aimSatellite.transform);
+                        /*-----------------------------------------------------------------------------------------------------------------
+                        |NOTI| 아이템 프리팹은 기본 PIVOT을 들고있다.
+                        무기의 위치는 자식 Transform으로 결정돠면 안된다 : (IK를 이용할 가능성 때문에)
+                        -----------------------------------------------------------------------------------------------------------------*/
+
+                        //Vector3 weaponPivot = newObject.transform.localPosition;
+                        //newObject.transform.localPosition = Vector3.zero;
+                        //newObject.transform.position = correctSocket.position;
+                        //newObject.transform.rotation = correctSocket.rotation;
+                        //newObject.transform.localPosition = weaponPivot;
                     }
-
-
                 }
             }
+
         }
 
+        //Temp Aim
+
+        if (_aimScript != null && _aimScript.enabled == true)
+        {
+            bool isAimed = Input.GetButton("Fire2");
+            
+            if (isAimed != _isAim) 
+            {
+                _isAim = isAimed;
+
+                if (isAimed == true)
+                {
+                    _aimScript.OnAimState();
+
+                    if (_currRightWeaponIndex == 1)
+                    {
+                        _tempRightWeapons[1].TurnOnAim();
+                    }
+                }
+                else
+                {
+                    _aimScript.OffAimState();
+
+                    if (_tempRightWeapons[_currRightWeaponIndex] != null)
+                    {
+                        _tempRightWeapons[_currRightWeaponIndex].TurnOffAim();
+                    }
+                }
+            }
+
+
+        }
 
         /*-----------------------------------------------------------------------------------------------------------------
         |TODO| 현재는 이 컴포넌트가 사용할 상태를 전부 들고있다. 공격상태의 경우에는 무기가 상태를 들고있어야 하지 않을까?
@@ -309,15 +376,29 @@ public class PlayerScript : MonoBehaviour
         _corutineStarted = false;
     }
 
+    public void AnimationOverride(AnimationClip targetClip)
+    {
+        {
+            AnimatorClipInfo[] currentClipInfos = _animator.GetCurrentAnimatorClipInfo(0);
+            Debug.Assert((currentClipInfos.Length > 0), "재생중인 애니메이션을 잃어버렸습니다");
+        }
+        if (_currentLayerIndex == 0)
+        {
+            _overrideController[_targetName1] = targetClip;
+        }
+        else
+        {
+            _overrideController[_targetName2] = targetClip;
+        }
+    }
 
-    private void ChangeAnimation(AnimationClip targetClip)
+    public void ChangeAnimation(AnimationClip targetClip)
     {
         /*----------------------------------------------------------------------------------------------------------
         |TODO| Jump -> Sprint 상태 전환시
         부주의로 인해 Jump -> Move -> Idle의 전환이 이루어졌다.
         이때 너무빠른 전환으로 인해 즉시 코루틴이 종료되면서 모션이 텔레포트한다 수정해라
         ----------------------------------------------------------------------------------------------------------*/
-
         {
             AnimatorClipInfo[] currentClipInfos = _animator.GetCurrentAnimatorClipInfo(0);
             Debug.Assert((currentClipInfos.Length > 0), "재생중인 애니메이션을 잃어버렸습니다");
