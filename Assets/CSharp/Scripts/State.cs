@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,8 +30,6 @@ public enum ConditionType
 [Serializable]
 public class KeyInputConditionDesc
 {
-
-
     public KeyCode _targetKeyCode;
     public KeyPressType _targetState;
     public bool _keyInpuyGoal;
@@ -56,10 +55,18 @@ public class StateLinkDesc
 }
 
 [Serializable]
+public class WeaponOverrideAnimation
+{
+    public ItemInfo.WeaponType _weaponType = ItemInfo.WeaponType.NotWeapon;
+    public AnimationClip _animationClip = null;
+}
+
+    [Serializable]
 public class StateDesc
 {
     public string _stataName;
     public AnimationClip _stateAnimationClip;
+    public List<WeaponOverrideAnimation> _weaponOverrideClip;
 
     public List<StateActionType> _EnterStateActionTypes;
     public List<StateActionType> _inStateActionTypes;
@@ -74,6 +81,15 @@ public class State
     {
         _stateDesc = stateAsset._myState; //복사 완료
         _stateAssetCreateFrom = stateAsset;
+
+        foreach (var weaponOverrideAnimation in _stateDesc._weaponOverrideClip)
+        {
+            Debug.Assert(weaponOverrideAnimation._weaponType != ItemInfo.WeaponType.NotWeapon, "Override 할려면 NotWeapon이여서는 안된다");
+            Debug.Assert(weaponOverrideAnimation._animationClip != null, "Override 할려는데 AnimationClip이 null이여서는ㄴ 안더ㅣㄴ다");
+            Debug.Assert(_weaponOverrideAnimationDic.ContainsKey(weaponOverrideAnimation._weaponType) == false, "Override하려는 Animation이 이미 존재합니다");
+
+            _weaponOverrideAnimationDic.Add(weaponOverrideAnimation._weaponType, weaponOverrideAnimation._animationClip);
+        }
     }
 
     public class StateInitDesc
@@ -97,16 +113,26 @@ public class State
     private StateDesc _stateDesc; //Copy From ScriptableObject
     private StateAsset _stateAssetCreateFrom = null;
     private Dictionary<State/*Another State*/, List<Condition>> _linkedState = new Dictionary<State , List<Condition>>();
+    private Dictionary<ItemInfo.WeaponType, AnimationClip> _weaponOverrideAnimationDic = new Dictionary<ItemInfo.WeaponType, AnimationClip>();
+
     private StateInitDesc _ownerActionComponent;
     private string _unityName_HipBone = "Hips";
     private string _unityName_HipBoneLocalPositionX = "RootT.x";
     private string _unityName_HipBoneLocalPositionY = "RootT.y";
     private string _unityName_HipBoneLocalPositionZ = "RootT.z";
 
-
     public StateDesc GetStateDesc() {return _stateDesc;}
     public StateAsset GetStateAssetFrom() {return _stateAssetCreateFrom;}
-    
+    public AnimationClip GetCurrWeaponOverrideAnimation(ItemInfo.WeaponType currWeaponType)
+    {
+        if (_weaponOverrideAnimationDic.ContainsKey(currWeaponType) == false)
+        {
+            return null;
+        }
+
+        return _weaponOverrideAnimationDic[currWeaponType];
+    }
+
 
 
     public void Initialize(PlayerScript owner)
@@ -380,15 +406,6 @@ public class State
                             {
                                 if (curveXFind == true && curveYFind == true && curveZFind == true)
                                 { break; } //다 찾았습니다.
-
-                                //if (binding.path == _unityName_HipBone && binding.propertyName == _unityName_HipBoneLocalPositionX)
-                                //{_ownerActionComponent._animationHipCurveX = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveXFind = true; }
-
-                                //if (binding.path == _unityName_HipBone && binding.propertyName == _unityName_HipBoneLocalPositionY)
-                                //{_ownerActionComponent._animationHipCurveY = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveYFind = true; }
-
-                                //if (binding.path == _unityName_HipBone && binding.propertyName == _unityName_HipBoneLocalPositionZ)
-                                //{_ownerActionComponent._animationHipCurveZ = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveZFind = true; }
 
                                 if (binding.propertyName == _unityName_HipBoneLocalPositionX)
                                 { _ownerActionComponent._animationHipCurveX = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveXFind = true; }

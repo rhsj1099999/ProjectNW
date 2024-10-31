@@ -33,8 +33,6 @@ public class Gunscript2 : WeaponScript
     /*------------------------------------------
     IK Section.
     ------------------------------------------*/
-    [SerializeField] AnimationClip _idleAnimationClipForDebugging = null;
-    [SerializeField] AnimationClip _aimAnimationClipForDebugging = null;
     private Animator _ownerAnimator = null;
     private IKScript _ownerIKSkript = null;
     private Transform _shoulderStock_Unity = null;
@@ -90,25 +88,6 @@ public class Gunscript2 : WeaponScript
         Debug.Assert(_firePosition != null, "발사할곳이 없는데 이게 총입니까?");
         Debug.Assert(_stockPosition != null, "자세제어를 위해 견착위치가 필요합니다(권총도 마찬가지)");
         Debug.Assert(_ownerIKSkript != null, "Gun은 IK를 이용해야만 합니다");
-
-        //애니메이션 바꾸기
-        {
-            //AnimationClip weaponOverrideAnimation = null;
-            //{
-            //    //플레이어에게 상태를 받아오고 덮어 쓸 애니메이션이 있는지 찾음
-            //}
-
-            //if (weaponOverrideAnimation != null)
-            //{
-            //    //덮어 씌운다
-            //}
-
-            //임시로 IdleAnimation 강제로 바꾸기
-            if (_idleAnimationClipForDebugging != null)
-            {
-                itemOwner.ChangeAnimation(_idleAnimationClipForDebugging);
-            }
-        }
 
         //IK 세팅 단계
         {
@@ -234,22 +213,18 @@ public class Gunscript2 : WeaponScript
 
     override public void TurnOnAim()
     {
-        if (_aimAnimationClipForDebugging != null)
-        {
-            _isAimming = true;
-            _owner.ChangeAnimation(_aimAnimationClipForDebugging);
-        }
+        /*------------------------------------------------------
+        |TODO| Desc 받아와서 MainHandler에 해당하는 Desc를 꺼야한다
+        ------------------------------------------------------*/
         _ownerIKSkript.OnIK(_createdIKTargets["RightHandIK"]);
     }
 
 
     override public void TurnOffAim()
     {
-        if (_idleAnimationClipForDebugging != null)
-        {
-            _isAimming = false;
-            _owner.ChangeAnimation(_idleAnimationClipForDebugging);
-        }
+        /*------------------------------------------------------
+        |TODO| Desc 받아와서 MainHandler에 해당하는 Desc를 꺼야한다
+        ------------------------------------------------------*/
         _ownerIKSkript.OffIK(_createdIKTargets["RightHandIK"]);
     }
 

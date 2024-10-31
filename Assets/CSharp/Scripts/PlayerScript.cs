@@ -4,6 +4,49 @@ using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
+public class WeaponHoldingType
+{
+    public enum HoldingType //생각날때마다(컨텐츠 추가) 이넘값 늘리기로
+    {
+        None, //손에 아무것도 없다.
+        SmallMelee,             //SmallMelee : 버클러, 단검 등등
+        TwoSmallMelee,          //SmallMelee : 버클러, 단검 등등
+        MediumMeelee,           //MediumMelee : 한손검, 일반 방패 등등
+        TwoMediumMeelee,         //MediumMelee : 한손검, 일반 방패 등등
+        LargeMelee,
+        TwoLargeMelee,
+    }
+
+
+    void CalculateCurrHoldingType(WeaponScript leftHand, WeaponScript rightHand)
+    {
+        if (leftHand == null && rightHand == null) //둘다 장착하고있지 않다.
+        {
+            _currHoldingType = HoldingType.None;
+            return;
+        }
+
+
+        if (leftHand != null && rightHand != null) //둘다 뭔가를 장착하고 있다.
+        {
+            _currHoldingType = HoldingType.None;
+            return;
+        }
+
+        
+
+
+
+        
+    }
+
+    public HoldingType _currHoldingType = HoldingType.None;
+    public bool _isRightSided = true;  //오른손에만 장착하고 있다
+    public bool _isSideFocused = true; //한손무기를 양손으로 잡았습니까
+}
+
+
 public class PlayerScript : MonoBehaviour
 {
     //대표 컴포넌트
@@ -17,12 +60,18 @@ public class PlayerScript : MonoBehaviour
     private ItemInfo _currEquipWeaponItem = null;
     public WeaponScript GetWeapon() { return _currEquipWeapon; }
     public ItemInfo GetWeaponItem() { return _currEquipWeaponItem; }
-    private List<WeaponScript> _tempLeftWeapons = new List<WeaponScript>();
+
     private int _currLeftWeaponIndex = 0;
-    private WeaponScript _tempCurrLeftWeapon = null;
-    private List<WeaponScript> _tempRightWeapons = new List<WeaponScript>();
     private int _currRightWeaponIndex = 0;
-    private WeaponScript _tempCurrTightWeapon = null;
+
+    private WeaponScript _tempCurrLeftWeapon = null;
+    private WeaponScript _tempCurrRightWeapon = null;
+
+    private List<WeaponScript> _tempLeftWeapons = new List<WeaponScript>();
+    private List<WeaponScript> _tempRightWeapons = new List<WeaponScript>();
+    private WeaponHoldingType _weaponHoldingType = new WeaponHoldingType();
+
+
     //현재는 캐릭터메쉬가 애니메이터를 갖고있기 때문에 애니메이터를 갖고있는 게임오브젝트가 캐릭터 메쉬다
     private GameObject _characterModelObject = null; //애니메이터는 얘가 갖고있다
     public Animator GetAnimator() { return _animator; }
@@ -68,6 +117,13 @@ public class PlayerScript : MonoBehaviour
         _animator.runtimeAnimatorController = _overrideController;
         _characterModelObject = _animator.gameObject;
 
+        /*-----------------------------------------------------------------
+        |NOTO| 총 무기 뿐만 아니라 그냥 무기투적을 생각해서라도 TPS 시스템을 준비한다
+        -----------------------------------------------------------------*/
+        ReadyAimSystem();
+        _aimScript.enabled = false;
+
+
         /*------------------------
         |TODO| 임시코드이다. 지워라
         --------------------------*/
@@ -80,8 +136,8 @@ public class PlayerScript : MonoBehaviour
             _tempRightWeapons[0]._weaponType = ItemInfo.WeaponType.LargeSword;
 
             _tempRightWeapons.Add(gameObject.AddComponent<Gunscript2>());
+            _tempRightWeapons[1]._weaponType = ItemInfo.WeaponType.MediumGun;
             //_tempRightWeapons[1]._weaponType = ItemInfo.WeaponType.MediumGun;
-            _tempRightWeapons[1]._weaponType = ItemInfo.WeaponType.LargeSword;
             //어깨에 붙인다는 이론은 더이상 쓰지 않는다
             //어깨는 IK를 통해 따라간다.
             _tempRightWeapons[1]._itemPrefabRoute = "RuntimePrefab/Weapon/GunPivot";
@@ -172,94 +228,109 @@ public class PlayerScript : MonoBehaviour
                 nextWeapon = _tempRightWeapons[_currRightWeaponIndex];
             }
 
-            //무기 전환을 시도했다
-            if (weaponChangeTry == true) 
+            _tempCurrLeftWeapon = _tempLeftWeapons[_currLeftWeaponIndex];
+            _tempCurrRightWeapon = _tempRightWeapons[_currRightWeaponIndex];
+
+            //무기 전환을 시도했으며, 다음 무기가 있다.
+            if (weaponChangeTry == true && nextWeapon != null)
             {
-                //다음 무기가 없다.
-                if (nextWeapon == null)
+                //아이템 소켓 장착(메쉬 붙이기) -> 필요하다면 IK 까지
+                GameObject prefab = Resources.Load<GameObject>(nextWeapon._itemPrefabRoute);
+                if (prefab != null)
                 {
-                    if (_aimScript != null)
+                    //소켓 찾기
+                    Transform correctSocket = null;
                     {
-                        _aimScript.enabled = false;
-                    }
-                }
-                else
-                {
-                    //다음 무기가 있다.
-                    //nextWeapon.enabled = true;
-                    //1. 조준 시스템 활성/비활성화
-                    {
-                        //if (nextWeapon._weaponType >= ItemInfo.WeaponType.NotWeapon && nextWeapon._weaponType <= ItemInfo.WeaponType.LargeSword)
-                        //{
-                        //    if (_aimScript != null)
-                        //    {
-                        //        _aimScript.enabled = false;
-                        //    }
-                        //}
+                        Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
 
-                        //if (nextWeapon._weaponType >= ItemInfo.WeaponType.SmallGun && nextWeapon._weaponType <= ItemInfo.WeaponType.LargeGun)
-                        //{
-                        //    ReadyAimSystem();
-                        //}
+                        WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+                        Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
 
-                        ReadyAimSystem();
-                    }
+                        ItemInfo.WeaponType targetType = nextWeapon._weaponType;
 
-                    //2. 아이템 소켓 장착(메쉬 붙이기) -> 필요하다면 IK 까지
-                    GameObject prefab = Resources.Load<GameObject>(nextWeapon._itemPrefabRoute);
-                    if (prefab != null)
-                    {
-
-
-                        Transform correctSocket = null;
-                        //소켓 찾기
+                        foreach (var socketComponent in weaponSockets)
                         {
-                            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
-
-                            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
-                            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
-
-                            ItemInfo.WeaponType targetType = nextWeapon._weaponType;
-
-                            foreach (var socketComponent in weaponSockets)
+                            foreach (var type in socketComponent._equippableWeaponTypes)
                             {
-                                foreach (var type in socketComponent._equippableWeaponTypes)
+                                if (type == targetType)
                                 {
-                                    if (type == targetType)
-                                    {
-                                        correctSocket = socketComponent.gameObject.transform;
-                                        break;
-                                    }
+                                    correctSocket = socketComponent.gameObject.transform;
+                                    break;
                                 }
                             }
-
-                            Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
                         }
 
-                        //아이템 프리팹 생성
-                        GameObject newObject = null;
+                        Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
+                    }
+
+                    //아이템 프리팹 생성 -> IK 설정이 Equip에서 완료된다. nextWeapon = 인벤토리에 무기가 장착돼있었다는 디버깅이였고 실제 장착한 무기의 정보로 변수가 바뀐다.
+                    GameObject newObject = null;
+                    {
+                        newObject = Instantiate(prefab);
+                        nextWeapon = newObject.GetComponent<WeaponScript>();
+                        nextWeapon._weaponType = ItemInfo.WeaponType.MediumGun;
+                        nextWeapon.Equip(this, correctSocket);
+                        _tempRightWeapons[1] = nextWeapon;
+                        newObject.transform.SetParent(transform);
+                    }
+
+                    //기존에 들고있던 왼손, 오른손에 대해 계산하는 코드
+                    {
+                        bool tempIsRightHandWeapon = true; //이건 인벤터로기 결정해야한다.
+
+                        if (nextWeapon._onlyTwoHand == true)
                         {
-                            newObject = Instantiate(prefab);
-                            WeaponScript component = newObject.GetComponent<WeaponScript>();
-                            component.Equip(this, correctSocket);
-                            _tempRightWeapons[1] = component;
-
-                            //조종자의 자식으로 부모를 설정해야한다
-                            //움직임은 WeaponScript의 Follow를 호출해 직접 움직인다
-                            newObject.transform.SetParent(transform);
-                            newObject.transform.localPosition = Vector3.zero;
+                            if (tempIsRightHandWeapon == true)
+                            {
+                                _tempCurrLeftWeapon = null;
+                            }
+                            else
+                            {
+                                _tempCurrRightWeapon = null;
+                            }
                         }
 
-                        /*-----------------------------------------------------------------------------------------------------------------
-                        |NOTI| 아이템 프리팹은 기본 PIVOT을 들고있다.
-                        무기의 위치는 자식 Transform으로 결정돠면 안된다 : (IK를 이용할 가능성 때문에)
-                        -----------------------------------------------------------------------------------------------------------------*/
+                        {
+                            //세팅이 끝났으면 양손에 뭔가를 들고있다
 
-                        //Vector3 weaponPivot = newObject.transform.localPosition;
-                        //newObject.transform.localPosition = Vector3.zero;
-                        //newObject.transform.position = correctSocket.position;
-                        //newObject.transform.rotation = correctSocket.rotation;
-                        //newObject.transform.localPosition = weaponPivot;
+                            //오른손 무기에게서 핸들링 애니메이션을 받아온다.
+                            //왼손 무기에게서 핸들링 애니메이션을 받아온다.
+                            AnimationClip leftWeaponHandlingAnimation = null;
+                            AnimationClip rightWeaponHandlingAnimation = null;
+
+                            //AvatarMask leftWeaponAvatarMask = null;
+                            //AvatarMask rightWeaponAvatarMask = null;
+
+                            if (_tempCurrLeftWeapon != null)
+                            {
+                                leftWeaponHandlingAnimation = _tempCurrLeftWeapon._handlingIdleAnimation;
+                            }
+                            if (_tempCurrRightWeapon != null)
+                            {
+                                rightWeaponHandlingAnimation = _tempCurrRightWeapon._handlingIdleAnimation;
+                            }
+
+
+                            {
+                                //무기가 양손에 있다
+                                //2개의 아바타 마스크를 받아온다
+                            }
+
+                            {
+                                //무기가 한손에 있다
+                                //1개의 아바타 마스크를 받아온다.
+                            }
+                            
+
+
+                        }
+                    }
+
+                    //애니메이션 오버라이드 클립 탐색
+                    AnimationClip overrideAnimation = _stateContoller.GetCurrState().GetCurrWeaponOverrideAnimation(nextWeapon._weaponType);
+                    if (overrideAnimation != null)
+                    {
+                        ChangeAnimation(overrideAnimation);
                     }
                 }
             }
@@ -267,7 +338,6 @@ public class PlayerScript : MonoBehaviour
         }
 
         //Temp Aim
-
         if (_aimScript != null && _aimScript.enabled == true)
         {
             bool isAimed = Input.GetButton("Fire2");
@@ -295,8 +365,6 @@ public class PlayerScript : MonoBehaviour
                     }
                 }
             }
-
-
         }
 
         /*-----------------------------------------------------------------------------------------------------------------
@@ -318,10 +386,46 @@ public class PlayerScript : MonoBehaviour
         _characterMoveScript2.ClearLatestVelocity();
     }
 
+    public void ChangeWeaponOverrideAnimation(ItemInfo.WeaponType weaponType)
+    {
+        /*
+        Idle -> 무기 오버라이드 O
+        roll -> 무기 오버라이드 O
+        Jump -> 무기 오버라이드 O
+        Sprint -> 무기 오버라이드 O
+
+        Hitted -> 무기 오버라이드 X
+        Dead -> 무기 오버라이드 X
+
+        무기마다 고유자세 -> State한테서 받아올게 아니라 무기한테 빋아와야함
+        -----------------------------------
+
+        Swing Attack -> 무기 오버라이드 X
+
+        -----------------------------------
+
+
+         
+         
+         
+         
+         
+         
+         
+         */
+
+    }
+
+
+
+
+
     private void LateUpdate()
     {
-        {//애니메이션 업데이트
+        //애니메이션 업데이트
+        {
             State currState = _stateContoller.GetCurrState();
+
             AnimationClip currAnimationClip = currState.GetStateDesc()._stateAnimationClip;
 
             if (_currAnimClip != currAnimationClip)
@@ -382,6 +486,7 @@ public class PlayerScript : MonoBehaviour
             AnimatorClipInfo[] currentClipInfos = _animator.GetCurrentAnimatorClipInfo(0);
             Debug.Assert((currentClipInfos.Length > 0), "재생중인 애니메이션을 잃어버렸습니다");
         }
+
         if (_currentLayerIndex == 0)
         {
             _overrideController[_targetName1] = targetClip;

@@ -16,6 +16,9 @@ MonoBehaviour:
     _stataName: Idle
     _stateAnimationClip: {fileID: 3094330708855449807, guid: ebf6d636f0bdc7642bca3e831800df09,
       type: 3}
+    _weaponOverrideClip:
+    - _weaponType: 5
+      _animationClip: {fileID: 7400000, guid: 1cb483fdd3fc8ac4a817695a40a0536d, type: 2}
     _EnterStateActionTypes: 
     _inStateActionTypes: 
     _ExitStateActionTypes: 
@@ -28,6 +31,7 @@ MonoBehaviour:
         - _targetKeyCode: 113
           _targetState: 0
           _keyInpuyGoal: 1
+          _keyHoldGoal: 0
         _animationFrameUpGoal: 0
         _animationFrameUnderGoal: 0
       _stateAsset: {fileID: 11400000, guid: 7404b31f3cd58024487d41858c11f617, type: 2}
@@ -55,6 +59,7 @@ MonoBehaviour:
         - _targetKeyCode: 32
           _targetState: 0
           _keyInpuyGoal: 1
+          _keyHoldGoal: 0
         _animationFrameUpGoal: 0
         _animationFrameUnderGoal: 0
       _stateAsset: {fileID: 11400000, guid: d88f711dc5f252741aa18d52f1cddb43, type: 2}
