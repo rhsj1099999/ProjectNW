@@ -6,12 +6,39 @@ using UnityEngine.UI;
 
 public class OnGUIManager : MonoBehaviour
 {
-    void Update()
-    {
-    }
+    private GUIStyle _style = null;
+    private List<int> _frameDebug = new List<int>();
+    private int _currentFrame = 0;
+    private float _currentTimeAcc = 0;
 
-    void Start()
+    private void Update()
     {
+        _currentTimeAcc += Time.deltaTime;
+
+        
+        if (_currentTimeAcc > 0.2f )
+        {
+            if (_frameDebug.Count >= 5)
+            {
+                _frameDebug.Remove(_frameDebug[0]);
+            }
+
+            _frameDebug.Add((int)(1.0f / Time.deltaTime));
+
+            if (_frameDebug.Count >= 5)
+            {
+                int total = 0;
+                foreach (int i in _frameDebug) 
+                {
+                    total += i;
+                }
+                _currentFrame = total / 5;
+            }
+
+            _currentTimeAcc = 0.0f;
+        }
+        
+
     }
 
     public List<RaycastResult> GetUIElementsUnderMouse()
@@ -41,6 +68,7 @@ public class OnGUIManager : MonoBehaviour
             ShowString("겹친UI 개수 : " + GetUIElementsUnderMouse().Count, ref messageStartRect, 35.0f);
             Vector2 mousePosition = Input.mousePosition;
             ShowString("마우스InputPosition : X|" + mousePosition.x + " Y|" + mousePosition.y, ref messageStartRect, 35.0f);
+            ShowString("현재프레임 : " + _currentFrame + "FPS", ref messageStartRect, 35.0f);
 
             foreach (KeyValuePair<string, string> pair in _debugStrings)
             {
@@ -115,5 +143,4 @@ public class OnGUIManager : MonoBehaviour
         _style.normal.textColor = Color.white;
     }
 
-    private GUIStyle _style = null;
 }

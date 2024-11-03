@@ -3,110 +3,17 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor;
 using UnityEngine;
-
-public enum StateActionType
-{
-    Move,
-    Attack, //현재 무기에 따라 달라질 수 있다.
-    SaveLatestVelocity,
-    Jump,
-    ForcedMove,
-    ResetLatestVelocity,
-    RootMove,
-    RotateWithoutInterpolate,
-    RightHandWeaponSignal,
-    LeftHandWeaponSignal,
-}
-
-public enum ConditionType
-{
-    MoveDesired,
-    AnimationEnd,
-    InAir,
-    KeyInput,
-    EquipWeaponByType,
-    AnimationFrameUp, //~~초 이상으로 재생 됐습니다. -> Animator가 지원하는 normalizedTime을 쓰지 않습니다.
-    AnimationFrameUnder, //~~초 이하로 재생 됐습니다. -> Animator가 지원하는 normalizedTime을 쓰지 않습니다.
-    RightHandWeaponSignaled, //무기로 공격하려했으며, 넘어갈 수 있습니다.
-    LeftHandWeaponSignaled, //무기로 공격하려했으며, 넘어갈 수 있습니다.
-}
-
-[Serializable]
-public class KeyInputConditionDesc
-{
-    public KeyCode _targetKeyCode;
-    public KeyPressType _targetState;
-    public bool _keyInpuyGoal;
-    public float _keyHoldGoal = 0.0f;
-}
-
-[Serializable]
-public class ConditionDesc
-{
-    public ConditionType _singleConditionType;
-    public bool _componentConditionGoal;
-    public ItemInfo.WeaponType _weaponTypeGoal;
-    public List<KeyInputConditionDesc> _keyInputConditionTarget;
-    public float _animationFrameUpGoal;
-    public float _animationFrameUnderGoal;
-}
-
-[Serializable]
-public class StateLinkDesc
-{
-    public List<ConditionDesc> _multiConditionAsset; //MultiCondition
-    public StateAsset _stateAsset;
-}
-
-[Serializable]
-public class WeaponOverrideAnimation
-{
-    public ItemInfo.WeaponType _weaponType = ItemInfo.WeaponType.NotWeapon;
-    public AnimationClip _animationClip = null;
-}
-
-[Serializable]
-public class StateDesc
-{
-    public string _stataName;
-    public AnimationClip _stateAnimationClip;
-    public bool _rightWeaponOverride = true;
-    public bool _leftWeaponOverride = true;
-
-    public List<WeaponOverrideAnimation> _weaponOverrideClip;
-
-    public List<StateActionType> _EnterStateActionTypes;
-    public List<StateActionType> _inStateActionTypes;
-    public List<StateActionType> _ExitStateActionTypes;
-
-    public List<StateLinkDesc> _linkedStates;
-}
+using static StateContoller;
 
 public class State
 {
-    public State(StateAsset stateAsset)
+    private string _unityName_HipBone = "Hips";
+    private string _unityName_HipBoneLocalPositionX = "RootT.x";
+    private string _unityName_HipBoneLocalPositionY = "RootT.y";
+    private string _unityName_HipBoneLocalPositionZ = "RootT.z";
+
+    public class StateAnimActionInfo
     {
-        _stateDesc = stateAsset._myState; //복사 완료
-        _stateAssetCreateFrom = stateAsset;
-
-        foreach (var weaponOverrideAnimation in _stateDesc._weaponOverrideClip)
-        {
-            Debug.Assert(weaponOverrideAnimation._weaponType != ItemInfo.WeaponType.NotWeapon, "Override 할려면 NotWeapon이여서는 안된다");
-            Debug.Assert(weaponOverrideAnimation._animationClip != null, "Override 할려는데 AnimationClip이 null이여서는ㄴ 안더ㅣㄴ다");
-            Debug.Assert(_weaponOverrideAnimationDic.ContainsKey(weaponOverrideAnimation._weaponType) == false, "Override하려는 Animation이 이미 존재합니다");
-
-            _weaponOverrideAnimationDic.Add(weaponOverrideAnimation._weaponType, weaponOverrideAnimation._animationClip);
-        }
-    }
-
-    public class StateInitDesc
-    {
-        public PlayerScript _owner = null;
-        public CharacterMoveScript2 _ownerMoveScript = null;
-        public CharacterController _ownerCharacterController = null;
-        public InputController _ownerInputController = null;
-        public Animator _ownerAnimator = null;
-
         public AnimationCurve _animationHipCurveX = null;
         public AnimationCurve _animationHipCurveY = null;
         public AnimationCurve _animationHipCurveZ = null;
@@ -117,43 +24,39 @@ public class State
     }
 
 
-    private StateDesc _stateDesc; //Copy From ScriptableObject
+    public State(StateAsset stateAsset)
+    {
+        _stateDesc = stateAsset._myState; //복사 완료
+        _stateAssetCreateFrom = stateAsset;
+    }
+
+
+    private PlayerScript _owner = null;
+    private StateDesc _stateDesc;
     private StateAsset _stateAssetCreateFrom = null;
-    private Dictionary<State/*Another State*/, List<Condition>> _linkedState = new Dictionary<State , List<Condition>>();
-    private Dictionary<ItemInfo.WeaponType, AnimationClip> _weaponOverrideAnimationDic = new Dictionary<ItemInfo.WeaponType, AnimationClip>();
+    public StateDesc GetStateDesc() { return _stateDesc; }
+    public StateAsset GetStateAssetFrom() { return _stateAssetCreateFrom; }
 
-    private StateInitDesc _ownerActionComponent;
-    private string _unityName_HipBone = "Hips";
-    private string _unityName_HipBoneLocalPositionX = "RootT.x";
-    private string _unityName_HipBoneLocalPositionY = "RootT.y";
-    private string _unityName_HipBoneLocalPositionZ = "RootT.z";
 
-    public StateDesc GetStateDesc() {return _stateDesc;}
-    public StateAsset GetStateAssetFrom() {return _stateAssetCreateFrom;}
-    public AnimationClip GetCurrWeaponOverrideAnimation(ItemInfo.WeaponType currWeaponType)
+    private StateAnimActionInfo _stateAnimActionInfo = null;
+    public StateAnimActionInfo GetStateAnimActionInfo() { return _stateAnimActionInfo; }
+
+
+    private Dictionary<State, List<ConditionDesc>> _linkedState = new Dictionary<State , List<ConditionDesc>>();
+    public Dictionary<State, List<ConditionDesc>> GetLinkedState() { return _linkedState; }
+
+
+    public void SettingOwnerComponent(PlayerScript owner, StateContollerComponentDesc ownerComponent)
     {
-        if (_weaponOverrideAnimationDic.ContainsKey(currWeaponType) == false)
-        {
-            return null;
-        }
-
-        return _weaponOverrideAnimationDic[currWeaponType];
+        _owner = owner;
+        InitPartial(ownerComponent, _stateDesc._EnterStateActionTypes, owner);
+        InitPartial(ownerComponent, _stateDesc._inStateActionTypes, owner);
+        InitPartial(ownerComponent, _stateDesc._ExitStateActionTypes, owner);
     }
 
 
-
-    public void Initialize(PlayerScript owner)
-    {
-        _ownerActionComponent = new StateInitDesc();
-
-        _ownerActionComponent._owner = owner;
-
-        InitPartial(ref _ownerActionComponent, _stateDesc._EnterStateActionTypes, owner);
-        InitPartial(ref _ownerActionComponent, _stateDesc._inStateActionTypes, owner);
-        InitPartial(ref _ownerActionComponent, _stateDesc._ExitStateActionTypes, owner);
-    }
-
-    public void LinkingStates(/*컨트롤러가 사용하는 스테이트들*/ref List<State> allStates /*딕셔너리로 바꾸세요*/, PlayerScript owner)
+    //Caller Must Have 'List<State>'                    /*Change To Dic*/
+    public void LinkingStates(ref List<State> allStates/*Change To Dic*/)
     {
         foreach (var linked in _stateDesc._linkedStates)
         {
@@ -173,155 +76,23 @@ public class State
                 }
             }
 
-            Debug.Log("없는 상태로 넘어가려 하는 조건이 있습니다. 오류는 아닐수도 있지만 실수일수도 있습니다.");
 
             if (targetState == null) //연결된 상태가 플레이어(혹은몬스터)가 사용하지 않는 상태다
             {
+                Debug.Log("없는 상태로 넘어가려 하는 조건이 있습니다. 오류는 아닐수도 있지만 실수일수도 있습니다.");
                 continue;
             }
 
-            
+
             if (_linkedState.ContainsKey(targetState) == false)
             {
-                _linkedState.Add(targetState, new List<Condition>());
-            }
-
-            List<Condition> existConditions = _linkedState[targetState];
-
-            for (int i = 0; i < linked._multiConditionAsset.Count; i++)
-            {
-                Condition newCondition = new Condition(linked._multiConditionAsset[i]);
-                newCondition.Initialize(owner);
-                existConditions.Add(newCondition);
-            }
-        }
-    }
-
-    public State CheckChangeState()
-    {
-        foreach(KeyValuePair<State, List<Condition>> pair in _linkedState)
-        {
-            bool isSuccess = true;
-
-            foreach (Condition condition in pair.Value) 
-            {
-                if (condition.CheckCondition() == false)
-                {
-                    isSuccess = false;
-                    break; //멀티컨디션에서 하나라도 삑났다.
-                }
-            }
-
-            if (isSuccess == true)
-            {
-                return pair.Key; //전부다 만족했다.
-            }
-        }
-
-        return null; //만족한게 하나도 없다.
-    }
-
-
-    public void DoActions(List<StateActionType> actions)
-    {
-        _ownerActionComponent._currStateSecond += Time.deltaTime;
-
-        foreach (var action in actions)
-        {
-            switch(action)
-            {
-                case StateActionType.Move:
-                    {
-                        _ownerActionComponent._ownerMoveScript.CharacterRotate(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
-                        _ownerActionComponent._ownerMoveScript.CharacterMove(_ownerActionComponent._ownerInputController._pr_directionByInput, 1.0f);
-                    }
-
-                    break;
-
-                case StateActionType.Attack:
-                    break;
-
-                case StateActionType.SaveLatestVelocity:
-                    break;
-
-                case StateActionType.Jump:
-                    {
-                        _ownerActionComponent._ownerMoveScript.DoJump();
-                    }
-                    
-                    break;
-
-                case StateActionType.ForcedMove:
-                    {
-                        Vector3 planeVelocity = _ownerActionComponent._ownerMoveScript.GetLatestVelocity();
-                        planeVelocity.y = 0.0f;
-                        _ownerActionComponent._ownerMoveScript.CharacterForcedMove(planeVelocity, 1.0f);
-                    }
-
-                    break;
-
-                case StateActionType.ResetLatestVelocity:
-                    break;
-
-                case StateActionType.RootMove:
-                    {
-                        float currentSecond = _ownerActionComponent._owner.GetCurrAnimationClipSecond();
-                        //float currentSecond = _ownerActionComponent._currStateSecond;
-
-                        Vector3 currentUnityLocalHip = new Vector3
-                            (
-                            _ownerActionComponent._animationHipCurveX.Evaluate(currentSecond),
-                            _ownerActionComponent._animationHipCurveY.Evaluate(currentSecond),
-                            _ownerActionComponent._animationHipCurveZ.Evaluate(currentSecond)
-                            );
-
-                        float prevSecond = _ownerActionComponent._prevReadedSecond;
-                        //float prevSecond = _ownerActionComponent._prevStateSecond;
-
-                        if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
-                        {
-                            prevSecond = 0.0f;
-                        }
-
-                        Vector3 prevUnityLocalHip = new Vector3
-                            (
-                            _ownerActionComponent._animationHipCurveX.Evaluate(prevSecond),
-                            _ownerActionComponent._animationHipCurveY.Evaluate(prevSecond),
-                            _ownerActionComponent._animationHipCurveZ.Evaluate(prevSecond)
-                            );
-
-                        Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
-                        Vector3 worldDelta = _ownerActionComponent._ownerCharacterController.transform.localToWorldMatrix * deltaLocalHip;
-                        _ownerActionComponent._ownerCharacterController.Move(worldDelta);
-
-                        //_ownerActionComponent._prevStateSecond = currentSecond;
-                        _ownerActionComponent._prevReadedSecond = currentSecond;
-                    }
-                    break;
-
-                case StateActionType.RotateWithoutInterpolate:
-                    {
-
-                    }
-                    break;
-
-                case StateActionType.RightHandWeaponSignal:
-                    break;
-
-                case StateActionType.LeftHandWeaponSignal:
-                    break;
-
-                default:
-                    Debug.Assert(false, "데이터가 추가됐습니까?");
-                    break;
+                _linkedState.Add(targetState, linked._multiConditionAsset);
             }
         }
     }
 
 
-
-
-    private void InitPartial(ref StateInitDesc _ownerActionComponent, List<StateActionType> list, PlayerScript owner)
+    private void InitPartial(StateContollerComponentDesc _ownerActionComponent, List<StateActionType> list, PlayerScript owner)
     {
         foreach (var actions in list)
         {
@@ -377,10 +148,10 @@ public class State
                             Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "ForcedMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
-                        if (_ownerActionComponent._ownerCharacterController == null)
+                        if (_ownerActionComponent._ownerCharacterComponent == null)
                         {
-                            _ownerActionComponent._ownerCharacterController = owner.GetComponent<CharacterController>();
-                            Debug.Assert(_ownerActionComponent._ownerCharacterController != null, "ForcedMove행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponent<CharacterController>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "ForcedMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
                     break;
@@ -403,14 +174,16 @@ public class State
                             Debug.Assert(_ownerActionComponent._ownerAnimator != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
-                        if (_ownerActionComponent._ownerCharacterController == null)
+                        if (_ownerActionComponent._ownerCharacterComponent == null)
                         {
-                            _ownerActionComponent._ownerCharacterController = owner.GetComponentInChildren<CharacterController>();
-                            Debug.Assert(_ownerActionComponent._ownerCharacterController != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         //애니메이션 커브 찾아놓기
                         {
+                            _stateAnimActionInfo = new StateAnimActionInfo();
+
                             EditorCurveBinding[] bindings = AnimationUtility.GetCurveBindings(_stateDesc._stateAnimationClip);
 
                             bool curveXFind = false, curveYFind = false, curveZFind = false;
@@ -421,13 +194,13 @@ public class State
                                 { break; } //다 찾았습니다.
 
                                 if (binding.propertyName == _unityName_HipBoneLocalPositionX)
-                                { _ownerActionComponent._animationHipCurveX = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveXFind = true; }
+                                { _stateAnimActionInfo._animationHipCurveX = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveXFind = true; }
 
                                 if (binding.propertyName == _unityName_HipBoneLocalPositionY)
-                                { _ownerActionComponent._animationHipCurveY = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveYFind = true; }
+                                { _stateAnimActionInfo._animationHipCurveY = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveYFind = true; }
 
                                 if (binding.propertyName == _unityName_HipBoneLocalPositionZ)
-                                { _ownerActionComponent._animationHipCurveZ = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveZFind = true; }
+                                { _stateAnimActionInfo._animationHipCurveZ = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveZFind = true; }
                             }
 
                             Debug.Assert((curveXFind == true && curveYFind == true && curveZFind == true), "커브가 존재하지 않습니다");
@@ -438,10 +211,10 @@ public class State
 
                 case StateActionType.RotateWithoutInterpolate:
                     {
-                        if (_ownerActionComponent._ownerCharacterController == null)
+                        if (_ownerActionComponent._ownerCharacterComponent == null)
                         {
-                            _ownerActionComponent._ownerCharacterController = owner.GetComponentInChildren<CharacterController>();
-                            Debug.Assert(_ownerActionComponent._ownerCharacterController != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
                     break;
@@ -464,4 +237,80 @@ public class State
             }
         }
     }
+
+
+
+
+    //public void SettingOwnerComponent_LinkedCondition(PlayerScript owner)
+    //{
+    //    //오류검사
+    //    switch (_conditionDesc._singleConditionType)
+    //    {
+    //        case ConditionType.KeyInput:
+    //            Debug.Assert(_conditionDesc._keyInputConditionTarget.Count != 0, "키인풋인데 정보가 없다");
+    //            break;
+    //        case ConditionType.EquipWeaponByType:
+    //            Debug.Assert(_conditionDesc._weaponTypeGoal != ItemInfo.WeaponType.NotWeapon, "WeaponType인데 Goal이 None이다. 오류는 아닐수도 있다");
+    //            break;
+    //        case ConditionType.AnimationFrameUp:
+    //            Debug.Assert(_conditionDesc._animationFrameUpGoal > float.Epsilon, "AnimSecondType인데 Goal이 0.0이다. 오류는 아닐수도 있다");
+    //            break;
+
+    //        case ConditionType.AnimationFrameUnder:
+    //            Debug.Assert(_conditionDesc._animationFrameUnderGoal > float.Epsilon, "AnimSecondType인데 Goal이 0.0이다. 오류는 아닐수도 있다");
+    //            break;
+
+    //        default:
+    //            break;
+    //    }
+
+    //    switch (_conditionDesc._singleConditionType)
+    //    {
+    //        case ConditionType.MoveDesired:
+    //            _ownerComponents._ownerInputController = owner.GetComponent<InputController>();
+    //            Debug.Assert(_ownerComponents._ownerInputController != null, "Input조건이 있는데 이 컴포넌트가 없습니다");
+    //            break;
+
+    //        case ConditionType.AnimationEnd:
+    //            _ownerComponents._ownerAnimator = owner.GetComponentInChildren<Animator>();
+    //            Debug.Assert(_ownerComponents._ownerAnimator != null, "Animation조건이 있는데 이 컴포넌트가 없습니다");
+    //            break;
+
+    //        case ConditionType.InAir:
+    //            _ownerComponents._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+    //            Debug.Assert(_ownerComponents._ownerMoveScript != null, "GroundLoss조건이 있는데 이 컴포넌트가 없습니다");
+    //            break;
+
+    //        case ConditionType.KeyInput:
+    //            _ownerComponents._ownerInputController = owner.GetComponent<InputController>();
+    //            Debug.Assert(_ownerComponents._ownerInputController != null, "Jump조건이 있는데 이 컴포넌트가 없습니다");
+    //            break;
+
+    //        case ConditionType.EquipWeaponByType:
+    //            //|TODO| 실시간으로 무기 장착 정보를 알 수 있는 인벤토리 컴포넌트를 알아야합니다.
+    //            _ownerComponents._ownerCurrWeapon = owner.GetComponent<WeaponScript>();
+    //            Debug.Assert(_ownerComponents._ownerCurrWeapon != null, "Jump조건이 있는데 이 컴포넌트가 없습니다");
+    //            break;
+
+    //        case ConditionType.AnimationFrameUp:
+    //            //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
+    //            break;
+
+    //        case ConditionType.AnimationFrameUnder:
+    //            //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
+    //            break;
+
+    //        case ConditionType.RightHandWeaponSignaled:
+    //            break;
+
+    //        case ConditionType.LeftHandWeaponSignaled:
+    //            break;
+
+    //        default:
+    //            Debug.Assert(false, "데이터가 추가됐습니까?");
+    //            break;
+    //    }
+    //}
+
+
 }

@@ -199,11 +199,10 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
-        /*-----------------------------------------------------------------------------------------------------------------
-        |TODO| 이 섹션이 있어야 하나? 공통적으로 쓰이는 스테이트에 대해서, 만들어져있는 스테이트들에게 이어붙이는게 귀찮아서 빼긴했음
-        -----------------------------------------------------------------------------------------------------------------*/
-        //Weapon Change Check
-        WeaponChangeCheck();
+        //임시 무기변경 코드
+        {
+            WeaponChangeCheck();
+        }
 
         //Temp Aim
         if (_aimScript != null && _aimScript.enabled == true)
@@ -235,15 +234,17 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
-        {//상태 업데이트
+        //상태 업데이트
+        {
             _stateContoller.DoWork();
         }
 
-        {//기본적으로 중력은 계속 업데이트 한다
+        //기본적으로 중력은 계속 업데이트 한다
+        {
             _characterMoveScript2.GravityUpdate();
-        }
+            _characterMoveScript2.ClearLatestVelocity();
 
-        _characterMoveScript2.ClearLatestVelocity();
+        }
     }
 
     private void LateUpdate()
