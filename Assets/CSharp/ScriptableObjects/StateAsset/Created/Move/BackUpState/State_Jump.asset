@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
+  m_Name: State_Jump
+  m_EditorClassIdentifier: 
+  _myState:
+    _stataName: Jump
+    _stateAnimationClip: {fileID: 7400000, guid: e17822bd9b29aa542b97969eed95ff50,
+      type: 2}
+    _EnterStateActionTypes: 03000000
+    _inStateActionTypes: 04000000
+    _ExitStateActionTypes: 
+    _linkedStates:
+    - _multiConditionAsset:
+      - _singleConditionType: 2
+        _componentConditionGoal: 0
+        _keyInputConditionTarget: []
+      - _singleConditionType: 0
+        _componentConditionGoal: 1
+        _keyInputConditionTarget: []
+      - _singleConditionType: 3
+        _componentConditionGoal: 0
+        _keyInputConditionTarget:
+        - _targetKeyCode: 304
+          _targetState: 1
+          _keyInpuyGoal: 1
+      _stateAsset: {fileID: 11400000, guid: 0f8c3ddadefc2e045b3f3f1f542ef6ef, type: 2}
+    - _multiConditionAsset:
+      - _singleConditionType: 2
+        _componentConditionGoal: 0
+        _keyInputConditionTarget: []
+      - _singleConditionType: 0
+        _componentConditionGoal: 1
+        _keyInputConditionTarget: []
+      _stateAsset: {fileID: 11400000, guid: dd3d314bd19ab0c4bb5ca14f7ddee8ca, type: 2}
+    - _multiConditionAsset:
+      - _singleConditionType: 2
+        _componentConditionGoal: 0
+        _keyInputConditionTarget: []
+      - _singleConditionType: 0
+        _componentConditionGoal: 1
+        _keyInputConditionTarget: []
+      _stateAsset: {fileID: 11400000, guid: dd3d314bd19ab0c4bb5ca14f7ddee8ca, type: 2}

@@ -54,6 +54,8 @@ public class StateContoller : MonoBehaviour
     {
         if (nextState == null)
         {
+            //State를 무기가 가지고있으면 여기서 null이라서 함수가 실행이 안됨
+            //일단 이거 고치고
             return;
         }
         
@@ -79,12 +81,10 @@ public class StateContoller : MonoBehaviour
     {
         Debug.Assert(_currState != null, "스테이트 null입니다");
 
-        {
-            State nextState = _currState.CheckChangeState();
+        State nextState = _currState.CheckChangeState();
 
-            ChangeState(nextState);
+        ChangeState(nextState);
 
-            _currState.DoActions(_currState.GetStateDesc()._inStateActionTypes);
-        }
+        _currState.DoActions(_currState.GetStateDesc()._inStateActionTypes);
     }
 }

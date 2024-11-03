@@ -91,6 +91,12 @@ public class Condition
                 //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
                 break;
 
+            case ConditionType.RightHandWeaponSignaled:
+                break;
+
+            case ConditionType.LeftHandWeaponSignaled:
+                break;
+
             default:
                 Debug.Assert(false, "데이터가 추가됐습니까?");
                 break;
@@ -205,6 +211,18 @@ public class Condition
 
                     return true;
                 }
+
+            case ConditionType.RightHandWeaponSignaled:
+                {
+
+                }
+                break;
+
+            case ConditionType.LeftHandWeaponSignaled:
+                {
+
+                }
+                break;
 
             default:
                 Debug.Assert(false, "데이터가 추가됐습니까?");

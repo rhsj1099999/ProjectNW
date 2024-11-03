@@ -16,9 +16,9 @@ MonoBehaviour:
     _stataName: Move
     _stateAnimationClip: {fileID: 7400000, guid: d6cb1cbe422413547b1ede5c752b60ef,
       type: 2}
-    _rightWeaponOverride: 1
-    _leftWeaponOverride: 1
-    _weaponOverrideClip: []
+    _weaponOverrideClip:
+    - _weaponType: 5
+      _animationClip: {fileID: 7400000, guid: 842726761e5f61a43a16862b354dd273, type: 2}
     _EnterStateActionTypes: 
     _inStateActionTypes: 00000000
     _ExitStateActionTypes: 
@@ -69,3 +69,15 @@ MonoBehaviour:
         _animationFrameUpGoal: 0
         _animationFrameUnderGoal: 0
       _stateAsset: {fileID: 11400000, guid: c8159052495618847a0af51e70fb7a91, type: 2}
+    - _multiConditionAsset:
+      - _singleConditionType: 3
+        _componentConditionGoal: 0
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget:
+        - _targetKeyCode: 113
+          _targetState: 0
+          _keyInpuyGoal: 1
+          _keyHoldGoal: 0
+        _animationFrameUpGoal: 0
+        _animationFrameUnderGoal: 0
+      _stateAsset: {fileID: 11400000, guid: 7404b31f3cd58024487d41858c11f617, type: 2}

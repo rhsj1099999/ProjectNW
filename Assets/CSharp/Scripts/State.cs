@@ -14,6 +14,8 @@ public enum StateActionType
     ResetLatestVelocity,
     RootMove,
     RotateWithoutInterpolate,
+    RightHandWeaponSignal,
+    LeftHandWeaponSignal,
 }
 
 public enum ConditionType
@@ -25,6 +27,8 @@ public enum ConditionType
     EquipWeaponByType,
     AnimationFrameUp, //~~초 이상으로 재생 됐습니다. -> Animator가 지원하는 normalizedTime을 쓰지 않습니다.
     AnimationFrameUnder, //~~초 이하로 재생 됐습니다. -> Animator가 지원하는 normalizedTime을 쓰지 않습니다.
+    RightHandWeaponSignaled, //무기로 공격하려했으며, 넘어갈 수 있습니다.
+    LeftHandWeaponSignaled, //무기로 공격하려했으며, 넘어갈 수 있습니다.
 }
 
 [Serializable]
@@ -33,7 +37,7 @@ public class KeyInputConditionDesc
     public KeyCode _targetKeyCode;
     public KeyPressType _targetState;
     public bool _keyInpuyGoal;
-    public float _keyHoldGoal = 0.0f; //n초 이상 이 키를 눌렀다 근데 어디 저장하냐
+    public float _keyHoldGoal = 0.0f;
 }
 
 [Serializable]
@@ -61,11 +65,14 @@ public class WeaponOverrideAnimation
     public AnimationClip _animationClip = null;
 }
 
-    [Serializable]
+[Serializable]
 public class StateDesc
 {
     public string _stataName;
     public AnimationClip _stateAnimationClip;
+    public bool _rightWeaponOverride = true;
+    public bool _leftWeaponOverride = true;
+
     public List<WeaponOverrideAnimation> _weaponOverrideClip;
 
     public List<StateActionType> _EnterStateActionTypes;
@@ -298,6 +305,12 @@ public class State
                     }
                     break;
 
+                case StateActionType.RightHandWeaponSignal:
+                    break;
+
+                case StateActionType.LeftHandWeaponSignal:
+                    break;
+
                 default:
                     Debug.Assert(false, "데이터가 추가됐습니까?");
                     break;
@@ -430,6 +443,18 @@ public class State
                             _ownerActionComponent._ownerCharacterController = owner.GetComponentInChildren<CharacterController>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterController != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없습니다");
                         }
+                    }
+                    break;
+
+                case StateActionType.RightHandWeaponSignal:
+                    {
+                        //_ownerActionComponent._owner.RightHandWeaponSignal();
+                    }
+                    break;
+
+                case StateActionType.LeftHandWeaponSignal:
+                    {
+                        //_ownerActionComponent._owner.LeftHandWeaponSignal();
                     }
                     break;
 

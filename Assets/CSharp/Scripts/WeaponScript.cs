@@ -18,7 +18,6 @@ public class AnimationOverridePair
 }
 
 
-
 public class WeaponScript : MonoBehaviour
 {
     public enum HoldAbleType
@@ -32,11 +31,7 @@ public class WeaponScript : MonoBehaviour
     public bool _onlyTwoHand = false;
     public ItemInfo _itemInfo = null;
     public PlayerScript _owner = null;
-
     public AvatarMask _weaponAvatarMask = null; // ??
-
-
-
     public AnimationClip _handlingIdleAnimation = null;
     public ItemInfo.WeaponType _weaponType = ItemInfo.WeaponType.NotWeapon;
 
@@ -46,9 +41,16 @@ public class WeaponScript : MonoBehaviour
     public Vector3 _pivotRotation = Vector3.zero;
     public Vector3 _pivotPosition = Vector3.zero;
 
+    public List<StateAsset> _weaponStateAssets = new List<StateAsset>();
+    private List<State> _stateCreated = new List<State>();
+
     [SerializeField] private List<AnimationOverridePair> _animationOverrideList = new List<AnimationOverridePair>();
     private Dictionary<StateAsset, AnimationOverrideDesc> _animationOverrideDic = new Dictionary<StateAsset, AnimationOverrideDesc>();
 
+    public virtual State CalculateNextState()
+    {
+        return null;
+    }
 
     private void Awake()
     {
@@ -62,6 +64,11 @@ public class WeaponScript : MonoBehaviour
         |NOTI| 아이템 프리팹은 기본 PIVOT을 들고있다.
         무기의 위치는 자식 Transform으로 결정돠면 안된다 : (IK를 이용할 가능성 때문에)
         -----------------------------------------------------------------------------------------------------------------*/
+    }
+
+    protected virtual void LateUpdate()
+    {
+        FollowSocketTransform();
     }
 
 
@@ -78,6 +85,10 @@ public class WeaponScript : MonoBehaviour
     {
         transform.position = _pivotPosition + _socketTranform.position;
         transform.rotation = Quaternion.Euler(_pivotRotation) * _socketTranform.rotation;
+
+        //Quaternion parentRotation = transform.parent.rotation;
+        //Quaternion adjustedPivotRotation = parentRotation * Quaternion.Euler(_pivotRotation);
+        //transform.rotation = _socketTranform.rotation * adjustedPivotRotation;
     }
 
 

@@ -53,12 +53,6 @@ public class Gunscript2 : WeaponScript
         FireCheck();
     }
 
-
-    private void LateUpdate()
-    {
-        FollowSocketTransform();
-    }
-
     public override void FollowSocketTransform()
     {
         if (_isAimming == true)
