@@ -2,6 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ComboCommandKeyType
+{
+    TargetingFront,
+    TargetingBack,
+    TargetingLeft,
+    TargetingRight,
+    LeftClick,
+    RightClick,
+    CtrlLeftClick,
+    CtrlRightClick,
+    SubLeftClick,
+    SubRightClick,
+};
+
+public class ComboCommandKeyDesc
+{
+    public ComboCommandKeyDesc(ComboCommandKeyType type, float time)
+    {
+        _type = type;
+        _inputtedTime = time;
+    }
+
+    ComboCommandKeyType _type = ComboCommandKeyType.TargetingFront;
+    float _inputtedTime = 0.0f;
+}
+
 public enum KeyPressType
 {
     Pressed,
@@ -30,6 +56,10 @@ public class CustomKeyManager : MonoBehaviour
 
     private Dictionary<KeyCode, KeyInputDesc> _usingKeyInputDesc = new Dictionary<KeyCode, KeyInputDesc>();
     private List<KeyInputDesc> _currInputDescs = new List<KeyInputDesc>();
+    private PlayerScript _playerOnlyOne = null;
+    public void LinkPlayer(PlayerScript player) {_playerOnlyOne = player;}
+    private LinkedList<ComboCommandKeyDesc> _comboCommandRecorder = new LinkedList<ComboCommandKeyDesc>();
+    public LinkedList<ComboCommandKeyDesc> GetComboCommandKeyDescs() { return _comboCommandRecorder; }
 
     private static CustomKeyManager _instance = null;
     public static CustomKeyManager Instance
@@ -46,8 +76,7 @@ public class CustomKeyManager : MonoBehaviour
             return _instance; 
         }
     }
-        
-
+    
 
     private void Awake()
     {
@@ -58,6 +87,8 @@ public class CustomKeyManager : MonoBehaviour
         _instance = this;
         DontDestroyOnLoad(gameObject);
     }
+
+
 
     public KeyInputDesc GetKeyInputDesc(KeyCode target)
     {
@@ -75,6 +106,14 @@ public class CustomKeyManager : MonoBehaviour
     }
 
     private void Update()
+    {
+        NormalKeyUpdate();
+        ComboKeyCommandUpdate();
+    }
+
+
+
+    private void NormalKeyUpdate()
     {
         foreach (KeyValuePair<KeyCode, KeyInputDesc> keyInput in _usingKeyInputDesc)
         {
@@ -121,5 +160,82 @@ public class CustomKeyManager : MonoBehaviour
                 }
             }
         }
+    }
+
+
+    private void ComboKeyCommandUpdate()
+    {
+        //w, a, s, d, Click, Right Clikc
+        int keyDebugCount = 0;
+
+
+        if (Input.GetKeyDown(KeyCode.Q) == true)
+        {
+            if (Input.GetKey(KeyCode.LeftControl) == true)
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlLeftClick, Time.time));
+                keyDebugCount++;
+            }
+            else if (Input.GetKey(KeyCode.X) == true)
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.SubLeftClick, Time.time));
+                keyDebugCount++;
+            }
+            else
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.LeftClick, Time.time));
+                keyDebugCount++;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.E) == true)
+        {
+            if (Input.GetKey(KeyCode.LeftControl) == true)
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlRightClick, Time.time));
+                keyDebugCount++;
+            }
+            else if (Input.GetKey(KeyCode.X) == true)
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.SubRightClick, Time.time));
+                keyDebugCount++;
+            }
+            else
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.RightClick, Time.time));
+                keyDebugCount++;
+            }
+        }
+
+        bool isPlayerTargeting = false;
+
+        if (isPlayerTargeting == true)
+        {
+            if (Input.GetKeyDown(KeyCode.W) == true)
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.TargetingFront, Time.time));
+                keyDebugCount++;
+            }
+
+            if (Input.GetKeyDown(KeyCode.S) == true)
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.TargetingBack, Time.time));
+                keyDebugCount++;
+            }
+
+            if (Input.GetKeyDown(KeyCode.A) == true)
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.TargetingLeft, Time.time));
+                keyDebugCount++;
+            }
+
+            if (Input.GetKeyDown(KeyCode.D) == true)
+            {
+                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.TargetingRight, Time.time));
+                keyDebugCount++;
+            }
+        }
+
+        Debug.Assert(keyDebugCount < 2, "delta Time이 구분하지 못하는 키 입력속도에 도달했다");
     }
 }

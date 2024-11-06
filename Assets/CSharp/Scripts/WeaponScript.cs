@@ -3,6 +3,68 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+public enum WeaponUseType
+{
+    TargetingFront,
+    TargetingBack,
+    TargetingLeft,
+    TargetingRight,
+    MainUse, //클릭
+    SubUse,
+    SpecialUse,
+}
+
+
+//[Serializable]
+//public class StateLinkDesc
+//{
+//    public List<ConditionDesc> _multiConditionAsset; //MultiCondition
+//    public StateAsset _stateAsset;
+//    private int _autoLinkWeight = 0; //각 조건들을 자동으로 계산하는 가중치 변수
+//}
+
+[Serializable]
+public class WeaponStateDesc
+{
+    [Serializable]
+    public class JumpingState
+    {
+        public List<StateLinkDesc> _linkedStates = new List<StateLinkDesc>(); //각각 전부 넘어갈 수 있다
+    }
+
+    [Serializable]
+    public class EachState
+    {
+        private bool _isEntry = false;
+        public List<ConditionDesc> _entryConditions = new List<ConditionDesc>();
+
+        public StateAsset _state = null;
+        public List<ConditionDesc> _nextStateConditions = new List<ConditionDesc>();
+        public List<JumpingState> _linkedStates = new List<JumpingState>();
+    }
+
+    public List<EachState> _states = new List<EachState>();
+
+}
+
+
+[Serializable]
+public class WeaponComboEntryDesc
+{
+    public bool _isEntry = false;
+    public ConditionDesc _entryCondition = null;
+    public StateAsset _stateAsset = null;
+}
+
+[Serializable]
+public class WeaponComboEntry
+{
+    public ConditionDesc _entryCondition = null;
+    public State _state = null;
+}
+
 public class WeaponScript : MonoBehaviour
 {
     public Transform _socketTranform = null;
@@ -21,32 +83,14 @@ public class WeaponScript : MonoBehaviour
     public ItemInfo.WeaponType _weaponType = ItemInfo.WeaponType.NotWeapon;
 
 
-
-    //public List<StateAsset> _weaponStateAssets = new List<StateAsset>();
-    //private List<State> _weaponState = new List<State>();
-    ////이제 스테이트가 다음 스테이트로 넘어가는게, '콤보 어택' 기능임
+    public List<WeaponStateDesc> _weaponStateAssets = new List<WeaponStateDesc>();
 
 
-
-    public State NextStateCheck()
-    {
-        //플레이어는 무기에게 단순히 좌클릭, 우클릭 등 조작만 넘겨줄거임
-
-        //무기가 알아서 판단해서 다음 스테이트를 넘겨줘야 한다.
-        //공중에 있으면 공중공격, 다음 콤보공격 등등
-
-
-        //무기가 계획된 상태를 연출 도중에 평캔 등등을 요청하면?
-
-        return null;
-    }
-
-
-
-    public virtual State CalculateNextState()
-    {
-        return null;
-    }
+    ////사용할 무브셋 전부 가지고있는것들
+    //public List<WeaponComboEntryDesc> _weaponStateAssets = new List<WeaponComboEntryDesc>();
+    //////실제로 생성된 인스턴스들
+    //private List<State> _weaponStates = new List<State>();
+    //private List<WeaponComboEntry> _weaponEntryStates = new List<WeaponComboEntry>();
 
 
 
@@ -60,17 +104,34 @@ public class WeaponScript : MonoBehaviour
         _pivotPosition = transform.position;
         _pivotRotation = transform.rotation.eulerAngles;
 
-        //foreach (var stateAsset in _weaponStateAssets) 
-        //{
-        //    State newState = new State(stateAsset);
 
-        //    _weaponState.Add(newState);
-        //}
 
-        //foreach (State state in _weaponState)
+
+        //foreach (var stateAsset in _weaponStateAssets)
         //{
-        //    state.LinkingStates(ref _weaponState);
+        //    State newState = new State(stateAsset._stateAsset);
+
+        //    if (stateAsset._isEntry == true)
+        //    {
+        //        WeaponComboEntry comboEntry = new WeaponComboEntry();
+        //        comboEntry._entryCondition = stateAsset._entryCondition;
+        //        comboEntry._state = newState;
+
+        //        _weaponEntryStates.Add(comboEntry);
+        //    }
+
+
+        //    foreach (State state in _weaponStates)
+        //    {
+        //        state.LinkingStates(ref _weaponStates);
+        //    }
         //}
+    }
+
+
+    protected void GraphLinking()
+    {
+
     }
 
     protected virtual void LateUpdate()
@@ -97,28 +158,34 @@ public class WeaponScript : MonoBehaviour
     }
 
 
+    public void CheckNextAttackStates(ref List<State> statesOut)
+    {
+        //위에 무기가 사용할 스테이트를 이용(이건 전부 진입점임)
+    }
+
+
+    public State NextStateCheck()
+    {
+        //플레이어는 무기에게 단순히 좌클릭, 우클릭 등 조작만 넘겨줄거임
+
+        //무기가 알아서 판단해서 다음 스테이트를 넘겨줘야 한다.
+        //공중에 있으면 공중공격, 다음 콤보공격 등등
+
+
+        //무기가 계획된 상태를 연출 도중에 평캔 등등을 요청하면?
+
+        return null;
+    }
+
+
+
+    public virtual State CalculateNextState()
+    {
+        return null;
+    }
+
 
     virtual public void TurnOnAim() { }
     virtual public void TurnOffAim() { }
     virtual public void UnEquip() { }
-
-
-
-    //virtual public AnimationOverrideDesc FindAnimationOverride(StateAsset currStateAsset) 
-    //{
-    //    if (_animationOverrideDic.ContainsKey(currStateAsset) == false)
-    //    {
-    //        return null;
-    //    }
-
-    //    return _animationOverrideDic[currStateAsset];
-    //}
-
-    //public void ReadyAnimationOverrideDic_Debug(List<StateAsset> targetStataAssets, List<AnimationOverrideDesc> targetAnimationClips)
-    //{
-    //    for (int i = 0; i < targetAnimationClips.Count; ++i)
-    //    {
-    //        _animationOverrideDic.Add(targetStataAssets[i], targetAnimationClips[i]);
-    //    }
-    //}
 }

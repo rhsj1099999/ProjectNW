@@ -143,7 +143,7 @@ public class ItemInfoManager : MonoBehaviour
         return targetMeshes;
     }
 
-    public ItemInfo? GetItemInfo(int itemKey)
+    public ItemInfo GetItemInfo(int itemKey)
     {
         Debug.Assert(_items.ContainsKey(itemKey) == true, "없는 아이템 인포를 요청했습니다 key : " + itemKey);
 

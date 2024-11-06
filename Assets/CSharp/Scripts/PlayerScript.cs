@@ -7,6 +7,16 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public enum WeaponHandlingType
+{
+    Off,
+    RightOnLeftOff,
+    LeftOnRightOff,
+    RightOnLeftOn,
+    RightFocused,
+    LeftFocused,
+    DualHand,
+}
 
 public class WeaponHoldingType
 {
@@ -43,6 +53,13 @@ public class WeaponHoldingType
     public bool _isSideFocused = true; //한손무기를 양손으로 잡았습니까
 }
 
+public enum WeaponGrabFocus
+{
+    Normal,
+    RightHandFocused,
+    LeftHandFocused,
+    DualGrab,
+}
 
 public class PlayerScript : MonoBehaviour
 {
@@ -53,19 +70,20 @@ public class PlayerScript : MonoBehaviour
 
 
     //Weapon Section -> 이거 다른 컴포넌트로 빼세요(현재 만들어져있는건 EquipmentBoard 혹은 Inventory)
-    private WeaponScript _currEquipWeapon = null;
-    private ItemInfo _currEquipWeaponItem = null;
-    public WeaponScript GetWeapon() { return _currEquipWeapon; }
-    public ItemInfo GetWeaponItem() { return _currEquipWeaponItem; }
-
     private int _currLeftWeaponIndex = 0;
     private int _currRightWeaponIndex = 0;
 
     private WeaponScript _tempCurrLeftWeapon = null;
     private WeaponScript _tempCurrRightWeapon = null;
 
+    private WeaponGrabFocus _tempGrabFocusType = WeaponGrabFocus.Normal;
+    public WeaponGrabFocus GetGrabFocusType() { return _tempGrabFocusType; }
     private GameObject _tempCurrLeftWeaponPrefab = null;
+    public GameObject GetLeftWeaponPrefab() { return _tempCurrLeftWeaponPrefab; }
     private GameObject _tempCurrRightWeaponPrefab = null;
+    public GameObject GetRightWeaponPrefab() { return _tempCurrRightWeaponPrefab; }
+    private WeaponHandlingType _weaponHandlingType = WeaponHandlingType.Off;
+    public WeaponHandlingType GetWeaponHandlingType() { return _weaponHandlingType; }
 
     [SerializeField] private List<WeaponScript> _tempLeftWeapons = new List<WeaponScript>();
     [SerializeField] private List<WeaponScript> _tempRightWeapons = new List<WeaponScript>();
@@ -83,7 +101,8 @@ public class PlayerScript : MonoBehaviour
     //Aim System
     private AimScript2 _aimScript = null;
     private bool _isAim = false;
-
+    private bool _isTargeting = false;
+    public bool GetIsTargeting() { return _isTargeting; }
 
 
     //Animator Secton -> 이거 다른 컴포넌트로 빼세요
@@ -136,43 +155,6 @@ public class PlayerScript : MonoBehaviour
         -----------------------------------------------------------------*/
         ReadyAimSystem();
         _aimScript.enabled = false;
-
-
-        /*------------------------
-        |TODO| 임시코드이다. 지워라
-        --------------------------*/
-        {
-            //_tempLeftWeapons.Add(gameObject.AddComponent<WeaponScript>());
-            //_tempLeftWeapons[0]._weaponType = ItemInfo.WeaponType.LargeSword;
-            ////_tempLeftWeapons[0]._itemPrefabRoute = "RuntimePrefab/Weapon/GunPivot";
-
-            //_tempLeftWeapons.Add(gameObject.AddComponent<WeaponScript>());
-            //_tempLeftWeapons[1]._weaponType = ItemInfo.WeaponType.LargeSword;
-            ////_tempLeftWeapons[1]._itemPrefabRoute = "RuntimePrefab/Weapon/GunPivot";
-
-            //_tempLeftWeapons.Add(gameObject.AddComponent<WeaponScript>());
-            //_tempLeftWeapons[2]._weaponType = ItemInfo.WeaponType.MediumSword;
-            ////_tempLeftWeapons[2]._itemPrefabRoute = "RuntimePrefab/Weapon/GunPivot";
-
-
-            //_tempRightWeapons.Add(gameObject.AddComponent<WeaponScript>());
-            //_tempRightWeapons[0]._weaponType = ItemInfo.WeaponType.LargeSword;
-            ////_tempRightWeapons[1]._itemPrefabRoute = "RuntimePrefab/Weapon/GunPivot";
-
-            //_tempRightWeapons.Add(gameObject.AddComponent<Gunscript2>());
-            //_tempRightWeapons[1]._weaponType = ItemInfo.WeaponType.MediumSword;
-            ////_tempRightWeapons[1]._itemPrefabRoute = "RuntimePrefab/Weapon/GunPivot";
-
-            //_tempRightWeapons.Add(gameObject.AddComponent<WeaponScript>());
-            //_tempRightWeapons[2]._weaponType = ItemInfo.WeaponType.LargeSword;
-            ////_tempRightWeapons[2]._itemPrefabRoute = "RuntimePrefab/Weapon/GunPivot";
-
-            //for (int i = 0; i < 3; i++)
-            //{
-            //    _tempLeftWeapons[i].enabled = false;
-            //    _tempRightWeapons[i].enabled = false;
-            //}
-        }
     }
 
     private void Start()
@@ -234,7 +216,6 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
-        //상태 업데이트
         {
             _stateContoller.DoWork();
         }
@@ -286,6 +267,21 @@ public class PlayerScript : MonoBehaviour
     }
 
 
+    public WeaponScript GetWeaponScript(bool isRightHand)
+    {
+        GameObject weaponPrefab = (isRightHand == true)
+            ? _tempCurrRightWeaponPrefab
+            : _tempCurrLeftWeaponPrefab;
+
+
+        if (weaponPrefab == null) 
+        {
+            return null;
+        }
+
+        return weaponPrefab.GetComponent<WeaponScript>();
+    }
+
 
     private IEnumerator SwitchingBlendCoroutine()
     {
@@ -321,6 +317,8 @@ public class PlayerScript : MonoBehaviour
 
         _corutineStarted = false;
     }
+
+
 
 
     private IEnumerator SwitchingBlendCoroutine_Weapon()

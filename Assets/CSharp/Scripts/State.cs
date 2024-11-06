@@ -5,12 +5,35 @@ using UnityEditor;
 using UnityEngine;
 using static StateContoller;
 
+
+
+//public class RepresentStateType
+//{
+//    private List<uint> _types = new List<uint>();
+
+//    public RepresentStateType()
+//    {
+//        for (RepresentStateTypeHelper i = 0; i < RepresentStateTypeHelper.End; i++)
+//        {
+//            short typeNumber = (short)i;
+//            Debug.Assert(typeNumber <= 63, "비트플래그가 64를 넘어가려 합니다. 큰일났습니다");
+//            _types.Add((uint)(1 << typeNumber));
+//        }
+//    }
+
+//    public uint GetType(RepresentStateTypeHelper type)
+//    {
+//        return _types[(int)type];
+//    }
+//}
+
 public class State
 {
     private string _unityName_HipBone = "Hips";
     private string _unityName_HipBoneLocalPositionX = "RootT.x";
     private string _unityName_HipBoneLocalPositionY = "RootT.y";
     private string _unityName_HipBoneLocalPositionZ = "RootT.z";
+    private bool _isTimerHandleAnimation = false;
 
     public class StateAnimActionInfo
     {
@@ -28,6 +51,20 @@ public class State
     {
         _stateDesc = stateAsset._myState; //복사 완료
         _stateAssetCreateFrom = stateAsset;
+
+        for (int i = 0; i < _stateDesc._linkedStates.Count; ++i)
+        {
+            List<ConditionDesc> multiConditionDesc = _stateDesc._linkedStates[i]._multiConditionAsset;
+
+            for (int j = 0; j < multiConditionDesc.Count; j++)
+            {
+                //if (multiConditionDesc[i])
+                //{
+
+                //}
+            }
+            
+        }
     }
 
 
@@ -229,6 +266,9 @@ public class State
                     {
                         //_ownerActionComponent._owner.LeftHandWeaponSignal();
                     }
+                    break;
+
+                case StateActionType.AttackCommandCheck:
                     break;
 
                 default:

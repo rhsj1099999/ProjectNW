@@ -15,6 +15,7 @@ public enum StateActionType
     RotateWithoutInterpolate,
     RightHandWeaponSignal,
     LeftHandWeaponSignal,
+    AttackCommandCheck, //Action에 이것을 가지고 있다면, 무기에게 조작을 넘겨주어 공격을 시도할 수 있다.
 }
 
 public enum ConditionType
@@ -28,6 +29,37 @@ public enum ConditionType
     AnimationFrameUnder, //~~초 이하로 재생 됐습니다. -> Animator가 지원하는 normalizedTime을 쓰지 않습니다.
     RightHandWeaponSignaled, //무기로 공격하려했으며, 넘어갈 수 있습니다.
     LeftHandWeaponSignaled, //무기로 공격하려했으며, 넘어갈 수 있습니다.
+    RightAttackTry, //한손무기를 양손으로 잡거나, 쌍수화를 진행하면 Right 기준으로 키조작을 잡습니다.
+    LeftAttackTry,
+    AttackTry,
+    isTargeting,
+    ComboKeyCommand,
+    FocusedWeapon, //양손으로 잡아야만 한다.
+}
+
+
+public enum RepresentStateType
+{
+    Idle = 1 << 0,
+    Walk = 1 << 1,
+    Run = 1 << 2,
+    Sprint = 1 << 3,
+    Attack = 1 << 4,
+    InAir = 1 << 5,
+    Hit = 1 << 6,
+    End = 1 << 7,
+}
+
+[Serializable]
+public class ComboKeyCommandDesc
+{
+    public WeaponUseType _targetCommandKey;
+    public List<WeaponUseType> _CombinedCommandKey = new List<WeaponUseType>(); //같이 눌려야 하는 키
+
+    //콤보 커맨드에 홀드 관련 집어넣지마라...아직은
+    //public KeyPressType _targetState;
+    //public bool _keyInpuyGoal;
+    //public float _keyHoldGoal = 0.0f;
 }
 
 [Serializable]
@@ -46,8 +78,10 @@ public class ConditionDesc
     public bool _componentConditionGoal;
     public ItemInfo.WeaponType _weaponTypeGoal;
     public List<KeyInputConditionDesc> _keyInputConditionTarget;
+    public List<ComboKeyCommandDesc> _commandInputConditionTarget;
     public float _animationFrameUpGoal;
     public float _animationFrameUnderGoal;
+    public float _comboStrainedTime = -1.0f; //n초 내에 완성시켜야 하는 콤보
 }
 
 [Serializable]
@@ -55,6 +89,7 @@ public class StateLinkDesc
 {
     public List<ConditionDesc> _multiConditionAsset; //MultiCondition
     public StateAsset _stateAsset;
+    private int _autoLinkWeight = 0; //각 조건들을 자동으로 계산하는 가중치 변수
 }
 
 [Serializable]
@@ -64,12 +99,17 @@ public class StateDesc
     public AnimationClip _stateAnimationClip;
     public bool _rightWeaponOverride = true;
     public bool _leftWeaponOverride = true;
+    public bool _isAttackState = false;
+    
+    public List<RepresentStateType> _stateType = new List<RepresentStateType>();
 
     public List<StateActionType> _EnterStateActionTypes;
     public List<StateActionType> _inStateActionTypes;
     public List<StateActionType> _ExitStateActionTypes;
 
     public List<StateLinkDesc> _linkedStates;
+
+    
 }
 
 [Serializable]
@@ -84,11 +124,10 @@ public class StateContoller : MonoBehaviour
     public class StateContollerComponentDesc
     {
         public PlayerScript _owner;
-        public CharacterController _ownerCharacterComponent;
         public Animator _ownerAnimator = null;
         public InputController _ownerInputController;
         public CharacterMoveScript2 _ownerMoveScript;
-        public WeaponScript _ownerCurrWeapon;
+        public CharacterController _ownerCharacterComponent;
     }
 
     private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
@@ -99,15 +138,17 @@ public class StateContoller : MonoBehaviour
     private State _currState;
     public State GetCurrState() { return _currState; }
 
-    private PlayerScript _owner = null;
-
     private float _currStateTime = 0.0f;
+    private KeyCode _rightHandAttackKey = KeyCode.Q;
+    private KeyCode _leftHandAttackKey = KeyCode.E;
+
+    private List<State> _nextAttackStates = new List<State>();
 
     private void Awake()
     {
         PlayerScript playerScript = GetComponent<PlayerScript>();
 
-        _owner = playerScript;
+        _ownerStateControllingComponent._owner = playerScript;
 
         for (int i = 0; i < _stateInitial.Count; ++i)
         {
@@ -126,18 +167,17 @@ public class StateContoller : MonoBehaviour
         ChangeState(_states[0]);
     }
 
+
+
+
+
     private void ChangeState(State nextState)
     {
-        if (nextState == null)
-        {
-            return;
-        }
-        
         if (nextState != _currState)  //상태가 달라졌다.
         {
             //Debug.Log(nextState.GetStateDesc()._stataName);
 
-            _owner.StateChanged();
+            _ownerStateControllingComponent._owner.StateChanged();
 
             if (_currState != null) 
             {
@@ -151,16 +191,33 @@ public class StateContoller : MonoBehaviour
     }
 
 
+
+
+
+
     public void DoWork()
     {
         Debug.Assert(_currState != null, "스테이트 null입니다");
 
         State nextState = CheckChangeState();
 
-        ChangeState(nextState);
+        if (nextState != null)
+        {
+            ChangeState(nextState);
+
+            if (nextState.GetStateDesc()._isAttackState == true)
+            {
+                //다음 상태가 공격 상태임으로, 현재 들고있는 무기에 따라서 Layer Override를 진행하세요
+            }
+        }
 
         DoActions(_currState.GetStateDesc()._inStateActionTypes);
     }
+
+
+
+
+
 
 
 
@@ -279,6 +336,67 @@ public class StateContoller : MonoBehaviour
                 case StateActionType.LeftHandWeaponSignal:
                     break;
 
+                case StateActionType.AttackCommandCheck:
+                    {
+                        if (Input.GetKeyDown(KeyCode.Q) == false && Input.GetKeyDown(KeyCode.E) == false)
+                        {
+                            return;
+                        }
+
+                        if (_nextAttackStates.Count > 0)
+                        {
+                            //이벤트가 걸려있다.
+                            return;
+                        }
+
+                        Debug.Assert(_currState.GetStateDesc()._isAttackState == false, "LocoMotion 에서 Attack으로 전환할때만 쓰는 Action입니다");
+
+                        GameObject ownerCurrRightWeapon = _ownerStateControllingComponent._owner.GetRightWeaponPrefab();
+
+                        WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(true);
+
+                        if (weaponScript != null)
+                        {
+                            weaponScript.CheckNextAttackStates(ref _nextAttackStates);
+
+                            if (_nextAttackStates.Count > 0)
+                            {
+                                if (_nextAttackStates.Count >= 2)
+                                {
+                                    //Timer Event 0.1f at 어려운 상태부터 검사하는 이벤트 추가
+                                }
+                                else if (_nextAttackStates.Count == 1)
+                                {
+                                    ChangeState(_nextAttackStates[0]);
+                                }
+
+                                return;
+                            }
+                        }
+
+                        weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(false);
+
+                        if (weaponScript != null)
+                        {
+                            weaponScript.CheckNextAttackStates(ref _nextAttackStates);
+
+                            if (_nextAttackStates.Count > 0)
+                            {
+                                if (_nextAttackStates.Count >= 2)
+                                {
+                                    //Timer Event 0.1f at 어려운 상태부터 검사하는 이벤트 추가
+                                }
+                                else if (_nextAttackStates.Count == 1)
+                                {
+                                    ChangeState(_nextAttackStates[0]);
+                                }
+
+                                return;
+                            }
+                        }
+                    }
+                    break;
+
                 default:
                     Debug.Assert(false, "데이터가 추가됐습니까?");
                     break;
@@ -297,7 +415,7 @@ public class StateContoller : MonoBehaviour
                 {
                     if(_ownerStateControllingComponent._ownerInputController == null)
                     {
-                        _ownerStateControllingComponent._ownerInputController = _owner.GetComponent<InputController>();
+                        _ownerStateControllingComponent._ownerInputController = _ownerStateControllingComponent._owner.GetComponent<InputController>();
                     }
 
                     Vector3 desiredMoved = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
@@ -322,7 +440,7 @@ public class StateContoller : MonoBehaviour
                 {
                     if (_ownerStateControllingComponent._ownerMoveScript == null)
                     {
-                        _ownerStateControllingComponent._ownerMoveScript = _owner.GetComponent<CharacterMoveScript2>();
+                        _ownerStateControllingComponent._ownerMoveScript = _ownerStateControllingComponent._owner.GetComponent<CharacterMoveScript2>();
                     }
 
                     if (_ownerStateControllingComponent._ownerMoveScript.GetIsInAir() == true)
@@ -376,13 +494,13 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.EquipWeaponByType:
                 {
-                    ItemInfo ownerCurrWeapon = _ownerStateControllingComponent._owner.GetWeaponItem();
+                    //ItemInfo ownerCurrWeapon = _ownerStateControllingComponent._owner.GetWeaponItem();
 
-                    if (ownerCurrWeapon == null)
-                    { return false; } //무기를 끼고있지 않습니다.
+                    //if (ownerCurrWeapon == null)
+                    //{ return false; } //무기를 끼고있지 않습니다.
 
-                    if (ownerCurrWeapon._weaponType == conditionDesc._weaponTypeGoal)
-                    { return false; } //끼고있는 무기가 목표값과 다릅니다.
+                    //if (ownerCurrWeapon._weaponType == conditionDesc._weaponTypeGoal)
+                    //{ return false; } //끼고있는 무기가 목표값과 다릅니다.
 
                     return true;
                 }
@@ -417,6 +535,87 @@ public class StateContoller : MonoBehaviour
                 }
                 break;
 
+            case ConditionType.RightAttackTry:
+                {
+                    bool rightHandGrabCondition = true;
+
+                    switch (_ownerStateControllingComponent._owner.GetGrabFocusType())
+                    {
+                        case WeaponGrabFocus.Normal:
+                            {
+                                if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null)
+                                {
+                                    rightHandGrabCondition = false;
+                                }
+                            }
+                            break;
+                        case WeaponGrabFocus.RightHandFocused:
+                            {
+                                if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null)
+                                {
+                                    rightHandGrabCondition = false;
+                                }
+                            }
+                            break;
+                        case WeaponGrabFocus.LeftHandFocused:
+                            {
+                                if (_ownerStateControllingComponent._owner.GetLeftWeaponPrefab() == null)
+                                {
+                                    rightHandGrabCondition = false;
+                                }
+                            }
+                            break;
+                        case WeaponGrabFocus.DualGrab:
+                            {
+                                if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null ||
+                                    _ownerStateControllingComponent._owner.GetLeftWeaponPrefab() == null)
+                                {
+                                    rightHandGrabCondition = false;
+                                }
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    if (rightHandGrabCondition == false)
+                    {
+                        return false;
+                    }
+
+                    if (CustomKeyManager.Instance.GetKeyInputDesc(_rightHandAttackKey)._pressType == KeyPressType.Pressed)
+                    {
+                        return true;
+                    }
+                }
+                break;
+
+            case ConditionType.LeftAttackTry:
+                {
+                    if (CustomKeyManager.Instance.GetKeyInputDesc(_leftHandAttackKey)._pressType == KeyPressType.Pressed)
+                    {
+                        //공격 키 둘중에 하나라도 눌렸다.
+                        return true;
+                    }
+                }
+                break;
+
+            case ConditionType.AttackTry:
+                {
+
+                }
+                break;
+
+            case ConditionType.isTargeting:
+                break;
+
+            case ConditionType.ComboKeyCommand:
+                break;
+
+            case ConditionType.FocusedWeapon:
+                break;
+            
             default:
                 Debug.Assert(false, "데이터가 추가됐습니까?");
                 break;

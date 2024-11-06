@@ -18,11 +18,22 @@ MonoBehaviour:
       type: 3}
     _rightWeaponOverride: 1
     _leftWeaponOverride: 1
-    _weaponOverrideClip: []
     _EnterStateActionTypes: 
     _inStateActionTypes: 
     _ExitStateActionTypes: 
     _linkedStates:
+    - _multiConditionAsset:
+      - _singleConditionType: 3
+        _componentConditionGoal: 0
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget:
+        - _targetKeyCode: 113
+          _targetState: 0
+          _keyInpuyGoal: 1
+          _keyHoldGoal: 0
+        _animationFrameUpGoal: 0
+        _animationFrameUnderGoal: 0
+      _stateAsset: {fileID: 11400000, guid: 7404b31f3cd58024487d41858c11f617, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 0
         _componentConditionGoal: 1
@@ -30,7 +41,7 @@ MonoBehaviour:
         _keyInputConditionTarget: []
         _animationFrameUpGoal: 0
         _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: dd3d314bd19ab0c4bb5ca14f7ddee8ca, type: 2}
+      _stateAsset: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 2
         _componentConditionGoal: 1
@@ -38,7 +49,7 @@ MonoBehaviour:
         _keyInputConditionTarget: []
         _animationFrameUpGoal: 0
         _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: 88fe78e2280462842bc01117a2902772, type: 2}
+      _stateAsset: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 3
         _componentConditionGoal: 0
@@ -50,4 +61,4 @@ MonoBehaviour:
           _keyHoldGoal: 0
         _animationFrameUpGoal: 0
         _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: d88f711dc5f252741aa18d52f1cddb43, type: 2}
+      _stateAsset: {fileID: 11400000, guid: 2d4223264dd6f374fa05bc7da6665b3f, type: 2}

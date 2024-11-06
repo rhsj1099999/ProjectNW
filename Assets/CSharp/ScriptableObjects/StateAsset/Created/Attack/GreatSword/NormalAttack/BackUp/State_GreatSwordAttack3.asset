@@ -10,65 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
-  m_Name: State_Move
+  m_Name: State_GreatSwordAttack3
   m_EditorClassIdentifier: 
   _myState:
-    _stataName: Move
-    _stateAnimationClip: {fileID: 7400000, guid: d6cb1cbe422413547b1ede5c752b60ef,
+    _stataName: GreatSwordAttack3
+    _stateAnimationClip: {fileID: 7400000, guid: 3755eed2c621b2f489367bd06aa5fde0,
       type: 2}
-    _weaponOverrideClip:
-    - _weaponType: 5
-      _animationClip: {fileID: 7400000, guid: 842726761e5f61a43a16862b354dd273, type: 2}
+    _rightWeaponOverride: 0
+    _leftWeaponOverride: 0
     _EnterStateActionTypes: 
-    _inStateActionTypes: 00000000
+    _inStateActionTypes: 06000000
     _ExitStateActionTypes: 
     _linkedStates:
-    - _multiConditionAsset:
-      - _singleConditionType: 3
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget:
-        - _targetKeyCode: 32
-          _targetState: 0
-          _keyInpuyGoal: 1
-          _keyHoldGoal: 0
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: d88f711dc5f252741aa18d52f1cddb43, type: 2}
-    - _multiConditionAsset:
-      - _singleConditionType: 2
-        _componentConditionGoal: 1
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: 88fe78e2280462842bc01117a2902772, type: 2}
-    - _multiConditionAsset:
-      - _singleConditionType: 0
-        _componentConditionGoal: 1
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
-      - _singleConditionType: 3
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget:
-        - _targetKeyCode: 304
-          _targetState: 1
-          _keyInpuyGoal: 1
-          _keyHoldGoal: 0
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: 0f8c3ddadefc2e045b3f3f1f542ef6ef, type: 2}
-    - _multiConditionAsset:
-      - _singleConditionType: 0
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: c8159052495618847a0af51e70fb7a91, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 3
         _componentConditionGoal: 0
@@ -80,4 +33,36 @@ MonoBehaviour:
           _keyHoldGoal: 0
         _animationFrameUpGoal: 0
         _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: 7404b31f3cd58024487d41858c11f617, type: 2}
+      - _singleConditionType: 5
+        _componentConditionGoal: 0
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget: []
+        _animationFrameUpGoal: 30
+        _animationFrameUnderGoal: 0
+      - _singleConditionType: 6
+        _componentConditionGoal: 0
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget: []
+        _animationFrameUpGoal: 0
+        _animationFrameUnderGoal: 70
+      _stateAsset: {fileID: 11400000, guid: aba6c0ae7a74da443a5a92d41771d32e, type: 2}
+    - _multiConditionAsset:
+      - _singleConditionType: 1
+        _componentConditionGoal: 0
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget: []
+        _animationFrameUpGoal: 0
+        _animationFrameUnderGoal: 0
+      _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
+    - _multiConditionAsset:
+      - _singleConditionType: 3
+        _componentConditionGoal: 0
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget:
+        - _targetKeyCode: 113
+          _targetState: 1
+          _keyInpuyGoal: 1
+          _keyHoldGoal: 1
+        _animationFrameUpGoal: 0
+        _animationFrameUnderGoal: 0
+      _stateAsset: {fileID: 11400000, guid: 9ca50b39eb792574795c9f008f06b9fa, type: 2}

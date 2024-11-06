@@ -16,8 +16,8 @@ MonoBehaviour:
     _stataName: GreatSwordAttack2
     _stateAnimationClip: {fileID: 7400000, guid: 0d4a586e2eabaa24b965a643b3a80e4d,
       type: 2}
-    _rightWeaponOverride: 1
-    _leftWeaponOverride: 1
+    _rightWeaponOverride: 0
+    _leftWeaponOverride: 0
     _EnterStateActionTypes: 
     _inStateActionTypes: 06000000
     _ExitStateActionTypes: 
@@ -53,7 +53,7 @@ MonoBehaviour:
         _keyInputConditionTarget: []
         _animationFrameUpGoal: 0
         _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: c8159052495618847a0af51e70fb7a91, type: 2}
+      _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 3
         _componentConditionGoal: 0
