@@ -5,8 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using static StateContoller;
 
-
-
 //public class RepresentStateType
 //{
 //    private List<uint> _types = new List<uint>();
@@ -29,44 +27,23 @@ using static StateContoller;
 
 public class State
 {
-    private string _unityName_HipBone = "Hips";
-    private string _unityName_HipBoneLocalPositionX = "RootT.x";
-    private string _unityName_HipBoneLocalPositionY = "RootT.y";
-    private string _unityName_HipBoneLocalPositionZ = "RootT.z";
     private bool _isTimerHandleAnimation = false;
 
     public class StateAnimActionInfo
     {
-        public AnimationCurve _animationHipCurveX = null;
-        public AnimationCurve _animationHipCurveY = null;
-        public AnimationCurve _animationHipCurveZ = null;
-
+        public AnimationHipCurve _myAnimationCurve = null;
         public float _currStateSecond = 0.0f;
         public float _prevStateSecond = 0.0f;
         public float _prevReadedSecond = 0.0f;
     }
 
-
     public State(StateAsset stateAsset)
     {
         _stateDesc = stateAsset._myState; //복사 완료
         _stateAssetCreateFrom = stateAsset;
-
-        for (int i = 0; i < _stateDesc._linkedStates.Count; ++i)
-        {
-            List<ConditionDesc> multiConditionDesc = _stateDesc._linkedStates[i]._multiConditionAsset;
-
-            for (int j = 0; j < multiConditionDesc.Count; j++)
-            {
-                //if (multiConditionDesc[i])
-                //{
-
-                //}
-            }
-            
-        }
+        ResourceDataManager.Instance.AddHipCurve(_stateDesc._stateAnimationClip);
+        _stateAnimActionInfo._myAnimationCurve = ResourceDataManager.Instance.GetHipCurve(_stateDesc._stateAnimationClip);
     }
-
 
     private PlayerScript _owner = null;
     private StateDesc _stateDesc;
@@ -74,10 +51,8 @@ public class State
     public StateDesc GetStateDesc() { return _stateDesc; }
     public StateAsset GetStateAssetFrom() { return _stateAssetCreateFrom; }
 
-
-    private StateAnimActionInfo _stateAnimActionInfo = null;
+    private StateAnimActionInfo _stateAnimActionInfo = new StateAnimActionInfo();
     public StateAnimActionInfo GetStateAnimActionInfo() { return _stateAnimActionInfo; }
-
 
     private Dictionary<State, List<ConditionDesc>> _linkedState = new Dictionary<State , List<ConditionDesc>>();
     public Dictionary<State, List<ConditionDesc>> GetLinkedState() { return _linkedState; }
@@ -215,32 +190,6 @@ public class State
                         {
                             _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
-                        }
-
-                        //애니메이션 커브 찾아놓기
-                        {
-                            _stateAnimActionInfo = new StateAnimActionInfo();
-
-                            EditorCurveBinding[] bindings = AnimationUtility.GetCurveBindings(_stateDesc._stateAnimationClip);
-
-                            bool curveXFind = false, curveYFind = false, curveZFind = false;
-
-                            foreach (var binding in bindings)
-                            {
-                                if (curveXFind == true && curveYFind == true && curveZFind == true)
-                                { break; } //다 찾았습니다.
-
-                                if (binding.propertyName == _unityName_HipBoneLocalPositionX)
-                                { _stateAnimActionInfo._animationHipCurveX = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveXFind = true; }
-
-                                if (binding.propertyName == _unityName_HipBoneLocalPositionY)
-                                { _stateAnimActionInfo._animationHipCurveY = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveYFind = true; }
-
-                                if (binding.propertyName == _unityName_HipBoneLocalPositionZ)
-                                { _stateAnimActionInfo._animationHipCurveZ = AnimationUtility.GetEditorCurve(_stateDesc._stateAnimationClip, binding); curveZFind = true; }
-                            }
-
-                            Debug.Assert((curveXFind == true && curveYFind == true && curveZFind == true), "커브가 존재하지 않습니다");
                         }
 
                     }

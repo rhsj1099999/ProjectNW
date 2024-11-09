@@ -16,6 +16,11 @@ MonoBehaviour:
     _stataName: GreatSwordWheelAttackReady
     _stateAnimationClip: {fileID: 7400000, guid: ff7aa9c039f1e61449bf0ecd5fecc7b2,
       type: 2}
+    _rightWeaponOverride: 1
+    _leftWeaponOverride: 1
+    _isAttackState: 1
+    _isLocoMotionToAttackAction: 0
+    _stateType: 
     _EnterStateActionTypes: 
     _inStateActionTypes: 06000000
     _ExitStateActionTypes: 
@@ -25,8 +30,9 @@ MonoBehaviour:
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       - _singleConditionType: 3
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
@@ -35,14 +41,16 @@ MonoBehaviour:
           _targetState: 1
           _keyInpuyGoal: 1
           _keyHoldGoal: 0
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: e1203f7171343a249920ffbf20c7c38f, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 1
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 770b22d7cb891404d822504a890d0f86, type: 2}

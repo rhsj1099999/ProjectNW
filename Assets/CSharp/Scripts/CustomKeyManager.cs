@@ -24,8 +24,8 @@ public class ComboCommandKeyDesc
         _inputtedTime = time;
     }
 
-    ComboCommandKeyType _type = ComboCommandKeyType.TargetingFront;
-    float _inputtedTime = 0.0f;
+    public ComboCommandKeyType _type = ComboCommandKeyType.TargetingFront;
+    public float _inputtedTime = 0.0f;
 }
 
 public enum KeyPressType
@@ -41,10 +41,6 @@ public class CustomKeyManager : MonoBehaviour
     /*-----------------------------------------------------
     유니티가 지원하지 않는 부차적인 기능들을 하는 클래스입니다
     -----------------------------------------------------*/
-
-
-    private float _deleteDescThreshold = 300.0f; //5분동안 사용되지 않았으면 제거한다
-
     public class KeyInputDesc
     {
         public KeyPressType _pressType = KeyPressType.None;
@@ -54,12 +50,35 @@ public class CustomKeyManager : MonoBehaviour
         public bool _deleteTrigger = false;
     }
 
+    private float _deleteDescThreshold = 300.0f; //5분동안 사용되지 않았으면 제거한다
+    private bool _isRecordAttackKeyRestrained = false; //True = Attack키만 받는다. //false = 다 받는다
+    private Dictionary<ComboCommandKeyType, int> _afterAttackKeyRestrained = new Dictionary<ComboCommandKeyType, int>();
+    public void SetAttackKeyRestrained(bool target) 
+    {
+        _afterAttackKeyRestrained.Clear();
+
+        _isRecordAttackKeyRestrained = target;
+
+        if (_isRecordAttackKeyRestrained == true &&
+            _comboCommandRecorder.Last.Value._type >= ComboCommandKeyType.LeftClick && _comboCommandRecorder.Last.Value._type <= ComboCommandKeyType.SubRightClick)
+        {
+            _afterAttackKeyRestrained.Add(_comboCommandRecorder.Last.Value._type, 1);
+        }
+    }
+
+
+
     private Dictionary<KeyCode, KeyInputDesc> _usingKeyInputDesc = new Dictionary<KeyCode, KeyInputDesc>();
     private List<KeyInputDesc> _currInputDescs = new List<KeyInputDesc>();
     private PlayerScript _playerOnlyOne = null;
     public void LinkPlayer(PlayerScript player) {_playerOnlyOne = player;}
     private LinkedList<ComboCommandKeyDesc> _comboCommandRecorder = new LinkedList<ComboCommandKeyDesc>();
     public LinkedList<ComboCommandKeyDesc> GetComboCommandKeyDescs() { return _comboCommandRecorder; }
+
+
+    
+    //플레이어가 콤보를 체크하기 위하여 제한을 시작하면 _afterAttackKeyRestrained이곳에 담는다.
+
 
     private static CustomKeyManager _instance = null;
     public static CustomKeyManager Instance
@@ -105,10 +124,15 @@ public class CustomKeyManager : MonoBehaviour
         return _usingKeyInputDesc[target];
     }
 
+    private void FixedUpdate()
+    {
+        ComboKeyCommandUpdate();
+    }
+
     private void Update()
     {
         NormalKeyUpdate();
-        ComboKeyCommandUpdate();
+
     }
 
 
@@ -162,28 +186,78 @@ public class CustomKeyManager : MonoBehaviour
         }
     }
 
+    public bool AttackKeyRestrainedExist(ComboCommandKeyType target)
+    {
+        return _afterAttackKeyRestrained.ContainsKey(target);
+    }
 
     private void ComboKeyCommandUpdate()
     {
         //w, a, s, d, Click, Right Clikc
         int keyDebugCount = 0;
-
+        ComboCommandKeyType type = ComboCommandKeyType.TargetingFront;
 
         if (Input.GetKeyDown(KeyCode.Q) == true)
         {
+            
             if (Input.GetKey(KeyCode.LeftControl) == true)
             {
-                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlLeftClick, Time.time));
+                type = ComboCommandKeyType.CtrlLeftClick;
+                if (_isRecordAttackKeyRestrained == true)
+                {
+                    if (_afterAttackKeyRestrained.ContainsKey(type) == true)
+                    {
+                        _afterAttackKeyRestrained[type]++;
+                    }
+                    else
+                    {
+                        _afterAttackKeyRestrained.Add(type, 0);
+                    }
+                }
+                else
+                {
+                    _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlLeftClick, Time.time));
+                }
                 keyDebugCount++;
             }
             else if (Input.GetKey(KeyCode.X) == true)
             {
-                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.SubLeftClick, Time.time));
+                type = ComboCommandKeyType.SubLeftClick;
+                if (_isRecordAttackKeyRestrained == true)
+                {
+                    if (_afterAttackKeyRestrained.ContainsKey(type) == true)
+                    {
+                        _afterAttackKeyRestrained[type]++;
+                    }
+                    else
+                    {
+                        _afterAttackKeyRestrained.Add(type, 0);
+                    }
+                }
+                else
+                {
+                    _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.SubLeftClick, Time.time));
+                }
                 keyDebugCount++;
             }
             else
             {
-                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.LeftClick, Time.time));
+                type = ComboCommandKeyType.LeftClick;
+                if (_isRecordAttackKeyRestrained == true)
+                {
+                    if (_afterAttackKeyRestrained.ContainsKey(type) == true)
+                    {
+                        _afterAttackKeyRestrained[type]++;
+                    }
+                    else
+                    {
+                        _afterAttackKeyRestrained.Add(type, 0);
+                    }
+                }
+                else
+                {
+                    _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.LeftClick, Time.time));
+                }
                 keyDebugCount++;
             }
         }
@@ -192,22 +266,72 @@ public class CustomKeyManager : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftControl) == true)
             {
-                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlRightClick, Time.time));
+                type = ComboCommandKeyType.CtrlRightClick;
+                if (_isRecordAttackKeyRestrained == true)
+                {
+                    if (_afterAttackKeyRestrained.ContainsKey(type) == true)
+                    {
+                        _afterAttackKeyRestrained[type]++;
+                    }
+                    else
+                    {
+                        _afterAttackKeyRestrained.Add(type, 0);
+                    }
+                }
+                else
+                {
+                    _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlRightClick, Time.time));
+                }
                 keyDebugCount++;
             }
             else if (Input.GetKey(KeyCode.X) == true)
             {
-                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.SubRightClick, Time.time));
+                type = ComboCommandKeyType.SubRightClick;
+                if (_isRecordAttackKeyRestrained == true)
+                {
+                    if (_afterAttackKeyRestrained.ContainsKey(type) == true)
+                    {
+                        _afterAttackKeyRestrained[type]++;
+                    }
+                    else
+                    {
+                        _afterAttackKeyRestrained.Add(type, 0);
+                    }
+                }
+                else
+                {
+                    _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.SubRightClick, Time.time));
+                }
                 keyDebugCount++;
             }
             else
             {
-                _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.RightClick, Time.time));
+                type = ComboCommandKeyType.RightClick;
+                if (_isRecordAttackKeyRestrained == true)
+                {
+                    if (_afterAttackKeyRestrained.ContainsKey(type) == true)
+                    {
+                        _afterAttackKeyRestrained[type]++;
+                    }
+                    else
+                    {
+                        _afterAttackKeyRestrained.Add(type, 0);
+                    }
+                }
+                else
+                {
+                    _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.RightClick, Time.time));
+                }
                 keyDebugCount++;
             }
         }
 
-        bool isPlayerTargeting = false;
+        if (_isRecordAttackKeyRestrained == true)
+        {
+            return;
+        }
+
+        bool isPlayerTargeting = true;
 
         if (isPlayerTargeting == true)
         {
@@ -217,7 +341,7 @@ public class CustomKeyManager : MonoBehaviour
                 keyDebugCount++;
             }
 
-            if (Input.GetKeyDown(KeyCode.S) == true)
+            else if (Input.GetKeyDown(KeyCode.S) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.TargetingBack, Time.time));
                 keyDebugCount++;
@@ -229,7 +353,7 @@ public class CustomKeyManager : MonoBehaviour
                 keyDebugCount++;
             }
 
-            if (Input.GetKeyDown(KeyCode.D) == true)
+            else if (Input.GetKeyDown(KeyCode.D) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.TargetingRight, Time.time));
                 keyDebugCount++;

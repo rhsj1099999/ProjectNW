@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: State_MediumSwordAttack_FromPlayerBoy_4
   m_EditorClassIdentifier: 
   _myState:
-    _stataName: MediumSwordAttack4
+    _stataName: MediumSwordAttack_FromPlayerBoy_4
     _stateAnimationClip: {fileID: 7400000, guid: 14625a4bf606b584c954dd6cf5f1b7b8,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
-    _isAttackState: 0
+    _isAttackState: 1
+    _isLocoMotionToAttackAction: 0
     _stateType: 
     _EnterStateActionTypes: 
     _inStateActionTypes: 06000000
@@ -33,18 +34,21 @@ MonoBehaviour:
           _targetState: 0
           _keyInpuyGoal: 1
           _keyHoldGoal: 0
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       - _singleConditionType: 5
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 55
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       - _singleConditionType: 6
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 80
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: d0826422c33c20340b750a09ccd2cb6a, type: 2}

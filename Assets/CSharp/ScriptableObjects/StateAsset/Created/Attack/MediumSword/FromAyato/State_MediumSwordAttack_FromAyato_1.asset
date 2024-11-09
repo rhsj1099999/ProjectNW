@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: State_MediumSwordAttack_FromAyato_1
   m_EditorClassIdentifier: 
   _myState:
-    _stataName: MediumSwordAttack1
+    _stataName: MediumSwordAttack_FromAyato_1
     _stateAnimationClip: {fileID: 7400000, guid: 89fea5b72bc77614d89f09aa0dd54956,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
-    _isAttackState: 0
+    _isAttackState: 1
+    _isLocoMotionToAttackAction: 0
     _stateType: 
     _EnterStateActionTypes: 
     _inStateActionTypes: 06000000
@@ -34,20 +35,20 @@ MonoBehaviour:
           _keyInpuyGoal: 1
           _keyHoldGoal: 0
         _commandInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       - _singleConditionType: 5
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
         _commandInputConditionTarget: []
-        _animationFrameUpGoal: 24
-        _animationFrameUnderGoal: 0
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       - _singleConditionType: 6
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
         _commandInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 50
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 449438a2a0aee6d46b449c98d2730db0, type: 2}

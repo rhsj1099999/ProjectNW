@@ -1,9 +1,19 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
+class DescendingComparer<T> : IComparer<T> where T : IComparable<T>
+{
+    public int Compare(T x, T y)
+    {
+        // 기본 오름차순 정렬의 결과를 반전시켜 내림차순으로 반환
+        return y.CompareTo(x);
+    }
+}
 
 public enum WeaponUseType
 {
@@ -17,23 +27,9 @@ public enum WeaponUseType
 }
 
 
-//[Serializable]
-//public class StateLinkDesc
-//{
-//    public List<ConditionDesc> _multiConditionAsset; //MultiCondition
-//    public StateAsset _stateAsset;
-//    private int _autoLinkWeight = 0; //각 조건들을 자동으로 계산하는 가중치 변수
-//}
-
 [Serializable]
 public class WeaponStateDesc
 {
-    [Serializable]
-    public class JumpingState
-    {
-        public List<StateLinkDesc> _linkedStates = new List<StateLinkDesc>(); //각각 전부 넘어갈 수 있다
-    }
-
     [Serializable]
     public class EachState
     {
@@ -42,11 +38,48 @@ public class WeaponStateDesc
 
         public StateAsset _state = null;
         public List<ConditionDesc> _nextStateConditions = new List<ConditionDesc>();
-        public List<JumpingState> _linkedStates = new List<JumpingState>();
+        public List<StateLinkDesc> _linkedStates = new List<StateLinkDesc>();
     }
 
     public List<EachState> _states = new List<EachState>();
+}
 
+public class EntryState
+{
+    public State _state = null;
+    public List<ConditionDesc> _entryCondition = null;
+}
+
+
+public class StateNodeDesc
+{
+    public class LinkedState
+    {
+        public State _state = null;
+        public List<ConditionDesc> _multiConditions = null;
+    }
+
+    private HashSet<State> _linked = new HashSet<State>();
+    private SortedDictionary<int, List<LinkedState>>  _linkedStates = new SortedDictionary<int, List<LinkedState>>(new DescendingComparer<int>());
+    public SortedDictionary<int, List<LinkedState>> GetLinkecStates() { return _linkedStates; } 
+
+    public void AddNode(int weight, LinkedState willBeLinkedState)
+    {
+        if (_linkedStates.ContainsKey(weight) == false) 
+        {
+            _linkedStates.Add(weight, new List<LinkedState>());
+        }
+
+        List<LinkedState> targetLinked = _linkedStates[weight];
+
+        targetLinked.Add(willBeLinkedState);
+        _linked.Add(willBeLinkedState._state);
+    }
+
+    public bool FindNode(State willBeLinkedState)
+    {
+        return _linked.Contains(willBeLinkedState);
+    }
 }
 
 
@@ -71,28 +104,27 @@ public class WeaponScript : MonoBehaviour
     public Vector3 _pivotRotation = Vector3.zero;
     public Vector3 _pivotPosition = Vector3.zero;
 
-
     
     public PlayerScript _owner = null;
     public AnimationClip _handlingIdleAnimation = null;
 
 
-
     public bool _onlyTwoHand = false;
     public ItemInfo _itemInfo = null;
     public ItemInfo.WeaponType _weaponType = ItemInfo.WeaponType.NotWeapon;
-
+    
 
     public List<WeaponStateDesc> _weaponStateAssets = new List<WeaponStateDesc>();
-
-
-    ////사용할 무브셋 전부 가지고있는것들
-    //public List<WeaponComboEntryDesc> _weaponStateAssets = new List<WeaponComboEntryDesc>();
-    //////실제로 생성된 인스턴스들
-    //private List<State> _weaponStates = new List<State>();
-    //private List<WeaponComboEntry> _weaponEntryStates = new List<WeaponComboEntry>();
-
-
+    private Dictionary<State, StateNodeDesc> _weaponStates = new Dictionary<State, StateNodeDesc>();
+    private SortedDictionary<int, List<EntryState>> _entryStates = new SortedDictionary<int, List<EntryState>>(new DescendingComparer<int>());
+    public StateNodeDesc FindLinkedStateNodeDesc(State targetState)
+    {
+        if (_weaponStates.ContainsKey(targetState) == false)
+        {
+            return null;
+        }
+        return _weaponStates[targetState];
+    }
 
     private void Awake()
     {
@@ -104,34 +136,211 @@ public class WeaponScript : MonoBehaviour
         _pivotPosition = transform.position;
         _pivotRotation = transform.rotation.eulerAngles;
 
+        GraphLinking();
+    }
 
+    public int CalculateConditionWeight(List<ConditionDesc> conditions)
+    {
+        int retWeight = 0;
 
+        foreach (ConditionDesc condition in conditions)
+        {
+            //기본적으로 조건이 하나 걸려있으면 가중치 +1입니다.
+            //콤보 키, KeyInput경우에는 키가 어려울수록 가중치가 더들어갑니다.
+            switch (condition._singleConditionType)
+            {
+                default:
+                    retWeight++;
+                    break;
 
-        //foreach (var stateAsset in _weaponStateAssets)
-        //{
-        //    State newState = new State(stateAsset._stateAsset);
+                case ConditionType.KeyInput:
+                    {
+                        //총 키 개수 ... ver 1
+                        List<KeyInputConditionDesc> keys = condition._keyInputConditionTarget;
+                        retWeight += keys.Count;
+                    }
+                    break;
 
-        //    if (stateAsset._isEntry == true)
-        //    {
-        //        WeaponComboEntry comboEntry = new WeaponComboEntry();
-        //        comboEntry._entryCondition = stateAsset._entryCondition;
-        //        comboEntry._state = newState;
+                case ConditionType.ComboKeyCommand:
+                    {
+                        //조합키들 총 개수 + 콤보개수 ... ver 1
+                        List<ComboKeyCommandDesc> comboKeys = condition._commandInputConditionTarget;
+                        foreach (ComboKeyCommandDesc command in comboKeys)
+                        {
+                            retWeight += command._CombinedCommandKey.Count;
+                            retWeight++;
+                        }
+                    }
+                    break;
+            }
+        }
 
-        //        _weaponEntryStates.Add(comboEntry);
-        //    }
-
-
-        //    foreach (State state in _weaponStates)
-        //    {
-        //        state.LinkingStates(ref _weaponStates);
-        //    }
-        //}
+        return retWeight;
     }
 
 
     protected void GraphLinking()
     {
+        Dictionary<StateAsset, State> tempReadyAssets = new Dictionary<StateAsset, State>();
 
+        //EntryState를 미리 만들어둔다.
+        {
+            for (int i = 0; i < _weaponStateAssets.Count; i++)
+            {
+                StateAsset entryNode = _weaponStateAssets[i]._states[0]._state;
+
+                if (tempReadyAssets.ContainsKey(entryNode) == false)//최초 순회 된 노드이다.
+                {
+                    State newState = new State(entryNode);
+                    tempReadyAssets.Add(entryNode, newState);
+                    Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions != null, "Entry 인데 null이면 안됩니다.");
+                    Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions.Count > 0 , "Entry 인데 Count가 0이면 안됩니다.");
+                    StateNodeDesc newStateNode = new StateNodeDesc();
+                    _weaponStates.Add(newState, newStateNode);
+
+                    int entryWeight = CalculateConditionWeight(_weaponStateAssets[i]._states[0]._entryConditions);
+
+                    //Dictionary<int, List<State>>
+                    if (_entryStates.ContainsKey(entryWeight) == false)
+                    {
+                        _entryStates.Add(entryWeight, new List<EntryState>());
+                    }
+                    EntryState newEntryState = new EntryState();
+                    newEntryState._state = newState;
+                    newEntryState._entryCondition = _weaponStateAssets[i]._states[0]._entryConditions;
+                    _entryStates[entryWeight].Add(newEntryState);
+                }
+            }
+        }
+
+
+        for (int i = 0; i < _weaponStateAssets.Count; i++)
+        {
+            for (int j = 0; j < _weaponStateAssets[i]._states.Count; j++)
+            {
+                StateAsset node = _weaponStateAssets[i]._states[j]._state;
+
+                State targetState = null;
+                tempReadyAssets.TryGetValue(node, out targetState);
+
+                if (targetState == null)//최초 순회 된 노드이다.
+                {
+                    State newState = new State(node);
+                    tempReadyAssets.Add(node, newState);
+                    StateNodeDesc newStateNode = new StateNodeDesc();
+                    _weaponStates.Add(newState, newStateNode);
+                }
+
+                //Next Combo State 연결 ...  다음 콤보가 있다면 ... 
+                if ((j + 1) < _weaponStateAssets[i]._states.Count)
+                {
+                    StateAsset nextComboNode = _weaponStateAssets[i]._states[j + 1]._state;
+
+                    State nextComboState = null;
+                    tempReadyAssets.TryGetValue(nextComboNode, out nextComboState);
+
+                    if (nextComboState == null)//최초 순회 된 노드이다.
+                    {
+                        State newState = new State(nextComboNode);
+                        tempReadyAssets.Add(nextComboNode, newState);
+                        StateNodeDesc newStateNode = new StateNodeDesc();
+                        _weaponStates.Add(newState, newStateNode);
+                    }
+                    nextComboState = tempReadyAssets[nextComboNode];
+
+                    //   [[ --- targetState  --->>  stateWillBeLinked --- ]]
+                    Debug.Assert(_weaponStates.ContainsKey(targetState) != false, "없으면 안됩니다");
+                    StateNodeDesc targetLinkedDesc = _weaponStates[targetState];
+
+                    if (targetLinkedDesc.FindNode(nextComboState) == false)
+                    {
+                        StateNodeDesc.LinkedState linkingDesc = new StateNodeDesc.LinkedState();
+                        linkingDesc._state = nextComboState;
+                        linkingDesc._multiConditions = _weaponStateAssets[i]._states[j + 1]._nextStateConditions;
+                        
+                        int stateWeight = CalculateConditionWeight(linkingDesc._multiConditions);
+                        targetLinkedDesc.AddNode(stateWeight, linkingDesc);
+                    }
+                }
+
+
+                // Jumping Linking State 연결
+                {
+                    for (int k = 0; k < _weaponStateAssets[i]._states[j]._linkedStates.Count; k++)
+                    {
+                        StateAsset linkedNode = _weaponStateAssets[i]._states[j]._linkedStates[k]._stateAsset;
+
+                        State willBeLinkedState = null;
+                        tempReadyAssets.TryGetValue(linkedNode, out willBeLinkedState);
+
+                        if (willBeLinkedState == null)//최초 순회 된 노드이다.
+                        {
+                            State newState = new State(linkedNode);
+                            tempReadyAssets.Add(linkedNode, newState);
+                            StateNodeDesc newStateNode = new StateNodeDesc();
+                            _weaponStates.Add(newState, newStateNode);
+                        }
+
+                        willBeLinkedState = tempReadyAssets[linkedNode];
+
+
+                        //   [[ --- targetState  --->>  stateWillBeLinked --- ]]
+                        Debug.Assert(_weaponStates.ContainsKey(targetState) != false, "없으면 안됩니다");
+                        StateNodeDesc targetLinkedDesc = _weaponStates[targetState];
+
+                        if (targetLinkedDesc.FindNode(willBeLinkedState) == false)
+                        {
+                            StateNodeDesc.LinkedState linkingDesc = new StateNodeDesc.LinkedState();
+                            linkingDesc._state = willBeLinkedState;
+                            linkingDesc._multiConditions = _weaponStateAssets[i]._states[j]._linkedStates[k]._multiConditionAsset;
+
+                            int stateWeight = CalculateConditionWeight(linkingDesc._multiConditions);
+                            targetLinkedDesc.AddNode(stateWeight, linkingDesc);
+                        }
+                    }
+                }
+
+
+                //Entry State 연결 ... 동일 콤보의 Entry로는 넘어갈 수 없다.
+                {
+                    for (int k = 0; k < _weaponStateAssets.Count; k++)
+                    {
+                        List<WeaponStateDesc.EachState> temoComboList = _weaponStateAssets[k]._states;
+
+                        if (k == i)
+                        {
+                            continue;
+                        }
+
+                        StateAsset EntryState = temoComboList[0]._state;
+                        State willBeLinkedState = null;
+                        tempReadyAssets.TryGetValue(EntryState, out willBeLinkedState);
+                        Debug.Assert(willBeLinkedState != null, "없으면 안됩니다");
+
+                        if (targetState == willBeLinkedState)
+                        {
+                            continue;
+                        }
+
+                        //   [[ --- targetState  --->>  stateWillBeLinked --- ]]
+                        Debug.Assert(_weaponStates.ContainsKey(targetState) != false, "없으면 안됩니다");
+                        Debug.Assert(_weaponStates.ContainsKey(willBeLinkedState) != false, "없으면 안됩니다");
+
+                        StateNodeDesc targetLinkedDesc = _weaponStates[targetState];
+                        if (targetLinkedDesc.FindNode(willBeLinkedState) == false)
+                        {
+                            StateNodeDesc.LinkedState linkingDesc = new StateNodeDesc.LinkedState();
+                            linkingDesc._state = willBeLinkedState;
+                            linkingDesc._multiConditions = temoComboList[0]._entryConditions;
+
+                            int stateWeight = CalculateConditionWeight(linkingDesc._multiConditions);
+                            targetLinkedDesc.AddNode(stateWeight, linkingDesc);
+                        }
+
+                    }
+                }
+            }
+        }
     }
 
     protected virtual void LateUpdate()
@@ -157,31 +366,9 @@ public class WeaponScript : MonoBehaviour
         _socketTranform = followTransform;
     }
 
-
-    public void CheckNextAttackStates(ref List<State> statesOut)
+    public SortedDictionary<int, List<EntryState>> GetEntryStates()
     {
-        //위에 무기가 사용할 스테이트를 이용(이건 전부 진입점임)
-    }
-
-
-    public State NextStateCheck()
-    {
-        //플레이어는 무기에게 단순히 좌클릭, 우클릭 등 조작만 넘겨줄거임
-
-        //무기가 알아서 판단해서 다음 스테이트를 넘겨줘야 한다.
-        //공중에 있으면 공중공격, 다음 콤보공격 등등
-
-
-        //무기가 계획된 상태를 연출 도중에 평캔 등등을 요청하면?
-
-        return null;
-    }
-
-
-
-    public virtual State CalculateNextState()
-    {
-        return null;
+        return _entryStates;
     }
 
 

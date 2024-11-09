@@ -18,8 +18,11 @@ MonoBehaviour:
       type: 2}
     _rightWeaponOverride: 1
     _leftWeaponOverride: 1
+    _isAttackState: 0
+    _isLocoMotionToAttackAction: 1
+    _stateType: 
     _EnterStateActionTypes: 03000000
-    _inStateActionTypes: 04000000
+    _inStateActionTypes: 040000000a000000
     _ExitStateActionTypes: 
     _linkedStates:
     - _multiConditionAsset:
@@ -27,14 +30,16 @@ MonoBehaviour:
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       - _singleConditionType: 0
         _componentConditionGoal: 1
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       - _singleConditionType: 3
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
@@ -43,34 +48,39 @@ MonoBehaviour:
           _targetState: 1
           _keyInpuyGoal: 1
           _keyHoldGoal: 0
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: bbe06f87d4b556f4083ec1977ee3eb23, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 2
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       - _singleConditionType: 0
         _componentConditionGoal: 1
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 2
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       - _singleConditionType: 0
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}

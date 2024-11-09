@@ -18,37 +18,30 @@ MonoBehaviour:
       type: 3}
     _rightWeaponOverride: 1
     _leftWeaponOverride: 1
+    _isAttackState: 0
+    _isLocoMotionToAttackAction: 1
+    _stateType: 
     _EnterStateActionTypes: 
-    _inStateActionTypes: 
+    _inStateActionTypes: 0a000000
     _ExitStateActionTypes: 
     _linkedStates:
-    - _multiConditionAsset:
-      - _singleConditionType: 3
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget:
-        - _targetKeyCode: 113
-          _targetState: 0
-          _keyInpuyGoal: 1
-          _keyHoldGoal: 0
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
-      _stateAsset: {fileID: 11400000, guid: 7404b31f3cd58024487d41858c11f617, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 0
         _componentConditionGoal: 1
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 2
         _componentConditionGoal: 1
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 3
@@ -59,6 +52,7 @@ MonoBehaviour:
           _targetState: 0
           _keyInpuyGoal: 1
           _keyHoldGoal: 0
-        _animationFrameUpGoal: 0
-        _animationFrameUnderGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameGoal: 0
+        _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 2d4223264dd6f374fa05bc7da6665b3f, type: 2}

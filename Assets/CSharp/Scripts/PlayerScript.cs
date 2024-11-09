@@ -443,13 +443,16 @@ public class PlayerScript : MonoBehaviour
             tempIsRightHandWeapon = true;
         }
 
-        _tempCurrLeftWeaponPrefab = _tempLeftWeaponPrefabs[_currLeftWeaponIndex];
-        _tempCurrRightWeaponPrefab = _tempRightWeaponPrefabs[_currRightWeaponIndex];
+
 
         if (weaponChangeTry == false)
         { return; }
 
         WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
+
+        WeaponSocketScript.SideType targetSide = (tempIsRightHandWeapon == true)
+            ? WeaponSocketScript.SideType.Right
+            : WeaponSocketScript.SideType.Left;
 
         if (nextWeaponPrefab != null)
         {
@@ -464,9 +467,7 @@ public class PlayerScript : MonoBehaviour
 
                 Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
 
-                WeaponSocketScript.SideType targetSide = (tempIsRightHandWeapon == true)
-                    ? WeaponSocketScript.SideType.Right
-                    : WeaponSocketScript.SideType.Left;
+
                 ItemInfo.WeaponType targetType = nextWeaponScript._weaponType;
 
                 foreach (var socketComponent in weaponSockets)
@@ -499,6 +500,19 @@ public class PlayerScript : MonoBehaviour
                 newObject.transform.SetParent(transform);
             }
 
+            if (targetSide == WeaponSocketScript.SideType.Left)
+            {
+                _tempLeftWeaponPrefabs[_currLeftWeaponIndex] = newObject;
+            }
+            else if (targetSide == WeaponSocketScript.SideType.Right)
+            {
+                _tempRightWeaponPrefabs[_currRightWeaponIndex] = newObject;
+            }
+            else
+            {
+                Debug.Assert(false, "아직 Middle Type의 무기는 없다");
+            }
+
             //양손으로만 쥘 수 있는 무기에 따른 후처리
             if (nextWeaponScript._onlyTwoHand == true)
             {
@@ -515,6 +529,10 @@ public class PlayerScript : MonoBehaviour
                     _tempCurrRightWeaponPrefab = null; //왼손을 양손으로 쥐어야 해서 오른손을 집어넣는다
                 }
             }
+
+
+            _tempCurrLeftWeaponPrefab = _tempLeftWeaponPrefabs[_currLeftWeaponIndex];
+            _tempCurrRightWeaponPrefab = _tempRightWeaponPrefabs[_currRightWeaponIndex];
         }
 
         /*----------------------------------------------------------------------------------------------
