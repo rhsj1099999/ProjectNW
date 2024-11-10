@@ -166,7 +166,8 @@ public class StateContoller : MonoBehaviour
 
         for (int i = 0; i < _stateInitial.Count; ++i)
         {
-            State newState = new State(_stateInitial[i]);
+            //State newState = new State(_stateInitial[i]);
+            State newState = ResourceDataManager.Instance.GetState(_stateInitial[i]);
             
             newState.SettingOwnerComponent(playerScript, _ownerStateControllingComponent);
 
@@ -1261,7 +1262,7 @@ public class StateContoller : MonoBehaviour
 
                         foreach (ConditionDesc condition in entryState._multiConditions)
                         {
-                            if (CheckCondition(condition, true) == false)
+                            if (CheckCondition(condition, false) == false)
                             {
                                 stateCheckPassed = false;
                                 break;

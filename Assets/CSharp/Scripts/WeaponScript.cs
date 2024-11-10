@@ -186,7 +186,8 @@ public class WeaponScript : MonoBehaviour
 
             if (tempReadyAssets.ContainsKey(entryNode) == false)//최초 순회 된 노드이다.
             {
-                State newState = new State(entryNode);
+                //State newState = new State(entryNode);
+                State newState = ResourceDataManager.Instance.GetState(entryNode);
                 tempReadyAssets.Add(entryNode, newState);
                 Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions != null, "Entry 인데 null이면 안됩니다.");
                 Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions.Count > 0, "Entry 인데 Count가 0이면 안됩니다.");
@@ -219,7 +220,8 @@ public class WeaponScript : MonoBehaviour
 
                 if (targetState == null)//최초 순회 된 노드이다.
                 {
-                    State newState = new State(node);
+                    //State newState = new State(node);
+                    State newState = ResourceDataManager.Instance.GetState(node);
                     tempReadyAssets.Add(node, newState);
                     StateNodeDesc newStateNode = new StateNodeDesc();
                     _weaponStates.Add(newState, newStateNode);
@@ -235,7 +237,8 @@ public class WeaponScript : MonoBehaviour
 
                     if (nextComboState == null)//최초 순회 된 노드이다.
                     {
-                        State newState = new State(nextComboNode);
+                        //State newState = new State(nextComboNode);
+                        State newState = ResourceDataManager.Instance.GetState(nextComboNode);
                         tempReadyAssets.Add(nextComboNode, newState);
                         StateNodeDesc newStateNode = new StateNodeDesc();
                         _weaponStates.Add(newState, newStateNode);
@@ -269,7 +272,8 @@ public class WeaponScript : MonoBehaviour
 
                         if (willBeLinkedState == null)//최초 순회 된 노드이다.
                         {
-                            State newState = new State(linkedNode);
+                            //State newState = new State(linkedNode);
+                            State newState = ResourceDataManager.Instance.GetState(linkedNode);
                             tempReadyAssets.Add(linkedNode, newState);
                             StateNodeDesc newStateNode = new StateNodeDesc();
                             _weaponStates.Add(newState, newStateNode);

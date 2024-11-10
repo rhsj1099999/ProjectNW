@@ -215,7 +215,7 @@ public class ResourceDataManager : SubManager
     -----------------------------------*/
     [SerializeField] private List<StateAsset> _stateAsset = new List<StateAsset>();
     private Dictionary<StateAsset, State> _created = new Dictionary<StateAsset, State>();
-
+    
     private void ReadyStateData()
     {
         foreach (StateAsset stateAsset in _stateAsset)
@@ -230,5 +230,21 @@ public class ResourceDataManager : SubManager
 
             _created.Add(stateAsset, newState);
         }
+    }
+
+
+    public State GetState(StateAsset stateAsset)
+    {
+        if (_created.ContainsKey(stateAsset) == false)
+        {
+            Debug.Log("사용하려는 State가 만들어지지 않았다" + stateAsset.name);
+
+            State newState = new State(stateAsset);
+
+            _created.Add(stateAsset, newState);
+        }
+        
+
+        return _created[stateAsset];
     }
 }
