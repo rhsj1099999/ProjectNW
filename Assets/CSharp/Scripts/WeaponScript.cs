@@ -180,36 +180,34 @@ public class WeaponScript : MonoBehaviour
         Dictionary<StateAsset, State> tempReadyAssets = new Dictionary<StateAsset, State>();
 
         //EntryState를 미리 만들어둔다.
+        for (int i = 0; i < _weaponStateAssets.Count; i++)
         {
-            for (int i = 0; i < _weaponStateAssets.Count; i++)
+            StateAsset entryNode = _weaponStateAssets[i]._states[0]._state;
+
+            if (tempReadyAssets.ContainsKey(entryNode) == false)//최초 순회 된 노드이다.
             {
-                StateAsset entryNode = _weaponStateAssets[i]._states[0]._state;
+                State newState = new State(entryNode);
+                tempReadyAssets.Add(entryNode, newState);
+                Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions != null, "Entry 인데 null이면 안됩니다.");
+                Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions.Count > 0, "Entry 인데 Count가 0이면 안됩니다.");
+                StateNodeDesc newStateNode = new StateNodeDesc();
+                _weaponStates.Add(newState, newStateNode);
 
-                if (tempReadyAssets.ContainsKey(entryNode) == false)//최초 순회 된 노드이다.
+                int entryWeight = CalculateConditionWeight(_weaponStateAssets[i]._states[0]._entryConditions);
+
+                //Dictionary<int, List<State>>
+                if (_entryStates.ContainsKey(entryWeight) == false)
                 {
-                    State newState = new State(entryNode);
-                    tempReadyAssets.Add(entryNode, newState);
-                    Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions != null, "Entry 인데 null이면 안됩니다.");
-                    Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions.Count > 0 , "Entry 인데 Count가 0이면 안됩니다.");
-                    StateNodeDesc newStateNode = new StateNodeDesc();
-                    _weaponStates.Add(newState, newStateNode);
-
-                    int entryWeight = CalculateConditionWeight(_weaponStateAssets[i]._states[0]._entryConditions);
-
-                    //Dictionary<int, List<State>>
-                    if (_entryStates.ContainsKey(entryWeight) == false)
-                    {
-                        _entryStates.Add(entryWeight, new List<EntryState>());
-                    }
-                    EntryState newEntryState = new EntryState();
-                    newEntryState._state = newState;
-                    newEntryState._entryCondition = _weaponStateAssets[i]._states[0]._entryConditions;
-                    _entryStates[entryWeight].Add(newEntryState);
+                    _entryStates.Add(entryWeight, new List<EntryState>());
                 }
+                EntryState newEntryState = new EntryState();
+                newEntryState._state = newState;
+                newEntryState._entryCondition = _weaponStateAssets[i]._states[0]._entryConditions;
+                _entryStates[entryWeight].Add(newEntryState);
             }
         }
 
-
+        //State Linking 단계
         for (int i = 0; i < _weaponStateAssets.Count; i++)
         {
             for (int j = 0; j < _weaponStateAssets[i]._states.Count; j++)

@@ -5,6 +5,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Text;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public enum WeaponHandlingType
@@ -70,27 +71,25 @@ public class PlayerScript : MonoBehaviour
 
 
     //Weapon Section -> 이거 다른 컴포넌트로 빼세요(현재 만들어져있는건 EquipmentBoard 혹은 Inventory)
+    [SerializeField] private List<GameObject> _tempLeftWeaponPrefabs = new List<GameObject>();
+    [SerializeField] private List<GameObject> _tempRightWeaponPrefabs = new List<GameObject>();
+
     private int _currLeftWeaponIndex = 0;
     private int _currRightWeaponIndex = 0;
 
-    private WeaponScript _tempCurrLeftWeapon = null;
-    private WeaponScript _tempCurrRightWeapon = null;
+    private GameObject _tempCurrLeftWeapon = null;
+    private GameObject _tempCurrRightWeapon = null;
+
+    public GameObject GetLeftWeapon() { return _tempCurrLeftWeapon; }
+    public GameObject GetRightWeapon() { return _tempCurrRightWeapon; }
 
     private WeaponGrabFocus _tempGrabFocusType = WeaponGrabFocus.Normal;
     public WeaponGrabFocus GetGrabFocusType() { return _tempGrabFocusType; }
-    private GameObject _tempCurrLeftWeaponPrefab = null;
-    public GameObject GetLeftWeaponPrefab() { return _tempCurrLeftWeaponPrefab; }
-    private GameObject _tempCurrRightWeaponPrefab = null;
-    public GameObject GetRightWeaponPrefab() { return _tempCurrRightWeaponPrefab; }
+
     private WeaponHandlingType _weaponHandlingType = WeaponHandlingType.Off;
     public WeaponHandlingType GetWeaponHandlingType() { return _weaponHandlingType; }
 
-    [SerializeField] private List<WeaponScript> _tempLeftWeapons = new List<WeaponScript>();
-    [SerializeField] private List<WeaponScript> _tempRightWeapons = new List<WeaponScript>();
-
-    [SerializeField] private List<GameObject> _tempLeftWeaponPrefabs = new List<GameObject>();
-    [SerializeField] private List<GameObject> _tempRightWeaponPrefabs = new List<GameObject>();
-    private WeaponHoldingType _weaponHoldingType = new WeaponHoldingType();
+    
 
 
     //현재는 캐릭터메쉬가 애니메이터를 갖고있기 때문에 애니메이터를 갖고있는 게임오브젝트가 캐릭터 메쉬다
@@ -128,6 +127,7 @@ public class PlayerScript : MonoBehaviour
     private AnimationClip _currAnimClip = null;
     private float _currAnimationSeconds = 0.0f;
     private int _currAnimationLoopCount = 0;
+    private int _tempMaxWeaponSlot = 3;
 
     public float GetCurrAnimationClipFrame() { return _currAnimClip.frameRate * _currAnimationSeconds; }
     public float GetCurrAnimationClipSecond() { return _currAnimationSeconds; }
@@ -189,33 +189,35 @@ public class PlayerScript : MonoBehaviour
         //Temp Aim
         if (_aimScript != null && _aimScript.enabled == true)
         {
-            bool isAimed = Input.GetButton("Fire2");
+            //bool isAimed = Input.GetButton("Fire2");
 
-            if (isAimed != _isAim)
-            {
-                _isAim = isAimed;
+            //if (isAimed != _isAim)
+            //{
+            //    _isAim = isAimed;
 
-                if (isAimed == true)
-                {
-                    _aimScript.OnAimState();
+            //    if (isAimed == true)
+            //    {
+            //        _aimScript.OnAimState();
 
-                    if (_currRightWeaponIndex == 1)
-                    {
-                        _tempRightWeapons[1].TurnOnAim();
-                    }
-                }
-                else
-                {
-                    _aimScript.OffAimState();
+            //        if (_currRightWeaponIndex == 1)
+            //        {
+            //            _tempRightWeapons[1].TurnOnAim();
+            //        }
+            //    }
+            //    else
+            //    {
+            //        _aimScript.OffAimState();
 
-                    if (_tempRightWeapons[_currRightWeaponIndex] != null)
-                    {
-                        _tempRightWeapons[_currRightWeaponIndex].TurnOffAim();
-                    }
-                }
-            }
+            //        if (_tempRightWeapons[_currRightWeaponIndex] != null)
+            //        {
+            //            _tempRightWeapons[_currRightWeaponIndex].TurnOffAim();
+            //        }
+            //    }
+            //}
         }
 
+
+        //현재 상태 업데이트
         {
             _stateContoller.DoWork();
         }
@@ -270,8 +272,8 @@ public class PlayerScript : MonoBehaviour
     public WeaponScript GetWeaponScript(bool isRightHand)
     {
         GameObject weaponPrefab = (isRightHand == true)
-            ? _tempCurrRightWeaponPrefab
-            : _tempCurrLeftWeaponPrefab;
+            ? _tempCurrRightWeapon
+            : _tempCurrLeftWeapon;
 
 
         if (weaponPrefab == null) 
@@ -422,9 +424,9 @@ public class PlayerScript : MonoBehaviour
             weaponChangeTry = true;
 
             _currLeftWeaponIndex++;
-            if (_currLeftWeaponIndex >= 3)
+            if (_currLeftWeaponIndex >= _tempMaxWeaponSlot)
             {
-                _currLeftWeaponIndex = _currLeftWeaponIndex % 3;
+                _currLeftWeaponIndex = _currLeftWeaponIndex % _tempMaxWeaponSlot;
             }
             nextWeaponPrefab = _tempLeftWeaponPrefabs[_currLeftWeaponIndex];
         }
@@ -434,28 +436,50 @@ public class PlayerScript : MonoBehaviour
             weaponChangeTry = true;
 
             _currRightWeaponIndex++;
-            if (_currRightWeaponIndex >= 3)
+            if (_currRightWeaponIndex >= _tempMaxWeaponSlot)
             {
-                _currRightWeaponIndex = _currRightWeaponIndex % 3;
+                _currRightWeaponIndex = _currRightWeaponIndex % _tempMaxWeaponSlot;
             }
             nextWeaponPrefab = _tempRightWeaponPrefabs[_currRightWeaponIndex];
 
             tempIsRightHandWeapon = true;
         }
 
+        if (weaponChangeTry == false) //무기 전환을 시도하지 않았다. 아무일도 일어나지 않을것이다.
+        { 
+            return;
+        }
 
 
-        if (weaponChangeTry == false)
-        { return; }
+        //기존 무기 삭제
+        {
+            if (tempIsRightHandWeapon == true)
+            {
+                if (_tempCurrRightWeapon != null) //오른손 에 뭔가를 쥐고있었다.
+                {
+                    Destroy(_tempCurrRightWeapon);
+                }
+                _tempCurrRightWeapon = null;
+            }
+            else
+            {
+                if (_tempCurrLeftWeapon != null) //왼손에 뭔가를 쥐고있었다.
+                {
+                    Destroy(_tempCurrLeftWeapon);
+                }
+                _tempCurrLeftWeapon = null;
+            }
+        }
 
-        WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
-
-        WeaponSocketScript.SideType targetSide = (tempIsRightHandWeapon == true)
+        //새로운 무기 장착코드
+        if (nextWeaponPrefab != null)
+        {
+            WeaponSocketScript.SideType targetSide = (tempIsRightHandWeapon == true)
             ? WeaponSocketScript.SideType.Right
             : WeaponSocketScript.SideType.Left;
 
-        if (nextWeaponPrefab != null)
-        {
+            WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
+
             Debug.Assert(nextWeaponScript != null, "무기는 WeaponScript가 있어야 한다");
 
             //소켓 찾기
@@ -490,49 +514,40 @@ public class PlayerScript : MonoBehaviour
                 Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
             }
 
-            //아이템 프리팹 생성
-            GameObject newObject = null;
+            //아이템 프리팹 생성, 장착
+            GameObject newObject = Instantiate(nextWeaponPrefab);
             {
-                newObject = Instantiate(nextWeaponPrefab);
                 nextWeaponScript = newObject.GetComponent<WeaponScript>();
                 nextWeaponScript._weaponType = ItemInfo.WeaponType.MediumGun;
                 nextWeaponScript.Equip(this, correctSocket);
                 newObject.transform.SetParent(transform);
-            }
 
-            if (targetSide == WeaponSocketScript.SideType.Left)
-            {
-                _tempLeftWeaponPrefabs[_currLeftWeaponIndex] = newObject;
-            }
-            else if (targetSide == WeaponSocketScript.SideType.Right)
-            {
-                _tempRightWeaponPrefabs[_currRightWeaponIndex] = newObject;
-            }
-            else
-            {
-                Debug.Assert(false, "아직 Middle Type의 무기는 없다");
+                if (tempIsRightHandWeapon == true)
+                {
+                    _tempCurrRightWeapon = newObject;
+                }
+                else
+                {
+                    _tempCurrLeftWeapon = newObject;
+                }
             }
 
             //양손으로만 쥘 수 있는 무기에 따른 후처리
             if (nextWeaponScript._onlyTwoHand == true)
             {
-                Debug.Assert(false, "작업 시작 전까지 여기에 들어와선 안된다");
+                //Debug.Assert(false, "작업 시작 전까지 여기에 들어와선 안된다");
 
-                if (tempIsRightHandWeapon == true)
-                {
-                    //오른손을 양손으로 쥐고있다.
-                    _tempCurrLeftWeaponPrefab = null; //오른손을 양손으로 쥐어야 해서 왼손을 집어넣는다
-                }
-                else
-                {
-                    //왼손을 양손으로 쥐고있다.
-                    _tempCurrRightWeaponPrefab = null; //왼손을 양손으로 쥐어야 해서 오른손을 집어넣는다
-                }
+                //if (tempIsRightHandWeapon == true)
+                //{
+                //    //오른손을 양손으로 쥐고있다.
+                //    _tempCurrLeftWeaponPrefab = null; //오른손을 양손으로 쥐어야 해서 왼손을 집어넣는다
+                //}
+                //else
+                //{
+                //    //왼손을 양손으로 쥐고있다.
+                //    _tempCurrRightWeaponPrefab = null; //왼손을 양손으로 쥐어야 해서 오른손을 집어넣는다
+                //}
             }
-
-
-            _tempCurrLeftWeaponPrefab = _tempLeftWeaponPrefabs[_currLeftWeaponIndex];
-            _tempCurrRightWeaponPrefab = _tempRightWeaponPrefabs[_currRightWeaponIndex];
         }
 
         /*----------------------------------------------------------------------------------------------
@@ -541,12 +556,14 @@ public class PlayerScript : MonoBehaviour
         ----------------------------------------------------------------------------------------------*/
 
         //무기 변경시 레이어 변경코드
-        _WeaponAnimationLayerChange();
+        {
+            _WeaponAnimationLayerChange();
+        }
     }
 
     private void _WeaponAnimationLayerChange()
     {
-        if (_tempCurrLeftWeaponPrefab == null && _tempCurrRightWeaponPrefab == null)
+        if (_tempCurrLeftWeapon == null && _tempCurrRightWeapon == null)
         {
             //무기를 아무것도 쥐고있지 않다
             Debug.Log("왼손, 오른손 무기가 '비'활성화가 됐다");
@@ -554,7 +571,7 @@ public class PlayerScript : MonoBehaviour
             _animator.SetLayerWeight(3, 0.0f);
         }
 
-        else if (_tempCurrLeftWeaponPrefab != null && _tempCurrRightWeaponPrefab != null)
+        else if (_tempCurrLeftWeapon != null && _tempCurrRightWeapon != null)
         {
             //왼손, 오른손 레이어를 활성화 해서 Handling을 연출한다.
             Debug.Log("왼손, 오른손 무기가 활성화가 됐다");
@@ -565,9 +582,9 @@ public class PlayerScript : MonoBehaviour
         else
         {
             //오른손 무기만 있다.
-            if (_tempCurrLeftWeaponPrefab == null && _tempCurrRightWeaponPrefab != null)
+            if (_tempCurrLeftWeapon == null && _tempCurrRightWeapon != null)
             {
-                if (_tempCurrRightWeaponPrefab.GetComponent<WeaponScript>()._onlyTwoHand == true)
+                if (_tempCurrRightWeapon.GetComponent<WeaponScript>()._onlyTwoHand == true)
                 {
                     //오른손 무기를 양손으로 쥐고있다.
                     Debug.Assert(false, "작업 시작 전까지 여기에 들어와선 안된다");
@@ -580,9 +597,9 @@ public class PlayerScript : MonoBehaviour
                 }
             }
             //왼손무기만 있다.
-            if (_tempCurrLeftWeaponPrefab != null && _tempCurrRightWeaponPrefab == null)
+            if (_tempCurrLeftWeapon != null && _tempCurrRightWeapon == null)
             {
-                if (_tempCurrLeftWeaponPrefab.GetComponent<WeaponScript>()._onlyTwoHand == true)
+                if (_tempCurrLeftWeapon.GetComponent<WeaponScript>()._onlyTwoHand == true)
                 {
                     //왼손 무기를 양손으로 쥐고있다.
                     Debug.Assert(false, "작업 시작 전까지 여기에 들어와선 안된다");

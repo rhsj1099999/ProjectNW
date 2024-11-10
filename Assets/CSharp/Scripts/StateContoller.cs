@@ -620,67 +620,67 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.RightAttackTry:
                 {
-                    bool rightHandGrabCondition = true;
+                    //bool rightHandGrabCondition = true;
 
-                    switch (_ownerStateControllingComponent._owner.GetGrabFocusType())
-                    {
-                        case WeaponGrabFocus.Normal:
-                            {
-                                if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null)
-                                {
-                                    rightHandGrabCondition = false;
-                                }
-                            }
-                            break;
-                        case WeaponGrabFocus.RightHandFocused:
-                            {
-                                if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null)
-                                {
-                                    rightHandGrabCondition = false;
-                                }
-                            }
-                            break;
-                        case WeaponGrabFocus.LeftHandFocused:
-                            {
-                                if (_ownerStateControllingComponent._owner.GetLeftWeaponPrefab() == null)
-                                {
-                                    rightHandGrabCondition = false;
-                                }
-                            }
-                            break;
-                        case WeaponGrabFocus.DualGrab:
-                            {
-                                if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null ||
-                                    _ownerStateControllingComponent._owner.GetLeftWeaponPrefab() == null)
-                                {
-                                    rightHandGrabCondition = false;
-                                }
-                            }
-                            break;
+                    //switch (_ownerStateControllingComponent._owner.GetGrabFocusType())
+                    //{
+                    //    case WeaponGrabFocus.Normal:
+                    //        {
+                    //            if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null)
+                    //            {
+                    //                rightHandGrabCondition = false;
+                    //            }
+                    //        }
+                    //        break;
+                    //    case WeaponGrabFocus.RightHandFocused:
+                    //        {
+                    //            if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null)
+                    //            {
+                    //                rightHandGrabCondition = false;
+                    //            }
+                    //        }
+                    //        break;
+                    //    case WeaponGrabFocus.LeftHandFocused:
+                    //        {
+                    //            if (_ownerStateControllingComponent._owner.GetLeftWeaponPrefab() == null)
+                    //            {
+                    //                rightHandGrabCondition = false;
+                    //            }
+                    //        }
+                    //        break;
+                    //    case WeaponGrabFocus.DualGrab:
+                    //        {
+                    //            if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null ||
+                    //                _ownerStateControllingComponent._owner.GetLeftWeaponPrefab() == null)
+                    //            {
+                    //                rightHandGrabCondition = false;
+                    //            }
+                    //        }
+                    //        break;
 
-                        default:
-                            break;
-                    }
+                    //    default:
+                    //        break;
+                    //}
 
-                    if (rightHandGrabCondition == false)
-                    {
-                        return false;
-                    }
+                    //if (rightHandGrabCondition == false)
+                    //{
+                    //    return false;
+                    //}
 
-                    if (CustomKeyManager.Instance.GetKeyInputDesc(_rightHandAttackKey)._pressType == KeyPressType.Pressed)
-                    {
-                        return true;
-                    }
+                    //if (CustomKeyManager.Instance.GetKeyInputDesc(_rightHandAttackKey)._pressType == KeyPressType.Pressed)
+                    //{
+                    //    return true;
+                    //}
                 }
                 break;
 
             case ConditionType.LeftAttackTry:
                 {
-                    if (CustomKeyManager.Instance.GetKeyInputDesc(_leftHandAttackKey)._pressType == KeyPressType.Pressed)
-                    {
-                        //공격 키 둘중에 하나라도 눌렸다.
-                        return true;
-                    }
+                    //if (CustomKeyManager.Instance.GetKeyInputDesc(_leftHandAttackKey)._pressType == KeyPressType.Pressed)
+                    //{
+                    //    //공격 키 둘중에 하나라도 눌렸다.
+                    //    return true;
+                    //}
                 }
                 break;
 
@@ -1170,8 +1170,6 @@ public class StateContoller : MonoBehaviour
 
                         bool stateCheckPassed = true;
 
-                        //왜 장착하고 e 누르자마자 streak야 ㅅㅂ
-
                         foreach (ConditionDesc condition in entryState._entryCondition)
                         {
                             if (CheckCondition(condition, true) == false)
@@ -1185,10 +1183,6 @@ public class StateContoller : MonoBehaviour
                         {
                             _reservedNextWeaponState = entryState._state;
                             return;
-                        }
-                        else
-                        {
-                            continue;
                         }
                     }
                 }
@@ -1217,10 +1211,6 @@ public class StateContoller : MonoBehaviour
                         {
                             _reservedNextWeaponState = entryState._state;
                             return;
-                        }
-                        else
-                        {
-                            continue;
                         }
                     }
                 }
@@ -1255,10 +1245,6 @@ public class StateContoller : MonoBehaviour
                             _reservedNextWeaponState = entryState._state;
                             return;
                         }
-                        else
-                        {
-                            continue;
-                        }
                     }
                 }
 
@@ -1288,10 +1274,6 @@ public class StateContoller : MonoBehaviour
                         {
                             _reservedNextWeaponState = entryState._state;
                             return;
-                        }
-                        else
-                        {
-                            continue;
                         }
                     }
                 }
