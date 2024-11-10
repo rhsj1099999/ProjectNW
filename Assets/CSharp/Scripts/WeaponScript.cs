@@ -167,8 +167,7 @@ public class WeaponScript : MonoBehaviour
                         List<ComboKeyCommandDesc> comboKeys = condition._commandInputConditionTarget;
                         foreach (ComboKeyCommandDesc command in comboKeys)
                         {
-                            retWeight += command._CombinedCommandKey.Count;
-                            retWeight++;
+                            retWeight += command._targetCommandKeys.Count;
                         }
                     }
                     break;

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ad2de68ba504b24e84273b222c9f9c9, type: 3}
+  m_Name: Ayato
+  m_EditorClassIdentifier: 
+  _list:
+  - _animationClip: {fileID: 7400000, guid: 89fea5b72bc77614d89f09aa0dd54956, type: 2}
+    _dataAssetWrapper:
+    - _frameDataType: 0
+      _dataAsset:
+        _frameUp: 45
+        _frameUnder: 77
+        _frameCheckType: 2
+  - _animationClip: {fileID: 7400000, guid: 55de0dde0e3d59146b6516d54369c002, type: 2}
+    _dataAssetWrapper:
+    - _frameDataType: 0
+      _dataAsset:
+        _frameUp: 45
+        _frameUnder: 88
+        _frameCheckType: 2
+  - _animationClip: {fileID: 7400000, guid: 865ff1e3e15bb184e9cac72d6f658759, type: 2}
+    _dataAssetWrapper:
+    - _frameDataType: 0
+      _dataAsset:
+        _frameUp: 60
+        _frameUnder: 130
+        _frameCheckType: 2
+  - _animationClip: {fileID: 7400000, guid: d006c1278f81fa54cb39427e8f7e1fe1, type: 2}
+    _dataAssetWrapper:
+    - _frameDataType: 0
+      _dataAsset:
+        _frameUp: 80
+        _frameUnder: 120
+        _frameCheckType: 2

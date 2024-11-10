@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static State;
 using static StateNodeDesc;
 
 public enum StateActionType
@@ -54,8 +55,7 @@ public enum RepresentStateType
 [Serializable]
 public class ComboKeyCommandDesc
 {
-    public WeaponUseType _targetCommandKey;
-    public List<WeaponUseType> _CombinedCommandKey = new List<WeaponUseType>(); //같이 눌려야 하는 키
+    public List<WeaponUseType> _targetCommandKeys = new List<WeaponUseType>(); //같이 눌려야 하는 키
 
     //콤보 커맨드에 홀드 관련 집어넣지마라...아직은
     //public KeyPressType _targetState;
@@ -80,7 +80,7 @@ public class ConditionDesc
     public ItemInfo.WeaponType _weaponTypeGoal;
     public List<KeyInputConditionDesc> _keyInputConditionTarget;
     public List<ComboKeyCommandDesc> _commandInputConditionTarget;
-    public float _animationFrameGoal; //음수면 UnderGoal 양수면 UpGoal로 쓰세요
+    public FrameDataType _animationFrameDataType = FrameDataType.End;
     public float _comboStrainedTime = -1.0f; //n초 내에 완성시켜야 하는 콤보
 }
 
@@ -589,24 +589,21 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AnimationFrame:
                 {
-                    //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
-                    float currAnimationFrame = conditionDesc._animationFrameGoal;
-                    float currOnwerAnimationFrame = _currStateTime * _currState.GetStateDesc()._stateAnimationClip.frameRate;
+                    StateDesc currStateDesc = _currState.GetStateDesc();
+                    
+                    int currOnwerAnimationFrame = (int)(_currStateTime * currStateDesc._stateAnimationClip.frameRate);
 
-                    if (currAnimationFrame >= 0.0f) 
+                    StateAnimActionInfo currStateAnimInfo = _currState.GetStateAnimActionInfo();
+
+                    if (currStateAnimInfo._myFrameData == null)
                     {
-                        //양수 = Up조건이다
-                        if (currOnwerAnimationFrame > currAnimationFrame)
-                        { return true; }
-                    }
-                    else
-                    {
-                        //음수 = Under조건이다
-                        if (currOnwerAnimationFrame < (currAnimationFrame * -1.0f))
-                        { return true; }
+                        //한번은 찾아본다
+                        currStateAnimInfo._myFrameData = ResourceDataManager.Instance.GetAnimationFrameData(currStateDesc._stateAnimationClip, conditionDesc._animationFrameDataType);
+
+                        Debug.Assert(currStateAnimInfo._myFrameData != null, "Condition이 AnimationFrame인데, FrameData가 null입니다.");
                     }
 
-                    return false;
+                    return currStateAnimInfo._myFrameData.FrameCheck(currOnwerAnimationFrame);
                 }
 
             case ConditionType.RightHandWeaponSignaled:
@@ -710,54 +707,44 @@ public class StateContoller : MonoBehaviour
 
                     WeaponGrabFocus ownerGrabType = _ownerStateControllingComponent._owner.GetGrabFocusType();
                     WeaponUseType weaponComboType = WeaponUseType.MainUse;
-                    WeaponUseType convertedFromRecorded = WeaponUseType.MainUse;
                     ComboCommandKeyType recordedType = ComboCommandKeyType.TargetingBack;
 
                     int index = 0;
 
+                    if (CommandCount > KeyRecoredeCount)
+                    {
+                        return false; //콤보를 확인할만큼 키가 없다.
+                    }
+
                     for (LinkedListNode<ComboCommandKeyDesc> node = currCommand.Last; node != null; node = node.Previous)
                     {
                         if ((CommandCount - index) < 0)
-                        { break; }
+                        {
+                            break; //콤보를 다 검사했다. 이상이 없었다면 return을 안했음
+                        }
 
                         recordedType = node.Value._type; //입력된 키
-                        
 
                         if (weaponComboType == WeaponUseType.MainUse || weaponComboType == WeaponUseType.SubUse || weaponComboType == WeaponUseType.SpecialUse)
                         {
-                            //무기의 콤보가 공격키 관련인데 녹화된 키가 공격과 관련 없으면 종료
                             if (recordedType == ComboCommandKeyType.TargetingBack || recordedType == ComboCommandKeyType.TargetingFront || recordedType == ComboCommandKeyType.TargetingLeft || recordedType == ComboCommandKeyType.TargetingRight)
                             {return false;}
 
-                            //원본 키 체크
+                            //조합 키 체크
+                            for (int i = 0; i < stateComboKeyCommand[CommandCount - index]._targetCommandKeys.Count; i++)
                             {
-                                weaponComboType = stateComboKeyCommand[CommandCount - index]._targetCommandKey; //해야만 하는 키
+                                weaponComboType = stateComboKeyCommand[CommandCount - index]._targetCommandKeys[i];
 
                                 ComboCommandKeyType targetType = KeyConvert2(weaponComboType, ownerGrabType, isRightHandWeapon);
+
                                 if (targetType <= ComboCommandKeyType.TargetingRight)
-                                {return false;} //치환에 실패했다
+                                {
+                                    return false; //치환에 실패했다
+                                } 
 
                                 if (CustomKeyManager.Instance.AttackKeyRestrainedExist(targetType) == false)
                                 {
                                     return false;
-                                }
-                            }
-
-
-                            //조합 키 체크
-                            {
-                                for (int i = 0; i < stateComboKeyCommand[CommandCount - index]._CombinedCommandKey.Count; i++)
-                                {
-                                    weaponComboType = stateComboKeyCommand[CommandCount - index]._targetCommandKey; //해야만 하는 키
-
-                                    ComboCommandKeyType targetType = KeyConvert2(weaponComboType, ownerGrabType, isRightHandWeapon);
-                                    if (targetType <= ComboCommandKeyType.TargetingRight)
-                                    { return false; } //치환에 실패했다
-
-                                    if (CustomKeyManager.Instance.AttackKeyRestrainedExist(targetType) == false)
-                                    {
-                                        return false;
-                                    }
                                 }
                             }
                         }
@@ -768,9 +755,16 @@ public class StateContoller : MonoBehaviour
                                 return false;
                             }
                         }
+
                         index++;
                     }
+
+
+
+
                 }
+
+
                 return true;
 
             case ConditionType.FocusedWeapon:
@@ -1179,6 +1173,8 @@ public class StateContoller : MonoBehaviour
                     {//이미 어려운거부터 정렬돼있다고 가정한다. 그렇지 않다면 정렬로직의 문제다. 여기서 신경쓰지 않는다
 
                         bool stateCheckPassed = true;
+
+                        //왜 장착하고 e 누르자마자 streak야 ㅅㅂ
 
                         foreach (ConditionDesc condition in entryState._entryCondition)
                         {

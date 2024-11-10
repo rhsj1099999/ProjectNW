@@ -36,7 +36,7 @@ public enum KeyPressType
     None,
 };
 
-public class CustomKeyManager : MonoBehaviour
+public class CustomKeyManager : SubManager
 {
     /*-----------------------------------------------------
     유니티가 지원하지 않는 부차적인 기능들을 하는 클래스입니다
@@ -60,7 +60,9 @@ public class CustomKeyManager : MonoBehaviour
         _isRecordAttackKeyRestrained = target;
 
         if (_isRecordAttackKeyRestrained == true &&
-            _comboCommandRecorder.Last.Value._type >= ComboCommandKeyType.LeftClick && _comboCommandRecorder.Last.Value._type <= ComboCommandKeyType.SubRightClick)
+            _comboCommandRecorder.Count > 0 &&
+            _comboCommandRecorder.Last.Value._type >= ComboCommandKeyType.LeftClick &&
+            _comboCommandRecorder.Last.Value._type <= ComboCommandKeyType.SubRightClick)
         {
             _afterAttackKeyRestrained.Add(_comboCommandRecorder.Last.Value._type, 1);
         }
@@ -95,9 +97,9 @@ public class CustomKeyManager : MonoBehaviour
             return _instance; 
         }
     }
-    
 
-    private void Awake()
+
+    public override void SubManagerAwake()
     {
         if (_instance != null && _instance != this)
         {
@@ -106,7 +108,6 @@ public class CustomKeyManager : MonoBehaviour
         _instance = this;
         DontDestroyOnLoad(gameObject);
     }
-
 
 
     public KeyInputDesc GetKeyInputDesc(KeyCode target)
@@ -124,18 +125,15 @@ public class CustomKeyManager : MonoBehaviour
         return _usingKeyInputDesc[target];
     }
 
-    private void FixedUpdate()
+    public override void SubManagerUpdate()
+    {
+        NormalKeyUpdate();
+    }
+
+    public override void SubManagerFixedUpdate()
     {
         ComboKeyCommandUpdate();
     }
-
-    private void Update()
-    {
-        NormalKeyUpdate();
-
-    }
-
-
 
     private void NormalKeyUpdate()
     {

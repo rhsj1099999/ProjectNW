@@ -5,25 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using static StateContoller;
 
-//public class RepresentStateType
-//{
-//    private List<uint> _types = new List<uint>();
-
-//    public RepresentStateType()
-//    {
-//        for (RepresentStateTypeHelper i = 0; i < RepresentStateTypeHelper.End; i++)
-//        {
-//            short typeNumber = (short)i;
-//            Debug.Assert(typeNumber <= 63, "비트플래그가 64를 넘어가려 합니다. 큰일났습니다");
-//            _types.Add((uint)(1 << typeNumber));
-//        }
-//    }
-
-//    public uint GetType(RepresentStateTypeHelper type)
-//    {
-//        return _types[(int)type];
-//    }
-//}
 
 public class State
 {
@@ -32,6 +13,8 @@ public class State
     public class StateAnimActionInfo
     {
         public AnimationHipCurve _myAnimationCurve = null;
+        public FrameData _myFrameData = null;
+
         public float _currStateSecond = 0.0f;
         public float _prevStateSecond = 0.0f;
         public float _prevReadedSecond = 0.0f;
@@ -41,8 +24,12 @@ public class State
     {
         _stateDesc = stateAsset._myState; //복사 완료
         _stateAssetCreateFrom = stateAsset;
-        ResourceDataManager.Instance.AddHipCurve(_stateDesc._stateAnimationClip);
-        _stateAnimActionInfo._myAnimationCurve = ResourceDataManager.Instance.GetHipCurve(_stateDesc._stateAnimationClip);
+
+        //HipCurve Data
+        {
+            ResourceDataManager.Instance.AddHipCurve(_stateDesc._stateAnimationClip);
+            _stateAnimActionInfo._myAnimationCurve = ResourceDataManager.Instance.GetHipCurve(_stateDesc._stateAnimationClip);
+        }
     }
 
     private PlayerScript _owner = null;
@@ -226,80 +213,4 @@ public class State
             }
         }
     }
-
-
-
-
-    //public void SettingOwnerComponent_LinkedCondition(PlayerScript owner)
-    //{
-    //    //오류검사
-    //    switch (_conditionDesc._singleConditionType)
-    //    {
-    //        case ConditionType.KeyInput:
-    //            Debug.Assert(_conditionDesc._keyInputConditionTarget.Count != 0, "키인풋인데 정보가 없다");
-    //            break;
-    //        case ConditionType.EquipWeaponByType:
-    //            Debug.Assert(_conditionDesc._weaponTypeGoal != ItemInfo.WeaponType.NotWeapon, "WeaponType인데 Goal이 None이다. 오류는 아닐수도 있다");
-    //            break;
-    //        case ConditionType.AnimationFrameUp:
-    //            Debug.Assert(_conditionDesc._animationFrameUpGoal > float.Epsilon, "AnimSecondType인데 Goal이 0.0이다. 오류는 아닐수도 있다");
-    //            break;
-
-    //        case ConditionType.AnimationFrameUnder:
-    //            Debug.Assert(_conditionDesc._animationFrameUnderGoal > float.Epsilon, "AnimSecondType인데 Goal이 0.0이다. 오류는 아닐수도 있다");
-    //            break;
-
-    //        default:
-    //            break;
-    //    }
-
-    //    switch (_conditionDesc._singleConditionType)
-    //    {
-    //        case ConditionType.MoveDesired:
-    //            _ownerComponents._ownerInputController = owner.GetComponent<InputController>();
-    //            Debug.Assert(_ownerComponents._ownerInputController != null, "Input조건이 있는데 이 컴포넌트가 없습니다");
-    //            break;
-
-    //        case ConditionType.AnimationEnd:
-    //            _ownerComponents._ownerAnimator = owner.GetComponentInChildren<Animator>();
-    //            Debug.Assert(_ownerComponents._ownerAnimator != null, "Animation조건이 있는데 이 컴포넌트가 없습니다");
-    //            break;
-
-    //        case ConditionType.InAir:
-    //            _ownerComponents._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-    //            Debug.Assert(_ownerComponents._ownerMoveScript != null, "GroundLoss조건이 있는데 이 컴포넌트가 없습니다");
-    //            break;
-
-    //        case ConditionType.KeyInput:
-    //            _ownerComponents._ownerInputController = owner.GetComponent<InputController>();
-    //            Debug.Assert(_ownerComponents._ownerInputController != null, "Jump조건이 있는데 이 컴포넌트가 없습니다");
-    //            break;
-
-    //        case ConditionType.EquipWeaponByType:
-    //            //|TODO| 실시간으로 무기 장착 정보를 알 수 있는 인벤토리 컴포넌트를 알아야합니다.
-    //            _ownerComponents._ownerCurrWeapon = owner.GetComponent<WeaponScript>();
-    //            Debug.Assert(_ownerComponents._ownerCurrWeapon != null, "Jump조건이 있는데 이 컴포넌트가 없습니다");
-    //            break;
-
-    //        case ConditionType.AnimationFrameUp:
-    //            //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
-    //            break;
-
-    //        case ConditionType.AnimationFrameUnder:
-    //            //|TODO| 지금은 owner에게서 직접 재생시간을 받아옵니다. 추후 Animator가 이동하면 이곳에 작업이 필요합니다.
-    //            break;
-
-    //        case ConditionType.RightHandWeaponSignaled:
-    //            break;
-
-    //        case ConditionType.LeftHandWeaponSignaled:
-    //            break;
-
-    //        default:
-    //            Debug.Assert(false, "데이터가 추가됐습니까?");
-    //            break;
-    //    }
-    //}
-
-
 }

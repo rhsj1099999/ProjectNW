@@ -5,19 +5,31 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public struct InventoryUIDesc
-{
-    public int _rows;
-    public int _cols;
 
-    public Dictionary<int/*키*/, Dictionary<int/*저장된 칸*/, ItemStoreDesc>> _items;
-    public Dictionary<int/*저장된 칸*/, GameObject> _itemUIs;
-}
 
-public class UIManager : MonoBehaviour
+public class UIManager : SubManager
 {
     private static UIManager _instance = null;
-    private void Awake()
+
+    public static UIManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                GameObject newGameObject = new GameObject("UIManager");
+                _instance = newGameObject.AddComponent<UIManager>();
+                DontDestroyOnLoad(newGameObject);
+            }
+
+            return _instance;
+        }
+    }
+
+    [SerializeField] private GameObject _mainCanvas = null;
+    [SerializeField] private EventSystem _eventSystem = null;
+
+    public override void SubManagerAwake()
     {
         if (_instance != null && _instance != this)
         {
@@ -33,37 +45,12 @@ public class UIManager : MonoBehaviour
             Debug.Assert(false, "MainCanvas는 반드시 존재해야한다");
         }
     }
-    public static UIManager Instance
-    {
-        get
-        {
-            return _instance;
-        }
-    }
-
-    [SerializeField] private GameObject _mainCanvas = null;
-    [SerializeField] private EventSystem _eventSystem = null;
-    
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
 
     public void TurnOnUI(GameObject uiInstance, GameObject caller)
     {
         //uiInstance.SetActive(true);
         uiInstance.GetComponent<UIComponent>().ShowUI();
         uiInstance.transform.SetParent(_mainCanvas.transform);
-    }
-
-    public void TurnOffUI(GameObject uiPrefab)
-    {
-
     }
 
     public void RayCastAll(ref List<RaycastResult> results, bool isReverse = false)

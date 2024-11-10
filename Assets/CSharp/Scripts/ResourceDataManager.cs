@@ -1,18 +1,65 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using static State;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
-
-
-public class AnimationFrameData
+public enum FrameCheckType
 {
-    public enum FrameDataType
-    {
+    Up, Under, Between,
+    End,
+}
 
+public enum FrameDataType
+{
+    NextAttackMotion, StateChange,
+    End,
+}
+
+[Serializable]
+public class FrameData
+{
+    public int _frameUp = -1;
+    public int _frameUnder = -1;
+    public FrameCheckType _frameCheckType = FrameCheckType.Up;
+
+    public bool FrameCheck(int currAnimationFrame)
+    {
+        switch(_frameCheckType)
+        {
+            case FrameCheckType.Up:
+                {
+                    if (currAnimationFrame > _frameUp)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+
+            case FrameCheckType.Under:
+                {
+                    if (currAnimationFrame < _frameUnder)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+
+            case FrameCheckType.Between:
+                if (currAnimationFrame > _frameUp && currAnimationFrame < _frameUnder)
+                {
+                    return true;
+                }
+                return false;
+
+            default:
+                return false;
+        }
     }
 }
+
 
 public class AnimationHipCurve
 {
@@ -50,7 +97,7 @@ public class AnimationHipCurve
 }
 
 
-public class ResourceDataManager : MonoBehaviour
+public class ResourceDataManager : SubManager
 {
     static private ResourceDataManager _instance;
 
@@ -69,17 +116,26 @@ public class ResourceDataManager : MonoBehaviour
         }
     }
 
-
-    private void Awake()
+    public override void SubManagerAwake()
     {
+        if (_instance == null)
+        {
+            _instance = this;
+        }
+
         if (_instance != null && _instance != this)
         {
-            Destroy( _instance.gameObject );
+            Destroy(this.gameObject);
         }
+
+        ReadyAnimationFrameData();
     }
 
-
+    /*-----------------------------------
+    Data Section _ Hip Curve
+    -----------------------------------*/
     private Dictionary<AnimationClip, AnimationHipCurve> _animationHipData = new Dictionary<AnimationClip, AnimationHipCurve>();
+
     public void AddHipCurve(AnimationClip clip)
     {
         if (_animationHipData.ContainsKey(clip) == true)
@@ -89,11 +145,11 @@ public class ResourceDataManager : MonoBehaviour
         }
 
         _animationHipData.Add(clip, new AnimationHipCurve(clip));
-
     }
+
     public AnimationHipCurve GetHipCurve(AnimationClip clip)
     {
-        if ( _animationHipData.ContainsKey(clip) == false) 
+        if (_animationHipData.ContainsKey(clip) == false)
         {
             return null;
         }
@@ -102,4 +158,48 @@ public class ResourceDataManager : MonoBehaviour
     }
 
 
+    /*-----------------------------------
+    Data Section _ Frame Data
+    -----------------------------------*/
+    [SerializeField] private List<AnimationClipWrapperAsset> _animationFrameDataAssetSettings = new List<AnimationClipWrapperAsset>();
+    private Dictionary<AnimationClip, Dictionary<FrameDataType, FrameData>> _animationFrameDatas = new Dictionary<AnimationClip, Dictionary<FrameDataType, FrameData>>();
+
+    private void ReadyAnimationFrameData()
+    {
+        foreach (var dataWrappers in _animationFrameDataAssetSettings)
+        {
+            foreach (var wrappedData in dataWrappers._list)
+            {
+                AnimationClip animationClip = wrappedData._animationClip;
+
+                foreach (var data in wrappedData._dataAssetWrapper)
+                {
+                    FrameData frameData = data._dataAsset;
+                    FrameDataType frameDataType = data._frameDataType;
+
+                    if (_animationFrameDatas.ContainsKey(animationClip) == false)
+                    {
+                        _animationFrameDatas.Add(animationClip, new Dictionary<FrameDataType, FrameData>());
+                    }
+
+                    Dictionary<FrameDataType, FrameData> dataByClip = _animationFrameDatas[animationClip];
+
+                    Debug.Assert(dataByClip.ContainsKey(frameDataType) == false, "데이터가 겹칩니다. anim : " + animationClip.name + "type : " + frameDataType.ToString());
+
+                    dataByClip.Add(frameDataType, frameData);
+                }
+            }
+        }
+    }
+
+    public FrameData GetAnimationFrameData(AnimationClip clip, FrameDataType type)
+    {
+        Debug.Assert(_animationFrameDatas.ContainsKey(clip) != false, "clip에 대한 정보가 하나도 없다");
+
+        Dictionary<FrameDataType, FrameData> dataByClip = _animationFrameDatas[clip];
+
+        Debug.Assert(dataByClip.ContainsKey(type) != false, "clip 내에 해당 type에 대한 정보가 없다");
+
+        return dataByClip[type];
+    }
 }

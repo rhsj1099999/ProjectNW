@@ -4,19 +4,53 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class OnGUIManager : MonoBehaviour
+public class OnGUIManager : SubManager
 {
     private GUIStyle _style = null;
     private List<int> _frameDebug = new List<int>();
     private int _currentFrame = 0;
     private float _currentTimeAcc = 0;
 
-    private void Update()
+    public static OnGUIManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                GameObject singletonObject = new GameObject();
+                _instance = singletonObject.AddComponent<OnGUIManager>();
+                singletonObject.name = typeof(OnGUIManager).ToString();
+
+                DontDestroyOnLoad(singletonObject);
+            }
+
+            return _instance;
+        }
+    }
+
+    public override void SubManagerAwake()
+    {
+        if (_instance != this && _instance != null)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        _instance = this;
+
+        DontDestroyOnLoad(this.gameObject);
+
+        _style = new GUIStyle();
+        _style.fontSize = 20;
+        _style.normal.textColor = Color.white;
+    }
+
+    override public void SubManagerUpdate()
     {
         _currentTimeAcc += Time.deltaTime;
 
-        
-        if (_currentTimeAcc > 0.2f )
+
+        if (_currentTimeAcc > 0.2f)
         {
             if (_frameDebug.Count >= 5)
             {
@@ -28,7 +62,7 @@ public class OnGUIManager : MonoBehaviour
             if (_frameDebug.Count >= 5)
             {
                 int total = 0;
-                foreach (int i in _frameDebug) 
+                foreach (int i in _frameDebug)
                 {
                     total += i;
                 }
@@ -37,8 +71,6 @@ public class OnGUIManager : MonoBehaviour
 
             _currentTimeAcc = 0.0f;
         }
-        
-
     }
 
     public List<RaycastResult> GetUIElementsUnderMouse()
@@ -109,38 +141,7 @@ public class OnGUIManager : MonoBehaviour
         _debugStrings.Remove(key);
     }
 
-    public static OnGUIManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject singletonObject = new GameObject();
-                _instance = singletonObject.AddComponent<OnGUIManager>();
-                singletonObject.name = typeof(OnGUIManager).ToString();
 
-                DontDestroyOnLoad(singletonObject);
-            }
 
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != this && _instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(this.gameObject);
-
-        _style = new GUIStyle();
-        _style.fontSize = 20;
-        _style.normal.textColor = Color.white;
-    }
 
 }
