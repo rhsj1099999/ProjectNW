@@ -153,8 +153,8 @@ public class StateContoller : MonoBehaviour
     public State GetCurrState() { return _currState; }
 
     private float _currStateTime = 0.0f;
-    private KeyCode _rightHandAttackKey = KeyCode.Q;
-    private KeyCode _leftHandAttackKey = KeyCode.E;
+    private KeyCode _rightHandAttackKey = KeyCode.Mouse0;
+    private KeyCode _leftHandAttackKey = KeyCode.Mouse1;
 
     private List<State> _nextAttackStates = new List<State>();
 
@@ -257,7 +257,7 @@ public class StateContoller : MonoBehaviour
         //상태 변경이 완료됐고. 현재 상태들의 Action을 실행하려 합니다.
         {
             //공격을 할 수 있는 상태에서 공격키가 아무거나 눌렸습니다. 0.1초 뒤 공격 애니메이션으로 전환을 시도할겁니다.
-            if ((Input.GetKeyDown(KeyCode.Q) == true || Input.GetKeyDown(KeyCode.E) == true) &&
+            if ((Input.GetKeyDown(_rightHandAttackKey) == true || Input.GetKeyDown(_leftHandAttackKey) == true) &&
                 _stateChangeCoroutineStarted == false &&
                 true/*넘어갈 수 있는 공격상태가 하나라도 존재한다*/)
             {
@@ -725,43 +725,39 @@ public class StateContoller : MonoBehaviour
 
                         recordedType = node.Value._type; //입력된 키
 
-                        if (weaponComboType == WeaponUseType.MainUse || weaponComboType == WeaponUseType.SubUse || weaponComboType == WeaponUseType.SpecialUse)
+                        //조합 키 체크
+                        for (int i = 0; i < stateComboKeyCommand[CommandCount - index]._targetCommandKeys.Count; i++)
                         {
-                            if (recordedType == ComboCommandKeyType.TargetingBack || recordedType == ComboCommandKeyType.TargetingFront || recordedType == ComboCommandKeyType.TargetingLeft || recordedType == ComboCommandKeyType.TargetingRight)
-                            {return false;}
+                            weaponComboType = stateComboKeyCommand[CommandCount - index]._targetCommandKeys[i];
 
-                            //조합 키 체크
-                            for (int i = 0; i < stateComboKeyCommand[CommandCount - index]._targetCommandKeys.Count; i++)
+                            if (weaponComboType == WeaponUseType.MainUse || weaponComboType == WeaponUseType.SubUse || weaponComboType == WeaponUseType.SpecialUse)
                             {
-                                weaponComboType = stateComboKeyCommand[CommandCount - index]._targetCommandKeys[i];
+                                if (recordedType == ComboCommandKeyType.TargetingBack || recordedType == ComboCommandKeyType.TargetingFront || recordedType == ComboCommandKeyType.TargetingLeft || recordedType == ComboCommandKeyType.TargetingRight)
+                                { return false; }
 
                                 ComboCommandKeyType targetType = KeyConvert2(weaponComboType, ownerGrabType, isRightHandWeapon);
 
                                 if (targetType <= ComboCommandKeyType.TargetingRight)
                                 {
                                     return false; //치환에 실패했다
-                                } 
+                                }
 
                                 if (CustomKeyManager.Instance.AttackKeyRestrainedExist(targetType) == false)
                                 {
                                     return false;
                                 }
                             }
-                        }
-                        else
-                        {
-                            if ((ComboCommandKeyType)weaponComboType != recordedType)
+                            else
                             {
-                                return false;
+                                if ((ComboCommandKeyType)weaponComboType != recordedType)
+                                {
+                                    return false;
+                                }
                             }
                         }
 
                         index++;
                     }
-
-
-
-
                 }
 
 

@@ -128,11 +128,11 @@ public class CustomKeyManager : SubManager
     public override void SubManagerUpdate()
     {
         NormalKeyUpdate();
+        ComboKeyCommandUpdate();
     }
 
     public override void SubManagerFixedUpdate()
     {
-        ComboKeyCommandUpdate();
     }
 
     private void NormalKeyUpdate()
@@ -195,7 +195,7 @@ public class CustomKeyManager : SubManager
         int keyDebugCount = 0;
         ComboCommandKeyType type = ComboCommandKeyType.TargetingFront;
 
-        if (Input.GetKeyDown(KeyCode.Q) == true)
+        if (Input.GetKeyDown(KeyCode.Mouse0) == true)
         {
             
             if (Input.GetKey(KeyCode.LeftControl) == true)
@@ -260,7 +260,7 @@ public class CustomKeyManager : SubManager
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.E) == true)
+        if (Input.GetKeyDown(KeyCode.Mouse1) == true)
         {
             if (Input.GetKey(KeyCode.LeftControl) == true)
             {

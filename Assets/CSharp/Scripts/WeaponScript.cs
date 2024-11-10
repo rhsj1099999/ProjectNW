@@ -133,9 +133,6 @@ public class WeaponScript : MonoBehaviour
         무기의 위치는 자식 Transform으로 결정돠면 안된다 : (IK를 이용할 가능성 때문에)
         따라서 _pivotPosition, _pivotRotation = 무기마다 들고있는 고유 피벗 프리팹 인스펙터 창에서 미리 설정해둔다
         -----------------------------------------------------------------------------------------------------------------*/
-        _pivotPosition = transform.position;
-        _pivotRotation = transform.rotation.eulerAngles;
-
         GraphLinking();
     }
 
@@ -349,12 +346,8 @@ public class WeaponScript : MonoBehaviour
 
     virtual public void FollowSocketTransform()
     {
-        transform.position = _pivotPosition + _socketTranform.position;
-        transform.rotation = Quaternion.Euler(_pivotRotation) * _socketTranform.rotation;
-
-        //Quaternion parentRotation = transform.parent.rotation;
-        //Quaternion adjustedPivotRotation = parentRotation * Quaternion.Euler(_pivotRotation);
-        //transform.rotation = _socketTranform.rotation * adjustedPivotRotation;
+        transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation);
+        transform.position = (transform.rotation * _pivotPosition) + _socketTranform.position;
     }
 
 
@@ -365,10 +358,13 @@ public class WeaponScript : MonoBehaviour
         _socketTranform = followTransform;
     }
 
+
+
     public SortedDictionary<int, List<EntryState>> GetEntryStates()
     {
         return _entryStates;
     }
+
 
 
     virtual public void TurnOnAim() { }

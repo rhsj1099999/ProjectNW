@@ -194,11 +194,11 @@ public class ResourceDataManager : SubManager
 
     public FrameData GetAnimationFrameData(AnimationClip clip, FrameDataType type)
     {
-        Debug.Assert(_animationFrameDatas.ContainsKey(clip) != false, "clip에 대한 정보가 하나도 없다");
+        Debug.Assert(_animationFrameDatas.ContainsKey(clip) != false, "clip에 대한 정보가 하나도 없다" + clip.name);
 
         Dictionary<FrameDataType, FrameData> dataByClip = _animationFrameDatas[clip];
 
-        Debug.Assert(dataByClip.ContainsKey(type) != false, "clip 내에 해당 type에 대한 정보가 없다");
+        Debug.Assert(dataByClip.ContainsKey(type) != false, "clip 내에 해당 type에 대한 정보가 없다" + clip.name + type.ToString());
 
         return dataByClip[type];
     }
