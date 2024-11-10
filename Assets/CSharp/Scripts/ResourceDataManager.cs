@@ -129,6 +129,8 @@ public class ResourceDataManager : SubManager
         }
 
         ReadyAnimationFrameData();
+        ReadyStateData();
+
     }
 
     /*-----------------------------------
@@ -201,5 +203,32 @@ public class ResourceDataManager : SubManager
         Debug.Assert(dataByClip.ContainsKey(type) != false, "clip 내에 해당 type에 대한 정보가 없다" + clip.name + type.ToString());
 
         return dataByClip[type];
+    }
+
+
+
+
+
+
+    /*-----------------------------------
+    Data Section _ State Data
+    -----------------------------------*/
+    [SerializeField] private List<StateAsset> _stateAsset = new List<StateAsset>();
+    private Dictionary<StateAsset, State> _created = new Dictionary<StateAsset, State>();
+
+    private void ReadyStateData()
+    {
+        foreach (StateAsset stateAsset in _stateAsset)
+        {
+            State newState = new State(stateAsset);
+
+            if (_created.ContainsKey(stateAsset) != false)
+            {
+                Debug.Log("State Asset에게서 이미 만들어진 State 가 있다");
+                continue;
+            }
+
+            _created.Add(stateAsset, newState);
+        }
     }
 }

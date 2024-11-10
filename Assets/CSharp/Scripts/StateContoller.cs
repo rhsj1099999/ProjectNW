@@ -1247,8 +1247,6 @@ public class StateContoller : MonoBehaviour
                         }
                     }
                 }
-
-                _reservedNextWeaponState = null;
             }
             else
             {
