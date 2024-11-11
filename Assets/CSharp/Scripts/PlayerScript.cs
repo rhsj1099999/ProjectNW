@@ -1,3 +1,4 @@
+using Microsoft.SqlServer.Server;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -86,8 +87,15 @@ public class PlayerScript : MonoBehaviour
     private WeaponGrabFocus _tempGrabFocusType = WeaponGrabFocus.Normal;
     public WeaponGrabFocus GetGrabFocusType() { return _tempGrabFocusType; }
 
-    private WeaponHandlingType _weaponHandlingType = WeaponHandlingType.Off;
-    public WeaponHandlingType GetWeaponHandlingType() { return _weaponHandlingType; }
+    //private WeaponHandlingType _weaponHandlingType = WeaponHandlingType.Off;
+    //public WeaponHandlingType GetWeaponHandlingType() { return _weaponHandlingType; }
+
+    private bool _tempUsingRightHandWeapon = false; //최근에 사용한 무기가 오른손입니까?
+    public bool GetLatestWeaponUse() { return _tempUsingRightHandWeapon; }
+    public void SetLatestWeaponUse(bool isRightHandWeapon)
+    {
+        _tempUsingRightHandWeapon = isRightHandWeapon;
+    }
 
     
 
@@ -120,18 +128,20 @@ public class PlayerScript : MonoBehaviour
 
     private string _targetName1 = "Human@Idle01";
     private string _targetName2 = "UseThisToChange1";
-    private string _leftHandNodeName = "LeftHand";
-    private string _rightHandNodeName = "RightHand";
+    private int _tempMaxWeaponSlot = 3;
+
     private int _currentLayerIndex = 0;
     private int _maxLayer = 2;
     private AnimationClip _currAnimClip = null;
-    private float _currAnimationSeconds = 0.0f;
-    private int _currAnimationLoopCount = 0;
-    private int _tempMaxWeaponSlot = 3;
 
-    public float GetCurrAnimationClipFrame() { return _currAnimClip.frameRate * _currAnimationSeconds; }
-    public float GetCurrAnimationClipSecond() { return _currAnimationSeconds; }
-    public int GetCurrAnimationLoopCount() { return _currAnimationLoopCount; }
+
+    //public float GetCurrAnimationClipFrame() { return _currAnimClip.frameRate * _currAnimationSeconds; }
+    //public float GetCurrAnimationClipSecond() { return _currAnimationSeconds; }
+    //public int GetCurrAnimationLoopCount() { return _currAnimationLoopCount; }
+    //private float _currAnimationSeconds = 0.0f;
+    //private int _currAnimationLoopCount = 0;
+    //private string _leftHandNodeName = "LeftHand";
+    //private string _rightHandNodeName = "RightHand";
 
     private void Awake()
     {
@@ -233,21 +243,6 @@ public class PlayerScript : MonoBehaviour
     private void LateUpdate()
     {
         //애니메이션 업데이트
-        AnimationClip currAnimationClip = _stateContoller.GetCurrState().GetStateDesc()._stateAnimationClip;
-
-        if (_currAnimClip != currAnimationClip)
-        {
-            _currAnimClip = currAnimationClip;
-            ChangeAnimation(currAnimationClip);
-        }
-
-        _currAnimationSeconds += Time.deltaTime * _animator.speed;
-
-        if (_currAnimationSeconds > currAnimationClip.length)
-        {
-            _currAnimationSeconds -= currAnimationClip.length;
-            _currAnimationLoopCount++;
-        }
     }
 
     public void StateChanged()
@@ -255,8 +250,10 @@ public class PlayerScript : MonoBehaviour
         /*-----------------------------------------------------------------------------------------
         |TODO| 굳이 이 코드를 따로 빼야되나? Root 모션은 Late Tick 이 지나야 계산되서 필요하긴 한데
         -----------------------------------------------------------------------------------------*/
-        _currAnimationSeconds = 0.0f;
-        _currAnimationLoopCount = 0;
+        //_currAnimationSeconds = 0.0f;
+        //_currAnimationLoopCount = 0;
+
+        ChangeAnimation(_stateContoller.GetCurrState());
     }
 
     private void ReadyAimSystem()
@@ -322,94 +319,175 @@ public class PlayerScript : MonoBehaviour
 
 
 
-
-    private IEnumerator SwitchingBlendCoroutine_Weapon()
-    {
-        //Layer 인덱스 변경
-        while (true)
-        {
-            float blendDelta = (_currentLayerIndex == 0) //0번 레이어를 재생해야하나
-                ? Time.deltaTime * -_transitionSpeed   //0번 레이어를 재생해야한다면 목표값은 0.0
-                : Time.deltaTime * _transitionSpeed;  //1번 레이어를 재생해야한다면 목표값은 1.0
-
-            _blendTarget += blendDelta;
-
-            /*-------------------
-            |TODO| 이 코드는 뭐야
-            ---------------------*/
-            if (_blendTarget > 1.0f)
-            {
-                _blendTarget = 1.0f - float.Epsilon;
-                _animator.SetLayerWeight(1, _blendTarget);
-                break;
-            }
-            else if (_blendTarget < 0.0f)
-            {
-                _blendTarget = 0.0f;
-                _animator.SetLayerWeight(1, _blendTarget);
-                break;
-            }
-
-            _animator.SetLayerWeight(1, _blendTarget);
-
-            yield return null;
-        }
-
-        _corutineStarted = false;
-    }
-
-    public void ChangeAnimation(AnimationClip targetClip)
+    public void ChangeAnimation(State nextState)
     {
         /*----------------------------------------------------------------------------------------------------------
         |TODO| Jump -> Sprint 상태 전환시
         부주의로 인해 Jump -> Move -> Idle의 전환이 이루어졌다.
         이때 너무빠른 전환으로 인해 즉시 코루틴이 종료되면서 모션이 텔레포트한다 수정해라
         ----------------------------------------------------------------------------------------------------------*/
+
+        /*----------------------------------------------------
+        |NOTI| 모든 애니메이션은 RightHand 기준으로 녹화됐습니다.
+        ------------------------------------------------------*/
+
+        AnimationClip targetClip = nextState.GetStateDesc()._stateAnimationClip;
+        //if (targetClip == _currAnimClip)
+        //{
+        //    return;
+        //}
+
+        //디버그
         {
             AnimatorClipInfo[] currentClipInfos = _animator.GetCurrentAnimatorClipInfo(0);
             Debug.Assert((currentClipInfos.Length > 0), "재생중인 애니메이션을 잃어버렸습니다");
         }
-        
-        _currentLayerIndex++;
-        if (_currentLayerIndex >= _maxLayer)
+
+        //노드전환 작업
         {
-            _currentLayerIndex = _currentLayerIndex % _maxLayer;
+            _currentLayerIndex++;
+            if (_currentLayerIndex >= _maxLayer)
+            {
+                _currentLayerIndex = _currentLayerIndex % _maxLayer;
+            }
+
+            string nextNodeName = "None";
+
+            if (_currentLayerIndex == 0)
+            {
+                _overrideController[_targetName1] = targetClip;
+                nextNodeName = "State1";
+            }
+            else
+            {
+                _overrideController[_targetName2] = targetClip;
+                nextNodeName = "State2";
+            }
+
+            _animator.Play(nextNodeName, _currentLayerIndex, 0.0f);
+
+            //Start Coroutine
+            if (_corutineStarted == false)
+            {
+                _corutineStarted = true;
+                StartCoroutine("SwitchingBlendCoroutine");
+            }
+
+            _currAnimClip = targetClip;
         }
 
-        string nextNodeName = "None";
-
-        if (_currentLayerIndex == 0)
-        {
-            _overrideController[_targetName1] = targetClip;
-            nextNodeName = "State1";
-        }
-        else
-        {
-            _overrideController[_targetName2] = targetClip;
-            nextNodeName = "State2";
-        }
-
-        _animator.Play(nextNodeName, _currentLayerIndex, 0.0f);
-
-        //Start Coroutine
-        if (_corutineStarted == false)
-        {
-            _corutineStarted = true;
-            StartCoroutine("SwitchingBlendCoroutine");
-        }
-
-        //Weapon Layer Change
-        if (_stateContoller.GetCurrState().GetStateDesc()._rightWeaponOverride == true) 
-        {
-            _WeaponAnimationLayerChange();
-        }
-        else
-        {
-            _animator.SetLayerWeight(2, 0.0f);
-            _animator.SetLayerWeight(3, 0.0f);
-        }
-
+        //무기 레이어 변경, Mirror 적용 (무기 애니메이션이라면)
+        WeaponLayerChange(nextState);
     }
+
+
+
+
+    private void WeaponLayerChange(State currState)
+    {
+        if (currState.GetStateDesc()._isAttackState == true)
+        {
+            switch (_tempGrabFocusType)
+            {
+                case WeaponGrabFocus.Normal:
+                    {
+                        if (_tempUsingRightHandWeapon)
+                        {
+                            //오른손 무기를 사용하려합니다.
+                            _animator.SetLayerWeight(3, 0.0f); //오른손은 반드시 따라가야해서 0.0f
+
+                            if (_tempCurrLeftWeapon == null) //왼손무기를 쥐고있지 않다면
+                            {
+                                _animator.SetLayerWeight(2, 0.0f);
+                            }
+                            else
+                            {
+                                _animator.SetLayerWeight(2, 1.0f);
+                            }
+
+                            //미러링 작업
+                            _animator.SetBool("IsMirroring", false);
+                        }
+                        else
+                        {
+                            //왼손 무기를 사용하려합니다.
+                            _animator.SetLayerWeight(2, 0.0f); //왼손은 반드시 따라가야해서 0.0f
+
+                            if (_tempCurrRightWeapon == null) //오른손 무기를 쥐고있지 않다면
+                            {
+                                _animator.SetLayerWeight(3, 0.0f);
+                            }
+                            else
+                            {
+                                _animator.SetLayerWeight(3, 1.0f);
+                            }
+
+                            //미러링 작업
+                            _animator.SetBool("IsMirroring", true);
+                        }
+                    }
+                    break;
+
+                case WeaponGrabFocus.RightHandFocused:
+                    {
+                        Debug.Assert(false, "양손잡기 컨텐츠가 추가됐습니까?");
+                    }
+                    break;
+
+                case WeaponGrabFocus.LeftHandFocused:
+                    {
+                        Debug.Assert(false, "양손잡기 컨텐츠가 추가됐습니까?");
+                    }
+                    break;
+
+                case WeaponGrabFocus.DualGrab:
+                    {
+                        Debug.Assert(false, "양손잡기 컨텐츠가 추가됐습니까?");
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            //다음 상태가 공격상태는 아닙니다.
+            //점프, 움직임, IDLE 과 같은 플레이어의지 상태일수고있고
+            //피격, 낙하와 같은 외부요인 상태일수도 있습니다.
+
+            //_animator.SetBool("IsMirroring", false);
+
+            if (false/*핸들링 애니메이션 관련*/)
+            {
+
+            }
+            else
+            {
+                if (_tempCurrLeftWeapon == null) //왼손 무기를 쥐고있지 않다
+                {
+                    _animator.SetLayerWeight(2, 0.0f);
+                }
+                else
+                {
+                    _animator.SetLayerWeight(2, 1.0f);
+                }
+
+
+                if (_tempCurrRightWeapon == null) //오른손 무기를 쥐고있지 않다
+                {
+                    _animator.SetLayerWeight(3, 0.0f);
+                }
+                else
+                {
+                    _animator.SetLayerWeight(3, 1.0f);
+                }
+
+            }
+        }
+    }
+
+
+
+
+
 
 
     private void WeaponChangeCheck()
@@ -550,15 +628,9 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
-        /*----------------------------------------------------------------------------------------------
-        |NOTI| 레이어를 활성화 하는 순간, 이제부터 레이어는 특별한 지시가 없으면
-        활성화 되려는 관성을 가진다. (피격, 잠수 등등 오버라이딩을 허용하지 않는 애니메이션만 오버라이드 불가)
-        ----------------------------------------------------------------------------------------------*/
-
         //무기 변경시 레이어 변경코드
-        {
-            _WeaponAnimationLayerChange();
-        }
+        //_WeaponAnimationLayerChange();
+        WeaponLayerChange(_stateContoller.GetCurrState());
     }
 
     private void _WeaponAnimationLayerChange()
@@ -613,26 +685,4 @@ public class PlayerScript : MonoBehaviour
             }
         }
     }
-
-
-
-
-
-
-    //public void AnimationOverride(AnimationClip targetClip)
-    //{
-    //    {
-    //        AnimatorClipInfo[] currentClipInfos = _animator.GetCurrentAnimatorClipInfo(0);
-    //        Debug.Assert((currentClipInfos.Length > 0), "재생중인 애니메이션을 잃어버렸습니다");
-    //    }
-
-    //    if (_currentLayerIndex == 0)
-    //    {
-    //        _overrideController[_targetName1] = targetClip;
-    //    }
-    //    else
-    //    {
-    //        _overrideController[_targetName2] = targetClip;
-    //    }
-    //}
 }

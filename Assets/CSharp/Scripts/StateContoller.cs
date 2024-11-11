@@ -153,6 +153,7 @@ public class StateContoller : MonoBehaviour
     public State GetCurrState() { return _currState; }
 
     private float _currStateTime = 0.0f;
+    private float _prevStateTime = 0.0f;
     private KeyCode _rightHandAttackKey = KeyCode.Mouse0;
     private KeyCode _leftHandAttackKey = KeyCode.Mouse1;
 
@@ -188,7 +189,7 @@ public class StateContoller : MonoBehaviour
 
     private void ChangeState(State nextState)
     {
-        Debug.Assert(nextState != _currState, "같은 상태로 변경하려는 진입접이 있습니까?");
+        //Debug.Assert(nextState != _currState, "같은 상태로 변경하려는 진입접이 있습니까?"); 네
 
         if (_stateChangeCoroutineStarted == true)
         {
@@ -216,7 +217,6 @@ public class StateContoller : MonoBehaviour
 
         //Debug.Log(nextState.GetStateDesc()._stataName);
 
-        _ownerStateControllingComponent._owner.StateChanged();
 
         if (_currState != null)
         {
@@ -232,6 +232,7 @@ public class StateContoller : MonoBehaviour
             StartCoroutine("AttackStateAutoChangeCoroutine");
         }
 
+        _ownerStateControllingComponent._owner.StateChanged();
         _reservedNextWeaponState = null;
         _currStateTime = 0.0f;
     }
@@ -266,9 +267,10 @@ public class StateContoller : MonoBehaviour
             }
 
             DoActions(_currState.GetStateDesc()._inStateActionTypes);
-        }
 
-        _currStateTime += Time.deltaTime;
+            _prevStateTime = _currStateTime;
+            _currStateTime += Time.deltaTime;
+        }
     }
 
 
@@ -388,8 +390,6 @@ public class StateContoller : MonoBehaviour
 
     public void DoActions(List<StateActionType> actions)
     {
-        _currStateTime += Time.deltaTime;
-
         foreach (var action in actions)
         {
             switch (action)
@@ -429,7 +429,7 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.RootMove:
                     {
-                        float currentSecond = _ownerStateControllingComponent._owner.GetCurrAnimationClipSecond();
+                        float currentSecond = _currStateTime;
 
                         Vector3 currentUnityLocalHip = new Vector3
                             (
@@ -438,7 +438,7 @@ public class StateContoller : MonoBehaviour
                             _currState.GetStateAnimActionInfo()._myAnimationCurve._animationHipCurveZ.Evaluate(currentSecond)
                             );
 
-                        float prevSecond = _currState.GetStateAnimActionInfo()._prevReadedSecond;
+                        float prevSecond = _prevStateTime;
 
                         if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
                         {prevSecond = 0.0f;}
@@ -512,10 +512,17 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AnimationEnd:
                 {
-                    if (_ownerStateControllingComponent._owner.GetCurrAnimationLoopCount() >= 1)
+                    //if (_ownerStateControllingComponent._owner.GetCurrAnimationLoopCount() >= 1)
+                    //{
+                    //    return true;
+                    //}
+
+                    float animationLength = _currState.GetStateDesc()._stateAnimationClip.length;
+                    if (animationLength - Time.deltaTime > _currStateTime) 
                     {
                         return true;
                     }
+
                     return false;
                 }
 
@@ -736,7 +743,7 @@ public class StateContoller : MonoBehaviour
                                 if (recordedType == ComboCommandKeyType.TargetingBack || recordedType == ComboCommandKeyType.TargetingFront || recordedType == ComboCommandKeyType.TargetingLeft || recordedType == ComboCommandKeyType.TargetingRight)
                                 { return false; }
 
-                                ComboCommandKeyType targetType = KeyConvert2(weaponComboType, ownerGrabType, isRightHandWeapon);
+                                ComboCommandKeyType targetType = KeyConvert(weaponComboType, ownerGrabType, isRightHandWeapon);
 
                                 if (targetType <= ComboCommandKeyType.TargetingRight)
                                 {
@@ -760,8 +767,6 @@ public class StateContoller : MonoBehaviour
                         index++;
                     }
                 }
-
-
                 return true;
 
             case ConditionType.FocusedWeapon:
@@ -779,7 +784,7 @@ public class StateContoller : MonoBehaviour
 
 
 
-    private ComboCommandKeyType KeyConvert2(WeaponUseType target, WeaponGrabFocus ownerGrabType, bool isRightHandWeapon)
+    private ComboCommandKeyType KeyConvert(WeaponUseType target, WeaponGrabFocus ownerGrabType, bool isRightHandWeapon)
     {
         ComboCommandKeyType convertedRet = ComboCommandKeyType.TargetingFront;
 
@@ -902,253 +907,7 @@ public class StateContoller : MonoBehaviour
 
 
 
-    private bool KeyConvert(ref WeaponUseType ret, WeaponGrabFocus ownerGrabType, ComboCommandKeyType recordedType, bool isRightHandWeapon)
-    {
-        switch (recordedType)
-        {
-            case ComboCommandKeyType.LeftClick: //유저가 일반 왼클릭을 했따
-                {
-                    switch (ownerGrabType)
-                    {
-                        case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
-                            {
-                                if (isRightHandWeapon == false)
-                                {
-                                    ret = WeaponUseType.MainUse;
-                                }
-                                else
-                                {
-                                    return false;
-                                }
-                            }
-                            break;
-
-                        case WeaponGrabFocus.RightHandFocused: //일반 왼클릭 했는데 오른손을 주로 잡고있었다
-                            {
-                                ret = WeaponUseType.SubUse;
-                            }
-                            break;
-
-                        case WeaponGrabFocus.LeftHandFocused: //일반 왼클릭 했는데 왼손을 주로 잡고있었다
-                            {
-                                ret = WeaponUseType.MainUse;
-                            }
-                            break;
-
-                        case WeaponGrabFocus.DualGrab:
-                            {
-                                ret = WeaponUseType.SubUse;
-                            }
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-                break;
-
-            case ComboCommandKeyType.RightClick: //유저가 일반 우클릭을 했다
-                {
-                    switch (ownerGrabType)
-                    {
-                        case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
-                            {
-                                if (isRightHandWeapon == false)
-                                {
-                                    return false;
-                                }
-                                else
-                                {
-                                    ret = WeaponUseType.MainUse;
-                                }
-                            }
-                            break;
-
-                        case WeaponGrabFocus.RightHandFocused: //일반 우클릭 했는데 오른손을 주로 잡고있었다
-                            {
-                                ret = WeaponUseType.MainUse;
-                            }
-                            break;
-
-                        case WeaponGrabFocus.LeftHandFocused: //일반 왼클릭 했는데 왼손을 주로 잡고있었다
-                            {
-                                ret = WeaponUseType.SubUse;
-                            }
-                            break;
-
-                        case WeaponGrabFocus.DualGrab:
-                            {
-                                ret = WeaponUseType.MainUse;
-                            }
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-                break;
-
-            case ComboCommandKeyType.CtrlLeftClick: //유저가 스페셜 왼클릭을 했다
-                {
-                    switch (ownerGrabType)
-                    {
-                        case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
-                            {
-                                if (isRightHandWeapon == false)
-                                {
-                                    ret = WeaponUseType.SpecialUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
-                                }
-                                else
-                                {
-                                    return false;
-                                }
-                            }
-                            break;
-
-                        case WeaponGrabFocus.RightHandFocused: //스페셜 왼클릭 했는데 오른손을 주로 잡고있었다
-                            {
-                                return false;
-                            }
-
-                        case WeaponGrabFocus.LeftHandFocused: //스페셜 왼클릭 했는데 왼손을 주로 잡고있었다
-                            {
-                                ret = WeaponUseType.SpecialUse;
-                            }
-                            break;
-
-                        case WeaponGrabFocus.DualGrab:
-                            {
-                                return false;
-                            }
-
-                        default:
-                            break;
-                    }
-                }
-                break;
-
-            case ComboCommandKeyType.CtrlRightClick: //유저가 스페셜 우클릭을 했다.
-                {
-                    switch (ownerGrabType)
-                    {
-                        case WeaponGrabFocus.Normal:
-                            {
-                                if (isRightHandWeapon == false)
-                                {
-                                    return false;
-                                }
-                                else
-                                {
-                                    ret = WeaponUseType.SpecialUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
-                                }
-                            }
-                            break;
-
-                        case WeaponGrabFocus.RightHandFocused:
-                            {
-                                ret = WeaponUseType.SpecialUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
-                            }
-                            break;
-
-                        case WeaponGrabFocus.LeftHandFocused:
-                            {
-                                return false;
-                            }
-
-                        case WeaponGrabFocus.DualGrab:
-                            {
-                                ret = WeaponUseType.SpecialUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
-                            }
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-                break;
-
-            case ComboCommandKeyType.SubLeftClick: //유저가 보조 왼클릭을 했다.
-                {
-                    switch (ownerGrabType)
-                    {
-                        case WeaponGrabFocus.Normal:
-                            {
-                                if (isRightHandWeapon == false)
-                                {
-                                    ret = WeaponUseType.SubUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
-                                }
-                                else
-                                {
-                                    return false;
-                                }
-                            }
-                            break;
-
-                        case WeaponGrabFocus.RightHandFocused:
-                            {
-                                return false;
-                            }
-
-                        case WeaponGrabFocus.LeftHandFocused:
-                            {
-                                return false;
-                            }
-
-                        case WeaponGrabFocus.DualGrab:
-                            {
-                                return false;
-                            }
-
-                        default:
-                            break;
-                    }
-                }
-                break;
-
-            case ComboCommandKeyType.SubRightClick: //유저가 보조 우클릭을 했다.
-                {
-                    switch (ownerGrabType)
-                    {
-                        case WeaponGrabFocus.Normal:
-                            {
-                                if (isRightHandWeapon == false)
-                                {
-                                    return false;
-                                }
-                                else
-                                {
-                                    ret = WeaponUseType.SubUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
-                                }
-                            }
-                            break;
-
-                        case WeaponGrabFocus.RightHandFocused:
-                            {
-                                return false;
-                            }
-
-                        case WeaponGrabFocus.LeftHandFocused:
-                            {
-                                return false;
-                            }
-
-                        case WeaponGrabFocus.DualGrab:
-                            {
-                                return false;
-                            }
-
-                        default:
-                            break;
-                    }
-                }
-                break;
-
-            default:
-                return false;
-        }
-
-        return true;
-    }
+    
 
 
 
@@ -1157,124 +916,79 @@ public class StateContoller : MonoBehaviour
     //isCheckingWeaponEntry == F -> Weapon Motion 에서  Weapon Motion을 쓰려고하는경우
     private void CalculateNextWeaponState(bool isCheckingWeaponEntry) 
     {
-        WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(true);
-
-        if (weaponScript != null)
+        if (isCheckingWeaponEntry == true)
         {
-            if (isCheckingWeaponEntry == true) 
+            WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(true);
+
+            SortedDictionary<int, List<LinkedState>> targetDict = null;
+
+            //오른손 먼저 검사
+            if (weaponScript != null)
             {
-                SortedDictionary<int, List<EntryState>> target = weaponScript.GetEntryStates();
-                foreach (KeyValuePair<int, List<EntryState>> stateList in target)
-                {
-                    foreach (EntryState entryState in stateList.Value)
-                    {//이미 어려운거부터 정렬돼있다고 가정한다. 그렇지 않다면 정렬로직의 문제다. 여기서 신경쓰지 않는다
+                targetDict = weaponScript.GetEntryStates();
 
-                        bool stateCheckPassed = true;
-
-                        foreach (ConditionDesc condition in entryState._entryCondition)
-                        {
-                            if (CheckCondition(condition, true) == false)
-                            {
-                                stateCheckPassed = false;
-                                break;
-                            }
-                        }
-
-                        if (stateCheckPassed == true)
-                        {
-                            _reservedNextWeaponState = entryState._state;
-                            return;
-                        }
-                    }
-                }
+                _reservedNextWeaponState = CheckNextWeaponState(targetDict, true);
             }
-            else
+
+            if (_reservedNextWeaponState != null)
             {
-                StateNodeDesc linkedStaateNodeDesc = weaponScript.FindLinkedStateNodeDesc(_currState);
-                SortedDictionary<int, List<LinkedState>> target2 = linkedStaateNodeDesc.GetLinkecStates();
-                foreach (KeyValuePair<int, List<LinkedState>> stateList in target2)
-                {
-                    foreach (LinkedState entryState in stateList.Value)
-                    {//이미 어려운거부터 정렬돼있다고 가정한다. 그렇지 않다면 정렬로직의 문제다. 여기서 신경쓰지 않는다
-
-                        bool stateCheckPassed = true;
-
-                        foreach (ConditionDesc condition in entryState._multiConditions)
-                        {
-                            if (CheckCondition(condition, true) == false)
-                            {
-                                stateCheckPassed = false;
-                                break;
-                            }
-                        }
-
-                        if (stateCheckPassed == true)
-                        {
-                            _reservedNextWeaponState = entryState._state;
-                            return;
-                        }
-                    }
-                }
+                _ownerStateControllingComponent._owner.SetLatestWeaponUse(true);
+                return;
             }
+
+            weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(false);
+
+            if (weaponScript == null)
+            {
+                return;
+            }
+
+            targetDict = weaponScript.GetEntryStates();
+
+            _reservedNextWeaponState = CheckNextWeaponState(targetDict, false);
+            _ownerStateControllingComponent._owner.SetLatestWeaponUse(false);
         }
-
-        weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(false);
-
-        if (weaponScript != null)
+        else 
         {
-            if (isCheckingWeaponEntry == true) 
+            //공격 -> 공격을 하려는 경우다
+
+            bool isLatestRightHandUse = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
+            WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(isLatestRightHandUse);
+            SortedDictionary<int, List<LinkedState>> targetDict = null;
+
+            //최근공격을 했던 손의 연결 상태 먼저 검사
             {
-                SortedDictionary<int, List<EntryState>> target = weaponScript.GetEntryStates();
-                foreach (KeyValuePair<int, List<EntryState>> stateList in target)
+                if (weaponScript != null)
                 {
-                    foreach (EntryState entryState in stateList.Value)
-                    {//이미 어려운거부터 정렬돼있다고 가정한다. 그렇지 않다면 정렬로직의 문제다. 여기서 신경쓰지 않는다
+                    //targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
+                    targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
 
-                        bool stateCheckPassed = true;
+                    _reservedNextWeaponState = CheckNextWeaponState(targetDict, isLatestRightHandUse);
+                }
 
-                        foreach (ConditionDesc condition in entryState._entryCondition)
-                        {
-                            if (CheckCondition(condition, false) == false)
-                            {
-                                stateCheckPassed = false;
-                                break;
-                            }
-                        }
-
-                        if (stateCheckPassed == true)
-                        {
-                            _reservedNextWeaponState = entryState._state;
-                            return;
-                        }
-                    }
+                if (_reservedNextWeaponState != null)
+                {
+                    _ownerStateControllingComponent._owner.SetLatestWeaponUse(isLatestRightHandUse);
+                    return;
                 }
             }
-            else
+
+
+            //반대손의 Entry를 검사
             {
-                StateNodeDesc linkedStaateNodeDesc = weaponScript.FindLinkedStateNodeDesc(_currState);
-                SortedDictionary<int, List<LinkedState>> target2 = linkedStaateNodeDesc.GetLinkecStates();
-                foreach (KeyValuePair<int, List<LinkedState>> stateList in target2)
+                weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(!isLatestRightHandUse);
+
+                if (weaponScript != null)
                 {
-                    foreach (LinkedState entryState in stateList.Value)
-                    {//이미 어려운거부터 정렬돼있다고 가정한다. 그렇지 않다면 정렬로직의 문제다. 여기서 신경쓰지 않는다
+                    targetDict = weaponScript.GetEntryStates();
 
-                        bool stateCheckPassed = true;
+                    _reservedNextWeaponState = CheckNextWeaponState(targetDict, !isLatestRightHandUse);
+                }
 
-                        foreach (ConditionDesc condition in entryState._multiConditions)
-                        {
-                            if (CheckCondition(condition, false) == false)
-                            {
-                                stateCheckPassed = false;
-                                break;
-                            }
-                        }
-
-                        if (stateCheckPassed == true)
-                        {
-                            _reservedNextWeaponState = entryState._state;
-                            return;
-                        }
-                    }
+                if (_reservedNextWeaponState != null)
+                {
+                    _ownerStateControllingComponent._owner.SetLatestWeaponUse(!isLatestRightHandUse);
+                    return;
                 }
             }
         }
@@ -1282,35 +996,315 @@ public class StateContoller : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private State CalculateWeaponStateFromEntry(Dictionary<int, List<EntryState>> weponEntryStates, bool isRightWeapon)
+    private State CheckNextWeaponState(SortedDictionary<int, List<LinkedState>> targetDict, bool isRightHandWeapon)
     {
-        //조건을 만족하면 _nextAttackStates에 집어넣습니다.
-
-        foreach (KeyValuePair<int, List<EntryState>> stateList in weponEntryStates)
+        foreach (KeyValuePair<int, List<LinkedState>> stateList in targetDict)
         {
-            foreach (EntryState entryState in stateList.Value)
+            foreach (LinkedState entryState in stateList.Value)
             {
-                //CheckChangeState()
-                foreach (ConditionDesc condition in entryState._entryCondition)
+                //이미 어려운거부터 정렬돼있다고 가정한다. 그렇지 않다면 정렬로직의 문제다. 여기서 신경쓰지 않는다
+                bool stateCheckPassed = true;
+
+                foreach (ConditionDesc condition in entryState._multiConditions)
                 {
-                    CheckCondition(condition, isRightWeapon);
+                    if (CheckCondition(condition, isRightHandWeapon) == false)
+                    {
+                        stateCheckPassed = false;
+                        break;
+                    }
+                }
+
+                if (stateCheckPassed == true)
+                {
+                    return entryState._state;
                 }
             }
         }
 
         return null;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //private State CalculateWeaponStateFromEntry(Dictionary<int, List<LinkedState>> weponEntryStates, bool isRightWeapon)
+    //{
+    //    //조건을 만족하면 _nextAttackStates에 집어넣습니다.
+
+    //    foreach (KeyValuePair<int, List<LinkedState>> stateList in weponEntryStates)
+    //    {
+    //        foreach (LinkedState entryState in stateList.Value)
+    //        {
+    //            //CheckChangeState()
+    //            foreach (ConditionDesc condition in entryState._multiConditions)
+    //            {
+    //                CheckCondition(condition, isRightWeapon);
+    //            }
+    //        }
+    //    }
+
+    //    return null;
+    //}
+
+
+
+    //private bool KeyConvert(ref WeaponUseType ret, WeaponGrabFocus ownerGrabType, ComboCommandKeyType recordedType, bool isRightHandWeapon)
+    //{
+    //    switch (recordedType)
+    //    {
+    //        case ComboCommandKeyType.LeftClick: //유저가 일반 왼클릭을 했따
+    //            {
+    //                switch (ownerGrabType)
+    //                {
+    //                    case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
+    //                        {
+    //                            if (isRightHandWeapon == false)
+    //                            {
+    //                                ret = WeaponUseType.MainUse;
+    //                            }
+    //                            else
+    //                            {
+    //                                return false;
+    //                            }
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.RightHandFocused: //일반 왼클릭 했는데 오른손을 주로 잡고있었다
+    //                        {
+    //                            ret = WeaponUseType.SubUse;
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.LeftHandFocused: //일반 왼클릭 했는데 왼손을 주로 잡고있었다
+    //                        {
+    //                            ret = WeaponUseType.MainUse;
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.DualGrab:
+    //                        {
+    //                            ret = WeaponUseType.SubUse;
+    //                        }
+    //                        break;
+
+    //                    default:
+    //                        break;
+    //                }
+    //            }
+    //            break;
+
+    //        case ComboCommandKeyType.RightClick: //유저가 일반 우클릭을 했다
+    //            {
+    //                switch (ownerGrabType)
+    //                {
+    //                    case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
+    //                        {
+    //                            if (isRightHandWeapon == false)
+    //                            {
+    //                                return false;
+    //                            }
+    //                            else
+    //                            {
+    //                                ret = WeaponUseType.MainUse;
+    //                            }
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.RightHandFocused: //일반 우클릭 했는데 오른손을 주로 잡고있었다
+    //                        {
+    //                            ret = WeaponUseType.MainUse;
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.LeftHandFocused: //일반 왼클릭 했는데 왼손을 주로 잡고있었다
+    //                        {
+    //                            ret = WeaponUseType.SubUse;
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.DualGrab:
+    //                        {
+    //                            ret = WeaponUseType.MainUse;
+    //                        }
+    //                        break;
+
+    //                    default:
+    //                        break;
+    //                }
+    //            }
+    //            break;
+
+    //        case ComboCommandKeyType.CtrlLeftClick: //유저가 스페셜 왼클릭을 했다
+    //            {
+    //                switch (ownerGrabType)
+    //                {
+    //                    case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
+    //                        {
+    //                            if (isRightHandWeapon == false)
+    //                            {
+    //                                ret = WeaponUseType.SpecialUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
+    //                            }
+    //                            else
+    //                            {
+    //                                return false;
+    //                            }
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.RightHandFocused: //스페셜 왼클릭 했는데 오른손을 주로 잡고있었다
+    //                        {
+    //                            return false;
+    //                        }
+
+    //                    case WeaponGrabFocus.LeftHandFocused: //스페셜 왼클릭 했는데 왼손을 주로 잡고있었다
+    //                        {
+    //                            ret = WeaponUseType.SpecialUse;
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.DualGrab:
+    //                        {
+    //                            return false;
+    //                        }
+
+    //                    default:
+    //                        break;
+    //                }
+    //            }
+    //            break;
+
+    //        case ComboCommandKeyType.CtrlRightClick: //유저가 스페셜 우클릭을 했다.
+    //            {
+    //                switch (ownerGrabType)
+    //                {
+    //                    case WeaponGrabFocus.Normal:
+    //                        {
+    //                            if (isRightHandWeapon == false)
+    //                            {
+    //                                return false;
+    //                            }
+    //                            else
+    //                            {
+    //                                ret = WeaponUseType.SpecialUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
+    //                            }
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.RightHandFocused:
+    //                        {
+    //                            ret = WeaponUseType.SpecialUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.LeftHandFocused:
+    //                        {
+    //                            return false;
+    //                        }
+
+    //                    case WeaponGrabFocus.DualGrab:
+    //                        {
+    //                            ret = WeaponUseType.SpecialUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
+    //                        }
+    //                        break;
+
+    //                    default:
+    //                        break;
+    //                }
+    //            }
+    //            break;
+
+    //        case ComboCommandKeyType.SubLeftClick: //유저가 보조 왼클릭을 했다.
+    //            {
+    //                switch (ownerGrabType)
+    //                {
+    //                    case WeaponGrabFocus.Normal:
+    //                        {
+    //                            if (isRightHandWeapon == false)
+    //                            {
+    //                                ret = WeaponUseType.SubUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
+    //                            }
+    //                            else
+    //                            {
+    //                                return false;
+    //                            }
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.RightHandFocused:
+    //                        {
+    //                            return false;
+    //                        }
+
+    //                    case WeaponGrabFocus.LeftHandFocused:
+    //                        {
+    //                            return false;
+    //                        }
+
+    //                    case WeaponGrabFocus.DualGrab:
+    //                        {
+    //                            return false;
+    //                        }
+
+    //                    default:
+    //                        break;
+    //                }
+    //            }
+    //            break;
+
+    //        case ComboCommandKeyType.SubRightClick: //유저가 보조 우클릭을 했다.
+    //            {
+    //                switch (ownerGrabType)
+    //                {
+    //                    case WeaponGrabFocus.Normal:
+    //                        {
+    //                            if (isRightHandWeapon == false)
+    //                            {
+    //                                return false;
+    //                            }
+    //                            else
+    //                            {
+    //                                ret = WeaponUseType.SubUse; //----왼손 무기였다면 왼손을 보조로 사용하려는 거였다
+    //                            }
+    //                        }
+    //                        break;
+
+    //                    case WeaponGrabFocus.RightHandFocused:
+    //                        {
+    //                            return false;
+    //                        }
+
+    //                    case WeaponGrabFocus.LeftHandFocused:
+    //                        {
+    //                            return false;
+    //                        }
+
+    //                    case WeaponGrabFocus.DualGrab:
+    //                        {
+    //                            return false;
+    //                        }
+
+    //                    default:
+    //                        break;
+    //                }
+    //            }
+    //            break;
+
+    //        default:
+    //            return false;
+    //    }
+
+    //    return true;
+    //}
 }

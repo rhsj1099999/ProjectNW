@@ -24,31 +24,4 @@ MonoBehaviour:
     _EnterStateActionTypes: 
     _inStateActionTypes: 06000000
     _ExitStateActionTypes: 
-    _linkedStates:
-    - _multiConditionAsset:
-      - _singleConditionType: 3
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget:
-        - _targetKeyCode: 113
-          _targetState: 0
-          _keyInpuyGoal: 1
-          _keyHoldGoal: 0
-        _commandInputConditionTarget: []
-        _animationFrameDataType: 2
-        _comboStrainedTime: -1
-      - _singleConditionType: 5
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameDataType: 2
-        _comboStrainedTime: -1
-      - _singleConditionType: 6
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameDataType: 2
-        _comboStrainedTime: -1
-      _stateAsset: {fileID: 11400000, guid: a93c5e8ae3dae1e419b0d146f05fb9a7, type: 2}
+    _linkedStates: []

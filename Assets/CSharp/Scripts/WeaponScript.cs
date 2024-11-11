@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -44,21 +45,15 @@ public class WeaponStateDesc
     public List<EachState> _states = new List<EachState>();
 }
 
-public class EntryState
+public class LinkedState
 {
     public State _state = null;
-    public List<ConditionDesc> _entryCondition = null;
+    public List<ConditionDesc> _multiConditions = null;
 }
 
 
 public class StateNodeDesc
 {
-    public class LinkedState
-    {
-        public State _state = null;
-        public List<ConditionDesc> _multiConditions = null;
-    }
-
     private HashSet<State> _linked = new HashSet<State>();
     private SortedDictionary<int, List<LinkedState>>  _linkedStates = new SortedDictionary<int, List<LinkedState>>(new DescendingComparer<int>());
     public SortedDictionary<int, List<LinkedState>> GetLinkecStates() { return _linkedStates; } 
@@ -101,10 +96,14 @@ public class WeaponComboEntry
 public class WeaponScript : MonoBehaviour
 {
     public Transform _socketTranform = null;
-    public Vector3 _pivotRotation = Vector3.zero;
-    public Vector3 _pivotPosition = Vector3.zero;
+    private bool _isRightHandWeapon = false;
 
-    
+    public Vector3 _pivotRotation_Right = Vector3.zero;
+    public Vector3 _pivotPosition_Right = Vector3.zero;
+    public Vector3 _pivotRotation_Left = Vector3.zero;
+    public Vector3 _pivotPosition_Left = Vector3.zero;
+
+
     public PlayerScript _owner = null;
     public AnimationClip _handlingIdleAnimation = null;
 
@@ -116,7 +115,7 @@ public class WeaponScript : MonoBehaviour
 
     public List<WeaponStateDesc> _weaponStateAssets = new List<WeaponStateDesc>();
     private Dictionary<State, StateNodeDesc> _weaponStates = new Dictionary<State, StateNodeDesc>();
-    private SortedDictionary<int, List<EntryState>> _entryStates = new SortedDictionary<int, List<EntryState>>(new DescendingComparer<int>());
+    private SortedDictionary<int, List<LinkedState>> _entryStates = new SortedDictionary<int, List<LinkedState>>(new DescendingComparer<int>());
     public StateNodeDesc FindLinkedStateNodeDesc(State targetState)
     {
         if (_weaponStates.ContainsKey(targetState) == false)
@@ -135,6 +134,75 @@ public class WeaponScript : MonoBehaviour
         -----------------------------------------------------------------------------------------------------------------*/
         GraphLinking();
     }
+
+
+
+    protected virtual void LateUpdate()
+    {
+        FollowSocketTransform();
+    }
+
+
+
+    virtual public void FollowSocketTransform()
+    {
+        if (_isRightHandWeapon == true)
+        {
+            transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation_Right);
+            transform.position = (transform.rotation * _pivotPosition_Right) + _socketTranform.position;
+        }
+        else 
+        {
+            transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation_Left);
+            transform.position = (transform.rotation * _pivotPosition_Left) + _socketTranform.position;
+        }
+    }
+
+
+
+    virtual public void Equip(PlayerScript itemOwner, Transform followTransform)
+    {
+        _owner = itemOwner;
+        _socketTranform = followTransform;
+
+        WeaponSocketScript weaponSocketScript = _socketTranform.gameObject.GetComponent<WeaponSocketScript>();
+        Debug.Assert(weaponSocketScript != null, "Socket이 아닌곳에 무기를 장착하려 하고 있다. 이런 컨텐츠가 추가되려고 합니까?");
+        
+        switch (weaponSocketScript._sideType)
+        {
+            case WeaponSocketScript.SideType.Left:
+                _isRightHandWeapon = false;
+                break;
+            case WeaponSocketScript.SideType.Right:
+                _isRightHandWeapon = true;
+                break;
+            case WeaponSocketScript.SideType.Middle:
+                Debug.Assert(false, "아직 중심무기는 없다");
+                break;
+        }
+
+    }
+
+
+
+    public SortedDictionary<int, List<LinkedState>> GetEntryStates()
+    {
+        return _entryStates;
+    }
+
+
+
+    virtual public void TurnOnAim() { }
+    virtual public void TurnOffAim() { }
+    virtual public void UnEquip() { }
+
+
+
+
+
+
+
+
 
     public int CalculateConditionWeight(List<ConditionDesc> conditions)
     {
@@ -166,6 +234,7 @@ public class WeaponScript : MonoBehaviour
                         {
                             retWeight += command._targetCommandKeys.Count;
                         }
+                        retWeight += condition._commandInputConditionTarget.Count;
                     }
                     break;
             }
@@ -199,11 +268,11 @@ public class WeaponScript : MonoBehaviour
                 //Dictionary<int, List<State>>
                 if (_entryStates.ContainsKey(entryWeight) == false)
                 {
-                    _entryStates.Add(entryWeight, new List<EntryState>());
+                    _entryStates.Add(entryWeight, new List<LinkedState>());
                 }
-                EntryState newEntryState = new EntryState();
+                LinkedState newEntryState = new LinkedState();
                 newEntryState._state = newState;
-                newEntryState._entryCondition = _weaponStateAssets[i]._states[0]._entryConditions;
+                newEntryState._multiConditions = _weaponStateAssets[i]._states[0]._entryConditions;
                 _entryStates[entryWeight].Add(newEntryState);
             }
         }
@@ -251,10 +320,10 @@ public class WeaponScript : MonoBehaviour
 
                     if (targetLinkedDesc.FindNode(nextComboState) == false)
                     {
-                        StateNodeDesc.LinkedState linkingDesc = new StateNodeDesc.LinkedState();
+                        LinkedState linkingDesc = new LinkedState();
                         linkingDesc._state = nextComboState;
                         linkingDesc._multiConditions = _weaponStateAssets[i]._states[j + 1]._nextStateConditions;
-                        
+
                         int stateWeight = CalculateConditionWeight(linkingDesc._multiConditions);
                         targetLinkedDesc.AddNode(stateWeight, linkingDesc);
                     }
@@ -288,7 +357,7 @@ public class WeaponScript : MonoBehaviour
 
                         if (targetLinkedDesc.FindNode(willBeLinkedState) == false)
                         {
-                            StateNodeDesc.LinkedState linkingDesc = new StateNodeDesc.LinkedState();
+                            LinkedState linkingDesc = new LinkedState();
                             linkingDesc._state = willBeLinkedState;
                             linkingDesc._multiConditions = _weaponStateAssets[i]._states[j]._linkedStates[k]._multiConditionAsset;
 
@@ -327,7 +396,7 @@ public class WeaponScript : MonoBehaviour
                         StateNodeDesc targetLinkedDesc = _weaponStates[targetState];
                         if (targetLinkedDesc.FindNode(willBeLinkedState) == false)
                         {
-                            StateNodeDesc.LinkedState linkingDesc = new StateNodeDesc.LinkedState();
+                            LinkedState linkingDesc = new LinkedState();
                             linkingDesc._state = willBeLinkedState;
                             linkingDesc._multiConditions = temoComboList[0]._entryConditions;
 
@@ -340,36 +409,4 @@ public class WeaponScript : MonoBehaviour
             }
         }
     }
-
-    protected virtual void LateUpdate()
-    {
-        FollowSocketTransform();
-    }
-
-    virtual public void FollowSocketTransform()
-    {
-        transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation);
-        transform.position = (transform.rotation * _pivotPosition) + _socketTranform.position;
-    }
-
-
-
-    virtual public void Equip(PlayerScript itemOwner, Transform followTransform)
-    {
-        _owner = itemOwner;
-        _socketTranform = followTransform;
-    }
-
-
-
-    public SortedDictionary<int, List<EntryState>> GetEntryStates()
-    {
-        return _entryStates;
-    }
-
-
-
-    virtual public void TurnOnAim() { }
-    virtual public void TurnOffAim() { }
-    virtual public void UnEquip() { }
 }
