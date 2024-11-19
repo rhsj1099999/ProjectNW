@@ -73,7 +73,7 @@ public struct ItemStoreDesc
 
 }
 
-public class ItemInfoManager : MonoBehaviour
+public class ItemInfoManager : SubManager
 {
     Dictionary<string, GameObject>       _equipmentPrefabs = new Dictionary<string, GameObject>();
     Dictionary<string, List<GameObject>> _equipmentObject = new Dictionary<string, List<GameObject>>();
@@ -95,8 +95,7 @@ public class ItemInfoManager : MonoBehaviour
         }
     }
 
-
-    private void Awake()
+    public override void SubManagerAwake()
     {
         if (_instance != null && _instance != this)
         {
@@ -111,8 +110,6 @@ public class ItemInfoManager : MonoBehaviour
 
         InitItem_TestCode_MustDel();
     }
-
-
 
 
 

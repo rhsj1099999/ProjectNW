@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using static StateContoller;
@@ -55,22 +56,23 @@ public class State
 
 
     //Caller Must Have 'List<State>'                    /*Change To Dic*/
-    public void LinkingStates(ref List<State> allStates/*Change To Dic*/)
+    public void LinkingStates(ref Dictionary<RepresentStateType, State> allStates/*Change To Dic*/)
     {
         foreach (var linked in _stateDesc._linkedStates)
         {
             State targetState = null;
 
-            foreach (var state in allStates)
+            
+            foreach (KeyValuePair<RepresentStateType, State> statePair in allStates)
             {
-                if (state == this)
+                if (statePair.Value == this)
                 {
                     continue; //나 자신이다
                 }
 
-                if (state.GetStateAssetFrom() == linked._stateAsset)
+                if (statePair.Value.GetStateAssetFrom() == linked._stateAsset)
                 {
-                    targetState = state;
+                    targetState = statePair.Value;
                     break;
                 }
             }
@@ -173,12 +175,17 @@ public class State
                             Debug.Assert(_ownerActionComponent._ownerAnimator != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
+                        if (_ownerActionComponent._ownerModelObjectOrigin == null)
+                        {
+                            _ownerActionComponent._ownerModelObjectOrigin = _ownerActionComponent._ownerAnimator.gameObject;
+                            Debug.Assert(_ownerActionComponent._ownerModelObjectOrigin != null, "RootMove행동이 있는데 모델이 없습니다");
+                        }
+
                         if (_ownerActionComponent._ownerCharacterComponent == null)
                         {
                             _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
-
                     }
                     break;
 
@@ -188,6 +195,18 @@ public class State
                         {
                             _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerInputController == null)
+                        {
+                            _ownerActionComponent._ownerInputController = owner.GetComponentInChildren<InputController>();
+                            Debug.Assert(_ownerActionComponent._ownerInputController != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없다");
+                        }
+
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponentInChildren<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없다");
                         }
                     }
                     break;
@@ -205,6 +224,9 @@ public class State
                     break;
 
                 case StateActionType.AttackCommandCheck:
+                    break;
+
+                case StateActionType.StateEndDesierdCheck:
                     break;
 
                 default:

@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static State;
 using static StateNodeDesc;
+using static UnityEngine.Rendering.DebugUI;
 
 public enum StateActionType
 {
@@ -19,6 +20,7 @@ public enum StateActionType
     RightHandWeaponSignal,
     LeftHandWeaponSignal,
     AttackCommandCheck, //Action에 이것을 가지고 있다면, 무기에게 조작을 넘겨주어 공격을 시도할 수 있다.
+    StateEndDesierdCheck,
 }
 
 public enum ConditionType
@@ -42,14 +44,20 @@ public enum ConditionType
 
 public enum RepresentStateType
 {
-    Idle = 1 << 0,
-    Walk = 1 << 1,
-    Run = 1 << 2,
-    Sprint = 1 << 3,
-    Attack = 1 << 4,
-    InAir = 1 << 5,
-    Hit = 1 << 6,
-    End = 1 << 7,
+    Idle,
+    Walk,
+    Run,
+    Sprint,
+    Jump,
+    Attack,
+    InAir,
+    Hit_L,
+    Hit_H,
+    Hit_Fall,
+    Hit_FallDropDown,
+    Hit_FallGround,
+    RollFront,
+    End,
 }
 
 [Serializable]
@@ -101,6 +109,8 @@ public class StateDesc
     public bool _leftWeaponOverride = true;
     public bool _isAttackState = false;
     public bool _isLocoMotionToAttackAction = false;
+
+    public bool _stateLocked = false; //외부에서 상태변경이 들어와도 씹겠다.
     /*------------------------------------------------------------------------------
     |NOTI| !_isAttackState = _isLocoMotionToAttackAction의 개념일거같지만 지금은 아니다
     ------------------------------------------------------------------------------*/
@@ -112,6 +122,7 @@ public class StateDesc
     public List<StateActionType> _ExitStateActionTypes;
 
     public List<StateLinkDesc> _linkedStates;
+    public AnimationClip _endStateIdleException = null; //상태의 애니메이션이 끝날때 예외 애니메이션
 }
 
 [Serializable]
@@ -121,8 +132,27 @@ public class StateInitial
     public StateDesc _stateDesc;
 }
 
+
+[Serializable]
+public class StateInitialPair
+{
+    public RepresentStateType _stateRepresentType = RepresentStateType.End;
+    public StateAsset _stateAsset = null;
+}
+
 public class StateContoller : MonoBehaviour
 {
+    public class StateContollerComponentDesc
+    {
+        public PlayerScript _owner = null;
+        public Animator _ownerAnimator = null;
+        public GameObject _ownerModelObjectOrigin = null;
+        public InputController _ownerInputController = null;
+        public CharacterMoveScript2 _ownerMoveScript = null;
+        public CharacterController _ownerCharacterComponent = null;
+    }
+    private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
+
     [SerializeField] private float _stateChangeTime = 0.085f;
     private float _stateChangeTimeAcc = 0.0f;
     private bool _stateChangeCoroutineStarted = false;
@@ -135,29 +165,21 @@ public class StateContoller : MonoBehaviour
 
 
 
-    public class StateContollerComponentDesc
-    {
-        public PlayerScript _owner;
-        public Animator _ownerAnimator = null;
-        public InputController _ownerInputController;
-        public CharacterMoveScript2 _ownerMoveScript;
-        public CharacterController _ownerCharacterComponent;
-    }
 
-    private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
 
-    [SerializeField] private List<StateAsset> _stateInitial = new List<StateAsset>(); //그냥 여기에 들어있는거만큼 어디선가 복사해오면 좋겠다
-    private List<State> _states = new List<State>();
+
+    [SerializeField] private List<StateInitialPair> _stateInitial = new List<StateInitialPair>();
+    private Dictionary<RepresentStateType, State> _states = new Dictionary<RepresentStateType, State>();
 
     private State _currState;
     public State GetCurrState() { return _currState; }
 
     private float _currStateTime = 0.0f;
     private float _prevStateTime = 0.0f;
+
     private KeyCode _rightHandAttackKey = KeyCode.Mouse0;
     private KeyCode _leftHandAttackKey = KeyCode.Mouse1;
 
-    private List<State> _nextAttackStates = new List<State>();
 
     private void Awake()
     {
@@ -167,22 +189,35 @@ public class StateContoller : MonoBehaviour
 
         for (int i = 0; i < _stateInitial.Count; ++i)
         {
-            //State newState = new State(_stateInitial[i]);
-            State newState = ResourceDataManager.Instance.GetState(_stateInitial[i]);
+            Debug.Assert(_states.ContainsKey(_stateInitial[i]._stateRepresentType) == false, "StateRepresent가 겹칩니다");
+
+            State newState = ResourceDataManager.Instance.GetState(_stateInitial[i]._stateAsset);
             
             newState.SettingOwnerComponent(playerScript, _ownerStateControllingComponent);
 
-            _states.Add(newState);
+            _states.Add(_stateInitial[i]._stateRepresentType, newState);
         }
 
-        foreach (State state in _states)
+        foreach (KeyValuePair<RepresentStateType, State> statePair in _states)
         {
-            state.LinkingStates(ref _states);
+            statePair.Value.LinkingStates(ref _states);
         }
 
-        ChangeState(_states[0]);
+        ChangeState(_states[RepresentStateType.Idle]);
     }
 
+
+
+    public void TryChangeState(RepresentStateType representType)
+    {
+        if (_states.ContainsKey(representType) == false)
+        {
+            Debug.Log("해당 상태를 사용하지 않습니다");
+            return;
+        }
+
+        ChangeState(_states[representType]);
+    }
 
 
 
@@ -215,7 +250,7 @@ public class StateContoller : MonoBehaviour
             _attackStateAutoChangeTimeCoroutineStarted = false;
         }
 
-        //Debug.Log(nextState.GetStateDesc()._stataName);
+        Debug.Log("State Changed : " + nextState.GetStateDesc()._stataName);
 
 
         if (_currState != null)
@@ -299,6 +334,9 @@ public class StateContoller : MonoBehaviour
     }
 
 
+
+
+
     private IEnumerator AttackStateAutoChangeCoroutine()
     {
         _attackStateAutoChangeTimeAcc = 0.0f;
@@ -320,6 +358,11 @@ public class StateContoller : MonoBehaviour
 
         _attackStateAutoChangeTimeCoroutineStarted = false;
     }
+
+
+
+
+
 
 
     private void CalculateAfterAttackState()
@@ -412,7 +455,6 @@ public class StateContoller : MonoBehaviour
                     {
                         _ownerStateControllingComponent._ownerMoveScript.DoJump();
                     }
-
                     break;
 
                 case StateActionType.ForcedMove:
@@ -421,7 +463,6 @@ public class StateContoller : MonoBehaviour
                         planeVelocity.y = 0.0f;
                         _ownerStateControllingComponent._ownerMoveScript.CharacterForcedMove(planeVelocity, 1.0f);
                     }
-
                     break;
 
                 case StateActionType.ResetLatestVelocity:
@@ -453,6 +494,14 @@ public class StateContoller : MonoBehaviour
                         Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
                         Vector3 worldDelta = _ownerStateControllingComponent._ownerCharacterComponent.transform.localToWorldMatrix * deltaLocalHip;
 
+                        //Root 모션의 y값은 모델에 적용
+                        {
+                            Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition;
+                            modelLocalPosition.y = worldDelta.y;
+                            _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition = modelLocalPosition;
+                        }
+
+                        worldDelta.y = 0.0f;
                         _ownerStateControllingComponent._ownerCharacterComponent.Move(worldDelta);
 
                         _currState.GetStateAnimActionInfo()._prevReadedSecond = currentSecond;
@@ -460,6 +509,10 @@ public class StateContoller : MonoBehaviour
                     break;
 
                 case StateActionType.RotateWithoutInterpolate:
+                    {
+                        Vector3 convertedDirection = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(_ownerStateControllingComponent._ownerInputController._pr_directionByInput);
+                        gameObject.transform.LookAt(gameObject.transform.position + convertedDirection);
+                    }
                     break;
 
                 case StateActionType.RightHandWeaponSignal:
@@ -469,6 +522,9 @@ public class StateContoller : MonoBehaviour
                     break;
 
                 case StateActionType.AttackCommandCheck:
+                    break;
+
+                case StateActionType.StateEndDesierdCheck:
                     break;
 
                 default:
@@ -518,7 +574,7 @@ public class StateContoller : MonoBehaviour
                     //}
 
                     float animationLength = _currState.GetStateDesc()._stateAnimationClip.length;
-                    if (animationLength - Time.deltaTime > _currStateTime) 
+                    if (animationLength - Time.deltaTime < _currStateTime) 
                     {
                         return true;
                     }

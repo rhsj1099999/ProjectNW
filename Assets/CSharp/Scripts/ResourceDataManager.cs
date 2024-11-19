@@ -65,6 +65,8 @@ public class AnimationHipCurve
 {
     public AnimationHipCurve(AnimationClip clip)
     {
+        Debug.Assert(clip != null, "clip이 null입니다");
+
         const string _unityName_HipBone = "Hips";
         const string _unityName_HipBoneLocalPositionX = "RootT.x";
         const string _unityName_HipBoneLocalPositionY = "RootT.y";
@@ -130,6 +132,7 @@ public class ResourceDataManager : SubManager
 
         ReadyAnimationFrameData();
         ReadyStateData();
+        ReadyZeroFrameAnimations();
 
     }
 
@@ -246,5 +249,46 @@ public class ResourceDataManager : SubManager
         
 
         return _created[stateAsset];
+    }
+
+
+
+
+    /*-----------------------------------
+    Data Section _ Zero Frames
+    -----------------------------------*/
+    [SerializeField] private List<AnimationClip> _totalZeroFrameAnimations = new List<AnimationClip>();
+    private Dictionary<string, AnimationClip> _zeroFrameAnimationClips = new Dictionary<string, AnimationClip>();
+
+
+    private void ReadyZeroFrameAnimations()
+    {
+        string zeroFrame = "_ZeroFrame";
+
+        foreach (AnimationClip zeroFrameAnimarions in _totalZeroFrameAnimations)
+        {
+            if (zeroFrameAnimarions.name.EndsWith(zeroFrame) == false)
+            {
+                Debug.Assert(false, "0프레임이 아닌 애니메이션을 등록하려 합니다");
+                continue;
+            }
+
+            string targetName = zeroFrameAnimarions.name.Substring(0, zeroFrameAnimarions.name.Length - zeroFrame.Length);
+
+            if (_zeroFrameAnimationClips.ContainsKey(targetName) == true)
+            {
+                Debug.Assert(false, "이미 0프레임 애니메이션이있습니다");
+                continue;
+            }
+
+            _zeroFrameAnimationClips.Add(targetName, zeroFrameAnimarions);
+        }
+    }
+
+    public AnimationClip GetZeroFrameAnimation(string animationClipName)
+    {
+        Debug.Assert(_zeroFrameAnimationClips.ContainsKey(animationClipName) == true, "찾으려는 0프레임 애니메이션이 없습니다");
+
+        return _zeroFrameAnimationClips[animationClipName];
     }
 }

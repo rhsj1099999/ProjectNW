@@ -105,12 +105,16 @@ public class WeaponScript : MonoBehaviour
 
 
     public PlayerScript _owner = null;
-    public AnimationClip _handlingIdleAnimation = null;
+    public AnimationClip _handlingIdleAnimation_OneHand = null;
+    public AnimationClip _handlingIdleAnimation_TwoHand = null;
 
 
     public bool _onlyTwoHand = false;
     public ItemInfo _itemInfo = null;
     public ItemInfo.WeaponType _weaponType = ItemInfo.WeaponType.NotWeapon;
+
+    public AnimationClip _putawayAnimation = null;
+    public AnimationClip _drawAnimation = null;
     
 
     public List<WeaponStateDesc> _weaponStateAssets = new List<WeaponStateDesc>();

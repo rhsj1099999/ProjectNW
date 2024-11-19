@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
+  m_Name: State_Roll
+  m_EditorClassIdentifier: 
+  _myState:
+    _stataName: State_Roll
+    _stateAnimationClip: {fileID: 7400000, guid: a0389fb433ff4bf40b8516234acf6c62,
+      type: 2}
+    _rightWeaponOverride: 1
+    _leftWeaponOverride: 1
+    _isAttackState: 0
+    _isLocoMotionToAttackAction: 1
+    _stateLocked: 0
+    _stateType: 
+    _EnterStateActionTypes: 
+    _inStateActionTypes: 06000000
+    _ExitStateActionTypes: 
+    _linkedStates:
+    - _multiConditionAsset:
+      - _singleConditionType: 2
+        _componentConditionGoal: 1
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget: []
+        _commandInputConditionTarget: []
+        _animationFrameDataType: 2
+        _comboStrainedTime: -1
+      _stateAsset: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
+    - _multiConditionAsset:
+      - _singleConditionType: 1
+        _componentConditionGoal: 1
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget: []
+        _commandInputConditionTarget: []
+        _animationFrameDataType: 2
+        _comboStrainedTime: -1
+      _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
+    _endStateIdleException: {fileID: 0}

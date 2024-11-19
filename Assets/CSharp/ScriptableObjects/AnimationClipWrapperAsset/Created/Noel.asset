@@ -13,10 +13,31 @@ MonoBehaviour:
   m_Name: Noel
   m_EditorClassIdentifier: 
   _list:
-  - animationClip: {fileID: 0}
-    _dataAssetWeapper:
-      _frameDataType: 0
+  - _animationClip: {fileID: 7400000, guid: 328d63ee00ec31142bfb11ca2cad873a, type: 2}
+    _dataAssetWrapper:
+    - _frameDataType: 0
       _dataAsset:
-        _frameUp: -1
-        _frameUnder: -1
-        _frameCheckType: 0
+        _frameUp: 30
+        _frameUnder: 100
+        _frameCheckType: 2
+  - _animationClip: {fileID: 7400000, guid: 0d4a586e2eabaa24b965a643b3a80e4d, type: 2}
+    _dataAssetWrapper:
+    - _frameDataType: 0
+      _dataAsset:
+        _frameUp: 80
+        _frameUnder: 120
+        _frameCheckType: 2
+  - _animationClip: {fileID: 7400000, guid: 3755eed2c621b2f489367bd06aa5fde0, type: 2}
+    _dataAssetWrapper:
+    - _frameDataType: 0
+      _dataAsset:
+        _frameUp: 60
+        _frameUnder: 100
+        _frameCheckType: 2
+  - _animationClip: {fileID: 7400000, guid: e9745c9de8d160c48808c82d89035544, type: 2}
+    _dataAssetWrapper:
+    - _frameDataType: 0
+      _dataAsset:
+        _frameUp: 90
+        _frameUnder: 120
+        _frameCheckType: 2

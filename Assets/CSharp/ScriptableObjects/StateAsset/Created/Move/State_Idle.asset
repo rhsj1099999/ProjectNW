@@ -20,29 +20,50 @@ MonoBehaviour:
     _leftWeaponOverride: 1
     _isAttackState: 0
     _isLocoMotionToAttackAction: 1
+    _stateLocked: 0
     _stateType: 
     _EnterStateActionTypes: 
     _inStateActionTypes: 0a000000
     _ExitStateActionTypes: 
     _linkedStates:
     - _multiConditionAsset:
-      - _singleConditionType: 0
-        _componentConditionGoal: 1
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameGoal: 0
-        _comboStrainedTime: -1
-      _stateAsset: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
-    - _multiConditionAsset:
       - _singleConditionType: 2
         _componentConditionGoal: 1
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
         _commandInputConditionTarget: []
-        _animationFrameGoal: 0
+        _animationFrameDataType: 2
         _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
+    - _multiConditionAsset:
+      - _singleConditionType: 0
+        _componentConditionGoal: 0
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget: []
+        _commandInputConditionTarget: []
+        _animationFrameDataType: 2
+        _comboStrainedTime: -1
+      - _singleConditionType: 3
+        _componentConditionGoal: 0
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget:
+        - _targetKeyCode: 304
+          _targetState: 1
+          _keyInpuyGoal: 1
+          _keyHoldGoal: 0
+        _commandInputConditionTarget: []
+        _animationFrameDataType: 2
+        _comboStrainedTime: -1
+      _stateAsset: {fileID: 11400000, guid: bbe06f87d4b556f4083ec1977ee3eb23, type: 2}
+    - _multiConditionAsset:
+      - _singleConditionType: 0
+        _componentConditionGoal: 1
+        _weaponTypeGoal: 0
+        _keyInputConditionTarget: []
+        _commandInputConditionTarget: []
+        _animationFrameDataType: 2
+        _comboStrainedTime: -1
+      _stateAsset: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 3
         _componentConditionGoal: 0
@@ -53,6 +74,7 @@ MonoBehaviour:
           _keyInpuyGoal: 1
           _keyHoldGoal: 0
         _commandInputConditionTarget: []
-        _animationFrameGoal: 0
+        _animationFrameDataType: 2
         _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 2d4223264dd6f374fa05bc7da6665b3f, type: 2}
+    _endStateIdleException: {fileID: 0}

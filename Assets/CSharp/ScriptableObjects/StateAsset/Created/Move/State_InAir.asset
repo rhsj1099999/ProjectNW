@@ -20,9 +20,10 @@ MonoBehaviour:
     _leftWeaponOverride: 1
     _isAttackState: 0
     _isLocoMotionToAttackAction: 1
+    _stateLocked: 0
     _stateType: 
-    _EnterStateActionTypes: 
-    _inStateActionTypes: 0a000000
+    _EnterStateActionTypes: 02000000
+    _inStateActionTypes: 04000000
     _ExitStateActionTypes: 
     _linkedStates:
     - _multiConditionAsset:
@@ -31,29 +32,7 @@ MonoBehaviour:
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
         _commandInputConditionTarget: []
-        _animationFrameGoal: 0
-        _comboStrainedTime: -1
-      - _singleConditionType: 0
-        _componentConditionGoal: 1
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameGoal: 0
-        _comboStrainedTime: -1
-      _stateAsset: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
-    - _multiConditionAsset:
-      - _singleConditionType: 0
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameGoal: 0
-        _comboStrainedTime: -1
-      - _singleConditionType: 2
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameGoal: 0
+        _animationFrameDataType: 2
         _comboStrainedTime: -1
       _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
+    _endStateIdleException: {fileID: 0}

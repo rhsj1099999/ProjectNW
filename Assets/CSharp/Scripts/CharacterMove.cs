@@ -1,15 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
-using Unity.AI.Navigation;
-using Cinemachine;
-using UnityEngine.Animations.Rigging;
-using UnityEngine.Animations;
-using Unity.VisualScripting;
-
-
 
 public class CharacterMoveScript2 : MonoBehaviour
 {
@@ -20,6 +9,7 @@ public class CharacterMoveScript2 : MonoBehaviour
     [SerializeField] private float _speed = 5.0f;
     [SerializeField] private float _rotatingSpeed_DEG = 90.0f;
     [SerializeField] private float _jumpForce = 3.0f;
+    [SerializeField] private float _inAirThreshould = 0.05f;
     
 
     private Vector3 _latestPlaneVelocityDontUseY = Vector3.zero;
@@ -28,10 +18,24 @@ public class CharacterMoveScript2 : MonoBehaviour
     private bool _isInAir = false;
     private float _verticalSpeedAcc = 0.0f;
     private bool _moveTriggerd = false;
+    private int _notGroundedCount = 0;
+
+    private float _inAirSlopeLimit = 0.0f;
+    private float _inGroundSlopeLimit = 45.0f;
+    private float _inAirStepOffset = 0.0f;
+    private float _inGroundStepOffset = 0.3f;
+
+
+
+
+    public bool GetIsJumping() { return _isJumping; }
+    public bool GetIsInAir() { return _isInAir; }
+    public Vector3 GetLatestVelocity() { return _latestPlaneVelocityDontUseY; }
+    public void ResetLatestVelocity() { _latestPlaneVelocityDontUseY = Vector3.zero; }
 
     private void Update()
     {
-        //if(_characterController.isGrounded == true)
+        //if (_isInAir == false)
         //{
         //    Debug.Log("Grounded");
         //}
@@ -39,7 +43,7 @@ public class CharacterMoveScript2 : MonoBehaviour
         //{
         //    Debug.Log("Not Grounded");
         //}
-        
+        //Debug.Log("CurrStepOffset : " + _characterController.stepOffset);
     }
 
     private void Awake()
@@ -47,11 +51,6 @@ public class CharacterMoveScript2 : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         Debug.Assert(_characterController != null, "_characterController ¾ø´Ù");
     }
-
-    public bool GetIsJumping() { return _isJumping; }
-    public bool GetIsInAir() { return _isInAir; }
-    public Vector3 GetLatestVelocity() { return _latestPlaneVelocityDontUseY; }
-    public void ResetLatestVelocity() { _latestPlaneVelocityDontUseY = Vector3.zero; }
 
     public void ClearLatestVelocity()
     {
@@ -74,42 +73,55 @@ public class CharacterMoveScript2 : MonoBehaviour
 
         if (_characterController.isGrounded == true)
         {
-            _characterController.stepOffset = 0.3f;
+            _characterController.stepOffset = _inGroundStepOffset;
+            _characterController.slopeLimit = _inGroundSlopeLimit;
+
             _verticalSpeedAcc = 0.0f;
+            _notGroundedCount = 0;
 
             _isJumping = false;
             _isInAir = false;
+        }
+        else
+        {
+            //_notGroundedCount++;
+            //if (_notGroundedCount >= 2)
+            //{
+            //    _characterController.stepOffset = _inAirStepOffset;
+            //    _characterController.slopeLimit = _inAirSlopeLimit;
+
+            //    _isInAir = true;
+            //    _notGroundedCount = 0;
+            //}
+
+            _characterController.stepOffset = _inAirStepOffset;
+            _characterController.slopeLimit = _inAirSlopeLimit;
+
+            _isInAir = true;
+            _notGroundedCount = 0;
         }
     }
 
     public void DoJump()
     {
-        //if (_characterController.isGrounded == true)
-        //{
-        //    _characterController.stepOffset = 0.0f;
-        //    _verticalSpeedAcc = _jumpForce;
+        if (_characterController.isGrounded == false)
+        {
+            return; //´õºí Á¡ÇÁ ÄÁÅÙÃ÷, ½ºÅ³ »ý±â¸é ¾î¶»°ÔÇÒ²¨¾ß
+        }
+        
+        _characterController.stepOffset = _inAirStepOffset;
+        _characterController.slopeLimit = _inAirSlopeLimit;
 
-        //    _isJumping = true;
-        //    _isInAir = true;
-        //}
-        //else
-        //{
-        //    Debug.Log("Á¡ÇÁ°¡ ¾ÃÇû´Ù");
-        //}
-
-        _characterController.stepOffset = 0.0f;
         _verticalSpeedAcc = _jumpForce;
 
+        _notGroundedCount = 0;
         _isJumping = true;
         _isInAir = true;
     }
 
     public void CharacterMove(Vector3 inputDirection, float ratio = 1.0f)
     {
-        Vector3 cameraLook = Camera.main.transform.forward;
-        cameraLook.y = 0.0f;
-        cameraLook = cameraLook.normalized;
-        inputDirection = (Quaternion.LookRotation(cameraLook) * inputDirection);
+        inputDirection = GetDirectionConvertedByCamera(inputDirection);
 
         float similarities = Mathf.Clamp(Vector3.Dot(transform.forward, inputDirection), 0.0f, 1.0f);
 
@@ -119,6 +131,14 @@ public class CharacterMoveScript2 : MonoBehaviour
         _moveTriggerd = true;
 
         _latestPlaneVelocityDontUseY = _characterController.velocity;
+    }
+
+    public Vector3 GetDirectionConvertedByCamera(Vector3 inputDirection)
+    {
+        Vector3 cameraLook = Camera.main.transform.forward;
+        cameraLook.y = 0.0f;
+        cameraLook = cameraLook.normalized;
+        return (Quaternion.LookRotation(cameraLook) * inputDirection);
     }
 
     public void CharacterForcedMove(Vector3 latestDelta, float ratio = 1.0f)

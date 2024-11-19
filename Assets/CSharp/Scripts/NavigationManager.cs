@@ -96,7 +96,7 @@ public struct NavMeshObject
     public List<NavMeshSurface> _navMeshSurfaceComponent;
 }
 
-public class NavigationManager : MonoBehaviour
+public class NavigationManager : SubManager
 {
     private static NavigationManager _instance = null;
     private Dictionary<string, HashSet<NavMeshSurface>> _stageNavMeshes = new Dictionary<string, HashSet<NavMeshSurface>>();
@@ -156,7 +156,7 @@ public class NavigationManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    public override void SubManagerUpdate()
     {
         DrawPlane();
         DrawCapsule();
@@ -204,7 +204,7 @@ public class NavigationManager : MonoBehaviour
         }
     }
 
-    private void Awake()
+    public override void SubManagerAwake()
     {
         if (_instance != null && _instance != this)
         {
@@ -229,7 +229,6 @@ public class NavigationManager : MonoBehaviour
         _colors.Add(color);
     }
 
-    
 
     private void Start()
     {
