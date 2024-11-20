@@ -84,16 +84,6 @@ public class CharacterMoveScript2 : MonoBehaviour
         }
         else
         {
-            //_notGroundedCount++;
-            //if (_notGroundedCount >= 2)
-            //{
-            //    _characterController.stepOffset = _inAirStepOffset;
-            //    _characterController.slopeLimit = _inAirSlopeLimit;
-
-            //    _isInAir = true;
-            //    _notGroundedCount = 0;
-            //}
-
             _characterController.stepOffset = _inAirStepOffset;
             _characterController.slopeLimit = _inAirSlopeLimit;
 

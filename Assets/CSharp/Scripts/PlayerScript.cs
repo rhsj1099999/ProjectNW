@@ -297,7 +297,6 @@ public class PlayerScript : MonoBehaviour, IHitable
 
         //임시 무기변경 코드
         {
-            //WeaponChangeCheck();
             WeaponChangeCheck2();
         }
 
@@ -331,7 +330,6 @@ public class PlayerScript : MonoBehaviour, IHitable
             //}
         }
 
-
         //현재 상태 업데이트
         {
             _stateContoller.DoWork();
@@ -346,12 +344,6 @@ public class PlayerScript : MonoBehaviour, IHitable
 
     public void StateChanged()
     {
-        /*-----------------------------------------------------------------------------------------
-        |TODO| 굳이 이 코드를 따로 빼야되나? Root 모션은 Late Tick 이 지나야 계산되서 필요하긴 한데
-        -----------------------------------------------------------------------------------------*/
-        //_currAnimationSeconds = 0.0f;
-        //_currAnimationLoopCount = 0;
-
         ChangeAnimation(_stateContoller.GetCurrState());
     }
 
@@ -387,12 +379,6 @@ public class PlayerScript : MonoBehaviour, IHitable
 
     public void ChangeAnimation(State nextState)
     {
-        /*----------------------------------------------------------------------------------------------------------
-        |TODO| Jump -> Sprint 상태 전환시
-        부주의로 인해 Jump -> Move -> Idle의 전환이 이루어졌다.
-        이때 너무빠른 전환으로 인해 즉시 코루틴이 종료되면서 모션이 텔레포트한다 수정해라
-        ----------------------------------------------------------------------------------------------------------*/
-
         /*----------------------------------------------------
         |NOTI| 모든 애니메이션은 RightHand 기준으로 녹화됐습니다.
         ------------------------------------------------------*/
@@ -431,7 +417,7 @@ public class PlayerScript : MonoBehaviour, IHitable
             //Start Coroutine
             if (_corutineStarted == false)
             {
-                _corutineStarted = true;
+                //_corutineStarted = true;
                 StartCoroutine("SwitchingBlendCoroutine");
             }
 
@@ -445,6 +431,8 @@ public class PlayerScript : MonoBehaviour, IHitable
 
     private IEnumerator SwitchingBlendCoroutine()
     {
+        _corutineStarted = true;
+
         //Layer 인덱스 변경
         while (true)
         {
@@ -454,23 +442,14 @@ public class PlayerScript : MonoBehaviour, IHitable
 
             _blendTarget += blendDelta;
 
-            /*-------------------
-            |TODO| 이 코드는 뭐야
-            ---------------------*/
-            if (_blendTarget > 1.0f)
-            {
-                _blendTarget = 1.0f - float.Epsilon;
-                _animator.SetLayerWeight((int)AnimatorLayer.FullBody_Sub, _blendTarget);
-                break;
-            }
-            else if (_blendTarget < 0.0f)
-            {
-                _blendTarget = 0.0f;
-                _animator.SetLayerWeight((int)AnimatorLayer.FullBody_Sub, _blendTarget);
-                break;
-            }
+            _blendTarget = Mathf.Clamp(_blendTarget, 0.0f, 1.0f);
 
             _animator.SetLayerWeight((int)AnimatorLayer.FullBody_Sub, _blendTarget);
+
+            if (_blendTarget >= 1.0f || _blendTarget <= 0.0f)
+            {
+                break;
+            }
 
             yield return null;
         }
@@ -656,34 +635,27 @@ public class PlayerScript : MonoBehaviour, IHitable
 
             //_animator.SetBool("IsMirroring", false);
 
-            if (false/*핸들링 애니메이션 관련*/)
+            if (_tempCurrLeftWeapon == null || //왼손 무기를 쥐고있지 않거나
+                _tempCurrLeftWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null) //왼손 무기의 파지 애니메이션이 없다
             {
-
+                _animator.SetLayerWeight((int)AnimatorLayer.LeftHand, 0.0f);
             }
             else
             {
-               if (_tempCurrLeftWeapon == null || //왼손 무기를 쥐고있지 않거나
-                    _tempCurrLeftWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null) //왼손 무기의 파지 애니메이션이 없다
-                {
-                    _animator.SetLayerWeight((int)AnimatorLayer.LeftHand, 0.0f);
-                }
-                else
-                {
-                    _animator.SetLayerWeight((int)AnimatorLayer.LeftHand, 1.0f);
-                }
+                _animator.SetLayerWeight((int)AnimatorLayer.LeftHand, 1.0f);
+            }
 
 
 
 
-                if (_tempCurrRightWeapon == null || //오른손 무기를 쥐고있지 않거나
-                    _tempCurrRightWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null) //오른손 무기의 파지 애니메이션이 없다
-                {
-                    _animator.SetLayerWeight((int)AnimatorLayer.RightHand, 0.0f);
-                }
-                else
-                {
-                    _animator.SetLayerWeight((int)AnimatorLayer.RightHand, 1.0f);
-                }
+            if (_tempCurrRightWeapon == null || //오른손 무기를 쥐고있지 않거나
+                _tempCurrRightWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null) //오른손 무기의 파지 애니메이션이 없다
+            {
+                _animator.SetLayerWeight((int)AnimatorLayer.RightHand, 0.0f);
+            }
+            else
+            {
+                _animator.SetLayerWeight((int)AnimatorLayer.RightHand, 1.0f);
             }
         }
     }
@@ -735,7 +707,6 @@ public class PlayerScript : MonoBehaviour, IHitable
             return;
         }
 
-        _corutineStarted_Weapon = true; //무기 바꾸기 코루틴이 실행된다.
 
         AnimationClip drawNextWeaponAnimationClip = null;
         AnimationClip putawayCurrentWeaponAnimationClip = null;
@@ -768,7 +739,10 @@ public class PlayerScript : MonoBehaviour, IHitable
                 else
                 {
                     WeaponScript weaponScript = currentWeapon.GetComponent<WeaponScript>();
-                    putawayCurrentWeaponAnimationClip = weaponScript._putawayAnimation;
+                    putawayCurrentWeaponAnimationClip = (tempIsRightHandWeapon == true)
+                        ? weaponScript._putawayAnimation
+                        : weaponScript._putawayAnimation_Mirrored;
+
                     Debug.Assert(putawayCurrentWeaponAnimationClip != null, "집어넣는 애니메이션이 설정돼있지 않습니다");
                 }
             }
@@ -782,7 +756,10 @@ public class PlayerScript : MonoBehaviour, IHitable
                 else
                 {
                     WeaponScript weaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
-                    drawNextWeaponAnimationClip = weaponScript._drawAnimation;
+                    drawNextWeaponAnimationClip = (tempIsRightHandWeapon == true)
+                        ? weaponScript._drawAnimation
+                        : weaponScript._drawAnimation_Mirrored;
+
                     Debug.Assert(drawNextWeaponAnimationClip != null, "꺼내는 애니메이션이 설정돼있지 않습니다");
                 }
             }
@@ -791,16 +768,14 @@ public class PlayerScript : MonoBehaviour, IHitable
         //코루틴 호출
         {
             StartCoroutine(WeaponChangingCoroutine(putawayCurrentWeaponAnimationClip, drawNextWeaponAnimationClip, layerType, nextWeaponPrefab));
-            _corutineStarted_Weapon = true;
         }
-
-        ////무기 변경시 레이어 변경코드
-        //WeaponChangeLayerModiry();
     }
 
     private IEnumerator WeaponChangingCoroutine(AnimationClip putAwayAnimationClip, AnimationClip drawAnimationClip, AnimatorLayerTypes targetBody, GameObject nextWeaponPrefab)
     {
         //무기전환을 할 수 있다면 이 코루틴이 시작될것이다.
+        _corutineStarted_Weapon = true;
+
         AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
         Debug.Assert(targetPart != null, "해당 파트는 사용하지 않는다고 설정돼있습니다");
         bool tempIsRightWeapon = (targetBody == AnimatorLayerTypes.RightHand);
@@ -845,8 +820,6 @@ public class PlayerScript : MonoBehaviour, IHitable
 
             //Layer Weight 세팅 완료
 
-            
-
             //애니메이션 다시 재생 시작
             {
                 int layerIndex = (targetPart._isUsingFirstLayer == true)
@@ -880,8 +853,6 @@ public class PlayerScript : MonoBehaviour, IHitable
             }
         }
 
-
-
         //2. 집어넣기 애니메이션 완료 / 혹은 무기를 들고 있지 않아서 스킵했다 =>//기존 무기를 삭제한다
         {
             if (tempIsRightWeapon == true && _tempCurrRightWeapon != null)
@@ -895,7 +866,6 @@ public class PlayerScript : MonoBehaviour, IHitable
                 _tempCurrLeftWeapon = null;
             }
         }
-
 
         //3. 무기 꺼내기
         if (drawAnimationClip != null)
@@ -1093,13 +1063,9 @@ public class PlayerScript : MonoBehaviour, IHitable
             }
         }
 
-
         //코루틴 정상종료 (중간에 피격당하거나 이벤트가 없었다)
         _corutineStarted_Weapon = false;
     }
-
-
-
 
 
 
@@ -1123,6 +1089,21 @@ public class PlayerScript : MonoBehaviour, IHitable
 
         _animator.Play(nextNodeName, layerIndex, 0.0f);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

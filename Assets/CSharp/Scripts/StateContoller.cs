@@ -283,7 +283,7 @@ public class StateContoller : MonoBehaviour
 
         State nextState = (_reservedNextWeaponState != null)
             ? _reservedNextWeaponState
-            : CheckChangeState();
+            : CheckChangeState_Recursion(_currState);
 
         if (nextState != null)
         {
@@ -379,11 +379,16 @@ public class StateContoller : MonoBehaviour
         Idle로 바꾼뒤 Idle에서 한번 더 체크를 하는게 일단 간단함
         -----------------------------------------------------*/
 
-        ChangeState(_states[0]);
+        //ChangeState(_states[0]);
 
         State nextState = (_reservedNextWeaponState != null)
             ? _reservedNextWeaponState
-            : CheckChangeState();
+            : CheckChangeState_Recursion(_states[0]);
+
+        if (nextState == null ) 
+        {
+            ChangeState(_states[0]);
+        }
 
         if (nextState != null && nextState != _currState)
         {
@@ -397,38 +402,111 @@ public class StateContoller : MonoBehaviour
 
 
 
-
-
-
-
-    public State CheckChangeState()
+    public State CheckChangeState_Recursion(State currentState) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
     {
+        //원래는 재귀적 탐색이 아니였다
+        {
+            //public State CheckChangeState()
+            //{
+            //    if (_stateChangeCoroutineStarted == true)
+            //    {
+            //        return null; //공격 콤보 체크가 진행중이라 아무것도 안할꺼다
+            //    }
+
+            //    foreach (KeyValuePair<State, List<ConditionDesc>> pair in _currState.GetLinkedState())
+            //    {
+            //        bool isSuccess = true;
+
+            //        foreach (ConditionDesc conditionDesc in pair.Value)
+            //        {
+            //            if (CheckCondition(conditionDesc) == false)
+            //            {
+            //                isSuccess = false;
+            //                break; //멀티컨디션에서 하나라도 삑났다.
+            //            }
+            //        }
+
+            //        if (isSuccess == true)
+            //        {
+            //            return pair.Key; //전부다 만족했다.
+            //        }
+            //    }
+
+            //    return null; //만족한게 하나도 없다.
+            //}
+        } //->함수원본
+
         if (_stateChangeCoroutineStarted == true)
         {
-            return null; //현재 공격을 시도해서 0.085초 뒤에 지연체크를 할겁니다. 아무것도 하지마세요...?
+            return null; //공격 콤보 체크가 진행중이라 아무것도 안할꺼다
         }
 
-        foreach (KeyValuePair<State, List<ConditionDesc>> pair in _currState.GetLinkedState())
+        State targetState = currentState;
+
+        int debugChangeCount = 0;
+
+        while (true)
         {
+            if (debugChangeCount > 10)
+            {
+                Debug.Assert(false, "상태가 계속 바뀌려합니다. 로직에 문제가 있습니까?");
+                Debug.Break();
+                return null;
+            }
+
             bool isSuccess = true;
 
-            foreach (ConditionDesc conditionDesc in pair.Value)
+            foreach (KeyValuePair<State, List<ConditionDesc>> pair in targetState.GetLinkedState())
             {
-                if (CheckCondition(conditionDesc) == false)
+                isSuccess = true;
+
+                foreach (ConditionDesc conditionDesc in pair.Value)
                 {
-                    isSuccess = false;
-                    break; //멀티컨디션에서 하나라도 삑났다.
+                    if (CheckCondition(conditionDesc) == false)
+                    {
+                        isSuccess = false;
+                        break; //멀티컨디션에서 하나라도 삑났다.
+                    }
                 }
+
+                if (isSuccess == true)
+                {
+                    targetState = pair.Key;
+                    {
+                        /*--------------------------------------------------------
+                        |TODO| 점프상태라면 연쇄 검사를 하지않도록 임시방편 처리.
+                        이유는 점프로 바뀌어야 y변화가 있는데 그전에 착지를 했다고 판정해버려서
+                        이거 지우는 구조 생각해볼것
+                        --------------------------------------------------------*/
+
+                        if (targetState.GetStateDesc()._EnterStateActionTypes.Count > 0 &&
+                            targetState.GetStateDesc()._EnterStateActionTypes[0] == StateActionType.Jump)
+                        {
+                            return targetState;
+                        }
+                    }
+                    break; //다시 검사하러 간다
+                }
+            }
+
+            if (targetState == currentState)
+            {
+                return null;
             }
 
             if (isSuccess == true)
             {
-                return pair.Key; //전부다 만족했다.
+                debugChangeCount++;
+                continue;
             }
-        }
 
-        return null; //만족한게 하나도 없다.
+            return targetState;
+        }
     }
+
+
+
+
 
 
     public void DoActions(List<StateActionType> actions)

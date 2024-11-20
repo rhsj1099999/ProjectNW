@@ -115,7 +115,9 @@ public class WeaponScript : MonoBehaviour
 
     public AnimationClip _putawayAnimation = null;
     public AnimationClip _drawAnimation = null;
-    
+    public AnimationClip _putawayAnimation_Mirrored = null;
+    public AnimationClip _drawAnimation_Mirrored = null;
+
 
     public List<WeaponStateDesc> _weaponStateAssets = new List<WeaponStateDesc>();
     private Dictionary<State, StateNodeDesc> _weaponStates = new Dictionary<State, StateNodeDesc>();
