@@ -44,6 +44,7 @@ public class IKScript : MonoBehaviour
 
         _ikDic[ikDesc]._activated = true;
     }
+
     public void OffIK(IKTargetDesc ikDesc) 
     {
         if (_ikDic.ContainsKey(ikDesc) == false)

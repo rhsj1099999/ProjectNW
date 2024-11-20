@@ -11,7 +11,6 @@ class DescendingComparer<T> : IComparer<T> where T : IComparable<T>
 {
     public int Compare(T x, T y)
     {
-        // 기본 오름차순 정렬의 결과를 반전시켜 내림차순으로 반환
         return y.CompareTo(x);
     }
 }
@@ -95,41 +94,77 @@ public class WeaponComboEntry
 
 public class WeaponScript : MonoBehaviour
 {
-    public Transform _socketTranform = null;
-    private bool _isRightHandWeapon = false;
 
+
+
+    /*------------------------------------------
+    Pivot Section.
+    ------------------------------------------*/
     public Vector3 _pivotRotation_Right = Vector3.zero;
     public Vector3 _pivotPosition_Right = Vector3.zero;
     public Vector3 _pivotRotation_Left = Vector3.zero;
     public Vector3 _pivotPosition_Left = Vector3.zero;
 
 
-    public PlayerScript _owner = null;
-    public AnimationClip _handlingIdleAnimation_OneHand = null;
-    public AnimationClip _handlingIdleAnimation_TwoHand = null;
-
-
+    /*------------------------------------------
+    Item Spec Section.
+    ------------------------------------------*/
     public bool _onlyTwoHand = false;
     public ItemInfo _itemInfo = null;
     public ItemInfo.WeaponType _weaponType = ItemInfo.WeaponType.NotWeapon;
 
+
+
+    /*------------------------------------------
+    PutAway/Draw AnimationClips Section.
+    ------------------------------------------*/
     public AnimationClip _putawayAnimation = null;
     public AnimationClip _drawAnimation = null;
     public AnimationClip _putawayAnimation_Mirrored = null;
     public AnimationClip _drawAnimation_Mirrored = null;
+    public AnimationClip _handlingIdleAnimation_OneHand = null;
+    public AnimationClip _handlingIdleAnimation_TwoHand = null;
 
 
+    /*------------------------------------------
+    IK Section.
+    ------------------------------------------*/
+    protected Animator _ownerAnimator = null;
+    protected IKScript _ownerIKSkript = null;
+    protected Dictionary<string, IKTargetDesc> _createdIKTargets = new Dictionary<string, IKTargetDesc>();
+
+
+
+    /*------------------------------------------
+    State Section.
+    ------------------------------------------*/
     public List<WeaponStateDesc> _weaponStateAssets = new List<WeaponStateDesc>();
     private Dictionary<State, StateNodeDesc> _weaponStates = new Dictionary<State, StateNodeDesc>();
     private SortedDictionary<int, List<LinkedState>> _entryStates = new SortedDictionary<int, List<LinkedState>>(new DescendingComparer<int>());
-    public StateNodeDesc FindLinkedStateNodeDesc(State targetState)
-    {
-        if (_weaponStates.ContainsKey(targetState) == false)
-        {
-            return null;
-        }
-        return _weaponStates[targetState];
-    }
+    public StateNodeDesc FindLinkedStateNodeDesc(State targetState) {if (_weaponStates.ContainsKey(targetState) == false) {return null;} return _weaponStates[targetState];}
+
+
+
+
+    /*------------------------------------------
+    런타임중 정보저장용 변수들
+    ------------------------------------------*/
+    public Transform _socketTranform = null;
+    private bool _isRightHandWeapon = false;
+    public PlayerScript _owner = null;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void Awake()
     {
@@ -141,7 +176,24 @@ public class WeaponScript : MonoBehaviour
         GraphLinking();
     }
 
+    public virtual void InitIK()
+    {
+        _ownerIKSkript = _ownerAnimator.gameObject.GetComponent<IKScript>();
 
+        //IK 세팅 단계
+        IKTargetScript[] ikTargets = gameObject.GetComponentsInChildren<IKTargetScript>();
+
+        foreach (IKTargetScript ikTarget in ikTargets)
+        {
+            ikTarget.RegistIK(_ownerIKSkript, true);
+            _createdIKTargets.Add(ikTarget.gameObject.name, ikTarget.GetDesc());
+        }
+
+        /*------------------------------------------------------
+        |TODO| Desc 받아와서 MainHandler에 해당하는 Desc를 꺼야한다
+        ------------------------------------------------------*/
+        //_ownerIKSkript.OffIK(_createdIKTargets["RightHandIK"]);
+    }
 
     protected virtual void LateUpdate()
     {
@@ -169,6 +221,7 @@ public class WeaponScript : MonoBehaviour
     virtual public void Equip(PlayerScript itemOwner, Transform followTransform)
     {
         _owner = itemOwner;
+        _ownerAnimator = itemOwner.gameObject.GetComponentInChildren<Animator>();
         _socketTranform = followTransform;
 
         WeaponSocketScript weaponSocketScript = _socketTranform.gameObject.GetComponent<WeaponSocketScript>();

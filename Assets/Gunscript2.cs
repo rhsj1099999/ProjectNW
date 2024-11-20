@@ -15,6 +15,7 @@ public class Gunscript2 : WeaponScript
     [SerializeField] UnityEvent _whenShootEvent = null;
 
     private AimScript2 _aimScript = null;
+
     // private GameObject _bullet = null;
     //[SerializeField] private Transform _followingTransformStartPoint = null;
 
@@ -30,13 +31,7 @@ public class Gunscript2 : WeaponScript
     [SerializeField] private Vector2 _absAimShakeForceMax = new Vector2(0.3f, 0.3f);
 
 
-    /*------------------------------------------
-    IK Section.
-    ------------------------------------------*/
-    private Animator _ownerAnimator = null;
-    private IKScript _ownerIKSkript = null;
-    private Transform _shoulderStock_Unity = null;
-    private Dictionary<string, IKTargetDesc> _createdIKTargets = new Dictionary<string, IKTargetDesc>();
+
 
 
     /*------------------------------------------
@@ -47,11 +42,21 @@ public class Gunscript2 : WeaponScript
     private float _aimShakeDuration = 0.0f;
     private Vector2 _aimShakeDampRef = new Vector2();
     private Vector2 _calculatedAimShakeForce = new Vector2();
+    protected Transform _shoulderStock_Unity = null;
+
+
+
+
 
     void Update()
     {
         FireCheck();
     }
+
+
+
+
+
 
     public override void FollowSocketTransform()
     {
@@ -73,37 +78,22 @@ public class Gunscript2 : WeaponScript
     override public void Equip(PlayerScript itemOwner, Transform followTransform) 
     {
         base.Equip(itemOwner, followTransform);
-        _ownerAnimator = itemOwner.gameObject.GetComponentInChildren<Animator>();
         _shoulderStock_Unity = _ownerAnimator.GetBoneTransform(HumanBodyBones.RightShoulder);
         _aimScript = itemOwner.gameObject.GetComponent<AimScript2>();
-        _ownerIKSkript = _ownerAnimator.gameObject.GetComponent<IKScript>();
 
         Debug.Assert(_aimScript != null, "Gun은 AimScrip가 반드시 있어야만 한다");
         Debug.Assert(_firePosition != null, "발사할곳이 없는데 이게 총입니까?");
         Debug.Assert(_stockPosition != null, "자세제어를 위해 견착위치가 필요합니다(권총도 마찬가지)");
         Debug.Assert(_ownerIKSkript != null, "Gun은 IK를 이용해야만 합니다");
-
-        //IK 세팅 단계
-        {
-            IKTargetScript[] ikTargets = gameObject.GetComponentsInChildren<IKTargetScript>();
-            Debug.Assert(ikTargets.Length > 0, "Gun은 IK를 이용해야만 하는데 IK목표가 없습니다");
-
-            foreach (IKTargetScript ikTarget in ikTargets)
-            {
-                ikTarget.RegistIK(_ownerIKSkript, true);
-                _createdIKTargets.Add(ikTarget.gameObject.name, ikTarget.GetDesc());
-            }
-
-            /*------------------------------------------------------
-            |TODO| Desc 받아와서 MainHandler에 해당하는 Desc를 꺼야한다
-            ------------------------------------------------------*/
-            _ownerIKSkript.OffIK(_createdIKTargets["RightHandIK"]);
-        }
     }
 
     override public void UnEquip()
     {
     }
+
+
+
+
 
     public void Fire()
     {

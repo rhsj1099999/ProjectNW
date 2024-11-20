@@ -220,23 +220,17 @@ public class StateContoller : MonoBehaviour
     }
 
 
-
-
-    private void ChangeState(State nextState)
+    private void StatedWillBeChanged()
     {
-        //Debug.Assert(nextState != _currState, "같은 상태로 변경하려는 진입접이 있습니까?"); 네
-
         if (_stateChangeCoroutineStarted == true)
         {
             /*--------------------------------------------------------------
             |NOTI| 이 코루틴이 실행중이였다면 플레이어는 지연체크를 하려는거였고.
             피격같은 외부에서 강제로 변경한 상태여만 합니다.
             --------------------------------------------------------------*/
-
             StopCoroutine("AttackComboChangeCoroutine");
             _stateChangeCoroutineStarted = false;
             CustomKeyManager.Instance.SetAttackKeyRestrained(false);
-            Debug.Log("||--State Intercepted!!--||" + nextState.GetStateDesc()._stataName);
         }
 
         if (_attackStateAutoChangeTimeCoroutineStarted == true)
@@ -245,13 +239,21 @@ public class StateContoller : MonoBehaviour
             |NOTI| 공격이 끝나든, 피격돼서 끝나든, 플레이어 의지로 끝나든 상태가
             변경되면 이 코루틴은 끝나야하는게 맞습니다.
             --------------------------------------------------------------*/
-
             StopCoroutine("AttackStateAutoChangeCoroutine");
             _attackStateAutoChangeTimeCoroutineStarted = false;
         }
 
-        Debug.Log("State Changed : " + nextState.GetStateDesc()._stataName);
+        _reservedNextWeaponState = null;
+        _currStateTime = 0.0f;
+    }
 
+    private void ChangeState(State nextState)
+    {
+        //Debug.Assert(nextState != _currState, "같은 상태로 변경하려는 진입접이 있습니까?"); 네
+
+        StatedWillBeChanged();
+
+        Debug.Log("State Changed : " + nextState.GetStateDesc()._stataName);
 
         if (_currState != null)
         {
@@ -268,8 +270,7 @@ public class StateContoller : MonoBehaviour
         }
 
         _ownerStateControllingComponent._owner.StateChanged();
-        _reservedNextWeaponState = null;
-        _currStateTime = 0.0f;
+
     }
 
 
@@ -367,30 +368,21 @@ public class StateContoller : MonoBehaviour
 
     private void CalculateAfterAttackState()
     {
-        //State nextState = null;
-        //{
-        //    //공격이 끝난 후, 상태결정 로직
-        //}
-        //Debug.Assert(nextState != null, "공격이 끝난 후 다음상태를 결정할 수 없습니까?");
-        //ChangeState(nextState);
-        
-        /*-----------------------------------------------------
-        |NOTI| 원래는 위에처럼 할려했는데.
-        Idle로 바꾼뒤 Idle에서 한번 더 체크를 하는게 일단 간단함
+        /*----------------------------------------------------
+        |NOTI| 무기 공격을 끝내면 기본적으로 Idle로 간다고 처리하는 구조임
+        이것을 불완전하다. 나중에 문제가 생길 수 있다
         -----------------------------------------------------*/
-
-        //ChangeState(_states[0]);
 
         State nextState = (_reservedNextWeaponState != null)
             ? _reservedNextWeaponState
             : CheckChangeState_Recursion(_states[0]);
 
-        if (nextState == null ) 
+        if (nextState == null) 
         {
             ChangeState(_states[0]);
         }
 
-        if (nextState != null && nextState != _currState)
+        else if (nextState != _currState)
         {
             ChangeState(nextState);
         }
@@ -444,10 +436,11 @@ public class StateContoller : MonoBehaviour
         State targetState = currentState;
 
         int debugChangeCount = 0;
+        bool isStateChangeGuaranted = false;
 
         while (true)
         {
-            if (debugChangeCount > 10)
+            if (debugChangeCount > 100)
             {
                 Debug.Assert(false, "상태가 계속 바뀌려합니다. 로직에 문제가 있습니까?");
                 Debug.Break();
@@ -472,19 +465,25 @@ public class StateContoller : MonoBehaviour
                 if (isSuccess == true)
                 {
                     targetState = pair.Key;
+                    
                     {
                         /*--------------------------------------------------------
-                        |TODO| 점프상태라면 연쇄 검사를 하지않도록 임시방편 처리.
-                        이유는 점프로 바뀌어야 y변화가 있는데 그전에 착지를 했다고 판정해버려서
-                        이거 지우는 구조 생각해볼것
+                        |TODO| 점프상태라면 연쇄 검사를 하지않도록 임시방편 처리. 이거 지우는 구조 생각해볼것
+                        이유는 점프로 바뀌어야 y변화가 있는데 그전에 착지를 했다고 판정해버려서임
                         --------------------------------------------------------*/
-
                         if (targetState.GetStateDesc()._EnterStateActionTypes.Count > 0 &&
                             targetState.GetStateDesc()._EnterStateActionTypes[0] == StateActionType.Jump)
                         {
                             return targetState;
                         }
                     }
+
+                    if (isStateChangeGuaranted == false)
+                    {
+                        StatedWillBeChanged();
+                        isStateChangeGuaranted = true;
+                    }
+
                     break; //다시 검사하러 간다
                 }
             }
