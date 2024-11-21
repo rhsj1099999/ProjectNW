@@ -122,8 +122,13 @@ public class WeaponScript : MonoBehaviour
     public AnimationClip _drawAnimation = null;
     public AnimationClip _putawayAnimation_Mirrored = null;
     public AnimationClip _drawAnimation_Mirrored = null;
+
+
     public AnimationClip _handlingIdleAnimation_OneHand = null;
     public AnimationClip _handlingIdleAnimation_TwoHand = null;
+    public AnimationClip _handlingIdleAnimation_OneHand_Mirrored = null;
+    public AnimationClip _handlingIdleAnimation_TwoHand_Mirrored = null;
+
 
 
     /*------------------------------------------

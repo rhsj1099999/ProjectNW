@@ -126,7 +126,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 100}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 227
+  controlID: 169
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -146,8 +146,8 @@ MonoBehaviour:
     y: 0
     width: 425
     height: 668
-  m_MinSize: {x: 275, y: 100}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 19}
   m_Panes:
   - {fileID: 19}
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 150}
   m_MaxSize: {x: 24288, y: 24288}
   vertical: 0
-  controlID: 8810
+  controlID: 168
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -353,7 +353,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 150}
   m_MaxSize: {x: 8096, y: 24288}
   vertical: 1
-  controlID: 8811
+  controlID: 78
 --- !u!114 &15
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -373,8 +373,8 @@ MonoBehaviour:
     y: 0
     width: 832
     height: 192
-  m_MinSize: {x: 202, y: 221}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 23}
   m_Panes:
   - {fileID: 23}
@@ -499,7 +499,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Resources/Anims/RPGPackConverted/Idles
+    - Assets/Resources/RuntimePrefab/Weapon
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -507,16 +507,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Resources/Anims/RPGPackConverted/Idles
+  - Assets/Resources/RuntimePrefab/Weapon
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\rhsj\Desktop\Unity\ProjectNW
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 767}
-    m_SelectedIDs: a2ff0400
-    m_LastClickedID: 327586
-    m_ExpandedIDs: 00000000049a0000069a0000089a00000a9a00000c9a00000e9a0000109a0000129a0000149a0000169a0000189a00001a9a00001c9a00001e9a0000209a0000229a0000249a0000269a0000289a00002a9a00002c9a00002e9a0000309a0000329a0000349a0000369a0000389a00003a9a00003c9a0000409a0000429a0000449a0000469a0000489a00004a9a0000ded30000d8ff040000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 680}
+    m_SelectedIDs: 04d40000
+    m_LastClickedID: 54276
+    m_ExpandedIDs: 00000000289a00002a9a00002c9a00002e9a0000309a0000329a0000349a0000369a0000389a00003a9a00003c9a00003e9a0000409a0000429a0000449a0000469a0000489a00004a9a00004c9a00004e9a0000509a0000529a0000549a0000569a0000589a00005a9a00005c9a00005e9a0000609a0000629a0000649a0000669a0000689a00006a9a00006c9a0000f4d3000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -544,7 +544,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000049a0000069a0000089a00000a9a00000c9a00000e9a0000109a0000129a0000149a0000169a0000189a00001a9a00001c9a00001e9a0000209a0000229a0000249a0000269a0000289a00002a9a00002c9a00002e9a0000309a0000329a0000349a0000369a0000389a00003a9a00003c9a00003e9a0000409a0000429a0000449a0000469a0000489a00004a9a0000
+    m_ExpandedIDs: 00000000289a00002a9a00002c9a00002e9a0000309a0000329a0000349a0000369a0000389a00003a9a00003c9a00003e9a0000409a0000429a0000449a0000469a0000489a00004a9a00004c9a00004e9a0000509a0000529a0000549a0000569a0000589a00005a9a00005c9a00005e9a0000609a0000629a0000649a0000669a0000689a00006a9a00006c9a0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -575,18 +575,18 @@ MonoBehaviour:
     m_ExpandedInstanceIDs: 
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: GunPivot
-      m_OriginalName: GunPivot
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 49084
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 3}
     m_CreateAssetUtility:
@@ -1140,9 +1140,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -43.31554, y: 8.308006, z: 38.919636}
+    m_Target: {x: -41.5057, y: 0.90686965, z: 37.302402}
     speed: 2
-    m_Value: {x: -43.31554, y: 8.308006, z: 38.919636}
+    m_Value: {x: -41.5057, y: 0.90686965, z: 37.302402}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1192,9 +1192,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: -0.26597053, y: -0.63209593, z: 0.25509802, w: -0.6816447}
   m_Size:
-    m_Target: 2.4768875
+    m_Target: 0.67551625
     speed: 2
-    m_Value: 2.4768875
+    m_Value: 0.67551625
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1356,23 +1356,23 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 138}
-      m_SelectedIDs: 60790000
-      m_LastClickedID: 31072
-      m_ExpandedIDs: 506bc7ffd233d8ff08fbffff60790000
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: 08fbffff60790000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: Sword(Clone)
+        m_OriginalName: Sword(Clone)
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: -602798
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 15}
       m_SearchString: 

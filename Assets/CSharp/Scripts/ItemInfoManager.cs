@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-
+[Serializable]
 public class ItemInfo
 {
     public enum EquipType //For BitShift
@@ -43,6 +44,7 @@ public class ItemInfo
     public EquipType _equipType;
     public string _meshObjectName;
     public List<int> _equipMeshIndicies;
+    public AnimationClip _usingItemAnimation = null;
 };
 
 
@@ -79,6 +81,8 @@ public class ItemInfoManager : SubManager
     Dictionary<string, List<GameObject>> _equipmentObject = new Dictionary<string, List<GameObject>>();
     Dictionary<int, ItemInfo> _items = new Dictionary<int, ItemInfo>();
 
+    [SerializeField] List<ItemAsset> _initItems = new List<ItemAsset>();
+
     private static ItemInfoManager _instance = null;
 
     public static ItemInfoManager Instance
@@ -109,9 +113,22 @@ public class ItemInfoManager : SubManager
         InitEquipments();
 
         InitItem_TestCode_MustDel();
+
+        InitItem();
     }
 
+    private void InitItem()
+    {
+        foreach (var item in _initItems)
+        {
+            ItemInfo newItemInfo = new ItemInfo();
+            newItemInfo = item._itemInfo;
 
+            Debug.Assert(_items.ContainsKey(newItemInfo._itemKey) == false, "아이템 키가 중복됩니다");
+
+            _items.Add(newItemInfo._itemKey, newItemInfo);
+        }
+    }
 
     public GameObject GetModelMesh(ItemInfo itemInfo)
     {
