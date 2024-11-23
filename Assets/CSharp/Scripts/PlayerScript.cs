@@ -10,7 +10,9 @@ using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
-
+using static BodyPartBlendingWork;
+using static AnimatorBlendingDesc;
+using UnityEngine.InputSystem.LowLevel;
 
 public class CoroutineLock
 {
@@ -29,6 +31,53 @@ public enum AnimatorLayerTypes
     RightLeg,
     End,
 }
+
+
+public enum AdditionalBehaveType
+{
+    ChangeWeapon,
+    ChangeFocus,
+    UseItem_Drink,
+    UseItem_Break,
+    UseItem_Throw,
+}
+
+
+
+
+public class BodyPartBlendingWork
+{
+    public enum BodyPartWorkType
+    {
+        ActiveNextLayer,
+        ActiveAllLayer,
+        DeActiveAllLayer,
+        ChangeAnimation,
+        ChangeAnimation_ZeroFrame,
+        AnimationPlayHold,
+        AttatchObjet,
+        DeleteObject,
+        DestroyWeapon,
+        WaitCoroutineUnlock,
+        UnLockCoroutine,
+        SwitchHand,
+        End,
+    }
+
+    public BodyPartBlendingWork(BodyPartWorkType type)
+    {
+        _workType = type;
+    }
+
+    public BodyPartWorkType _workType = BodyPartWorkType.End;
+    public AnimationClip _animationClip = null;
+    public GameObject _attachObjectPrefab = null;
+    public GameObject _deleteObjectTarget = null;
+    public CoroutineLock _coroutineLock = null;
+    public Transform _weaponEquipTransform = null;
+}
+
+
 
 
 public enum WeaponGrabFocus
@@ -63,7 +112,7 @@ public class AnimatorBlendingDesc
         DeactiveAllLayer,
     }
 
-    public IEnumerator ChangeNextLayerWeightSubCoroutine(float transitionSpeed, BlendingCoroutineType workType, CoroutineLock coroutineLockNullable)
+    public IEnumerator ChangeNextLayerWeightSubCoroutine(float transitionSpeed, BlendingCoroutineType workType)
     {
         int targetHandMainLayerIndex = (int)_targetPart * 2;
         int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
@@ -160,11 +209,6 @@ public class AnimatorBlendingDesc
             }
 
             yield return null;
-        }
-
-        if (coroutineLockNullable != null)
-        {
-            coroutineLockNullable._isEnd = true;
         }
     }
 }
@@ -280,6 +324,10 @@ public class PlayerScript : MonoBehaviour, IHitable
     private int _currentLayerIndex = 0;
     private int _maxLayer = 2;
 
+    private List<LinkedList<BodyPartBlendingWork>> _bodyPartWorks = new List<LinkedList<BodyPartBlendingWork>>();
+    private List<bool> _bodyCoroutineStarted = new List<bool>();
+    private List<Coroutine> _currentBodyCoroutine = new List<Coroutine>();
+
 
     [SerializeField] private AnimationClip _tempWeaponHandling_NoPlay = null;
 
@@ -312,6 +360,9 @@ public class PlayerScript : MonoBehaviour, IHitable
         {
             _partBlendingDesc.Add(null);
             _currentBusyAnimatorLayer.Add(false);
+            _bodyPartWorks.Add(new LinkedList<BodyPartBlendingWork>());
+            _bodyCoroutineStarted.Add(false);
+            _currentBodyCoroutine.Add(null);
         }
 
         foreach (var type in _usingBodyPart)
@@ -387,17 +438,17 @@ public class PlayerScript : MonoBehaviour, IHitable
 
         //임시 양손잡기 코드
         {
-            ChangeWeaponHandling();
+            //ChangeWeaponHandling();
         }
 
-        //임시 무기변경 코드
+        //임시 무기변경 코드 -> State가 BeHave를 체크해야한다.
         {
-            WeaponChangeCheck2();
+            //WeaponChangeCheck2();
         }
 
         //임시 아이템 사용 코드
         {
-            UseItemCheck();
+            //UseItemCheck();
         }
 
         //Temp Aim
@@ -443,10 +494,197 @@ public class PlayerScript : MonoBehaviour, IHitable
     }
 
 
+    private void UpdateBodyCoroutine()
+    {
+        //_bodyCoroutineStarted[]
+        //int index = 0;
+        //foreach (LinkedList<BodyPartBlendingWork> works in _bodyPartWorks) 
+        //{
+        //    if (works.Count > 0 && _bodyCoroutineStarted[index] == false) //예정된 일이 있습니다
+        //    {
+        //        //각각의 work 절차를 밟는다
+        //        StartProceduralWork((AnimatorLayerTypes)index, works.First.Value);
+        //        _bodyCoroutineStarted[index] = true;
+        //    }
+        //    ++index;
+        //}
+    }
+
+
+    private void CheckBodyCoroutine(int bodyIndex)
+    {
+        /*--------------------
+        Left Hand   |1|2|3|4|
+        Right Hand  |1|-|-|2|
+        Body        | | | | |
+        Left Leg    | | | | |
+        Right Leg   | | | | |
+        --------------------*/
+    }
+
+
+    Coroutine StartLambdaCoroutine(System.Func<IEnumerator> coroutine)
+    {
+        return StartCoroutine(coroutine());
+    }
+
+
+
+    private Coroutine StartProceduralWork(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    {
+        switch (work._workType)
+        {
+            case BodyPartWorkType.ActiveNextLayer:
+                {
+                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
+                    return StartCoroutine(targetBlendingDesc.ChangeNextLayerWeightSubCoroutine
+                    (
+                        _transitionSpeed_Weapon,
+                        BlendingCoroutineType.ActiveNextLayer
+                    ));
+                }
+
+            case BodyPartWorkType.ActiveAllLayer:
+                {
+                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
+                    return StartCoroutine(targetBlendingDesc.ChangeNextLayerWeightSubCoroutine
+                    (
+                         _transitionSpeed_Weapon,
+                         BlendingCoroutineType.ActiveAllLayer
+                    ));
+                }
+
+            case BodyPartWorkType.DeActiveAllLayer:
+                {
+                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
+                    return StartCoroutine(targetBlendingDesc.ChangeNextLayerWeightSubCoroutine
+                    (
+                         _transitionSpeed_Weapon,
+                         BlendingCoroutineType.DeactiveAllLayer
+                    ));
+                }
+
+            case BodyPartWorkType.ChangeAnimation:
+                {
+                    return StartCoroutine(WeaponChange_AnimationCoroutine(work._animationClip, layerType, false));
+                }
+
+            case BodyPartWorkType.ChangeAnimation_ZeroFrame:
+                {
+                    return StartCoroutine(WeaponChange_AnimationCoroutine(work._animationClip, layerType, true));
+                }
+
+            case BodyPartWorkType.AnimationPlayHold:
+                {
+                    return StartCoroutine(AnimationPlayHoldCoroutine(layerType, work));
+                }
+
+            case BodyPartWorkType.AttatchObjet:
+                {
+                    bool isRightHand = (layerType == AnimatorLayerTypes.RightHand);
+                    return StartCoroutine(CreateWeaponModelAndEquipCoroutine(isRightHand, work._attachObjectPrefab));
+                }
+
+            case BodyPartWorkType.DeleteObject:
+                {
+                    return null;
+                }
+
+            case BodyPartWorkType.DestroyWeapon:
+                {
+                    bool tempIsRightWeapon = (layerType == AnimatorLayerTypes.RightHand);
+
+                    System.Func<IEnumerator> lbd_coroutine = () =>
+                    {
+                        if (tempIsRightWeapon == true && _tempCurrRightWeapon != null)
+                        {
+                            Destroy(_tempCurrRightWeapon);
+                            _tempCurrRightWeapon = null;
+                        }
+                        else if (tempIsRightWeapon == false && _tempCurrLeftWeapon != null)
+                        {
+                            Destroy(_tempCurrLeftWeapon);
+                            _tempCurrLeftWeapon = null;
+                        }
+                        return null;
+                    };
+
+                    return StartLambdaCoroutine(lbd_coroutine);
+                }
+
+            case BodyPartWorkType.WaitCoroutineUnlock:
+                {
+                    return StartCoroutine(WaitCoroutineLock(layerType, work));
+                }
+
+            case BodyPartWorkType.UnLockCoroutine:
+                {
+                    System.Func<IEnumerator> lbd_coroutine = () =>
+                        {
+                            work._coroutineLock._isEnd = true;
+                            return null;
+                        };
+
+                    return StartLambdaCoroutine(lbd_coroutine);
+                }
+
+            case BodyPartWorkType.SwitchHand:
+                {
+                    System.Func<IEnumerator> lbd_coroutine = () =>
+                    {
+                        WeaponScript targetWeaponScript = (layerType == AnimatorLayerTypes.RightHand)
+                            ? _tempCurrRightWeapon.GetComponent<WeaponScript>()
+                            : _tempCurrLeftWeapon.GetComponent<WeaponScript>();
+                        targetWeaponScript.Equip_OnSocket(work._weaponEquipTransform);
+                        return null;
+                    };
+
+                    return StartLambdaCoroutine(lbd_coroutine);
+                }
+
+            case BodyPartWorkType.End:
+                {
+                    return null;
+                }
+        }
+
+        return null;
+    }
+
+    private IEnumerator WaitCoroutineLock(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    {
+        while (work._coroutineLock._isEnd == false) 
+        {
+            yield return null;
+        }
+    }
+    
+    private IEnumerator AnimationPlayHoldCoroutine(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    {
+        AnimatorBlendingDesc blendingDesc = _partBlendingDesc[(int)layerType];
+
+        while (true)
+        {
+            int layerIndex = (blendingDesc._isUsingFirstLayer == true)
+                ? (int)AnimatorLayerTypes.RightHand * 2
+                : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+
+            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+            if (normalizedTime >= 1.0f)
+            {
+                break;
+            }
+
+            yield return null;
+        }
+    }
+
     public void StateChanged()
     {
         ChangeAnimation(_stateContoller.GetCurrState());
     }
+
 
     private void ReadyAimSystem()
     {
@@ -520,43 +758,8 @@ public class PlayerScript : MonoBehaviour, IHitable
             _currAnimClip = targetClip;
         }
 
-        //무기 레이어 변경, Mirror 적용 (무기 애니메이션이라면)
-
         //WeaponLayerChange(nextState);
     }
-
-
-    private IEnumerator SwitchingBlendCoroutine()
-    {
-        _corutineStarted = true;
-
-        //Layer 인덱스 변경
-        while (true)
-        {
-            float blendDelta = (_currentLayerIndex == 0) //0번 레이어를 재생해야하나
-                ? Time.deltaTime * -_transitionSpeed   //0번 레이어를 재생해야한다면 목표값은 0.0
-                : Time.deltaTime * _transitionSpeed;  //1번 레이어를 재생해야한다면 목표값은 1.0
-
-            _blendTarget += blendDelta;
-
-            _blendTarget = Mathf.Clamp(_blendTarget, 0.0f, 1.0f);
-
-            _animator.SetLayerWeight(1, _blendTarget);
-
-            if (_blendTarget >= 1.0f || _blendTarget <= 0.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-
-        _corutineStarted = false;
-    }
-
-
-
-
 
 
     private void WeaponLayerChange(State currState)
@@ -619,13 +822,13 @@ public class PlayerScript : MonoBehaviour, IHitable
                     else
                     {
                         //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
-                        float leftHandLayerWeight = (_tempCurrLeftWeapon == null ||_tempCurrLeftWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null) //
+                        float leftHandLayerWeight = (_tempCurrLeftWeapon == null || _tempCurrLeftWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null) //
                             ? 0.0f
                             : 1.0f;
                         _animator.SetLayerWeight(leftHandMainLayer, leftHandLayerWeight);
 
                         //오른손 무기를 쥐고있지 않거나 오른손 무기의 파지 애니메이션이 없다
-                        float rightHandLayerWeight = (_tempCurrRightWeapon == null || _tempCurrRightWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null) 
+                        float rightHandLayerWeight = (_tempCurrRightWeapon == null || _tempCurrRightWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null)
                             ? 0.0f
                             : 1.0f;
                         _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
@@ -665,6 +868,63 @@ public class PlayerScript : MonoBehaviour, IHitable
     }
 
 
+    private IEnumerator SwitchingBlendCoroutine()
+    {
+        _corutineStarted = true;
+
+        //Layer 인덱스 변경
+        while (true)
+        {
+            float blendDelta = (_currentLayerIndex == 0) //0번 레이어를 재생해야하나
+                ? Time.deltaTime * -_transitionSpeed   //0번 레이어를 재생해야한다면 목표값은 0.0
+                : Time.deltaTime * _transitionSpeed;  //1번 레이어를 재생해야한다면 목표값은 1.0
+
+            _blendTarget += blendDelta;
+
+            _blendTarget = Mathf.Clamp(_blendTarget, 0.0f, 1.0f);
+
+            _animator.SetLayerWeight(1, _blendTarget);
+
+            if (_blendTarget >= 1.0f || _blendTarget <= 0.0f)
+            {
+                break;
+            }
+
+            yield return null;
+        }
+
+        _corutineStarted = false;
+    }
+
+
+
+    private IEnumerator WeaponChange_AnimationCoroutine(AnimationClip nextAnimation, AnimatorLayerTypes targetBody, bool isZeroFrame)
+    {
+        AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
+
+        targetPart._isUsingFirstLayer = !(targetPart._isUsingFirstLayer);
+
+        int layerStartIndex = (int)targetBody * 2;
+
+        int layerIndex = (targetPart._isUsingFirstLayer == true)
+            ? layerStartIndex
+            : layerStartIndex + 1;
+
+        string nextNodeName = (targetPart._isUsingFirstLayer == true)
+            ? "State1"
+            : "State2";
+
+        AnimationClip targetclip = (isZeroFrame == true)
+            ? ResourceDataManager.Instance.GetZeroFrameAnimation(nextAnimation.name)
+            : nextAnimation;
+
+        _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = targetclip;
+
+        _animator.Play(nextNodeName, layerIndex, 0.0f);
+
+        return null;
+    }
+
     public void WeaponChange_Animation(AnimationClip nextAnimation, AnimatorLayerTypes targetBody, bool isZeroFrame)
     {
         AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
@@ -703,53 +963,6 @@ public class PlayerScript : MonoBehaviour, IHitable
 
 
 
-    // 코루틴 실행 함수
-    public void StartCoroutineWithCallback(IEnumerator coroutine, Action<object[]> onComplete, params object[] parameters)
-    {
-        StartCoroutine(RunCoroutineWithCallback(coroutine, onComplete, parameters));
-    }
-
-    // 내부적으로 래핑된 코루틴
-    private IEnumerator RunCoroutineWithCallback(IEnumerator coroutine, Action<object[]> onComplete, object[] parameters)
-    {
-        yield return StartCoroutine(coroutine); // 코루틴이 완료될 때까지 대기
-        onComplete?.Invoke(parameters); // 코루틴 완료 후 람다 함수 실행
-    }
-
-
-
-    //private void testFunc()
-    //{
-    //    // 가변 매개변수 콜백 바인딩
-    //    StartCoroutineWithCallback(ExampleCoroutine(), (args) =>
-    //    {
-    //        Debug.Log($"Callback executed with parameters: {string.Join(", ", args)}");
-    //    }, "Hello", 123, true, 45.67f);
-    //}
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private void StartCoroutine_WithCallBack(IEnumerator coroutine, Action<object[]> callBackFunc, object[] parameters, CoroutineLock coroutineLockNullable)
     {
@@ -771,82 +984,6 @@ public class PlayerScript : MonoBehaviour, IHitable
         }
     }
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // 예제 코루틴
-    private IEnumerator ExampleCoroutine()
-    {
-        Debug.Log("Coroutine started.");
-        yield return new WaitForSeconds(2); // 2초 대기
-        Debug.Log("Coroutine ended.");
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -907,522 +1044,468 @@ public class PlayerScript : MonoBehaviour, IHitable
 
 
 
-    private void WeaponChangeCheck2()
+
+
+
+
+    private void CheckBehave(AdditionalBehaveType additionalBehaveType)
     {
-        GameObject nextWeaponPrefab = null;
-        bool weaponChangeTry = false;
-        bool tempIsRightHandWeapon = false;
-
-        if (Input.GetKeyDown(KeyCode.R))
+        switch (additionalBehaveType)
         {
-            //왼손 무기 다음으로 전환
-            weaponChangeTry = true;
-
-            _currLeftWeaponIndex++;
-            if (_currLeftWeaponIndex >= _tempMaxWeaponSlot)
-            {
-                _currLeftWeaponIndex = _currLeftWeaponIndex % _tempMaxWeaponSlot;
-            }
-            nextWeaponPrefab = _tempLeftWeaponPrefabs[_currLeftWeaponIndex];
-        }
-        else if (Input.GetKeyDown(KeyCode.T))
-        {
-            //오른손 무기 다음으로 전환
-            weaponChangeTry = true;
-
-            _currRightWeaponIndex++;
-            if (_currRightWeaponIndex >= _tempMaxWeaponSlot)
-            {
-                _currRightWeaponIndex = _currRightWeaponIndex % _tempMaxWeaponSlot;
-            }
-            nextWeaponPrefab = _tempRightWeaponPrefabs[_currRightWeaponIndex];
-
-            tempIsRightHandWeapon = true;
-        }
-
-        if (weaponChangeTry == false) //무기 전환을 시도하지 않았다. 아무일도 일어나지 않을것이다.
-        {
-            return;
-        }
-
-        int willUsingAnimatorLayer = 0;
-
-        //사용할 애니메이션 부위 체크
-        {
-            if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused ||
-                _tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
-            {
-                //현재 양손으로 잡고있었다.
-                willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.LeftHand);
-                willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.RightHand);
-            }
-            else
-            {
-                //한손으로 잡고있었다.
-                if (tempIsRightHandWeapon == true)
+            case AdditionalBehaveType.ChangeWeapon:
                 {
-                    willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+                    bool weaponChangeTry = false;
+                    bool tempIsRightHandWeapon = false;
+
+                    if (Input.GetKeyDown(KeyCode.R))
+                    {
+                        //왼손 무기 다음으로 전환
+                        weaponChangeTry = true;
+
+                        _currLeftWeaponIndex++;
+                        if (_currLeftWeaponIndex >= _tempMaxWeaponSlot)
+                        {
+                            _currLeftWeaponIndex = _currLeftWeaponIndex % _tempMaxWeaponSlot;
+                        }
+                    }
+                    else if (Input.GetKeyDown(KeyCode.T))
+                    {
+                        //오른손 무기 다음으로 전환
+                        weaponChangeTry = true;
+
+                        _currRightWeaponIndex++;
+                        if (_currRightWeaponIndex >= _tempMaxWeaponSlot)
+                        {
+                            _currRightWeaponIndex = _currRightWeaponIndex % _tempMaxWeaponSlot;
+                        }
+
+                        tempIsRightHandWeapon = true;
+                    }
+
+                    if (weaponChangeTry == false) //무기 전환을 시도하지 않았다. 아무일도 일어나지 않을것이다.
+                    {
+                        return;
+                    }
+
+                    int willUsingAnimatorLayer = 0;
+
+                    //사용할 애니메이션 부위 체크
+                    {
+                        if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused ||
+                            _tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
+                        {
+                            //현재 양손으로 잡고있었다.
+                            willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.LeftHand);
+                            willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+                        }
+                        else
+                        {
+                            //한손으로 잡고있었다.
+                            if (tempIsRightHandWeapon == true)
+                            {
+                                willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+                            }
+                            else
+                            {
+                                willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.LeftHand);
+                            }
+                        }
+                    }
+
+                    if ((_currentBusyAnimatorLayer_BitShift & willUsingAnimatorLayer) != 0)
+                    {
+                        //지금 해당하는 부위들이 너무 바쁘다
+                        return;
+                    }
+
+                    //Work를 담는다 이전에 Lock 계산을 끝낼것.
+                    CalculateBodyWorkType_ChangeWeapon(tempIsRightHandWeapon); 
                 }
-                else
+                break;
+
+            case AdditionalBehaveType.ChangeFocus:
                 {
-                    willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.LeftHand);
+                    bool isChangeWeaponHandlingTry = false;
+                    bool isRightHandWeapon = false;
+
+                    if (Input.GetKeyDown(_changeRightHandWeaponHandlingKey) == true)
+                    {
+                        isChangeWeaponHandlingTry = true;
+                        isRightHandWeapon = true;
+                    }
+                    else if (Input.GetKeyDown(_changeLeftHandWeaponHandlingKey) == true)
+                    {
+                        isChangeWeaponHandlingTry = true;
+                    }
+
+                    if (isChangeWeaponHandlingTry == false)
+                    {
+                        return; //양손잡기 시도가 이루어지지 않았다. 아무일도 일어나지 않는다
+                    }
+
+                    GameObject targetWeapon = (isRightHandWeapon == true)
+                        ? _tempCurrRightWeapon
+                        : _tempCurrLeftWeapon;
+
+                    if (targetWeapon == null)
+                    {
+                        return; //양손잡기를 시도했지만 무기가 없다.
+                    }
+
+                    bool isRelease = false;
+
+                    if (isRightHandWeapon == true)
+                    {
+                        if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
+                        {
+                            isRelease = true;
+                        }
+                    }
+                    else
+                    {
+                        if (_tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
+                        {
+                            isRelease = true;
+                        }
+                    }
+
+                    int willUsingAnimatorLayer = 0;
+                    //사용할 레이어 계산
+                    {
+                        willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.LeftHand);
+                        willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+                    }
+
+                    if ((_currentBusyAnimatorLayer_BitShift & willUsingAnimatorLayer) != 0)
+                    {
+                        //지금 해당하는 부위들이 너무 바쁘다
+                        return;
+                    }
+
+                    //Work를 담는다 이전에 Lock 계산을 끝낼것.
+                    if (isRelease == true) //양손을 해제하려는 모드입니다
+                    {
+                        CalculateBodyWorkType_ChangeFocus_ReleaseMode(isRightHandWeapon);
+                    }
+                    else
+                    {
+                        CalculateBodyWorkType_ChangeFocus(isRightHandWeapon);
+                    }
                 }
-            }
+                break;
+
+            case AdditionalBehaveType.UseItem_Drink:
+                {
+                    ItemInfo newTestingItem = null;
+
+                    if (Input.GetKeyDown(_useItemKeyCode1) == true)
+                    {
+                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
+                    }
+                    else if (Input.GetKeyDown(_useItemKeyCode2) == true)
+                    {
+                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
+                    }
+                    else if (Input.GetKeyDown(_useItemKeyCode3) == true)
+                    {
+                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
+                    }
+                    else if (Input.GetKeyDown(_useItemKeyCode4) == true)
+                    {
+                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
+                    }
+
+                    if (newTestingItem == null)
+                    {
+                        return;
+                    }
+
+                    if (_stateContoller.GetCurrState().GetStateDesc()._canUseItem == false)
+                    {
+                        return;
+                    }
+
+
+                    //사용 부위 체크
+                    int willBusyLayer = 0;
+                    if (newTestingItem._usingItemMustNotBusyLayers != null || newTestingItem._usingItemMustNotBusyLayers.Count > 0)
+                    {
+                        if (newTestingItem._usingItemMustNotBusyLayer < 0)
+                        {
+                            newTestingItem._usingItemMustNotBusyLayer = 0;
+
+                            foreach (var item in newTestingItem._usingItemMustNotBusyLayers)
+                            {
+                                newTestingItem._usingItemMustNotBusyLayer = (newTestingItem._usingItemMustNotBusyLayer | 1 << (int)item);
+                            }
+                        }
+
+                        willBusyLayer = newTestingItem._usingItemMustNotBusyLayer;
+                    }
+
+
+                    if ((_currentBusyAnimatorLayer_BitShift & willBusyLayer) != 0)
+                    {
+                        return; //해당 부위들은 지금 할일이 있다
+                    }
+
+                    //Work를 담는다 이전에 Lock 계산을 끝낼것.
+                    CalculateBodyWorkType_UseItem_Drink();
+                }                
+                break;
+
+            case AdditionalBehaveType.UseItem_Break:
+                {
+                    Debug.Assert(false, "미구현입니다");
+                    Debug.Break();
+                    //Work를 담는다 이전에 Lock 계산을 끝낼것.
+                    //CalculateBodyWorkType_UseItem_Break();
+                }
+                break;
+
+            default:
+                break;
         }
-
-        if ((_currentBusyAnimatorLayer_BitShift & willUsingAnimatorLayer) != 0)
-        {
-            return;
-        }
-
-        //부위 Lock을 잡는다
-        UpdateBusyAnimatorLayers(willUsingAnimatorLayer, true);
-
-        AnimationClip drawNextWeaponAnimationClip = null;
-        AnimationClip putawayCurrentWeaponAnimationClip = null;
-
-        AnimatorLayerTypes layerType = (tempIsRightHandWeapon == true)
-            ? AnimatorLayerTypes.RightHand
-            : AnimatorLayerTypes.LeftHand;
-
-        //PutAway애니메이션 결정
-        {
-            GameObject currentWeapon = (tempIsRightHandWeapon == true)
-                ? _tempCurrRightWeapon
-                : _tempCurrLeftWeapon;
-
-            if (currentWeapon == null) //현재 무기를 장착하고 있지 않았다
-            {
-                putawayCurrentWeaponAnimationClip = null;
-            }
-            else
-            {
-                WeaponScript weaponScript = currentWeapon.GetComponent<WeaponScript>();
-                putawayCurrentWeaponAnimationClip = (tempIsRightHandWeapon == true)
-                    ? weaponScript._putawayAnimation
-                    : weaponScript._putawayAnimation_Mirrored;
-
-                Debug.Assert(putawayCurrentWeaponAnimationClip != null, "집어넣는 애니메이션이 설정돼있지 않습니다");
-            }
-        }
-
-        //Draw애니메이션 결정
-        {
-            if (nextWeaponPrefab == null) //현재 무기를 장착하고 있지 않았다
-            {
-                drawNextWeaponAnimationClip = null;
-            }
-            else
-            {
-                WeaponScript weaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
-                drawNextWeaponAnimationClip = (tempIsRightHandWeapon == true)
-                    ? weaponScript._drawAnimation
-                    : weaponScript._drawAnimation_Mirrored;
-
-                Debug.Assert(drawNextWeaponAnimationClip != null, "꺼내는 애니메이션이 설정돼있지 않습니다");
-            }
-        }
-
-        //액션을 취하기 위해 코루틴을 호출한다.
-        StartCoroutine(WeaponChangingCoroutine(putawayCurrentWeaponAnimationClip, drawNextWeaponAnimationClip, layerType, nextWeaponPrefab));
     }
 
 
-    private IEnumerator WeaponChangingCoroutine(AnimationClip putAwayAnimationClip, AnimationClip drawAnimationClip, AnimatorLayerTypes targetBody, GameObject nextWeaponPrefab)
+    private void CalculateBodyWorkType_ChangeWeapon(bool isRightWeaponTrigger)
     {
+        AnimatorLayerTypes oppositePartType = (isRightWeaponTrigger == true)
+            ? AnimatorLayerTypes.LeftHand
+            : AnimatorLayerTypes.RightHand;
+        int oppositePartIndex = (int)oppositePartType;
 
+        AnimatorLayerTypes targetPartType = (isRightWeaponTrigger == true)
+            ? AnimatorLayerTypes.RightHand
+            : AnimatorLayerTypes.LeftHand;
+        int targetPartIndex = (int)targetPartType;
 
-        AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
-        Debug.Assert(targetPart != null, "해당 파트는 사용하지 않는다고 설정돼있습니다");
-        bool tempIsRightWeapon = (targetBody == AnimatorLayerTypes.RightHand);
-
-        //0. 양손으로 잡고있었다면 양손모드를 해제할것.
-        if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused ||
-            _tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
+        //반대손 Work 예약
         {
-            AnimatorLayerTypes oppositePart = (tempIsRightWeapon == true)
-                ? AnimatorLayerTypes.LeftHand
-                : AnimatorLayerTypes.RightHand;
-
-            if (_tempGrabFocusType == WeaponGrabFocus.LeftHandFocused ||
-                _tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
+            if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused || _tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
             {
-                GameObject currentFocusedWeapon = (_tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
-                    ? _tempCurrLeftWeapon
-                    : _tempCurrRightWeapon;
+                //무기를 양손으로 잡고있었다.
 
-                WeaponScript currentFocusedWeaponScript = currentFocusedWeapon.GetComponent<WeaponScript>();
+                List<GameObject> oppositeWeaponPrefabs = (isRightWeaponTrigger == true)
+                    ? _tempLeftWeaponPrefabs
+                    : _tempRightWeaponPrefabs;
 
-                AnimationClip onehandHandlingAnimation = (_tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
-                    ? currentFocusedWeaponScript._handlingIdleAnimation_OneHand_Mirrored
-                    : currentFocusedWeaponScript._handlingIdleAnimation_OneHand;
+                int oppositeWeponCurrentIndex = (isRightWeaponTrigger == true)
+                    ? _currLeftWeaponIndex
+                    : _currRightWeaponIndex;
 
-                AnimatorBlendingDesc.BlendingCoroutineType coroutineWorkType = AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer;
-                if (onehandHandlingAnimation != null)
+                if (oppositeWeaponPrefabs[oppositeWeponCurrentIndex] != null)
                 {
-                    WeaponChange_Animation(onehandHandlingAnimation, oppositePart, false); //애니메이션이 바뀐다
+                    //반대손에 양손으로 잡으면서 집어넣은 무기가 있었다.
+
+                    //무기 꺼내기 ZeroFrame 애니메이션으로 바꾸기
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
+                    //레이어 웨이트 바꾸기
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+                    //무기 쥐어주기
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
+                    //무기 꺼내기 애니메이션으로 바꾸기
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+                    //레이어 웨이트 바꾸기
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+                    //다 재생할때까지 기다리기
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold)); 
                 }
                 else
                 {
-                    coroutineWorkType = AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer;
+                    //반대손에 양손으로 잡으면서 집어넣은 무기가 없다.
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
                 }
-                StartCoroutine_WithCallBack
-                (
-                    _partBlendingDesc[(int)oppositePart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, coroutineWorkType, null),
-                    (args) =>
-                    {
-                        _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
-                    },
-                    new object[] { (int)oppositePart },
-                    null
-                );
-
-                //코루틴이 끝나면 반대손은 자유로워진다.
             }
         }
 
-        //4. 무기 파지법 계산
+        //Target Work 예약
         {
-            _tempGrabFocusType = WeaponGrabFocus.Normal;
-        }
+            //무기 집어넣기 애니메이션으로 바꾸기
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            //다 재생할때까지 대기하기
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+            //무기삭제하기
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeleteObject)); 
 
-        //1. 무기 집어넣기
-        if (putAwayAnimationClip != null)
-        {
+            List<GameObject> targetWeaponPrefabs = (isRightWeaponTrigger == true)
+                ? _tempRightWeaponPrefabs
+                : _tempLeftWeaponPrefabs;
+
+            int targetWeponCurrentIndex = (isRightWeaponTrigger == true)
+                ? _currRightWeaponIndex
+                : _currLeftWeaponIndex;
+
+            if (targetWeaponPrefabs[targetWeponCurrentIndex] != null)
             {
-                ////재생해야할 노드가 바뀐다. 단, 0프레임 애니메이션으로 세팅돼있다.
-                //{
-                //    WeaponChange_Animation(putAwayAnimationClip, targetBody, true);
-                //}
+                //바꾸려는 다음 무기가 있다
 
-                ////재생해야할 노드의 Layer Weight가 바뀐다
-                //{
-                //    CoroutineLock targetHandLock = new CoroutineLock();
-
-                //    StartCoroutine(_partBlendingDesc[(int)targetBody].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
-                //    while (targetHandLock._isEnd == false)
-                //    {
-                //        yield return null;
-                //    }
-                //}
-
-                ////Layer Weight 세팅 완료
-
-                ////애니메이션 다시 재생 시작
-                //{
-                //    int layerIndex = (targetPart._isUsingFirstLayer == true)
-                //        ? (int)targetBody * 2
-                //        : (int)targetBody * 2 + 1;
-
-                //    string nextNodeName = (targetPart._isUsingFirstLayer == true)
-                //        ? "State1"
-                //        : "State2";
-
-                //    _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = putAwayAnimationClip;
-
-                //    _animator.Play(nextNodeName, layerIndex, 0.0f);
-                //}
-
-                ////애니메이션이 다 재생될때까지 홀딩
-                //while (true)
-                //{
-                //    int layerIndex = (targetPart._isUsingFirstLayer == true)
-                //        ? (int)targetBody * 2
-                //        : (int)targetBody * 2 + 1;
-
-                //    float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-                //    if (normalizedTime >= 1.0f)
-                //    {
-                //        break;
-                //    }
-
-                //    yield return null;
-                //}
+                //무기꺼내기 ZeroFrame 으로 바꾸기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
+                //무기쥐어주기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
+                //무기꺼내기 애니메이션으로 바꾸기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+                //Layer Wright 바꾸기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+                //다 재생할때까지 기다리기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold)); 
             }
-
-            //재생해야할 노드가 바뀐다. 단, 0프레임 애니메이션으로 세팅돼있다.
+            else
             {
-                WeaponChange_Animation(putAwayAnimationClip, targetBody, false);
-            }
+                //바꾸려는 다음 무기가 없다
 
-            //재생해야할 노드의 Layer Weight가 바뀐다
-            {
-                CoroutineLock targetHandLock = new CoroutineLock();
-
-                StartCoroutine(_partBlendingDesc[(int)targetBody].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
-                while (targetHandLock._isEnd == false)
-                {
-                    yield return null;
-                }
-            }
-
-            //Layer Weight 세팅 완료
-
-            //애니메이션이 다 재생될때까지 홀딩
-            while (true)
-            {
-                int layerIndex = (targetPart._isUsingFirstLayer == true)
-                    ? (int)targetBody * 2
-                    : (int)targetBody * 2 + 1;
-
-                float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-                if (normalizedTime >= 1.0f)
-                {
-                    break;
-                }
-
-                yield return null;
+                //레이어 꺼버리기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer)); 
             }
         }
+    }
 
-        //2. 집어넣기 애니메이션 완료 / 혹은 무기를 들고 있지 않아서 스킵했다 =>//기존 무기를 삭제한다
+    private void CalculateBodyWorkType_ChangeFocus(bool isRightHandTrigger)
+    {
+        int targetBodyIndex = (isRightHandTrigger == true)
+            ? (int)AnimatorLayerTypes.RightHand
+            : (int)AnimatorLayerTypes.LeftHand;
+
+        int oppositeBodyIndex = (isRightHandTrigger == true)
+            ? (int)AnimatorLayerTypes.LeftHand
+            : (int)AnimatorLayerTypes.RightHand;
+
+        GameObject targetWeapon = (isRightHandTrigger == true)
+            ? _tempCurrLeftWeapon
+            : _tempCurrRightWeapon;
+
+        WeaponScript targetWeaponScript = targetWeapon.GetComponent<WeaponScript>();
+
+        AnimationClip focusGrabAnimation = (isRightHandTrigger == true)
+            ? targetWeaponScript._handlingIdleAnimation_TwoHand
+            : targetWeaponScript._handlingIdleAnimation_TwoHand_Mirrored;
+
+        GameObject oppositeWeapon = (isRightHandTrigger == true)
+            ? _tempCurrRightWeapon
+            : _tempCurrLeftWeapon;
+
+        //반대 손에 무기를 들고있었다.
+        if (oppositeWeapon != null)
         {
-            if (tempIsRightWeapon == true && _tempCurrRightWeapon != null)
-            {
-                Destroy(_tempCurrRightWeapon);
-                _tempCurrRightWeapon = null;
-            }
-            else if (tempIsRightWeapon == false && _tempCurrLeftWeapon != null)
-            {
-                Destroy(_tempCurrLeftWeapon);
-                _tempCurrLeftWeapon = null;
-            }
+            WeaponScript oppositeWeaponScript = oppositeWeapon.GetComponent<WeaponScript>();
+
+            AnimationClip oppsiteWeaponPutAwayAnimation = (isRightHandTrigger == true)
+                ? oppositeWeaponScript._putawayAnimation_Mirrored
+                : oppositeWeaponScript._putawayAnimation;
+
+            //반대손을 무기 집어넣기 Zero Frame 애니메이션으로 바꾼다.
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            //반대손을 무기 집어넣기 Zero Frame 애니메이션 Layer Weight로 점점 올린다.
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            //반대손의 무기 집어넣기 애니메이션이 다 재생될때까지 홀딩한다.
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+            //반대손의 무기를 삭제한다.
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeleteObject));
         }
 
-        //3. 무기 꺼내기
-        if (drawAnimationClip != null)
+        //이 Behave에서 단계를 넘어섬을 코루틴 락을 해제하여 알려준다.
+        _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.UnLockCoroutine));
+        //반대손의 애니메이션을 바꾼다
+        _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+        //반대손의 LayerWeight를 올린다.
+        _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+
+
+        //해당 무기를 양손으로 잡는 애니메이션을 실행한다. 해당 손의 애니메이션을 바꾼다
         {
-            //재생해야할 노드가 바뀐다. 단, 0프레임 애니메이션으로 세팅돼있다.
-            {
-                WeaponChange_Animation(drawAnimationClip, targetBody, true);
-            }
+            //반대손의 이벤트가 끝날때까지 무한 대기한다
+            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.WaitCoroutineUnlock));
+            //해당 손의 애니메이션을 바꾼다
+            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            //해당 손의 Layer Weight를 바꾼다.
+            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+        }
+    }
 
-            //재생해야할 노드의 Layer Weight가 바뀐다
-            {
-                CoroutineLock targetHandLock = new CoroutineLock();
-                StartCoroutine(_partBlendingDesc[(int)targetBody].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
-                while (targetHandLock._isEnd == false)
-                {
-                    yield return null;
-                }
-            }
+    private void CalculateBodyWorkType_ChangeFocus_ReleaseMode(bool isRightHandTrigger)
+    {
+        GameObject oppositeWeaponPrefab = (isRightHandTrigger == true)
+            ? _tempRightWeaponPrefabs[_currRightWeaponIndex]
+            : _tempLeftWeaponPrefabs[_currLeftWeaponIndex];
 
-            //Layer Weight 세팅 완료
+        int targetBodyIndex = (isRightHandTrigger == true)
+            ? (int)AnimatorLayerTypes.RightHand
+            : (int)AnimatorLayerTypes.LeftHand;
 
-            //다음 무기 생성
-            {
-                CreateWeaponModelAndEquip(tempIsRightWeapon, nextWeaponPrefab);
-            }
+        int oppositeBodyIndex = (isRightHandTrigger == true)
+            ? (int)AnimatorLayerTypes.LeftHand
+            : (int)AnimatorLayerTypes.RightHand;
 
-            //애니메이션 다시 재생 시작
-            {
-                int layerIndex = (targetPart._isUsingFirstLayer == true)
-                    ? (int)targetBody * 2
-                    : (int)targetBody * 2 + 1;
+        //반대 손에 양손으로 잡기 전, 무기를 들고있었다.
+        if (oppositeWeaponPrefab != null)
+        {
+            WeaponScript oppositeWeaponScript = oppositeWeaponPrefab.GetComponent<WeaponScript>();
 
-                string nextNodeName = (targetPart._isUsingFirstLayer == true)
-                    ? "State1"
-                    : "State2";
+            AnimationClip oppsiteWeaponPutAwayAnimation = (isRightHandTrigger == true)
+                ? oppositeWeaponScript._putawayAnimation_Mirrored
+                : oppositeWeaponScript._putawayAnimation;
 
-                _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = drawAnimationClip;
-
-                _animator.Play(nextNodeName, layerIndex, 0.0f);
-            }
-
-            //애니메이션이 다 재생될때까지 홀딩
-            while (true)
-            {
-                int layerIndex = (targetPart._isUsingFirstLayer == true)
-                    ? (int)targetBody * 2
-                    : (int)targetBody * 2 + 1;
-
-                float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-                if (normalizedTime >= 1.0f)
-                {
-                    break;
-                }
-
-                yield return null;
-            }
+            //반대손을 무기 꺼내기 Zero Frame 애니메이션으로 바꾼다.
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
+            //반대손 Layer Weight로 점점 올린다.
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            //무기를 쥐어준다
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
+            ////반대손을 무기 꺼내기 애니메이션으로 바꾼다.
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            //반대손의 무기 꺼내기 애니메이션이 다 재생될때까지 홀딩한다.
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
         }
         else
         {
-            CoroutineLock targetHandLock = new CoroutineLock();
-
-            StartCoroutine_WithCallBack
-            (
-                _partBlendingDesc[(int)targetBody].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer, targetHandLock),
-                (args) =>
-                {
-                    _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
-                },
-                new object[] { (int)targetBody },
-                null
-            );
-           
-            while (targetHandLock._isEnd == false)
-            {
-                yield return null;
-            }
+            //이 Behave에서 단계를 넘어섬을 코루틴 락을 해제하여 알려준다.
+            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
         }
 
-        //코루틴 정상종료 (중간에 피격당하거나 이벤트가 없었다)
-        UpdateBusyAnimatorLayers(1 << (int)targetBody, false);
+        GameObject targetWeapon = (isRightHandTrigger == true)
+            ? _tempCurrRightWeapon
+            : _tempCurrLeftWeapon;
+
+        WeaponScript targetWeaponScript = targetWeapon.GetComponent<WeaponScript>();
+
+        AnimationClip oneHandHadlingAnimation = (isRightHandTrigger == true)
+            ? targetWeaponScript._handlingIdleAnimation_OneHand
+            : targetWeaponScript._handlingIdleAnimation_OneHand_Mirrored;
+
+        //해당 무기를 양손으로 잡는 애니메이션을 실행한다. 해당 손의 애니메이션을 바꾼다
+        {
+            //해당 손의 애니메이션을 바꾼다
+            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            //해당 손의 LayerWeight을 바꾼다
+            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+        }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private void UseItemCheck()
+    private void CalculateBodyWorkType_UseItem_Drink()
     {
-        ItemInfo newTestingItem = null;
+        int rightHandIndex = (int)AnimatorLayerTypes.RightHand;
 
-        if (Input.GetKeyDown(_useItemKeyCode1) == true)
-        {
-            newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
-        }
-        else if (Input.GetKeyDown(_useItemKeyCode2) == true)
-        {
-            newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
-        }
-        else if (Input.GetKeyDown(_useItemKeyCode3) == true)
-        {
-            newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
-        }
-        else if (Input.GetKeyDown(_useItemKeyCode4) == true)
-        {
-            newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
-        }
+        //무기를 오른손에 양손으로 잡고있습니까?
+        Transform oppositeHandTransform = null;
+        Transform rightHandSocketTransform = null;
 
-        if (newTestingItem == null)
-        {
-            return;
-        }
-
-        if (_stateContoller.GetCurrState().GetStateDesc()._canUseItem == false)
-        {
-            return;
-        }
-
-
-        //사용 부위 체크
-        int willBusyLayer = 0;
-        if (newTestingItem._usingItemMustNotBusyLayers != null || newTestingItem._usingItemMustNotBusyLayers.Count > 0)
-        {
-            if (newTestingItem._usingItemMustNotBusyLayer < 0)
-            {
-                newTestingItem._usingItemMustNotBusyLayer = 0;
-
-                foreach (var item in newTestingItem._usingItemMustNotBusyLayers)
-                {
-                    newTestingItem._usingItemMustNotBusyLayer = (newTestingItem._usingItemMustNotBusyLayer | 1 << (int)item);
-                }
-            }
-
-            willBusyLayer = newTestingItem._usingItemMustNotBusyLayer;
-        }
-
-
-        if ((_currentBusyAnimatorLayer_BitShift & willBusyLayer) != 0)
-        {
-            return; //해당 부위들은 지금 할일이 있다
-        }
-        
-        UpdateBusyAnimatorLayers(willBusyLayer, true); //부위 락을 잡는다.
-
-        StartCoroutine(UseItemCoroutine(newTestingItem));
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private IEnumerator UseItemCoroutine(ItemInfo usingItemInfo)
-    {
-        //_corutineStarted_Weapon = true;
-        AnimatorBlendingDesc rightHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.RightHand];
-        Transform tempRightHandTransformParent = null;
-
-        //무기를 양손으로 잡고있습니까?
         if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
         {
-            //왼손이면 괜찮은데 오른손이 쥐고 있다면 잠시 왼손에 쥐어준다.
-            //transform의 부모를 잠시 바꾸는 작업
             WeaponScript weaponScript = _tempCurrRightWeapon.GetComponent<WeaponScript>();
-
-            tempRightHandTransformParent = weaponScript._socketTranform;
+            rightHandSocketTransform = weaponScript._socketTranform;
 
             WeaponSocketScript.SideType targetSide = WeaponSocketScript.SideType.Left;
-
-            Debug.Assert(weaponScript != null, "무기는 WeaponScript가 있어야 한다");
-
-            //반대손 소켓 찾아서 임시로 붙여주기
+            //반대손 소켓 찾기
             {
                 Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
 
                 WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
 
                 Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
-
 
                 ItemInfo.WeaponType targetType = weaponScript._weaponType;
 
@@ -1437,232 +1520,76 @@ public class PlayerScript : MonoBehaviour, IHitable
                     {
                         if (type == targetType)
                         {
-                            //_tempCurrRightWeapon.transform.parent = socketComponent.gameObject.transform;
-                            weaponScript.Equip_OnSocket(socketComponent.gameObject.transform);
+                            oppositeHandTransform = socketComponent.gameObject.transform;
                             break;
                         }
                     }
                 }
             }
+
+            //왼손이면 괜찮은데 오른손이 쥐고 있다면 잠시 왼손에 쥐어준다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
         }
-        else if (_tempCurrRightWeapon != null)
+        else if (_tempCurrRightWeapon != null) //양손으로 잡고있진 않았습니다. 근데 오른손에 무기를 들긴 했습니다.
         {
-            //오른손에 무기가 있나?
-            //무기를 집어넣는다
-            AnimationClip rightHandWeaponPutAwayAnimation = _tempCurrRightWeapon.GetComponent<WeaponScript>()._putawayAnimation;
-            WeaponChange_Animation(rightHandWeaponPutAwayAnimation, AnimatorLayerTypes.RightHand, false);
-            yield return StartCoroutine(rightHandBlendingDesc.ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
+            //반대손을 무기 집어넣기 애니메이션으로 바꾼다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            //Layer Weight로 점점 올린다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            //반대손의 무기 집어넣기 애니메이션이 다 재생될때까지 홀딩한다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+            //반대손의 무기를 삭제한다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeleteObject));
+        }
 
-            //무기를 집어넣는 애니메이션이 다 재생될때까지 홀딩
-            while (true)
-            {
-                int layerIndex = (rightHandBlendingDesc._isUsingFirstLayer == true)
-                    ? (int)AnimatorLayerTypes.RightHand * 2
-                    : (int)AnimatorLayerTypes.RightHand * 2 + 1;
-
-                float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-                if (normalizedTime >= 1.0f)
-                {
-                    break;
-                }
-
-                yield return null;
-            }
-
-            Destroy(_tempCurrRightWeapon);
-            _tempCurrRightWeapon = null;
+        //아이템을 사용하는 부위들에게 일감을 배정한다.
+        //만약 여기까지 대기해야 한다면 코루틴 락을 사용해야한다.
+        {
+            //아이템을 사용하는 애니메이션으로 바꾼다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            //Layer Weight로 점점 올린다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            //반대손의 무기 집어넣기 애니메이션이 다 재생될때까지 홀딩한다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
         }
 
 
-        //아이템을 사용하는 애니메이션으로 바꾼다.
-        WeaponChange_Animation(usingItemInfo._usingItemAnimation, AnimatorLayerTypes.RightHand, false);
-        yield return StartCoroutine(rightHandBlendingDesc.ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
 
+        GameObject rightWeaponPrefab = _tempRightWeaponPrefabs[_currRightWeaponIndex];
 
-        //아이템을 사용하는 애니메이션이 다 재생될때까지 홀딩
-        while (true)
+        if (rightWeaponPrefab == null) //오른손에 아무것도 없었습니다
         {
-            int layerIndex = (rightHandBlendingDesc._isUsingFirstLayer == true)
-                ? (int)AnimatorLayerTypes.RightHand * 2
-                : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+            //무기를 꺼내는 Zero Frame Animation 으로 바꾼다
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
+            //Layer Weight로 점점 올린다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            //무기를 쥐어준다
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
+            //무기를 양손으로 파지하는 애니메이션으로 바꾼다
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            //Layer Weight로 점점 올린다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            //반대손의 무기 집어넣기 애니메이션이 다 재생될때까지 홀딩한다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+            //아까 반대손에 쥐어줬던 무기를 다시 바꾼다
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
 
-            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-            if (normalizedTime >= 1.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-
-
-        //이제 무기를 잡는 손으로 원상복구 한다.
-
-
-        //아까 양손으로 잡고있었나?
-        if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
-        {
-            WeaponScript currRightWeaponScript = _tempCurrRightWeapon.GetComponent<WeaponScript>();
-            WeaponChange_Animation(currRightWeaponScript._handlingIdleAnimation_TwoHand, AnimatorLayerTypes.RightHand, false);
-            yield return StartCoroutine(rightHandBlendingDesc.ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
-
-            //_tempCurrRightWeapon.transform.parent = tempRightHandTransformParent;
-            _tempCurrRightWeapon.GetComponent<WeaponScript>().Equip_OnSocket(tempRightHandTransformParent);
-        }
-        else
-        {
-            GameObject rightWeaponPrefab = _tempRightWeaponPrefabs[_currRightWeaponIndex];
-
-            if (rightWeaponPrefab == null)
-            {
-                UpdateBusyAnimatorLayers(1 << (int)AnimatorLayerTypes.RightHand, false);
-                yield break;
-            }
-
-
-            WeaponScript rightWeaponScript = rightWeaponPrefab.GetComponent<WeaponScript>();
-
-            WeaponChange_Animation(rightWeaponScript._drawAnimation, AnimatorLayerTypes.RightHand, true);
-            yield return StartCoroutine(rightHandBlendingDesc.ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
-
-            CreateWeaponModelAndEquip(true, rightWeaponPrefab);
-
-            //애니메이션 다시 재생 시작
-            {
-                int layerIndex = (rightHandBlendingDesc._isUsingFirstLayer == true)
-                    ? (int)AnimatorLayerTypes.RightHand * 2
-                    : (int)AnimatorLayerTypes.RightHand * 2 + 1;
-
-                string nextNodeName = (rightHandBlendingDesc._isUsingFirstLayer == true)
-                    ? "State1"
-                    : "State2";
-
-                _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = rightWeaponScript._drawAnimation;
-
-                _animator.Play(nextNodeName, layerIndex, 0.0f);
-            }
-
-            //애니메이션이 다 재생될때까지 홀딩
-            while (true)
-            {
-                int layerIndex = (rightHandBlendingDesc._isUsingFirstLayer == true)
-                    ? (int)AnimatorLayerTypes.RightHand * 2
-                    : (int)AnimatorLayerTypes.RightHand * 2 + 1;
-
-                float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-                if (normalizedTime >= 1.0f)
-                {
-                    break;
-                }
-
-                yield return null;
-            }
-        }
-
-        UpdateBusyAnimatorLayers(usingItemInfo._usingItemMustNotBusyLayer, false);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private void ChangeWeaponHandling()
-    {
-        bool isChangeWeaponHandlingTry = false;
-        bool isRightHandWeapon = false;
-
-        if (Input.GetKeyDown(_changeRightHandWeaponHandlingKey) == true)
-        {
-            isChangeWeaponHandlingTry = true;
-            isRightHandWeapon = true;
-        }
-        else if (Input.GetKeyDown(_changeLeftHandWeaponHandlingKey) == true)
-        {
-            isChangeWeaponHandlingTry = true;
-        }
-
-        if (isChangeWeaponHandlingTry == false)
-        {
-            return; //양손잡기 시도가 이루어지지 않았다. 아무일도 일어나지 않는다
-        }
-
-        GameObject targetWeapon = (isRightHandWeapon == true)
-            ? _tempCurrRightWeapon
-            : _tempCurrLeftWeapon;
-
-        if (targetWeapon == null)
-        {
-            return; //양손잡기를 시도했지만 무기가 없다.
-        }
-
-        bool isRelease = false;
-
-        if (isRightHandWeapon == true)
-        {
             if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
             {
-                isRelease = true;
+                //아까 반대손에 쥐어줬던 무기를 다시 바꾼다
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
             }
         }
         else
         {
-            if (_tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
-            {
-                isRelease = true;
-            }
+            //그냥 꺼버린다
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
         }
+    }
 
-        int willBusyLayer = 0;
-        //사용할 레이어 계산
-        {
-            willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.LeftHand);
-            willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.RightHand);
-        }
+    private void CalculateBodyWorkType_UseItem_Break()
+    {
 
-        UpdateBusyAnimatorLayers(willBusyLayer, true);
-
-        //코루틴 호출
-        if (isRelease == true)
-        {
-            StartCoroutine(ChangeWeaponHandling_ReleaseMode(isRightHandWeapon));
-            return;
-        }
-
-        GameObject oppositeWeapon = (isRightHandWeapon == true)
-            ? _tempCurrLeftWeapon
-            : _tempCurrRightWeapon;
-
-        AnimatorLayerTypes targetHandType = (isRightHandWeapon == true)
-            ? AnimatorLayerTypes.RightHand
-            : AnimatorLayerTypes.LeftHand;
-
-        AnimatorLayerTypes oppositeHandType = (isRightHandWeapon == true)
-            ? AnimatorLayerTypes.LeftHand
-            : AnimatorLayerTypes.RightHand;
-
-        StartCoroutine(ChangeWeaponHandlingCoroutine(targetWeapon, oppositeWeapon, isRightHandWeapon, targetHandType, oppositeHandType));
     }
 
 
@@ -1689,256 +1616,1074 @@ public class PlayerScript : MonoBehaviour, IHitable
 
 
 
-    private IEnumerator ChangeWeaponHandling_ReleaseMode(bool isRightHandWeapon)
+
+
+
+
+
+
+    //private void WeaponChangeCheck2()
+    //{
+    //    GameObject nextWeaponPrefab = null;
+    //    bool weaponChangeTry = false;
+    //    bool tempIsRightHandWeapon = false;
+
+    //    if (Input.GetKeyDown(KeyCode.R))
+    //    {
+    //        //왼손 무기 다음으로 전환
+    //        weaponChangeTry = true;
+
+    //        _currLeftWeaponIndex++;
+    //        if (_currLeftWeaponIndex >= _tempMaxWeaponSlot)
+    //        {
+    //            _currLeftWeaponIndex = _currLeftWeaponIndex % _tempMaxWeaponSlot;
+    //        }
+    //        nextWeaponPrefab = _tempLeftWeaponPrefabs[_currLeftWeaponIndex];
+    //    }
+    //    else if (Input.GetKeyDown(KeyCode.T))
+    //    {
+    //        //오른손 무기 다음으로 전환
+    //        weaponChangeTry = true;
+
+    //        _currRightWeaponIndex++;
+    //        if (_currRightWeaponIndex >= _tempMaxWeaponSlot)
+    //        {
+    //            _currRightWeaponIndex = _currRightWeaponIndex % _tempMaxWeaponSlot;
+    //        }
+    //        nextWeaponPrefab = _tempRightWeaponPrefabs[_currRightWeaponIndex];
+
+    //        tempIsRightHandWeapon = true;
+    //    }
+
+    //    if (weaponChangeTry == false) //무기 전환을 시도하지 않았다. 아무일도 일어나지 않을것이다.
+    //    {
+    //        return;
+    //    }
+
+    //    int willUsingAnimatorLayer = 0;
+
+    //    //사용할 애니메이션 부위 체크
+    //    {
+    //        if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused ||
+    //            _tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
+    //        {
+    //            //현재 양손으로 잡고있었다.
+    //            willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.LeftHand);
+    //            willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+    //        }
+    //        else
+    //        {
+    //            //한손으로 잡고있었다.
+    //            if (tempIsRightHandWeapon == true)
+    //            {
+    //                willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+    //            }
+    //            else
+    //            {
+    //                willUsingAnimatorLayer = willUsingAnimatorLayer | (1 << (int)AnimatorLayerTypes.LeftHand);
+    //            }
+    //        }
+    //    }
+
+    //    if ((_currentBusyAnimatorLayer_BitShift & willUsingAnimatorLayer) != 0)
+    //    {
+    //        return;
+    //    }
+
+    //    //부위 Lock을 잡는다
+    //    UpdateBusyAnimatorLayers(willUsingAnimatorLayer, true);
+
+    //    AnimationClip drawNextWeaponAnimationClip = null;
+    //    AnimationClip putawayCurrentWeaponAnimationClip = null;
+
+    //    AnimatorLayerTypes layerType = (tempIsRightHandWeapon == true)
+    //        ? AnimatorLayerTypes.RightHand
+    //        : AnimatorLayerTypes.LeftHand;
+
+    //    //PutAway애니메이션 결정
+    //    {
+    //        GameObject currentWeapon = (tempIsRightHandWeapon == true)
+    //            ? _tempCurrRightWeapon
+    //            : _tempCurrLeftWeapon;
+
+    //        if (currentWeapon == null) //현재 무기를 장착하고 있지 않았다
+    //        {
+    //            putawayCurrentWeaponAnimationClip = null;
+    //        }
+    //        else
+    //        {
+    //            WeaponScript weaponScript = currentWeapon.GetComponent<WeaponScript>();
+    //            putawayCurrentWeaponAnimationClip = (tempIsRightHandWeapon == true)
+    //                ? weaponScript._putawayAnimation
+    //                : weaponScript._putawayAnimation_Mirrored;
+
+    //            Debug.Assert(putawayCurrentWeaponAnimationClip != null, "집어넣는 애니메이션이 설정돼있지 않습니다");
+    //        }
+    //    }
+
+    //    //Draw애니메이션 결정
+    //    {
+    //        if (nextWeaponPrefab == null) //현재 무기를 장착하고 있지 않았다
+    //        {
+    //            drawNextWeaponAnimationClip = null;
+    //        }
+    //        else
+    //        {
+    //            WeaponScript weaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
+    //            drawNextWeaponAnimationClip = (tempIsRightHandWeapon == true)
+    //                ? weaponScript._drawAnimation
+    //                : weaponScript._drawAnimation_Mirrored;
+
+    //            Debug.Assert(drawNextWeaponAnimationClip != null, "꺼내는 애니메이션이 설정돼있지 않습니다");
+    //        }
+    //    }
+
+    //    //액션을 취하기 위해 코루틴을 호출한다.
+    //    StartCoroutine(WeaponChangingCoroutine(putawayCurrentWeaponAnimationClip, drawNextWeaponAnimationClip, layerType, nextWeaponPrefab));
+    //}
+
+
+    //private void OppositeHandRleaseFocuseMode(AnimatorLayerTypes oppositePartType)
+    //{
+    //    GameObject currentOppositeWeapon = (oppositePartType == AnimatorLayerTypes.LeftHand)
+    //        ? _tempCurrRightWeapon
+    //        : _tempCurrLeftWeapon;
+
+    //    StartCoroutine_WithCallBack
+    //    (
+    //        _partBlendingDesc[(int)oppositePartType].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer, null),
+    //        (args) =>
+    //        {
+    //            _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
+    //        },
+    //        new object[] { (int)oppositePartType },
+    //        null
+    //    );
+
+    //    //코루틴이 끝나면 반대손은 자유로워진다.
+    //}
+
+    //private IEnumerator WeaponChangingCoroutine(AnimationClip putAwayAnimationClip, AnimationClip drawAnimationClip, AnimatorLayerTypes targetBody, GameObject nextWeaponPrefab)
+    //{
+    //    AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
+    //    Debug.Assert(targetPart != null, "해당 파트는 사용하지 않는다고 설정돼있습니다");
+    //    bool tempIsRightWeapon = (targetBody == AnimatorLayerTypes.RightHand);
+
+    //    //양손모드 해제와 무기집어넣기가 동시에 출발해야한다.
+
+    //    //1. 양손으로 잡고있었다면 양손모드를 해제할것.
+    //    if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused ||_tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
+    //    {
+    //        AnimatorLayerTypes oppositePart = (tempIsRightWeapon == true)
+    //            ? AnimatorLayerTypes.LeftHand
+    //            : AnimatorLayerTypes.RightHand;
+
+    //        OppositeHandRleaseFocuseMode(oppositePart);
+    //    }
+
+    //    //1. 무기 집어넣기
+    //    if (putAwayAnimationClip != null)
+    //    {
+    //        {
+    //            ////재생해야할 노드가 바뀐다. 단, 0프레임 애니메이션으로 세팅돼있다.
+    //            //{
+    //            //    WeaponChange_Animation(putAwayAnimationClip, targetBody, true);
+    //            //}
+
+    //            ////재생해야할 노드의 Layer Weight가 바뀐다
+    //            //{
+    //            //    CoroutineLock targetHandLock = new CoroutineLock();
+
+    //            //    StartCoroutine(_partBlendingDesc[(int)targetBody].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
+    //            //    while (targetHandLock._isEnd == false)
+    //            //    {
+    //            //        yield return null;
+    //            //    }
+    //            //}
+
+    //            ////Layer Weight 세팅 완료
+
+    //            ////애니메이션 다시 재생 시작
+    //            //{
+    //            //    int layerIndex = (targetPart._isUsingFirstLayer == true)
+    //            //        ? (int)targetBody * 2
+    //            //        : (int)targetBody * 2 + 1;
+
+    //            //    string nextNodeName = (targetPart._isUsingFirstLayer == true)
+    //            //        ? "State1"
+    //            //        : "State2";
+
+    //            //    _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = putAwayAnimationClip;
+
+    //            //    _animator.Play(nextNodeName, layerIndex, 0.0f);
+    //            //}
+
+    //            ////애니메이션이 다 재생될때까지 홀딩
+    //            //while (true)
+    //            //{
+    //            //    int layerIndex = (targetPart._isUsingFirstLayer == true)
+    //            //        ? (int)targetBody * 2
+    //            //        : (int)targetBody * 2 + 1;
+
+    //            //    float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+    //            //    if (normalizedTime >= 1.0f)
+    //            //    {
+    //            //        break;
+    //            //    }
+
+    //            //    yield return null;
+    //            //}
+    //        }
+
+    //        //재생해야할 노드가 바뀐다. 단, 0프레임 애니메이션으로 세팅돼있다.
+    //        {
+    //            WeaponChange_Animation(putAwayAnimationClip, targetBody, false);
+    //        }
+
+    //        //재생해야할 노드의 Layer Weight가 바뀐다
+    //        {
+    //            CoroutineLock targetHandLock = new CoroutineLock();
+
+    //            StartCoroutine(_partBlendingDesc[(int)targetBody].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
+    //            while (targetHandLock._isEnd == false)
+    //            {
+    //                yield return null;
+    //            }
+    //        }
+
+    //        //Layer Weight 세팅 완료
+
+    //        //애니메이션이 다 재생될때까지 홀딩
+    //        while (true)
+    //        {
+    //            int layerIndex = (targetPart._isUsingFirstLayer == true)
+    //                ? (int)targetBody * 2
+    //                : (int)targetBody * 2 + 1;
+
+    //            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+    //            if (normalizedTime >= 1.0f)
+    //            {
+    //                break;
+    //            }
+
+    //            yield return null;
+    //        }
+    //    }
+
+    //    //2. 집어넣기 애니메이션 완료 / 혹은 무기를 들고 있지 않아서 스킵했다 =>//기존 무기를 삭제한다
+    //    {
+    //        if (tempIsRightWeapon == true && _tempCurrRightWeapon != null)
+    //        {
+    //            Destroy(_tempCurrRightWeapon);
+    //            _tempCurrRightWeapon = null;
+    //        }
+    //        else if (tempIsRightWeapon == false && _tempCurrLeftWeapon != null)
+    //        {
+    //            Destroy(_tempCurrLeftWeapon);
+    //            _tempCurrLeftWeapon = null;
+    //        }
+    //    }
+
+    //    //3. 무기 꺼내기
+    //    if (drawAnimationClip != null)
+    //    {
+    //        //재생해야할 노드가 바뀐다. 단, 0프레임 애니메이션으로 세팅돼있다.
+    //        {
+    //            WeaponChange_Animation(drawAnimationClip, targetBody, true);
+    //        }
+
+    //        //재생해야할 노드의 Layer Weight가 바뀐다
+    //        {
+    //            CoroutineLock targetHandLock = new CoroutineLock();
+    //            StartCoroutine(_partBlendingDesc[(int)targetBody].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
+    //            while (targetHandLock._isEnd == false)
+    //            {
+    //                yield return null;
+    //            }
+    //        }
+
+    //        //Layer Weight 세팅 완료
+
+    //        //다음 무기 생성
+    //        {
+    //            CreateWeaponModelAndEquip(tempIsRightWeapon, nextWeaponPrefab);
+    //        }
+
+    //        //애니메이션 다시 재생 시작
+    //        {
+    //            int layerIndex = (targetPart._isUsingFirstLayer == true)
+    //                ? (int)targetBody * 2
+    //                : (int)targetBody * 2 + 1;
+
+    //            string nextNodeName = (targetPart._isUsingFirstLayer == true)
+    //                ? "State1"
+    //                : "State2";
+
+    //            _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = drawAnimationClip;
+
+    //            _animator.Play(nextNodeName, layerIndex, 0.0f);
+    //        }
+
+    //        //애니메이션이 다 재생될때까지 홀딩
+    //        while (true)
+    //        {
+    //            int layerIndex = (targetPart._isUsingFirstLayer == true)
+    //                ? (int)targetBody * 2
+    //                : (int)targetBody * 2 + 1;
+
+    //            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+    //            if (normalizedTime >= 1.0f)
+    //            {
+    //                break;
+    //            }
+
+    //            yield return null;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        CoroutineLock targetHandLock = new CoroutineLock();
+
+    //        StartCoroutine_WithCallBack
+    //        (
+    //            _partBlendingDesc[(int)targetBody].ChangeNextLayerWeightSubCoroutine(_transitionSpeed, AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer, targetHandLock),
+    //            (args) =>
+    //            {
+    //                _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
+    //            },
+    //            new object[] { (int)targetBody },
+    //            null
+    //        );
+
+    //        while (targetHandLock._isEnd == false)
+    //        {
+    //            yield return null;
+    //        }
+    //    }
+
+    //    //4. 무기 파지법 계산
+    //    {
+    //        _tempGrabFocusType = WeaponGrabFocus.Normal;
+    //    }
+
+    //    //코루틴 정상종료 (중간에 피격당하거나 이벤트가 없었다)
+    //    UpdateBusyAnimatorLayers(1 << (int)targetBody, false);
+    //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //private void UseItemCheck()
+    //{
+    //    ItemInfo newTestingItem = null;
+
+    //    if (Input.GetKeyDown(_useItemKeyCode1) == true)
+    //    {
+    //        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
+    //    }
+    //    else if (Input.GetKeyDown(_useItemKeyCode2) == true)
+    //    {
+    //        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
+    //    }
+    //    else if (Input.GetKeyDown(_useItemKeyCode3) == true)
+    //    {
+    //        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
+    //    }
+    //    else if (Input.GetKeyDown(_useItemKeyCode4) == true)
+    //    {
+    //        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
+    //    }
+
+    //    if (newTestingItem == null)
+    //    {
+    //        return;
+    //    }
+
+    //    if (_stateContoller.GetCurrState().GetStateDesc()._canUseItem == false)
+    //    {
+    //        return;
+    //    }
+
+
+    //    //사용 부위 체크
+    //    int willBusyLayer = 0;
+    //    if (newTestingItem._usingItemMustNotBusyLayers != null || newTestingItem._usingItemMustNotBusyLayers.Count > 0)
+    //    {
+    //        if (newTestingItem._usingItemMustNotBusyLayer < 0)
+    //        {
+    //            newTestingItem._usingItemMustNotBusyLayer = 0;
+
+    //            foreach (var item in newTestingItem._usingItemMustNotBusyLayers)
+    //            {
+    //                newTestingItem._usingItemMustNotBusyLayer = (newTestingItem._usingItemMustNotBusyLayer | 1 << (int)item);
+    //            }
+    //        }
+
+    //        willBusyLayer = newTestingItem._usingItemMustNotBusyLayer;
+    //    }
+
+
+    //    if ((_currentBusyAnimatorLayer_BitShift & willBusyLayer) != 0)
+    //    {
+    //        return; //해당 부위들은 지금 할일이 있다
+    //    }
+
+    //    UpdateBusyAnimatorLayers(willBusyLayer, true); //부위 락을 잡는다.
+
+    //    StartCoroutine(UseItemCoroutine(newTestingItem));
+    //}
+
+
+
+    //private IEnumerator UseItemCoroutine(ItemInfo usingItemInfo)
+    //{
+    //    //_corutineStarted_Weapon = true;
+    //    AnimatorBlendingDesc rightHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.RightHand];
+    //    Transform tempRightHandTransformParent = null;
+
+    //    //무기를 양손으로 잡고있습니까?
+    //    if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
+    //    {
+    //        //왼손이면 괜찮은데 오른손이 쥐고 있다면 잠시 왼손에 쥐어준다.
+    //        //transform의 부모를 잠시 바꾸는 작업
+    //        WeaponScript weaponScript = _tempCurrRightWeapon.GetComponent<WeaponScript>();
+
+    //        tempRightHandTransformParent = weaponScript._socketTranform;
+
+    //        WeaponSocketScript.SideType targetSide = WeaponSocketScript.SideType.Left;
+
+    //        Debug.Assert(weaponScript != null, "무기는 WeaponScript가 있어야 한다");
+
+    //        //반대손 소켓 찾아서 임시로 붙여주기
+    //        {
+    //            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+
+    //            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+
+    //            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+
+    //            ItemInfo.WeaponType targetType = weaponScript._weaponType;
+
+    //            foreach (var socketComponent in weaponSockets)
+    //            {
+    //                if (socketComponent._sideType != targetSide)
+    //                {
+    //                    continue;
+    //                }
+
+    //                foreach (var type in socketComponent._equippableWeaponTypes)
+    //                {
+    //                    if (type == targetType)
+    //                    {
+    //                        //_tempCurrRightWeapon.transform.parent = socketComponent.gameObject.transform;
+    //                        weaponScript.Equip_OnSocket(socketComponent.gameObject.transform);
+    //                        break;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //    else if (_tempCurrRightWeapon != null)
+    //    {
+    //        //오른손에 무기가 있나?
+    //        //무기를 집어넣는다
+    //        AnimationClip rightHandWeaponPutAwayAnimation = _tempCurrRightWeapon.GetComponent<WeaponScript>()._putawayAnimation;
+    //        WeaponChange_Animation(rightHandWeaponPutAwayAnimation, AnimatorLayerTypes.RightHand, false);
+    //        yield return StartCoroutine(rightHandBlendingDesc.ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
+
+    //        //무기를 집어넣는 애니메이션이 다 재생될때까지 홀딩
+    //        while (true)
+    //        {
+    //            int layerIndex = (rightHandBlendingDesc._isUsingFirstLayer == true)
+    //                ? (int)AnimatorLayerTypes.RightHand * 2
+    //                : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+
+    //            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+    //            if (normalizedTime >= 1.0f)
+    //            {
+    //                break;
+    //            }
+
+    //            yield return null;
+    //        }
+
+    //        Destroy(_tempCurrRightWeapon);
+    //        _tempCurrRightWeapon = null;
+    //    }
+
+
+    //    //아이템을 사용하는 애니메이션으로 바꾼다.
+    //    WeaponChange_Animation(usingItemInfo._usingItemAnimation, AnimatorLayerTypes.RightHand, false);
+    //    yield return StartCoroutine(rightHandBlendingDesc.ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
+
+
+    //    //아이템을 사용하는 애니메이션이 다 재생될때까지 홀딩
+    //    while (true)
+    //    {
+    //        int layerIndex = (rightHandBlendingDesc._isUsingFirstLayer == true)
+    //            ? (int)AnimatorLayerTypes.RightHand * 2
+    //            : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+
+    //        float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+    //        if (normalizedTime >= 1.0f)
+    //        {
+    //            break;
+    //        }
+
+    //        yield return null;
+    //    }
+
+
+    //    //이제 무기를 잡는 손으로 원상복구 한다.
+
+
+    //    //아까 양손으로 잡고있었나?
+    //    if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
+    //    {
+    //        WeaponScript currRightWeaponScript = _tempCurrRightWeapon.GetComponent<WeaponScript>();
+    //        WeaponChange_Animation(currRightWeaponScript._handlingIdleAnimation_TwoHand, AnimatorLayerTypes.RightHand, false);
+    //        yield return StartCoroutine(rightHandBlendingDesc.ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
+
+    //        //_tempCurrRightWeapon.transform.parent = tempRightHandTransformParent;
+    //        _tempCurrRightWeapon.GetComponent<WeaponScript>().Equip_OnSocket(tempRightHandTransformParent);
+    //    }
+    //    else
+    //    {
+    //        GameObject rightWeaponPrefab = _tempRightWeaponPrefabs[_currRightWeaponIndex];
+
+    //        if (rightWeaponPrefab == null)
+    //        {
+    //            UpdateBusyAnimatorLayers(1 << (int)AnimatorLayerTypes.RightHand, false);
+    //            yield break;
+    //        }
+
+
+    //        WeaponScript rightWeaponScript = rightWeaponPrefab.GetComponent<WeaponScript>();
+
+    //        WeaponChange_Animation(rightWeaponScript._drawAnimation, AnimatorLayerTypes.RightHand, true);
+    //        yield return StartCoroutine(rightHandBlendingDesc.ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
+
+    //        CreateWeaponModelAndEquip(true, rightWeaponPrefab);
+
+    //        //애니메이션 다시 재생 시작
+    //        {
+    //            int layerIndex = (rightHandBlendingDesc._isUsingFirstLayer == true)
+    //                ? (int)AnimatorLayerTypes.RightHand * 2
+    //                : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+
+    //            string nextNodeName = (rightHandBlendingDesc._isUsingFirstLayer == true)
+    //                ? "State1"
+    //                : "State2";
+
+    //            _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = rightWeaponScript._drawAnimation;
+
+    //            _animator.Play(nextNodeName, layerIndex, 0.0f);
+    //        }
+
+    //        //애니메이션이 다 재생될때까지 홀딩
+    //        while (true)
+    //        {
+    //            int layerIndex = (rightHandBlendingDesc._isUsingFirstLayer == true)
+    //                ? (int)AnimatorLayerTypes.RightHand * 2
+    //                : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+
+    //            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+    //            if (normalizedTime >= 1.0f)
+    //            {
+    //                break;
+    //            }
+
+    //            yield return null;
+    //        }
+    //    }
+
+    //    UpdateBusyAnimatorLayers(usingItemInfo._usingItemMustNotBusyLayer, false);
+    //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //private void ChangeWeaponHandling()
+    //{
+    //    bool isChangeWeaponHandlingTry = false;
+    //    bool isRightHandWeapon = false;
+
+    //    if (Input.GetKeyDown(_changeRightHandWeaponHandlingKey) == true)
+    //    {
+    //        isChangeWeaponHandlingTry = true;
+    //        isRightHandWeapon = true;
+    //    }
+    //    else if (Input.GetKeyDown(_changeLeftHandWeaponHandlingKey) == true)
+    //    {
+    //        isChangeWeaponHandlingTry = true;
+    //    }
+
+    //    if (isChangeWeaponHandlingTry == false)
+    //    {
+    //        return; //양손잡기 시도가 이루어지지 않았다. 아무일도 일어나지 않는다
+    //    }
+
+    //    GameObject targetWeapon = (isRightHandWeapon == true)
+    //        ? _tempCurrRightWeapon
+    //        : _tempCurrLeftWeapon;
+
+    //    if (targetWeapon == null)
+    //    {
+    //        return; //양손잡기를 시도했지만 무기가 없다.
+    //    }
+
+    //    bool isRelease = false;
+
+    //    if (isRightHandWeapon == true)
+    //    {
+    //        if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
+    //        {
+    //            isRelease = true;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (_tempGrabFocusType == WeaponGrabFocus.LeftHandFocused)
+    //        {
+    //            isRelease = true;
+    //        }
+    //    }
+
+    //    int willBusyLayer = 0;
+    //    //사용할 레이어 계산
+    //    {
+    //        willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.LeftHand);
+    //        willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+    //    }
+
+    //    UpdateBusyAnimatorLayers(willBusyLayer, true);
+
+    //    //코루틴 호출
+    //    if (isRelease == true)
+    //    {
+    //        StartCoroutine(ChangeWeaponHandling_ReleaseMode(isRightHandWeapon));
+    //        return;
+    //    }
+
+    //    GameObject oppositeWeapon = (isRightHandWeapon == true)
+    //        ? _tempCurrLeftWeapon
+    //        : _tempCurrRightWeapon;
+
+    //    AnimatorLayerTypes targetHandType = (isRightHandWeapon == true)
+    //        ? AnimatorLayerTypes.RightHand
+    //        : AnimatorLayerTypes.LeftHand;
+
+    //    AnimatorLayerTypes oppositeHandType = (isRightHandWeapon == true)
+    //        ? AnimatorLayerTypes.LeftHand
+    //        : AnimatorLayerTypes.RightHand;
+
+    //    StartCoroutine(ChangeWeaponHandlingCoroutine(targetWeapon, oppositeWeapon, isRightHandWeapon, targetHandType, oppositeHandType));
+    //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //private IEnumerator ChangeWeaponHandling_ReleaseMode(bool isRightHandWeapon)
+    //{
+
+
+    //    GameObject targetWeapon = (isRightHandWeapon == true)
+    //        ? _tempCurrRightWeapon
+    //        : _tempCurrLeftWeapon;
+
+    //    AnimatorLayerTypes targetPart = (isRightHandWeapon == true)
+    //        ? AnimatorLayerTypes.RightHand
+    //        : AnimatorLayerTypes.LeftHand;
+
+    //    CoroutineLock targetHandLock = new CoroutineLock();
+    //    CoroutineLock oppositeHandLock = new CoroutineLock();
+
+
+    //    //타겟 손 함수 실행
+    //    {
+    //        WeaponScript targetWeaponScript = targetWeapon.GetComponent<WeaponScript>();
+    //        AnimationClip targetWeaponsOneHandHandlingAnimation = targetWeaponScript._handlingIdleAnimation_OneHand;
+
+    //        if (targetWeaponsOneHandHandlingAnimation != null)
+    //        {
+    //            //파지 애니메이션이 있습니다.
+    //            WeaponChange_Animation(targetWeaponsOneHandHandlingAnimation, targetPart, false);
+    //            StartCoroutine_WithCallBack
+    //                (
+    //                _partBlendingDesc[(int)targetPart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock),
+    //                (args) =>
+    //                {
+    //                    _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
+    //                }, 
+    //                new object[] { (int)targetPart},
+    //                null
+    //                );
+    //            //StartCoroutine(_partBlendingDesc[(int)targetPart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
+    //        }
+    //        else
+    //        {
+    //            //파지 애니메이션이 없습니다.
+    //            StartCoroutine_WithCallBack
+    //                (
+    //                _partBlendingDesc[(int)targetPart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer, targetHandLock),
+    //                (args) =>
+    //                {
+    //                    _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
+    //                },
+    //                new object[] { (int)targetPart },
+    //                null
+    //                );
+    //            //StartCoroutine(_partBlendingDesc[(int)targetPart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer, targetHandLock));
+    //        }
+    //    }
+
+
+    //    //반대손 함수 실행
+    //    GameObject oppositeWeaponPrefab = (isRightHandWeapon == true)
+    //        ? _tempLeftWeaponPrefabs[_currLeftWeaponIndex]
+    //        : _tempRightWeaponPrefabs[_currRightWeaponIndex];
+
+    //    AnimatorLayerTypes oppositePart = (isRightHandWeapon == true)
+    //        ? AnimatorLayerTypes.LeftHand
+    //        : AnimatorLayerTypes.RightHand;
+
+    //    if (oppositeWeaponPrefab == null) //양손으로 잡으면서 집어넣은 무기가 없다.
+    //    {
+    //        StartCoroutine_WithCallBack
+    //            (
+    //            _partBlendingDesc[(int)oppositePart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer, oppositeHandLock),
+    //            (args) =>
+    //            {
+    //                _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
+    //            },
+    //            new object[] { (int)oppositePart },
+    //            null
+    //            );
+
+    //        yield break;            
+    //    }
+
+
+    //    WeaponScript oppositeWeaponScript = oppositeWeaponPrefab.GetComponent<WeaponScript>();
+
+    //    AnimationClip oppositeWeaponDrawAnimation = (isRightHandWeapon == true)
+    //        ? oppositeWeaponScript._drawAnimation_Mirrored
+    //        : oppositeWeaponScript._drawAnimation;
+
+    //    //반대손을 무기 꺼내기 Zero Frame 애니메이션으로 바꾼다.
+    //    WeaponChange_Animation(oppositeWeaponDrawAnimation, oppositePart, true);
+
+    //    //반대손을 무기 꺼내기 Zero Frame 애니메이션 Layer Weight로 점점 올린다.
+    //    yield return StartCoroutine(_partBlendingDesc[(int)oppositePart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, oppositeHandLock));
+
+    //    //반대손에 무기를 쥐어준다.
+    //    {
+    //        CreateWeaponModelAndEquip(!isRightHandWeapon, oppositeWeaponPrefab);
+    //    }
+
+    //    AnimatorBlendingDesc oppositePartBlendingDesc = _partBlendingDesc[(int)oppositePart];
+
+    //    //반대손을 무기 꺼내기 애니메이션으로 바꾼다.
+    //    {
+    //        int layerIndex = (oppositePartBlendingDesc._isUsingFirstLayer == true)
+    //            ? (int)oppositePart * 2
+    //            : (int)oppositePart * 2 + 1;
+
+    //        string nextNodeName = (oppositePartBlendingDesc._isUsingFirstLayer == true)
+    //            ? "State1"
+    //            : "State2";
+
+    //        _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = oppositeWeaponDrawAnimation;
+
+    //        _animator.Play(nextNodeName, layerIndex, 0.0f);
+    //    }
+
+    //    //반대손의 무기 꺼내기 애니메이션이 다 재생될때까지 홀딩한다.
+    //    while (true)
+    //    {
+    //        int layerIndex = (oppositePartBlendingDesc._isUsingFirstLayer == true)
+    //            ? (int)oppositePart * 2
+    //            : (int)oppositePart * 2 + 1;
+
+    //        float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+    //        if (normalizedTime >= 1.0f)
+    //        {
+    //            break;
+    //        }
+
+    //        yield return null;
+    //    }
+
+    //    _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)oppositePart));
+
+    //    //파지법을 계산한다
+    //    {
+    //        _tempGrabFocusType = WeaponGrabFocus.Normal;
+    //    }
+    //}
+
+
+    //private IEnumerator ChangeWeaponHandlingCoroutine(GameObject targetWeapon, GameObject oppositeWeapon, bool isRightHandWeapon, AnimatorLayerTypes targetHand, AnimatorLayerTypes oppositeHand)
+    //{
+    //    WeaponScript targetWeaponScript = targetWeapon.GetComponent<WeaponScript>();
+
+    //    //반대 손에 무기를 들고있었다.
+    //    if (oppositeWeapon != null)
+    //    {
+    //        WeaponScript oppositeWeaponScript = oppositeWeapon.GetComponent<WeaponScript>();
+
+    //        AnimationClip oppsiteWeaponPutAwayAnimation = (isRightHandWeapon == true)
+    //            ? oppositeWeaponScript._putawayAnimation_Mirrored
+    //            : oppositeWeaponScript._putawayAnimation;
+
+    //        //반대손을 무기 집어넣기 Zero Frame 애니메이션으로 바꾼다.
+    //        WeaponChange_Animation(oppsiteWeaponPutAwayAnimation, oppositeHand, true);
+
+    //        //반대손을 무기 집어넣기 Zero Frame 애니메이션 Layer Weight로 점점 올린다.
+    //        yield return StartCoroutine(_partBlendingDesc[(int)oppositeHand].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
+
+    //        AnimatorBlendingDesc oppositePartBlendingDesc = _partBlendingDesc[(int)oppositeHand];
+
+    //        //반대손을 무기 집어넣기 애니메이션으로 바꾼다.
+    //        {
+    //            int layerIndex = (oppositePartBlendingDesc._isUsingFirstLayer == true)
+    //                ? (int)oppositeHand * 2
+    //                : (int)oppositeHand * 2 + 1;
+
+    //            string nextNodeName = (oppositePartBlendingDesc._isUsingFirstLayer == true)
+    //                ? "State1"
+    //                : "State2";
+
+    //            _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = oppsiteWeaponPutAwayAnimation;
+
+    //            _animator.Play(nextNodeName, layerIndex, 0.0f);
+    //        }
+
+    //        //반대손의 무기 집어넣기 애니메이션이 다 재생될때까지 홀딩한다.
+    //        while (true)
+    //        {
+    //            int layerIndex = (oppositePartBlendingDesc._isUsingFirstLayer == true)
+    //                ? (int)oppositeHand * 2
+    //                : (int)oppositeHand * 2 + 1;
+
+    //            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+    //            if (normalizedTime >= 1.0f)
+    //            {
+    //                break;
+    //            }
+
+    //            yield return null;
+    //        }
+
+    //        //무기 집어넣기가 끝났다. 반대손에 무기가 있었다면 무기를 삭제한다.
+    //        {
+    //            if (isRightHandWeapon == true)
+    //            {
+    //                if (_tempCurrLeftWeapon != null)
+    //                {
+    //                    Destroy(_tempCurrLeftWeapon);
+    //                    _tempCurrLeftWeapon = null;
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (_tempCurrRightWeapon != null)
+    //                {
+    //                    Destroy(_tempCurrRightWeapon);
+    //                    _tempCurrRightWeapon = null;
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //    AnimationClip focusGrabAnimation = (isRightHandWeapon == true)
+    //        ? targetWeaponScript._handlingIdleAnimation_TwoHand
+    //        : targetWeaponScript._handlingIdleAnimation_TwoHand_Mirrored;
+
+    //    //해당 무기를 양손으로 잡는 애니메이션을 실행한다. 해당 손의 애니메이션을 바꾼다
+    //    {
+    //        WeaponChange_Animation(focusGrabAnimation, targetHand, false);
+    //        WeaponChange_Animation(focusGrabAnimation, oppositeHand, false);
+
+    //        CoroutineLock targetHandLock = new CoroutineLock();
+    //        CoroutineLock oppositeHandLock = new CoroutineLock();
+
+    //        StartCoroutine(_partBlendingDesc[(int)targetHand].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
+    //        StartCoroutine(_partBlendingDesc[(int)oppositeHand].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, oppositeHandLock));
+
+    //        while (targetHandLock._isEnd == false || oppositeHandLock._isEnd == false)
+    //        {
+    //            yield return null;
+    //        }
+    //    }
+
+    //    UpdateBusyAnimatorLayers(1 << (int)AnimatorLayerTypes.LeftHand, false);
+    //    UpdateBusyAnimatorLayers(1 << (int)AnimatorLayerTypes.RightHand, false);
+
+    //    //파지법을 계산한다
+    //    {
+    //        if (isRightHandWeapon == true)
+    //        {
+    //            _tempGrabFocusType = WeaponGrabFocus.RightHandFocused;
+    //        }
+    //        else
+    //        {
+    //            _tempGrabFocusType = WeaponGrabFocus.LeftHandFocused;
+    //        }
+    //    }
+    //}
+
+
+
+
+
+    private IEnumerator CreateWeaponModelAndEquipCoroutine(bool tempIsRightWeapon, GameObject nextWeaponPrefab)
     {
-        //파지법을 계산한다
+        WeaponSocketScript.SideType targetSide = (tempIsRightWeapon == true)
+            ? WeaponSocketScript.SideType.Right
+            : WeaponSocketScript.SideType.Left;
+
+        WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
+
+        Debug.Assert(nextWeaponScript != null, "무기는 WeaponScript가 있어야 한다");
+
+        //소켓 찾기
+        Transform correctSocket = null;
         {
-            _tempGrabFocusType = WeaponGrabFocus.Normal;
+            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+
+            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+
+            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+
+            ItemInfo.WeaponType targetType = nextWeaponScript._weaponType;
+
+            foreach (var socketComponent in weaponSockets)
+            {
+                if (socketComponent._sideType != targetSide)
+                {
+                    continue;
+                }
+
+                foreach (var type in socketComponent._equippableWeaponTypes)
+                {
+                    if (type == targetType)
+                    {
+                        correctSocket = socketComponent.gameObject.transform;
+                        break;
+                    }
+                }
+            }
+
+            Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
         }
 
-        GameObject targetWeapon = (isRightHandWeapon == true)
-            ? _tempCurrRightWeapon
-            : _tempCurrLeftWeapon;
-
-        AnimatorLayerTypes targetPart = (isRightHandWeapon == true)
-            ? AnimatorLayerTypes.RightHand
-            : AnimatorLayerTypes.LeftHand;
-
-        CoroutineLock targetHandLock = new CoroutineLock();
-        CoroutineLock oppositeHandLock = new CoroutineLock();
-
-
-        //타겟 손 함수 실행
+        //아이템 프리팹 생성, 장착
+        GameObject newObject = Instantiate(nextWeaponPrefab);
         {
-            WeaponScript targetWeaponScript = targetWeapon.GetComponent<WeaponScript>();
-            AnimationClip targetWeaponsOneHandHandlingAnimation = targetWeaponScript._handlingIdleAnimation_OneHand;
+            nextWeaponScript = newObject.GetComponent<WeaponScript>();
+            nextWeaponScript._weaponType = ItemInfo.WeaponType.MediumGun;
+            nextWeaponScript.Equip(this, correctSocket);
+            newObject.transform.SetParent(transform);
 
-            if (targetWeaponsOneHandHandlingAnimation != null)
+            if (tempIsRightWeapon == true)
             {
-                //파지 애니메이션이 있습니다.
-                WeaponChange_Animation(targetWeaponsOneHandHandlingAnimation, targetPart, false);
-                StartCoroutine_WithCallBack
-                    (
-                    _partBlendingDesc[(int)targetPart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock),
-                    (args) =>
-                    {
-                        _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
-                    }, 
-                    new object[] { (int)targetPart},
-                    null
-                    );
-                //StartCoroutine(_partBlendingDesc[(int)targetPart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
+                _tempCurrRightWeapon = newObject;
             }
             else
             {
-                //파지 애니메이션이 없습니다.
-                StartCoroutine_WithCallBack
-                    (
-                    _partBlendingDesc[(int)targetPart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer, targetHandLock),
-                    (args) =>
-                    {
-                        _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
-                    },
-                    new object[] { (int)targetPart },
-                    null
-                    );
-                //StartCoroutine(_partBlendingDesc[(int)targetPart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer, targetHandLock));
+                _tempCurrLeftWeapon = newObject;
             }
         }
 
-
-        //반대손 함수 실행
-        GameObject oppositeWeaponPrefab = (isRightHandWeapon == true)
-            ? _tempLeftWeaponPrefabs[_currLeftWeaponIndex]
-            : _tempRightWeaponPrefabs[_currRightWeaponIndex];
-
-        AnimatorLayerTypes oppositePart = (isRightHandWeapon == true)
-            ? AnimatorLayerTypes.LeftHand
-            : AnimatorLayerTypes.RightHand;
-
-        if (oppositeWeaponPrefab == null) //양손으로 잡으면서 집어넣은 무기가 없다.
-        {
-            StartCoroutine_WithCallBack
-                (
-                _partBlendingDesc[(int)oppositePart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.DeactiveAllLayer, oppositeHandLock),
-                (args) =>
-                {
-                    _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)args[0]));
-                },
-                new object[] { (int)oppositePart },
-                null
-                );
-
-            yield break;            
-        }
-
-
-        WeaponScript oppositeWeaponScript = oppositeWeaponPrefab.GetComponent<WeaponScript>();
-
-        AnimationClip oppositeWeaponDrawAnimation = (isRightHandWeapon == true)
-            ? oppositeWeaponScript._drawAnimation_Mirrored
-            : oppositeWeaponScript._drawAnimation;
-
-        //반대손을 무기 꺼내기 Zero Frame 애니메이션으로 바꾼다.
-        WeaponChange_Animation(oppositeWeaponDrawAnimation, oppositePart, true);
-
-        //반대손을 무기 꺼내기 Zero Frame 애니메이션 Layer Weight로 점점 올린다.
-        yield return StartCoroutine(_partBlendingDesc[(int)oppositePart].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, oppositeHandLock));
-
-        //반대손에 무기를 쥐어준다.
-        {
-            CreateWeaponModelAndEquip(!isRightHandWeapon, oppositeWeaponPrefab);
-        }
-
-        AnimatorBlendingDesc oppositePartBlendingDesc = _partBlendingDesc[(int)oppositePart];
-
-        //반대손을 무기 꺼내기 애니메이션으로 바꾼다.
-        {
-            int layerIndex = (oppositePartBlendingDesc._isUsingFirstLayer == true)
-                ? (int)oppositePart * 2
-                : (int)oppositePart * 2 + 1;
-
-            string nextNodeName = (oppositePartBlendingDesc._isUsingFirstLayer == true)
-                ? "State1"
-                : "State2";
-
-            _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = oppositeWeaponDrawAnimation;
-
-            _animator.Play(nextNodeName, layerIndex, 0.0f);
-        }
-
-        //반대손의 무기 꺼내기 애니메이션이 다 재생될때까지 홀딩한다.
-        while (true)
-        {
-            int layerIndex = (oppositePartBlendingDesc._isUsingFirstLayer == true)
-                ? (int)oppositePart * 2
-                : (int)oppositePart * 2 + 1;
-
-            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-            if (normalizedTime >= 1.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-
-        _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~(1 << (int)oppositePart));
+        return null;
     }
-
-
-    private IEnumerator ChangeWeaponHandlingCoroutine(GameObject targetWeapon, GameObject oppositeWeapon, bool isRightHandWeapon, AnimatorLayerTypes targetHand, AnimatorLayerTypes oppositeHand)
-    {
-        //파지법을 계산한다
-        {
-            if (isRightHandWeapon == true)
-            {
-                _tempGrabFocusType = WeaponGrabFocus.RightHandFocused;
-            }
-            else
-            {
-                _tempGrabFocusType = WeaponGrabFocus.LeftHandFocused;
-            }
-        }
-
-        WeaponScript targetWeaponScript = targetWeapon.GetComponent<WeaponScript>();
-
-        //반대 손에 무기를 들고있었다.
-        if (oppositeWeapon != null)
-        {
-            WeaponScript oppositeWeaponScript = oppositeWeapon.GetComponent<WeaponScript>();
-
-            AnimationClip oppsiteWeaponPutAwayAnimation = (isRightHandWeapon == true)
-                ? oppositeWeaponScript._putawayAnimation_Mirrored
-                : oppositeWeaponScript._putawayAnimation;
-
-            //반대손을 무기 집어넣기 Zero Frame 애니메이션으로 바꾼다.
-            WeaponChange_Animation(oppsiteWeaponPutAwayAnimation, oppositeHand, true);
-
-            //반대손을 무기 집어넣기 Zero Frame 애니메이션 Layer Weight로 점점 올린다.
-            yield return StartCoroutine(_partBlendingDesc[(int)oppositeHand].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, null));
-
-            AnimatorBlendingDesc oppositePartBlendingDesc = _partBlendingDesc[(int)oppositeHand];
-
-            //반대손을 무기 집어넣기 애니메이션으로 바꾼다.
-            {
-                int layerIndex = (oppositePartBlendingDesc._isUsingFirstLayer == true)
-                    ? (int)oppositeHand * 2
-                    : (int)oppositeHand * 2 + 1;
-
-                string nextNodeName = (oppositePartBlendingDesc._isUsingFirstLayer == true)
-                    ? "State1"
-                    : "State2";
-
-                _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = oppsiteWeaponPutAwayAnimation;
-
-                _animator.Play(nextNodeName, layerIndex, 0.0f);
-            }
-
-            //반대손의 무기 집어넣기 애니메이션이 다 재생될때까지 홀딩한다.
-            while (true)
-            {
-                int layerIndex = (oppositePartBlendingDesc._isUsingFirstLayer == true)
-                    ? (int)oppositeHand * 2
-                    : (int)oppositeHand * 2 + 1;
-
-                float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-                if (normalizedTime >= 1.0f)
-                {
-                    break;
-                }
-
-                yield return null;
-            }
-
-            //무기 집어넣기가 끝났다. 반대손에 무기가 있었다면 무기를 삭제한다.
-            {
-                if (isRightHandWeapon == true)
-                {
-                    if (_tempCurrLeftWeapon != null)
-                    {
-                        Destroy(_tempCurrLeftWeapon);
-                        _tempCurrLeftWeapon = null;
-                    }
-                }
-                else
-                {
-                    if (_tempCurrRightWeapon != null)
-                    {
-                        Destroy(_tempCurrRightWeapon);
-                        _tempCurrRightWeapon = null;
-                    }
-                }
-            }
-        }
-
-        AnimationClip focusGrabAnimation = (isRightHandWeapon == true)
-            ? targetWeaponScript._handlingIdleAnimation_TwoHand
-            : targetWeaponScript._handlingIdleAnimation_TwoHand_Mirrored;
-
-        //해당 무기를 양손으로 잡는 애니메이션을 실행한다. 해당 손의 애니메이션을 바꾼다
-        {
-            WeaponChange_Animation(focusGrabAnimation, targetHand, false);
-            WeaponChange_Animation(focusGrabAnimation, oppositeHand, false);
-
-            CoroutineLock targetHandLock = new CoroutineLock();
-            CoroutineLock oppositeHandLock = new CoroutineLock();
-
-            StartCoroutine(_partBlendingDesc[(int)targetHand].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, targetHandLock));
-            StartCoroutine(_partBlendingDesc[(int)oppositeHand].ChangeNextLayerWeightSubCoroutine(_transitionSpeed_Weapon, AnimatorBlendingDesc.BlendingCoroutineType.ActiveNextLayer, oppositeHandLock));
-
-            while (targetHandLock._isEnd == false || oppositeHandLock._isEnd == false)
-            {
-                yield return null;
-            }
-        }
-
-        UpdateBusyAnimatorLayers(1 << (int)AnimatorLayerTypes.LeftHand, false);
-        UpdateBusyAnimatorLayers(1 << (int)AnimatorLayerTypes.RightHand, false);
-    }
-
 
 
 
