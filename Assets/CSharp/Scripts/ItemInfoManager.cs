@@ -44,6 +44,18 @@ public class ItemInfo
     public EquipType _equipType;
     public string _meshObjectName;
     public List<int> _equipMeshIndicies;
+
+    
+    
+
+
+
+
+
+
+    public List<AnimatorLayerTypes> _usingItemMustNotBusyLayers;
+    public int _usingItemMustNotBusyLayer = -1;
+    public StateAsset _usingItemState = null; //이게 null이  아니라면 state를 변경하며 사용해야 하는 아이템이다
     public AnimationClip _usingItemAnimation = null;
 };
 
@@ -170,8 +182,6 @@ public class ItemInfoManager : SubManager
         Debug.Assert(_equipmentPrefabs.ContainsKey(prefabName) == true, "존재하지 않는 프리팹을 요청합니다. 리소스 변화가 있었습니까?");
         return _equipmentPrefabs[prefabName];
     }
-
-
 
     private void InitEquipments()
     {

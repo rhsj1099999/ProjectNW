@@ -227,11 +227,15 @@ public class WeaponScript : MonoBehaviour
     {
         _owner = itemOwner;
         _ownerAnimator = itemOwner.gameObject.GetComponentInChildren<Animator>();
-        _socketTranform = followTransform;
 
+        Equip_OnSocket(followTransform);
+    }
+
+    public void Equip_OnSocket(Transform followTransform)
+    {
+        _socketTranform = followTransform;
         WeaponSocketScript weaponSocketScript = _socketTranform.gameObject.GetComponent<WeaponSocketScript>();
         Debug.Assert(weaponSocketScript != null, "Socket이 아닌곳에 무기를 장착하려 하고 있다. 이런 컨텐츠가 추가되려고 합니까?");
-        
         switch (weaponSocketScript._sideType)
         {
             case WeaponSocketScript.SideType.Left:
@@ -244,9 +248,7 @@ public class WeaponScript : MonoBehaviour
                 Debug.Assert(false, "아직 중심무기는 없다");
                 break;
         }
-
     }
-
 
 
     public SortedDictionary<int, List<LinkedState>> GetEntryStates()

@@ -21,6 +21,7 @@ MonoBehaviour:
     _isAttackState: 0
     _isLocoMotionToAttackAction: 1
     _stateLocked: 0
+    _canUseItem: 1
     _stateType: 
     _EnterStateActionTypes: 
     _inStateActionTypes: 06000000
@@ -34,6 +35,8 @@ MonoBehaviour:
         _commandInputConditionTarget: []
         _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 1
@@ -43,5 +46,7 @@ MonoBehaviour:
         _commandInputConditionTarget: []
         _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
     _endStateIdleException: {fileID: 0}

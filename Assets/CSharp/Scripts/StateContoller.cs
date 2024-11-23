@@ -21,6 +21,7 @@ public enum StateActionType
     LeftHandWeaponSignal,
     AttackCommandCheck, //Action에 이것을 가지고 있다면, 무기에게 조작을 넘겨주어 공격을 시도할 수 있다.
     StateEndDesierdCheck,
+    UseItemCheck,
 }
 
 public enum ConditionType
@@ -39,6 +40,7 @@ public enum ConditionType
     isTargeting,
     ComboKeyCommand,
     FocusedWeapon, //양손으로 잡아야만 한다.
+    AnimatorLayerNotBusy,
 }
 
 
@@ -90,6 +92,8 @@ public class ConditionDesc
     public List<ComboKeyCommandDesc> _commandInputConditionTarget;
     public FrameDataType _animationFrameDataType = FrameDataType.End;
     public float _comboStrainedTime = -1.0f; //n초 내에 완성시켜야 하는 콤보
+    public List<AnimatorLayerTypes> _mustNotBusyLayers;
+    public int _mustNotBusyLayers_BitShift = 1;
 }
 
 [Serializable]
@@ -114,6 +118,8 @@ public class StateDesc
     /*------------------------------------------------------------------------------
     |NOTI| !_isAttackState = _isLocoMotionToAttackAction의 개념일거같지만 지금은 아니다
     ------------------------------------------------------------------------------*/
+
+    public bool _canUseItem = false;
 
     public List<RepresentStateType> _stateType = new List<RepresentStateType>();
 
@@ -370,7 +376,7 @@ public class StateContoller : MonoBehaviour
     {
         /*----------------------------------------------------
         |NOTI| 무기 공격을 끝내면 기본적으로 Idle로 간다고 처리하는 구조임
-        이것을 불완전하다. 나중에 문제가 생길 수 있다
+        이것은 불완전하다. 나중에 문제가 생길 수 있다
         -----------------------------------------------------*/
 
         State nextState = (_reservedNextWeaponState != null)
@@ -602,6 +608,12 @@ public class StateContoller : MonoBehaviour
                     break;
 
                 case StateActionType.StateEndDesierdCheck:
+                    break;
+
+                case StateActionType.UseItemCheck:
+                    {
+
+                    }
                     break;
 
                 default:
@@ -904,7 +916,31 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.FocusedWeapon:
                 break;
-            
+
+            case ConditionType.AnimatorLayerNotBusy:
+                {
+                    if (conditionDesc._mustNotBusyLayers.Count <= 0)
+                    {
+                        return true;
+                    }
+
+                    if (conditionDesc._mustNotBusyLayers_BitShift == -1)
+                    {
+                        foreach (AnimatorLayerTypes item in conditionDesc._mustNotBusyLayers)
+                        {
+                            conditionDesc._mustNotBusyLayers_BitShift = (conditionDesc._mustNotBusyLayers_BitShift | (1 << (int)item));
+                        }
+                    }
+
+                    int ownerBusyLayer_Bitshift = _ownerStateControllingComponent._owner.GetCurrentBusyAnimatorLayer_BitShift();
+
+                    if ((ownerBusyLayer_Bitshift & conditionDesc._mustNotBusyLayers_BitShift) == 0)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+
             default:
                 Debug.Assert(false, "데이터가 추가됐습니까?");
                 break;
