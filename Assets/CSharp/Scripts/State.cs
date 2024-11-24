@@ -229,7 +229,7 @@ public class State
                 case StateActionType.StateEndDesierdCheck:
                     break;
 
-                case StateActionType.UseItemCheck:
+                case StateActionType.CheckBehaves:
                     break;
 
                 default:

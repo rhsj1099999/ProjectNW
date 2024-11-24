@@ -122,12 +122,56 @@ public class WeaponScript : MonoBehaviour
     public AnimationClip _drawAnimation = null;
     public AnimationClip _putawayAnimation_Mirrored = null;
     public AnimationClip _drawAnimation_Mirrored = null;
+    public AnimationClip GetDrawAnimation(bool isRightHand)
+    {
+        if (isRightHand == true)
+        {
+            return _drawAnimation;
+        }
+        else
+        {
+            return _drawAnimation_Mirrored;
+        }
+    }
+    public AnimationClip GetPutawayAnimation(bool isRightHand)
+    {
+        if (isRightHand == true)
+        {
+            return _putawayAnimation;
+        }
+        else
+        {
+            return _putawayAnimation_Mirrored;
+        }
+    }
 
 
     public AnimationClip _handlingIdleAnimation_OneHand = null;
     public AnimationClip _handlingIdleAnimation_TwoHand = null;
     public AnimationClip _handlingIdleAnimation_OneHand_Mirrored = null;
     public AnimationClip _handlingIdleAnimation_TwoHand_Mirrored = null;
+    public AnimationClip GetOneHandHandlingAnimation(bool isRightHand)
+    {
+        if (isRightHand == true)
+        {
+            return _handlingIdleAnimation_OneHand;
+        }
+        else
+        {
+            return _handlingIdleAnimation_OneHand_Mirrored;
+        }
+    }
+    public AnimationClip GetTwoHandHandlingAnimation(bool isRightHand)
+    {
+        if (isRightHand == true)
+        {
+            return _handlingIdleAnimation_TwoHand;
+        }
+        else
+        {
+            return _handlingIdleAnimation_TwoHand_Mirrored;
+        }
+    }
 
 
 

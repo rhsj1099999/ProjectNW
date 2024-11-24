@@ -21,7 +21,7 @@ public enum StateActionType
     LeftHandWeaponSignal,
     AttackCommandCheck, //Action에 이것을 가지고 있다면, 무기에게 조작을 넘겨주어 공격을 시도할 수 있다.
     StateEndDesierdCheck,
-    UseItemCheck,
+    CheckBehaves,
 }
 
 public enum ConditionType
@@ -122,10 +122,10 @@ public class StateDesc
     public bool _canUseItem = false;
 
     public List<RepresentStateType> _stateType = new List<RepresentStateType>();
-
     public List<StateActionType> _EnterStateActionTypes;
     public List<StateActionType> _inStateActionTypes;
     public List<StateActionType> _ExitStateActionTypes;
+    public List<AdditionalBehaveType> _checkingBehaves = new List<AdditionalBehaveType>();
 
     public List<StateLinkDesc> _linkedStates;
     public AnimationClip _endStateIdleException = null; //상태의 애니메이션이 끝날때 예외 애니메이션
@@ -170,10 +170,6 @@ public class StateContoller : MonoBehaviour
     private bool _attackStateAutoChangeTimeCoroutineStarted = false;
 
 
-
-
-
-
     [SerializeField] private List<StateInitialPair> _stateInitial = new List<StateInitialPair>();
     private Dictionary<RepresentStateType, State> _states = new Dictionary<RepresentStateType, State>();
 
@@ -211,7 +207,6 @@ public class StateContoller : MonoBehaviour
 
         ChangeState(_states[RepresentStateType.Idle]);
     }
-
 
 
     public void TryChangeState(RepresentStateType representType)
@@ -278,9 +273,6 @@ public class StateContoller : MonoBehaviour
         _ownerStateControllingComponent._owner.StateChanged();
 
     }
-
-
-
 
 
 
@@ -402,38 +394,6 @@ public class StateContoller : MonoBehaviour
 
     public State CheckChangeState_Recursion(State currentState) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
     {
-        //원래는 재귀적 탐색이 아니였다
-        {
-            //public State CheckChangeState()
-            //{
-            //    if (_stateChangeCoroutineStarted == true)
-            //    {
-            //        return null; //공격 콤보 체크가 진행중이라 아무것도 안할꺼다
-            //    }
-
-            //    foreach (KeyValuePair<State, List<ConditionDesc>> pair in _currState.GetLinkedState())
-            //    {
-            //        bool isSuccess = true;
-
-            //        foreach (ConditionDesc conditionDesc in pair.Value)
-            //        {
-            //            if (CheckCondition(conditionDesc) == false)
-            //            {
-            //                isSuccess = false;
-            //                break; //멀티컨디션에서 하나라도 삑났다.
-            //            }
-            //        }
-
-            //        if (isSuccess == true)
-            //        {
-            //            return pair.Key; //전부다 만족했다.
-            //        }
-            //    }
-
-            //    return null; //만족한게 하나도 없다.
-            //}
-        } //->함수원본
-
         if (_stateChangeCoroutineStarted == true)
         {
             return null; //공격 콤보 체크가 진행중이라 아무것도 안할꺼다
@@ -610,10 +570,14 @@ public class StateContoller : MonoBehaviour
                 case StateActionType.StateEndDesierdCheck:
                     break;
 
-                case StateActionType.UseItemCheck:
+                case StateActionType.CheckBehaves:
                     {
-
+                        foreach (var type in _currState.GetStateDesc()._checkingBehaves)
+                        {
+                            _ownerStateControllingComponent._owner.CheckBehave(type);
+                        }
                     }
+
                     break;
 
                 default:
