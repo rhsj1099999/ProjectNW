@@ -21,10 +21,12 @@ MonoBehaviour:
     _isAttackState: 0
     _isLocoMotionToAttackAction: 1
     _stateLocked: 0
+    _canUseItem: 0
     _stateType: 
     _EnterStateActionTypes: 02000000
-    _inStateActionTypes: 04000000
+    _inStateActionTypes: 040000000c000000
     _ExitStateActionTypes: 
+    _checkingBehaves: 0000000001000000
     _linkedStates:
     - _multiConditionAsset:
       - _singleConditionType: 2
@@ -34,5 +36,7 @@ MonoBehaviour:
         _commandInputConditionTarget: []
         _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
     _endStateIdleException: {fileID: 0}

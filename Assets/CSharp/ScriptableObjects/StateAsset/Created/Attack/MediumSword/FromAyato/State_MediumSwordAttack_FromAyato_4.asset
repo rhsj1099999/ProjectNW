@@ -20,10 +20,13 @@ MonoBehaviour:
     _leftWeaponOverride: 0
     _isAttackState: 1
     _isLocoMotionToAttackAction: 0
+    _stateLocked: 0
+    _canUseItem: 0
     _stateType: 
-    _EnterStateActionTypes: 
+    _EnterStateActionTypes: 0d000000
     _inStateActionTypes: 06000000
-    _ExitStateActionTypes: 
+    _ExitStateActionTypes: 0e000000
+    _checkingBehaves: 
     _linkedStates:
     - _multiConditionAsset:
       - _singleConditionType: 3
@@ -35,20 +38,27 @@ MonoBehaviour:
           _keyInpuyGoal: 1
           _keyHoldGoal: 0
         _commandInputConditionTarget: []
-        _animationFrameGoal: 0
+        _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       - _singleConditionType: 5
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
         _commandInputConditionTarget: []
-        _animationFrameGoal: 0
+        _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       - _singleConditionType: 6
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
         _commandInputConditionTarget: []
-        _animationFrameGoal: 0
+        _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: d0826422c33c20340b750a09ccd2cb6a, type: 2}
+    _endStateIdleException: {fileID: 0}

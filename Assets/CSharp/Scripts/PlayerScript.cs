@@ -728,18 +728,9 @@ public class PlayerScript : MonoBehaviour, IHitable
 
             case BodyPartWorkType.SwitchHand:
                 {
-                    System.Func<IEnumerator> lbd_coroutine = () =>
-                    {
-                        WeaponScript targetWeaponScript = (layerType == AnimatorLayerTypes.RightHand)
-                            ? _tempCurrRightWeapon.GetComponent<WeaponScript>()
-                            : _tempCurrLeftWeapon.GetComponent<WeaponScript>();
-                        targetWeaponScript.Equip_OnSocket(work._weaponEquipTransform);
-                        return null;
-                    };
-
                     startedCoroutine = StartCoroutine_CallBackAction
                     (
-                        lbd_coroutine,
+                        SwitchHandCoroutine(layerType, work),
                         StartNextCoroutine,
                         layerType
                     );
@@ -768,58 +759,6 @@ public class PlayerScript : MonoBehaviour, IHitable
         return startedCoroutine;
     }
 
-    private IEnumerator DestroyWeaponCoroutine(AnimatorLayerTypes layerType)
-    {
-        bool tempIsRightWeapon = (layerType == AnimatorLayerTypes.RightHand);
-
-        if (tempIsRightWeapon == true && _tempCurrRightWeapon != null)
-        {
-            Destroy(_tempCurrRightWeapon);
-            _tempCurrRightWeapon = null;
-        }
-        else if (tempIsRightWeapon == false && _tempCurrLeftWeapon != null)
-        {
-            Destroy(_tempCurrLeftWeapon);
-            _tempCurrLeftWeapon = null;
-        }
-
-        return null;
-    }
-
-    private IEnumerator WaitCoroutineLock(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
-    {
-        while (work._coroutineLock._isEnd == false) 
-        {
-            yield return null;
-        }
-    }
-
-    private IEnumerator UnlockCoroutineLock(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
-    {
-        work._coroutineLock._isEnd = true;
-        return null;
-    }
-
-    private IEnumerator AnimationPlayHoldCoroutine(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
-    {
-        AnimatorBlendingDesc blendingDesc = _partBlendingDesc[(int)layerType];
-
-        while (true)
-        {
-            int layerIndex = (blendingDesc._isUsingFirstLayer == true)
-                ? (int)layerType * 2
-                : (int)layerType * 2 + 1;
-
-            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-            if (normalizedTime >= 1.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-    }
 
     public void StateChanged()
     {
@@ -898,19 +837,30 @@ public class PlayerScript : MonoBehaviour, IHitable
 
             _currAnimClip = targetClip;
         }
-
-        //WeaponLayerChange(nextState);
     }
 
 
-    private void WeaponLayerChange(State currState)
-    {
-        //뭘 하던 애니메이션이 바뀌면 여기에 들어옵니다
-        //if (_currentBusyAnimatorLayer_BitShift > 0)
-        //{
-        //    return;
-        //}
 
+    private void UpdateBusyAnimatorLayers(int willBusyLayers_BitShift, bool isOn)
+    {
+        if (isOn == true)
+        {
+            _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift | willBusyLayers_BitShift);
+        }
+        else
+        {
+            _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~willBusyLayers_BitShift);
+        }
+    }
+
+
+
+
+
+    public void WeaponLayerChange_EnterAttack(State currState)
+    {
+        bool isAttackState = true;
+        
         AnimatorBlendingDesc leftHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.LeftHand];
         int leftHandMainLayer = (leftHandBlendingDesc._isUsingFirstLayer == true)
             ? (int)AnimatorLayerTypes.LeftHand * 2
@@ -927,7 +877,7 @@ public class PlayerScript : MonoBehaviour, IHitable
             case WeaponGrabFocus.Normal:
                 {
                     //공격 애니메이션이다
-                    if (currState.GetStateDesc()._isAttackState == true)
+                    if (isAttackState == true)
                     {
                         int usingHandLayer = (_tempUsingRightHandWeapon == true)
                             ? rightHandMainLayer
@@ -982,7 +932,7 @@ public class PlayerScript : MonoBehaviour, IHitable
             case WeaponGrabFocus.RightHandFocused:
             case WeaponGrabFocus.LeftHandFocused:
                 {
-                    float layerWeight = (currState.GetStateDesc()._isAttackState == true)
+                    float layerWeight = (isAttackState == true)
                         ? 0.0f
                         : 1.0f;
 
@@ -1007,6 +957,114 @@ public class PlayerScript : MonoBehaviour, IHitable
                 break;
         }
     }
+
+
+
+
+
+    public void WeaponLayerChange_ExitAttack(State currState)
+    {
+        bool isAttackState = false;
+
+        AnimatorBlendingDesc leftHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.LeftHand];
+        int leftHandMainLayer = (leftHandBlendingDesc._isUsingFirstLayer == true)
+            ? (int)AnimatorLayerTypes.LeftHand * 2
+            : (int)AnimatorLayerTypes.LeftHand * 2 + 1;
+        AnimatorBlendingDesc rightHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.RightHand];
+        int rightHandMainLayer = (rightHandBlendingDesc._isUsingFirstLayer == true)
+            ? (int)AnimatorLayerTypes.RightHand * 2
+            : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+
+        bool isMirrored = (_tempUsingRightHandWeapon == false);
+
+        switch (_tempGrabFocusType)
+        {
+            case WeaponGrabFocus.Normal:
+                {
+                    //공격 애니메이션이다
+                    if (isAttackState == true)
+                    {
+                        int usingHandLayer = (_tempUsingRightHandWeapon == true)
+                            ? rightHandMainLayer
+                            : leftHandMainLayer;
+
+                        int oppositeHandLayer = (_tempUsingRightHandWeapon == true)
+                            ? leftHandMainLayer
+                            : rightHandMainLayer;
+
+
+                        _animator.SetLayerWeight(usingHandLayer, 0.0f); //왼손은 반드시 따라가야해서 0.0f
+
+                        GameObject oppositeWeapon = (_tempUsingRightHandWeapon == true)
+                            ? _tempCurrLeftWeapon
+                            : _tempCurrRightWeapon;
+
+                        if (oppositeWeapon == null) //왼손무기를 쥐고있지 않다면
+                        {
+                            _animator.SetLayerWeight(oppositeHandLayer, 0.0f); //왼손 무기를 쥐고있지 않다면 모션을 따라가야해서 레이어를 꺼버린다.
+                        }
+                        else
+                        {
+                            if (oppositeWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null)
+                            {
+                                _overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
+                            }
+                            _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
+                        }
+
+                        _animator.SetBool("IsMirroring", isMirrored);
+                    }
+                    //공격 애니메이션이 아니다
+                    else
+                    {
+                        //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
+                        float leftHandLayerWeight = (_tempCurrLeftWeapon == null || _tempCurrLeftWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null) //
+                            ? 0.0f
+                            : 1.0f;
+                        _animator.SetLayerWeight(leftHandMainLayer, leftHandLayerWeight);
+
+                        //오른손 무기를 쥐고있지 않거나 오른손 무기의 파지 애니메이션이 없다
+                        float rightHandLayerWeight = (_tempCurrRightWeapon == null || _tempCurrRightWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null)
+                            ? 0.0f
+                            : 1.0f;
+                        _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
+
+                        //_animator.SetBool("IsMirroring", false);
+                    }
+                }
+                break;
+
+            case WeaponGrabFocus.RightHandFocused:
+            case WeaponGrabFocus.LeftHandFocused:
+                {
+                    float layerWeight = (isAttackState == true)
+                        ? 0.0f
+                        : 1.0f;
+
+                    _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
+                    _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
+
+                    if (currState.GetStateDesc()._isAttackState == true)
+                    {
+                        _animator.SetBool("IsMirroring", isMirrored);
+                    }
+                    else
+                    {
+                        //_animator.SetBool("IsMirroring", false);
+                    }
+                }
+                break;
+
+            case WeaponGrabFocus.DualGrab:
+                {
+                    Debug.Assert(false, "쌍수 컨텐츠가 추가됐습니까?");
+                }
+                break;
+        }
+    }
+
+
+
 
 
     private IEnumerator SwitchingBlendCoroutine()
@@ -1039,57 +1097,7 @@ public class PlayerScript : MonoBehaviour, IHitable
 
 
 
-    private IEnumerator WeaponChange_AnimationCoroutine(AnimationClip nextAnimation, AnimatorLayerTypes targetBody, bool isZeroFrame)
-    {
-        AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
 
-        targetPart._isUsingFirstLayer = !(targetPart._isUsingFirstLayer);
-
-        int layerStartIndex = (int)targetBody * 2;
-
-        int layerIndex = (targetPart._isUsingFirstLayer == true)
-            ? layerStartIndex
-            : layerStartIndex + 1;
-
-        string nextNodeName = (targetPart._isUsingFirstLayer == true)
-            ? "State1"
-            : "State2";
-
-        AnimationClip targetclip = (isZeroFrame == true)
-            ? ResourceDataManager.Instance.GetZeroFrameAnimation(nextAnimation.name)
-            : nextAnimation;
-
-        _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = targetclip;
-
-        _animator.Play(nextNodeName, layerIndex, 0.0f);
-
-        return null;
-    }
-
-    public void WeaponChange_Animation(AnimationClip nextAnimation, AnimatorLayerTypes targetBody, bool isZeroFrame)
-    {
-        AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
-
-        targetPart._isUsingFirstLayer = !(targetPart._isUsingFirstLayer);
-
-        int layerStartIndex = (int)targetBody * 2;
-
-        int layerIndex = (targetPart._isUsingFirstLayer == true)
-            ? layerStartIndex
-            : layerStartIndex + 1;
-
-        string nextNodeName = (targetPart._isUsingFirstLayer == true)
-            ? "State1"
-            : "State2";
-
-        AnimationClip targetclip = (isZeroFrame == true)
-            ? ResourceDataManager.Instance.GetZeroFrameAnimation(nextAnimation.name)
-            : nextAnimation;
-
-        _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = targetclip;
-
-        _animator.Play(nextNodeName, layerIndex, 0.0f);
-    }
 
 
 
@@ -1359,8 +1367,42 @@ public class PlayerScript : MonoBehaviour, IHitable
                 }
                 else
                 {
-                    //반대손에 양손으로 잡으면서 집어넣은 무기가 없다.
-                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+                    GameObject currentOppositeWeaponPrefab = GetCurrentWeaponPrefab(oppositePartType);
+
+                    if (currentOppositeWeaponPrefab != null)
+                    {
+                        WeaponScript currentOppositeWeaponScript = currentOppositeWeaponPrefab.GetComponent<WeaponScript>();
+
+                        //무기를 꺼내는 Zero Frame애니메이션으로 바꾼다
+                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
+                        {
+                            _bodyPartWorks[(int)oppositePartType].Last.Value._animationClip = currentOppositeWeaponScript.GetDrawAnimation(oppositePartType);
+                        }
+
+                        //LayerWeight를 수정한다
+                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+                        //무기를 쥐어준다
+                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
+                        {
+                            _bodyPartWorks[(int)oppositePartType].Last.Value._attachObjectPrefab = currentOppositeWeaponPrefab;
+                        }
+
+                        //무기를 꺼내는 애니메이션으로 바꾼다
+                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+                        {
+                            _bodyPartWorks[(int)oppositePartType].Last.Value._animationClip = currentOppositeWeaponScript.GetDrawAnimation(oppositePartType);
+                        }
+                        //LayerWeight를 수정한다
+                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+
+                        //다 재생할때까지 대기한다.
+                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+                    }
+                    else
+                    {
+                        //반대손에 양손으로 잡으면서 집어넣은 무기가 없다.
+                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+                    }
                 }
 
                 lockCompares.Add(oppositePartIndex);
@@ -1379,7 +1421,7 @@ public class PlayerScript : MonoBehaviour, IHitable
                 _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
                 {
                     WeaponScript targetWeaponScript = currentWeapon.GetComponent<WeaponScript>();
-                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = targetWeaponScript.GetPutawayAnimation(isRightWeaponTrigger);
+                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = targetWeaponScript.GetPutawayAnimation(targetPartType);
                 }
 
                 //LayerWeight 바꾸기
@@ -1389,9 +1431,6 @@ public class PlayerScript : MonoBehaviour, IHitable
                 //무기삭제하기
                 _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyWeapon));
             }
-
-
-
 
 
             GameObject nextWeaponPrefab = (isRightWeaponTrigger == true)
@@ -1406,7 +1445,7 @@ public class PlayerScript : MonoBehaviour, IHitable
                 _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
                 {
                     WeaponScript targetWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
-                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = targetWeaponScript.GetDrawAnimation(isRightWeaponTrigger);
+                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = targetWeaponScript.GetDrawAnimation(targetPartType);
                 }
 
                 //Layer Wright 바꾸기
@@ -1422,7 +1461,7 @@ public class PlayerScript : MonoBehaviour, IHitable
                 _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
                 {
                     WeaponScript targetWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
-                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = targetWeaponScript.GetDrawAnimation(isRightWeaponTrigger);
+                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = targetWeaponScript.GetDrawAnimation(targetPartType);
                 }
 
                 //Layer Wright 바꾸기
@@ -1468,13 +1507,15 @@ public class PlayerScript : MonoBehaviour, IHitable
     {
         HashSet<int> lockCompares = new HashSet<int>();
 
-        int targetBodyIndex = (isRightHandTrigger == true)
-            ? (int)AnimatorLayerTypes.RightHand
-            : (int)AnimatorLayerTypes.LeftHand;
+        AnimatorLayerTypes oppositePartType = (isRightHandTrigger == true)
+            ? AnimatorLayerTypes.LeftHand
+            : AnimatorLayerTypes.RightHand;
+        int oppositeBodyIndex = (int)oppositePartType;
 
-        int oppositeBodyIndex = (isRightHandTrigger == true)
-            ? (int)AnimatorLayerTypes.LeftHand
-            : (int)AnimatorLayerTypes.RightHand;
+        AnimatorLayerTypes targetPartType = (isRightHandTrigger == true)
+            ? AnimatorLayerTypes.RightHand
+            : AnimatorLayerTypes.LeftHand;
+        int targetBodyIndex = (int)targetPartType;
 
         GameObject targetWeapon = (isRightHandTrigger == true)
             ? _tempCurrRightWeapon
@@ -1486,7 +1527,6 @@ public class PlayerScript : MonoBehaviour, IHitable
             ? _tempCurrLeftWeapon
             : _tempCurrRightWeapon;
 
-
         //반대 손에 무기를 들고있다.
         if (oppositeWeapon != null)
         {
@@ -1494,7 +1534,7 @@ public class PlayerScript : MonoBehaviour, IHitable
             _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
             {
                 WeaponScript oppositeWeaponScript = oppositeWeapon.GetComponent<WeaponScript>();
-                _bodyPartWorks[(int)oppositeBodyIndex].Last.Value._animationClip = oppositeWeaponScript.GetPutawayAnimation(oppositeWeapon == _tempCurrRightWeapon);
+                _bodyPartWorks[(int)oppositeBodyIndex].Last.Value._animationClip = oppositeWeaponScript.GetPutawayAnimation(oppositePartType);
             }
 
             //Layer Weight로 점점 올린다.
@@ -1517,7 +1557,7 @@ public class PlayerScript : MonoBehaviour, IHitable
         //반대손의 애니메이션을 바꾼다
         _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
         {
-            _bodyPartWorks[(int)oppositeBodyIndex].Last.Value._animationClip = targetWeaponScript.GetTwoHandHandlingAnimation(_tempCurrRightWeapon);
+            _bodyPartWorks[(int)oppositeBodyIndex].Last.Value._animationClip = targetWeaponScript.GetTwoHandHandlingAnimation(targetPartType);
         }
 
         //반대손의 LayerWeight를 올린다.
@@ -1536,7 +1576,7 @@ public class PlayerScript : MonoBehaviour, IHitable
             //해당 손의 애니메이션을 바꾼다
             _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
             {
-                _bodyPartWorks[(int)targetBodyIndex].Last.Value._animationClip = targetWeaponScript.GetTwoHandHandlingAnimation(isRightHandTrigger);
+                _bodyPartWorks[(int)targetBodyIndex].Last.Value._animationClip = targetWeaponScript.GetTwoHandHandlingAnimation(targetPartType);
             }
             //해당 손의 Layer Weight를 바꾼다.
             _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
@@ -1573,17 +1613,20 @@ public class PlayerScript : MonoBehaviour, IHitable
     {
         HashSet<int> lockCompares = new HashSet<int>();
 
+        AnimatorLayerTypes oppositePartType = (isRightHandTrigger == true)
+            ? AnimatorLayerTypes.LeftHand
+            : AnimatorLayerTypes.RightHand;
+        int oppositeBodyIndex = (int)oppositePartType;
+
+        AnimatorLayerTypes targetPartType = (isRightHandTrigger == true)
+            ? AnimatorLayerTypes.RightHand
+            : AnimatorLayerTypes.LeftHand;
+        int targetBodyIndex = (int)targetPartType;
+
+
         GameObject oppositeWeaponPrefab = (isRightHandTrigger == true)
             ? _tempLeftWeaponPrefabs[_currLeftWeaponIndex]
             : _tempRightWeaponPrefabs[_currRightWeaponIndex];
-
-        int targetBodyIndex = (isRightHandTrigger == true)
-            ? (int)AnimatorLayerTypes.RightHand
-            : (int)AnimatorLayerTypes.LeftHand;
-
-        int oppositeBodyIndex = (isRightHandTrigger == true)
-            ? (int)AnimatorLayerTypes.LeftHand
-            : (int)AnimatorLayerTypes.RightHand;
 
         //반대 손에 양손으로 잡기 전, 무기를 들고있었다.
         if (oppositeWeaponPrefab != null)
@@ -1592,7 +1635,7 @@ public class PlayerScript : MonoBehaviour, IHitable
             _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
             {
                 WeaponScript oppositeWeaponScript = oppositeWeaponPrefab.GetComponent<WeaponScript>();
-                _bodyPartWorks[oppositeBodyIndex].Last.Value._animationClip = oppositeWeaponScript.GetDrawAnimation(!isRightHandTrigger);
+                _bodyPartWorks[oppositeBodyIndex].Last.Value._animationClip = oppositeWeaponScript.GetDrawAnimation(oppositePartType);
             }
 
             //반대손 Layer Weight로 점점 올린다.
@@ -1607,7 +1650,7 @@ public class PlayerScript : MonoBehaviour, IHitable
             _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
             {
                 WeaponScript oppositeWeaponScript = oppositeWeaponPrefab.GetComponent<WeaponScript>();
-                _bodyPartWorks[oppositeBodyIndex].Last.Value._animationClip = oppositeWeaponScript.GetDrawAnimation(!isRightHandTrigger);
+                _bodyPartWorks[oppositeBodyIndex].Last.Value._animationClip = oppositeWeaponScript.GetDrawAnimation(oppositePartType);
             }
 
             //반대손 Layer Weight로 점점 올린다.
@@ -1630,7 +1673,7 @@ public class PlayerScript : MonoBehaviour, IHitable
 
         WeaponScript targetWeaponScript = targetWeapon.GetComponent<WeaponScript>();
 
-        AnimationClip oneHandHadlingAnimation = targetWeaponScript.GetOneHandHandlingAnimation(isRightHandTrigger);
+        AnimationClip oneHandHadlingAnimation = targetWeaponScript.GetOneHandHandlingAnimation(targetPartType);
 
         if (oneHandHadlingAnimation != null) 
         {
@@ -1651,10 +1694,6 @@ public class PlayerScript : MonoBehaviour, IHitable
         }
 
         lockCompares.Add(targetBodyIndex);
-
-        /*------------------------------------------------------------
-        |TODO| 순회하며 검증하는 로직은 디버깅 모드에서만 하도록 바꿔야한다.
-        ------------------------------------------------------------*/
 
         int usingLockResult = 0;
         foreach (int index in lockCompares)
@@ -1684,47 +1723,47 @@ public class PlayerScript : MonoBehaviour, IHitable
 
         int rightHandIndex = (int)AnimatorLayerTypes.RightHand;
 
-        //무기를 오른손에 양손으로 잡고있습니까?
-        Transform oppositeHandTransform = null;
+        Transform rightHandWeaponOriginalTransform = null;
 
+        //무기를 오른손에 양손으로 잡고있습니까?
         if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
         {
             WeaponScript weaponScript = _tempCurrRightWeapon.GetComponent<WeaponScript>();
 
-
-            WeaponSocketScript.SideType targetSide = WeaponSocketScript.SideType.Left;
-            //반대손 소켓 찾기
+            //오른손에 양손으로 쥐고 있었다면 잠시 왼손에 쥐어준다.
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
             {
-                Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+                WeaponSocketScript.SideType targetSide = WeaponSocketScript.SideType.Left;
+                //원래 쥐고있는 트랜스폼 캐싱
+                rightHandWeaponOriginalTransform = weaponScript._socketTranform;
 
-                WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
-
-                Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
-
-                ItemInfo.WeaponType targetType = weaponScript._weaponType;
-
-                foreach (var socketComponent in weaponSockets)
+                //반대손 소켓 찾기
                 {
-                    if (socketComponent._sideType != targetSide)
-                    {
-                        continue;
-                    }
+                    Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
 
-                    foreach (var type in socketComponent._equippableWeaponTypes)
+                    WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+
+                    Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+                    ItemInfo.WeaponType targetType = weaponScript._weaponType;
+
+                    foreach (var socketComponent in weaponSockets)
                     {
-                        if (type == targetType)
+                        if (socketComponent._sideType != targetSide)
                         {
-                            oppositeHandTransform = socketComponent.gameObject.transform;
-                            break;
+                            continue;
+                        }
+
+                        foreach (var type in socketComponent._equippableWeaponTypes)
+                        {
+                            if (type == targetType)
+                            {
+                                _bodyPartWorks[rightHandIndex].Last.Value._weaponEquipTransform = socketComponent.gameObject.transform;
+                                break;
+                            }
                         }
                     }
                 }
-            }
-
-            //왼손이면 괜찮은데 오른손이 쥐고 있다면 잠시 왼손에 쥐어준다.
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
-            {
-                _bodyPartWorks[rightHandIndex].Last.Value._weaponEquipTransform = oppositeHandTransform;
             }
         }
         else if (_tempCurrRightWeapon != null) //양손으로 잡고있진 않았습니다. 근데 오른손에 무기를 들긴 했습니다.
@@ -1794,52 +1833,48 @@ public class PlayerScript : MonoBehaviour, IHitable
         {
             WeaponScript rightWeaponScript = rightWeaponPrefab.GetComponent<WeaponScript>();
 
-            //무기를 꺼내는 Zero Frame Animation 으로 바꾼다
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
+            if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
             {
-                _bodyPartWorks[rightHandIndex].Last.Value._animationClip = rightWeaponScript.GetDrawAnimation(true);
-            }
-
-            //Layer Weight로 점점 올린다.
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-
-            //무기를 쥐어준다
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
-            {
-                _bodyPartWorks[rightHandIndex].Last.Value._attachObjectPrefab = rightWeaponPrefab;
-            }
-
-            AnimationClip rightWeaponHandlingAnimation = (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
-                ? rightWeaponScript.GetOneHandHandlingAnimation(true)
-                : rightWeaponScript.GetOneHandHandlingAnimation(true);
-
-            if (rightWeaponHandlingAnimation == null) //쥐는 애니메이션이 없습니다.
-            {
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
-
-                lockCompares.Add(rightHandIndex);
-            }
-            else
-            {
-                //무기를 쥐는 애니메이션으로 바꾼다
+                //양손으로 쥐는 애니메이션으로 바꾼다.
                 _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
                 {
-                    _bodyPartWorks[rightHandIndex].Last.Value._animationClip = rightWeaponHandlingAnimation;
+                    _bodyPartWorks[rightHandIndex].Last.Value._animationClip = rightWeaponScript.GetTwoHandHandlingAnimation(true);
                 }
 
                 //Layer Weight로 점점 올린다.
                 _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-                
-                
 
-                if (_tempGrabFocusType == WeaponGrabFocus.RightHandFocused)
+                //아까 반대손에 쥐어줬던 무기를 다시 반대로 쥔다.
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
                 {
-                    //반대손의 무기 집어넣기 애니메이션이 다 재생될때까지 홀딩한다.
-                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
-
-                    //아까 반대손에 쥐어줬던 무기를 다시 바꾼다
-                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
+                    _bodyPartWorks[rightHandIndex].Last.Value._weaponEquipTransform = rightHandWeaponOriginalTransform;
                 }
+            }
+            else
+            {
+                //무기를 꺼내는 Zero Frame Animation 으로 바꾼다
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
+                {
+                    _bodyPartWorks[rightHandIndex].Last.Value._animationClip = rightWeaponScript.GetDrawAnimation(true);
+                }
+
+                //Layer Weight로 점점 올린다.
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+
+                //무기를 쥐어준다
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
+                {
+                    _bodyPartWorks[rightHandIndex].Last.Value._attachObjectPrefab = rightWeaponPrefab;
+                }
+
+                //무기를 꺼내는 Zero Frame Animation 으로 바꾼다
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+                {
+                    _bodyPartWorks[rightHandIndex].Last.Value._animationClip = rightWeaponScript.GetDrawAnimation(true);
+                }
+
+                //Layer Weight로 점점 올린다.
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
             }
 
             lockCompares.Add(rightHandIndex);
@@ -1879,27 +1914,259 @@ public class PlayerScript : MonoBehaviour, IHitable
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    private void UpdateBusyAnimatorLayers(int willBusyLayers_BitShift, bool isOn)
+    public void WeaponChange_Animation(AnimationClip nextAnimation, AnimatorLayerTypes targetBody, bool isZeroFrame)
     {
-        if (isOn == true)
+        AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
+
+        targetPart._isUsingFirstLayer = !(targetPart._isUsingFirstLayer);
+
+        int layerStartIndex = (int)targetBody * 2;
+
+        int layerIndex = (targetPart._isUsingFirstLayer == true)
+            ? layerStartIndex
+            : layerStartIndex + 1;
+
+        string nextNodeName = (targetPart._isUsingFirstLayer == true)
+            ? "State1"
+            : "State2";
+
+        AnimationClip targetclip = (isZeroFrame == true)
+            ? ResourceDataManager.Instance.GetZeroFrameAnimation(nextAnimation.name)
+            : nextAnimation;
+
+        _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = targetclip;
+
+        _animator.Play(nextNodeName, layerIndex, 0.0f);
+    }
+
+
+
+    #region Coroutines
+
+    private IEnumerator SwitchHandCoroutine(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    {
+        WeaponScript targetWeaponScript = (layerType == AnimatorLayerTypes.RightHand)
+            ? _tempCurrRightWeapon.GetComponent<WeaponScript>()
+            : _tempCurrLeftWeapon.GetComponent<WeaponScript>();
+
+        targetWeaponScript.Equip_OnSocket(work._weaponEquipTransform);
+
+        return null;
+    }
+
+    private IEnumerator DestroyWeaponCoroutine(AnimatorLayerTypes layerType)
+    {
+        bool tempIsRightWeapon = (layerType == AnimatorLayerTypes.RightHand);
+
+        if (tempIsRightWeapon == true && _tempCurrRightWeapon != null)
         {
-            _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift | willBusyLayers_BitShift);
+            Destroy(_tempCurrRightWeapon);
+            _tempCurrRightWeapon = null;
         }
-        else
+        else if (tempIsRightWeapon == false && _tempCurrLeftWeapon != null)
         {
-            _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~willBusyLayers_BitShift);
+            Destroy(_tempCurrLeftWeapon);
+            _tempCurrLeftWeapon = null;
+        }
+
+        return null;
+    }
+
+    private IEnumerator WaitCoroutineLock(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    {
+        while (work._coroutineLock._isEnd == false)
+        {
+            yield return null;
+        }
+    }
+
+    private IEnumerator UnlockCoroutineLock(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    {
+        work._coroutineLock._isEnd = true;
+        return null;
+    }
+
+    private IEnumerator AnimationPlayHoldCoroutine(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    {
+        AnimatorBlendingDesc blendingDesc = _partBlendingDesc[(int)layerType];
+
+        while (true)
+        {
+            int layerIndex = (blendingDesc._isUsingFirstLayer == true)
+                ? (int)layerType * 2
+                : (int)layerType * 2 + 1;
+
+            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+            if (normalizedTime >= 1.0f)
+            {
+                break;
+            }
+
+            yield return null;
+        }
+    }
+
+    private IEnumerator WeaponChange_AnimationCoroutine(AnimationClip nextAnimation, AnimatorLayerTypes targetBody, bool isZeroFrame)
+    {
+        AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
+
+        targetPart._isUsingFirstLayer = !(targetPart._isUsingFirstLayer);
+
+        int layerStartIndex = (int)targetBody * 2;
+
+        int layerIndex = (targetPart._isUsingFirstLayer == true)
+            ? layerStartIndex
+            : layerStartIndex + 1;
+
+        string nextNodeName = (targetPart._isUsingFirstLayer == true)
+            ? "State1"
+            : "State2";
+
+        AnimationClip targetclip = (isZeroFrame == true)
+            ? ResourceDataManager.Instance.GetZeroFrameAnimation(nextAnimation.name)
+            : nextAnimation;
+
+        _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = targetclip;
+
+        _animator.Play(nextNodeName, layerIndex, 0.0f);
+
+        return null;
+    }
+
+    private IEnumerator CreateWeaponModelAndEquipCoroutine(bool tempIsRightWeapon, GameObject nextWeaponPrefab)
+    {
+        WeaponSocketScript.SideType targetSide = (tempIsRightWeapon == true)
+            ? WeaponSocketScript.SideType.Right
+            : WeaponSocketScript.SideType.Left;
+
+        WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
+
+        Debug.Assert(nextWeaponScript != null, "무기는 WeaponScript가 있어야 한다");
+
+        //소켓 찾기
+        Transform correctSocket = null;
+        {
+            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+
+            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+
+            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+
+            ItemInfo.WeaponType targetType = nextWeaponScript._weaponType;
+
+            foreach (var socketComponent in weaponSockets)
+            {
+                if (socketComponent._sideType != targetSide)
+                {
+                    continue;
+                }
+
+                foreach (var type in socketComponent._equippableWeaponTypes)
+                {
+                    if (type == targetType)
+                    {
+                        correctSocket = socketComponent.gameObject.transform;
+                        break;
+                    }
+                }
+            }
+
+            Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
+        }
+
+        //아이템 프리팹 생성, 장착
+        GameObject newObject = Instantiate(nextWeaponPrefab);
+        {
+            nextWeaponScript = newObject.GetComponent<WeaponScript>();
+            nextWeaponScript._weaponType = ItemInfo.WeaponType.MediumGun;
+            nextWeaponScript.Equip(this, correctSocket);
+            newObject.transform.SetParent(transform);
+
+            if (tempIsRightWeapon == true)
+            {
+                _tempCurrRightWeapon = newObject;
+            }
+            else
+            {
+                _tempCurrLeftWeapon = newObject;
+            }
+        }
+
+        return null;
+    }
+    #endregion Coroutines
+
+
+
+
+
+
+
+
+
+
+
+
+    private void CreateWeaponModelAndEquip(bool tempIsRightWeapon, GameObject nextWeaponPrefab)
+    {
+        WeaponSocketScript.SideType targetSide = (tempIsRightWeapon == true)
+            ? WeaponSocketScript.SideType.Right
+            : WeaponSocketScript.SideType.Left;
+
+        WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
+
+        Debug.Assert(nextWeaponScript != null, "무기는 WeaponScript가 있어야 한다");
+
+        //소켓 찾기
+        Transform correctSocket = null;
+        {
+            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+
+            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+
+            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+
+            ItemInfo.WeaponType targetType = nextWeaponScript._weaponType;
+
+            foreach (var socketComponent in weaponSockets)
+            {
+                if (socketComponent._sideType != targetSide)
+                {
+                    continue;
+                }
+
+                foreach (var type in socketComponent._equippableWeaponTypes)
+                {
+                    if (type == targetType)
+                    {
+                        correctSocket = socketComponent.gameObject.transform;
+                        break;
+                    }
+                }
+            }
+
+            Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
+        }
+
+        //아이템 프리팹 생성, 장착
+        GameObject newObject = Instantiate(nextWeaponPrefab);
+        {
+            nextWeaponScript = newObject.GetComponent<WeaponScript>();
+            nextWeaponScript._weaponType = ItemInfo.WeaponType.MediumGun;
+            nextWeaponScript.Equip(this, correctSocket);
+            newObject.transform.SetParent(transform);
+
+            if (tempIsRightWeapon == true)
+            {
+                _tempCurrRightWeapon = newObject;
+            }
+            else
+            {
+                _tempCurrLeftWeapon = newObject;
+            }
         }
     }
 
@@ -2918,135 +3185,108 @@ public class PlayerScript : MonoBehaviour, IHitable
 
 
 
-    private IEnumerator CreateWeaponModelAndEquipCoroutine(bool tempIsRightWeapon, GameObject nextWeaponPrefab)
-    {
-        WeaponSocketScript.SideType targetSide = (tempIsRightWeapon == true)
-            ? WeaponSocketScript.SideType.Right
-            : WeaponSocketScript.SideType.Left;
-
-        WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
-
-        Debug.Assert(nextWeaponScript != null, "무기는 WeaponScript가 있어야 한다");
-
-        //소켓 찾기
-        Transform correctSocket = null;
-        {
-            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
-
-            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
-
-            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
-
-
-            ItemInfo.WeaponType targetType = nextWeaponScript._weaponType;
-
-            foreach (var socketComponent in weaponSockets)
-            {
-                if (socketComponent._sideType != targetSide)
-                {
-                    continue;
-                }
-
-                foreach (var type in socketComponent._equippableWeaponTypes)
-                {
-                    if (type == targetType)
-                    {
-                        correctSocket = socketComponent.gameObject.transform;
-                        break;
-                    }
-                }
-            }
-
-            Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
-        }
-
-        //아이템 프리팹 생성, 장착
-        GameObject newObject = Instantiate(nextWeaponPrefab);
-        {
-            nextWeaponScript = newObject.GetComponent<WeaponScript>();
-            nextWeaponScript._weaponType = ItemInfo.WeaponType.MediumGun;
-            nextWeaponScript.Equip(this, correctSocket);
-            newObject.transform.SetParent(transform);
-
-            if (tempIsRightWeapon == true)
-            {
-                _tempCurrRightWeapon = newObject;
-            }
-            else
-            {
-                _tempCurrLeftWeapon = newObject;
-            }
-        }
-
-        return null;
-    }
 
 
 
 
 
 
+    //public void WeaponLayerChange(State currState)
+    //{
+    //    AnimatorBlendingDesc leftHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.LeftHand];
+    //    int leftHandMainLayer = (leftHandBlendingDesc._isUsingFirstLayer == true)
+    //        ? (int)AnimatorLayerTypes.LeftHand * 2
+    //        : (int)AnimatorLayerTypes.LeftHand * 2 + 1;
+    //    AnimatorBlendingDesc rightHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.RightHand];
+    //    int rightHandMainLayer = (rightHandBlendingDesc._isUsingFirstLayer == true)
+    //        ? (int)AnimatorLayerTypes.RightHand * 2
+    //        : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+
+    //    bool isMirrored = (_tempUsingRightHandWeapon == false);
+
+    //    switch (_tempGrabFocusType)
+    //    {
+    //        case WeaponGrabFocus.Normal:
+    //            {
+    //                //공격 애니메이션이다
+    //                if (currState.GetStateDesc()._isAttackState == true)
+    //                {
+    //                    int usingHandLayer = (_tempUsingRightHandWeapon == true)
+    //                        ? rightHandMainLayer
+    //                        : leftHandMainLayer;
+
+    //                    int oppositeHandLayer = (_tempUsingRightHandWeapon == true)
+    //                        ? leftHandMainLayer
+    //                        : rightHandMainLayer;
 
 
+    //                    _animator.SetLayerWeight(usingHandLayer, 0.0f); //왼손은 반드시 따라가야해서 0.0f
 
-    private void CreateWeaponModelAndEquip(bool tempIsRightWeapon, GameObject nextWeaponPrefab)
-    {
-        WeaponSocketScript.SideType targetSide = (tempIsRightWeapon == true)
-            ? WeaponSocketScript.SideType.Right
-            : WeaponSocketScript.SideType.Left;
+    //                    GameObject oppositeWeapon = (_tempUsingRightHandWeapon == true)
+    //                        ? _tempCurrLeftWeapon
+    //                        : _tempCurrRightWeapon;
 
-        WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
+    //                    if (oppositeWeapon == null) //왼손무기를 쥐고있지 않다면
+    //                    {
+    //                        _animator.SetLayerWeight(oppositeHandLayer, 0.0f); //왼손 무기를 쥐고있지 않다면 모션을 따라가야해서 레이어를 꺼버린다.
+    //                    }
+    //                    else
+    //                    {
+    //                        if (oppositeWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null)
+    //                        {
+    //                            _overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
+    //                        }
+    //                        _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
+    //                    }
 
-        Debug.Assert(nextWeaponScript != null, "무기는 WeaponScript가 있어야 한다");
+    //                    _animator.SetBool("IsMirroring", isMirrored);
+    //                }
+    //                //공격 애니메이션이 아니다
+    //                else
+    //                {
+    //                    //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
+    //                    float leftHandLayerWeight = (_tempCurrLeftWeapon == null || _tempCurrLeftWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null) //
+    //                        ? 0.0f
+    //                        : 1.0f;
+    //                    _animator.SetLayerWeight(leftHandMainLayer, leftHandLayerWeight);
 
-        //소켓 찾기
-        Transform correctSocket = null;
-        {
-            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+    //                    //오른손 무기를 쥐고있지 않거나 오른손 무기의 파지 애니메이션이 없다
+    //                    float rightHandLayerWeight = (_tempCurrRightWeapon == null || _tempCurrRightWeapon.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null)
+    //                        ? 0.0f
+    //                        : 1.0f;
+    //                    _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
 
-            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+    //                    //_animator.SetBool("IsMirroring", false);
+    //                }
+    //            }
+    //            break;
 
-            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+    //        case WeaponGrabFocus.RightHandFocused:
+    //        case WeaponGrabFocus.LeftHandFocused:
+    //            {
+    //                float layerWeight = (currState.GetStateDesc()._isAttackState == true)
+    //                    ? 0.0f
+    //                    : 1.0f;
 
+    //                _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
+    //                _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
 
-            ItemInfo.WeaponType targetType = nextWeaponScript._weaponType;
+    //                if (currState.GetStateDesc()._isAttackState == true)
+    //                {
+    //                    _animator.SetBool("IsMirroring", isMirrored);
+    //                }
+    //                else
+    //                {
+    //                    //_animator.SetBool("IsMirroring", false);
+    //                }
+    //            }
+    //            break;
 
-            foreach (var socketComponent in weaponSockets)
-            {
-                if (socketComponent._sideType != targetSide)
-                {
-                    continue;
-                }
-
-                foreach (var type in socketComponent._equippableWeaponTypes)
-                {
-                    if (type == targetType)
-                    {
-                        correctSocket = socketComponent.gameObject.transform;
-                        break;
-                    }
-                }
-            }
-
-            Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
-        }
-
-        //아이템 프리팹 생성, 장착
-        GameObject newObject = Instantiate(nextWeaponPrefab);
-        {
-            nextWeaponScript = newObject.GetComponent<WeaponScript>();
-            nextWeaponScript._weaponType = ItemInfo.WeaponType.MediumGun;
-            nextWeaponScript.Equip(this, correctSocket);
-            newObject.transform.SetParent(transform);
-
-            if (tempIsRightWeapon == true)
-            {
-                _tempCurrRightWeapon = newObject;
-            }
-            else
-            {
-                _tempCurrLeftWeapon = newObject;
-            }
-        }
-    }
+    //        case WeaponGrabFocus.DualGrab:
+    //            {
+    //                Debug.Assert(false, "쌍수 컨텐츠가 추가됐습니까?");
+    //            }
+    //            break;
+    //    }
+    //}
 }

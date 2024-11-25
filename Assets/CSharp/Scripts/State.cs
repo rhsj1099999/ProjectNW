@@ -232,6 +232,12 @@ public class State
                 case StateActionType.CheckBehaves:
                     break;
 
+                case StateActionType.CalculateWeaponLayer_EnterAttack:
+                    break;
+
+                case StateActionType.CalculateWeaponLayer_ExitAttack:
+                    break;
+
                 default:
                     Debug.Assert(false, "데이터가 추가됐습니까?");
                     break;

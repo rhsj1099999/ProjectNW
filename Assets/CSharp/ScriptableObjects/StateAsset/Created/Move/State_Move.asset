@@ -21,10 +21,12 @@ MonoBehaviour:
     _isAttackState: 0
     _isLocoMotionToAttackAction: 1
     _stateLocked: 0
+    _canUseItem: 1
     _stateType: 
     _EnterStateActionTypes: 
-    _inStateActionTypes: 000000000a000000
+    _inStateActionTypes: 000000000a0000000c000000
     _ExitStateActionTypes: 
+    _checkingBehaves: 000000000100000002000000
     _linkedStates:
     - _multiConditionAsset:
       - _singleConditionType: 2
@@ -34,6 +36,8 @@ MonoBehaviour:
         _commandInputConditionTarget: []
         _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 3
@@ -47,6 +51,8 @@ MonoBehaviour:
         _commandInputConditionTarget: []
         _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: 1ebece2f354f25e43add2f6b95824516, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 3
@@ -60,6 +66,8 @@ MonoBehaviour:
         _commandInputConditionTarget: []
         _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: 2d4223264dd6f374fa05bc7da6665b3f, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 0
@@ -69,6 +77,8 @@ MonoBehaviour:
         _commandInputConditionTarget: []
         _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       - _singleConditionType: 3
         _componentConditionGoal: 0
         _weaponTypeGoal: 0
@@ -80,6 +90,8 @@ MonoBehaviour:
         _commandInputConditionTarget: []
         _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: bbe06f87d4b556f4083ec1977ee3eb23, type: 2}
     - _multiConditionAsset:
       - _singleConditionType: 0
@@ -89,5 +101,7 @@ MonoBehaviour:
         _commandInputConditionTarget: []
         _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
     _endStateIdleException: {fileID: 0}

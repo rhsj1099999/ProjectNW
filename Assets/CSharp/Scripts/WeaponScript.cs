@@ -122,6 +122,23 @@ public class WeaponScript : MonoBehaviour
     public AnimationClip _drawAnimation = null;
     public AnimationClip _putawayAnimation_Mirrored = null;
     public AnimationClip _drawAnimation_Mirrored = null;
+    public AnimationClip GetDrawAnimation(AnimatorLayerTypes layerType)
+    {
+        if (layerType == AnimatorLayerTypes.RightHand)
+        {
+            return _drawAnimation;
+        }
+        else if (layerType == AnimatorLayerTypes.LeftHand)
+        {
+            return _drawAnimation_Mirrored;
+        }
+        else
+        {
+            Debug.Assert(false, "무기를 꺼내는 애니메이션이 설정돼있지 않습니다");
+            Debug.Break();
+        }
+        return null;
+    }
     public AnimationClip GetDrawAnimation(bool isRightHand)
     {
         if (isRightHand == true)
@@ -132,6 +149,23 @@ public class WeaponScript : MonoBehaviour
         {
             return _drawAnimation_Mirrored;
         }
+    }
+    public AnimationClip GetPutawayAnimation(AnimatorLayerTypes layerType)
+    {
+        if (layerType == AnimatorLayerTypes.RightHand)
+        {
+            return _putawayAnimation;
+        }
+        else if (layerType == AnimatorLayerTypes.LeftHand)
+        {
+            return _putawayAnimation_Mirrored;
+        }
+        else
+        {
+            Debug.Assert(false, "무기를 집어넣는 애니메이션이 설정돼있지 않습니다");
+            Debug.Break();
+        }
+        return null;
     }
     public AnimationClip GetPutawayAnimation(bool isRightHand)
     {
@@ -150,6 +184,19 @@ public class WeaponScript : MonoBehaviour
     public AnimationClip _handlingIdleAnimation_TwoHand = null;
     public AnimationClip _handlingIdleAnimation_OneHand_Mirrored = null;
     public AnimationClip _handlingIdleAnimation_TwoHand_Mirrored = null;
+    public AnimationClip GetOneHandHandlingAnimation(AnimatorLayerTypes layerType)
+    {
+        if (layerType == AnimatorLayerTypes.RightHand)
+        {
+            return _handlingIdleAnimation_OneHand;
+        }
+        else if (layerType == AnimatorLayerTypes.LeftHand)
+        {
+            return _handlingIdleAnimation_OneHand_Mirrored;
+        }
+
+        return null;
+    }
     public AnimationClip GetOneHandHandlingAnimation(bool isRightHand)
     {
         if (isRightHand == true)
@@ -160,6 +207,18 @@ public class WeaponScript : MonoBehaviour
         {
             return _handlingIdleAnimation_OneHand_Mirrored;
         }
+    }
+    public AnimationClip GetTwoHandHandlingAnimation(AnimatorLayerTypes layerType)
+    {
+        if (layerType == AnimatorLayerTypes.RightHand)
+        {
+            return _handlingIdleAnimation_TwoHand;
+        }
+        else if (layerType == AnimatorLayerTypes.LeftHand)
+        {
+            return _handlingIdleAnimation_TwoHand_Mirrored;
+        }
+        return null;
     }
     public AnimationClip GetTwoHandHandlingAnimation(bool isRightHand)
     {

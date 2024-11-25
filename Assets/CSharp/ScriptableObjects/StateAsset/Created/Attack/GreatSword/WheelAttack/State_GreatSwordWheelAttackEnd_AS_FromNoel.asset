@@ -10,20 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
-  m_Name: State_GreatSwordWheelAttackEnd_AS
+  m_Name: State_GreatSwordWheelAttackEnd_AS_FromNoel
   m_EditorClassIdentifier: 
   _myState:
-    _stataName: GreatSwordWheelAttackEnd_AS
+    _stataName: GreatSwordWheelAttackEnd_AS_FromNoel
     _stateAnimationClip: {fileID: 7400000, guid: 7e99592c592f18f4881808dfb17bcedb,
       type: 2}
     _rightWeaponOverride: 1
     _leftWeaponOverride: 1
     _isAttackState: 1
     _isLocoMotionToAttackAction: 0
+    _stateLocked: 0
+    _canUseItem: 0
     _stateType: 
-    _EnterStateActionTypes: 
+    _EnterStateActionTypes: 0d000000
     _inStateActionTypes: 06000000
-    _ExitStateActionTypes: 
+    _ExitStateActionTypes: 0e000000
+    _checkingBehaves: 
     _linkedStates:
     - _multiConditionAsset:
       - _singleConditionType: 1
@@ -31,6 +34,9 @@ MonoBehaviour:
         _weaponTypeGoal: 0
         _keyInputConditionTarget: []
         _commandInputConditionTarget: []
-        _animationFrameGoal: 0
+        _animationFrameDataType: 2
         _comboStrainedTime: -1
+        _mustNotBusyLayers: 
+        _mustNotBusyLayers_BitShift: 1
       _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
+    _endStateIdleException: {fileID: 0}

@@ -22,6 +22,8 @@ public enum StateActionType
     AttackCommandCheck, //Action에 이것을 가지고 있다면, 무기에게 조작을 넘겨주어 공격을 시도할 수 있다.
     StateEndDesierdCheck,
     CheckBehaves,
+    CalculateWeaponLayer_EnterAttack,
+    CalculateWeaponLayer_ExitAttack,
 }
 
 public enum ConditionType
@@ -577,7 +579,18 @@ public class StateContoller : MonoBehaviour
                             _ownerStateControllingComponent._owner.CheckBehave(type);
                         }
                     }
+                    break;
 
+                case StateActionType.CalculateWeaponLayer_EnterAttack:
+                    {
+                        _ownerStateControllingComponent._owner.WeaponLayerChange_EnterAttack(_currState);
+                    }
+                    break;
+
+                case StateActionType.CalculateWeaponLayer_ExitAttack:
+                    {
+                        _ownerStateControllingComponent._owner.WeaponLayerChange_ExitAttack(_currState);
+                    }
                     break;
 
                 default:
