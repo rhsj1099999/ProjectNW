@@ -1,0 +1,2469 @@
+Using pre-set license
+Built from '2022.3/staging' branch; Version is '2022.3.4f1 (35713cd46cd7) revision 3502396'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 32469 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 1
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\2022.3.4f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker2
+-projectPath
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+-logFile
+Logs/AssetImportWorker2.log
+-srvPort
+57064
+Successfully changed project path to: C:/Users/rhsj/Desktop/Unity/ProjectNW
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [25796] Host "[IP] 192.168.1.3 [Port] 0 [Flags] 2 [Guid] 4252853402 [EditorId] 4252853402 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+
+Player connection [25796] Host "[IP] 192.168.1.3 [Port] 0 [Flags] 2 [Guid] 4252853402 [EditorId] 4252853402 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+
+Refreshing native plugins compatible for Editor in 194.01 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2022.3.4f1 (35713cd46cd7)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/rhsj/Desktop/Unity/ProjectNW/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   31.0.15.5244
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56824
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.010799 seconds.
+- Loaded All Assemblies, in  0.807 seconds
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.314 seconds
+Domain Reload Profiling: 1119ms
+	BeginReloadAssembly (88ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (230ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (79ms)
+	LoadAllAssembliesAndSetupDomain (393ms)
+		LoadAssemblies (87ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (388ms)
+			TypeCache.Refresh (386ms)
+				TypeCache.ScanAssembly (374ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (315ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (236ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (9ms)
+			SetLoadedEditorAssemblies (7ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (2ms)
+			ProcessInitializeOnLoadAttributes (164ms)
+			ProcessInitializeOnLoadMethodAttributes (54ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.907 seconds
+Refreshing native plugins compatible for Editor in 3.77 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Package Manager log level set to [2]
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.235 seconds
+Domain Reload Profiling: 2140ms
+	BeginReloadAssembly (130ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (20ms)
+	RebuildCommonClasses (32ms)
+	RebuildNativeTypeToScriptingClass (15ms)
+	initialDomainReloadingComplete (29ms)
+	LoadAllAssembliesAndSetupDomain (699ms)
+		LoadAssemblies (346ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (413ms)
+			TypeCache.Refresh (368ms)
+				TypeCache.ScanAssembly (357ms)
+			ScanForSourceGeneratedMonoScriptInfo (30ms)
+			ResolveRequiredComponents (15ms)
+	FinalizeReload (1235ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1022ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			SetLoadedEditorAssemblies (9ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (202ms)
+			ProcessInitializeOnLoadAttributes (717ms)
+			ProcessInitializeOnLoadMethodAttributes (80ms)
+			AfterProcessingInitializeOnLoad (6ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (6ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.03 seconds
+Refreshing native plugins compatible for Editor in 4.01 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5909 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 94 unused Assets / (425.4 KB). Loaded Objects now: 6413.
+Memory consumption went from 236.3 MB to 235.9 MB.
+Total: 5.218800 ms (FindLiveObjects: 0.504500 ms CreateObjectMapping: 0.423800 ms MarkObjects: 3.988800 ms  DeleteObjects: 0.300700 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.866 seconds
+Refreshing native plugins compatible for Editor in 4.04 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.311 seconds
+Domain Reload Profiling: 2174ms
+	BeginReloadAssembly (166ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (4ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (47ms)
+	RebuildCommonClasses (38ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (35ms)
+	LoadAllAssembliesAndSetupDomain (612ms)
+		LoadAssemblies (327ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (351ms)
+			TypeCache.Refresh (340ms)
+				TypeCache.ScanAssembly (326ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (12ms)
+	FinalizeReload (1312ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (711ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (5ms)
+			SetLoadedEditorAssemblies (6ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (137ms)
+			ProcessInitializeOnLoadAttributes (497ms)
+			ProcessInitializeOnLoadMethodAttributes (60ms)
+			AfterProcessingInitializeOnLoad (6ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (16ms)
+Refreshing native plugins compatible for Editor in 5.27 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (391.9 KB). Loaded Objects now: 6430.
+Memory consumption went from 206.1 MB to 205.7 MB.
+Total: 3.618000 ms (FindLiveObjects: 0.424600 ms CreateObjectMapping: 0.229400 ms MarkObjects: 2.855900 ms  DeleteObjects: 0.107200 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.893 seconds
+Refreshing native plugins compatible for Editor in 5.37 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Error saving file Library/StateCache/LayerSettings/9e/9ecc5c3c162a7aba29bafa64c8b94b7c.json. Error: System.IO.IOException: Sharing violation on path C:\Users\rhsj\Desktop\Unity\ProjectNW\Library\StateCache\LayerSettings\9e\9ecc5c3c162a7aba29bafa64c8b94b7c.json
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding, System.Int32 bufferSize) [0x00055] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamWriter..ctor(string,bool,System.Text.Encoding)
+  at System.IO.File.WriteAllText (System.String path, System.String contents, System.Text.Encoding encoding) [0x00034] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at UnityEditor.StateCache`1[T].SetState (UnityEngine.Hash128 key, T obj) [0x0004b] in <da771086bc2e4cfc9ad0a72e083a7f98>:0 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.StateCache`1<UnityEditor.Tools/LayerSettings>:SetState (UnityEngine.Hash128,UnityEditor.Tools/LayerSettings)
+UnityEditor.Tools:set_lockedLayers (int)
+UnityEditor.Tools:OnEnable ()
+
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.314 seconds
+Domain Reload Profiling: 2205ms
+	BeginReloadAssembly (162ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (4ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (54ms)
+	RebuildCommonClasses (30ms)
+	RebuildNativeTypeToScriptingClass (16ms)
+	initialDomainReloadingComplete (36ms)
+	LoadAllAssembliesAndSetupDomain (646ms)
+		LoadAssemblies (366ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (341ms)
+			TypeCache.Refresh (327ms)
+				TypeCache.ScanAssembly (311ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (14ms)
+	FinalizeReload (1315ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (715ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (5ms)
+			SetLoadedEditorAssemblies (4ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (128ms)
+			ProcessInitializeOnLoadAttributes (511ms)
+			ProcessInitializeOnLoadMethodAttributes (59ms)
+			AfterProcessingInitializeOnLoad (7ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (20ms)
+Refreshing native plugins compatible for Editor in 4.29 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.0 KB). Loaded Objects now: 6447.
+Memory consumption went from 206.3 MB to 205.9 MB.
+Total: 5.814200 ms (FindLiveObjects: 0.829500 ms CreateObjectMapping: 0.472900 ms MarkObjects: 4.402000 ms  DeleteObjects: 0.107800 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 345159.325065 seconds.
+  path: Assets/Resources/RuntimePrefab/Weapon/SwordSimpleCombo.prefab
+  artifactKey: Guid(2e991131e3bbf1c41a8b5216ec9b2e43) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/RuntimePrefab/Weapon/SwordSimpleCombo.prefab using Guid(2e991131e3bbf1c41a8b5216ec9b2e43) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '98bc2be1984b9fe1f1084282c6bbe546') in 4.519440 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 27
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.890 seconds
+Refreshing native plugins compatible for Editor in 5.97 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+Error loading file Library/StateCache/LayerSettings/9e/9ecc5c3c162a7aba29bafa64c8b94b7c.json. Error: System.IO.IOException: Sharing violation on path C:\Users\rhsj\Desktop\Unity\ProjectNW\Library\StateCache\LayerSettings\9e\9ecc5c3c162a7aba29bafa64c8b94b7c.json
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.File.ReadAllText (System.String path, System.Text.Encoding encoding) [0x00034] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at UnityEditor.StateCache`1[T].GetState (UnityEngine.Hash128 key, T defaultValue) [0x00041] in <da771086bc2e4cfc9ad0a72e083a7f98>:0 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.StateCache`1<UnityEditor.Tools/LayerSettings>:GetState (UnityEngine.Hash128,UnityEditor.Tools/LayerSettings)
+UnityEditor.Tools:OnEnable ()
+UnityEngine.ScriptableObject:CreateInstance (System.Type)
+UnityEngine.ScriptableObject:CreateInstance<UnityEditor.Tools> ()
+UnityEditor.Tools:get_get ()
+UnityEditor.Tools:get_visibleLayers ()
+UnityEditor.Animations.Rigging.BoneRendererUtils:.cctor () (at ./Library/PackageCache/com.unity.animation.rigging@1.2.1/Editor/Utils/BoneRendererUtils.cs:121)
+System.Runtime.CompilerServices.RuntimeHelpers:RunClassConstructor (System.RuntimeTypeHandle)
+UnityEditor.EditorAssemblies:ProcessInitializeOnLoadAttributes (System.Type[])
+
+(Filename: ./Library/PackageCache/com.unity.animation.rigging@1.2.1/Editor/Utils/BoneRendererUtils.cs Line: 121)
+
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.419 seconds
+Domain Reload Profiling: 2306ms
+	BeginReloadAssembly (173ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (58ms)
+	RebuildCommonClasses (38ms)
+	RebuildNativeTypeToScriptingClass (15ms)
+	initialDomainReloadingComplete (27ms)
+	LoadAllAssembliesAndSetupDomain (633ms)
+		LoadAssemblies (331ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (362ms)
+			TypeCache.Refresh (341ms)
+				TypeCache.ScanAssembly (325ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (21ms)
+	FinalizeReload (1420ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (814ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (6ms)
+			SetLoadedEditorAssemblies (4ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (198ms)
+			ProcessInitializeOnLoadAttributes (542ms)
+			ProcessInitializeOnLoadMethodAttributes (58ms)
+			AfterProcessingInitializeOnLoad (5ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (18ms)
+Refreshing native plugins compatible for Editor in 4.60 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.1 KB). Loaded Objects now: 6465.
+Memory consumption went from 206.3 MB to 205.9 MB.
+Total: 4.468800 ms (FindLiveObjects: 0.540900 ms CreateObjectMapping: 0.250500 ms MarkObjects: 3.547700 ms  DeleteObjects: 0.128700 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.943 seconds
+Refreshing native plugins compatible for Editor in 6.03 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.547 seconds
+Domain Reload Profiling: 2488ms
+	BeginReloadAssembly (170ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (4ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (55ms)
+	RebuildCommonClasses (37ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (28ms)
+	LoadAllAssembliesAndSetupDomain (696ms)
+		LoadAssemblies (328ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (431ms)
+			TypeCache.Refresh (397ms)
+				TypeCache.ScanAssembly (382ms)
+			ScanForSourceGeneratedMonoScriptInfo (17ms)
+			ResolveRequiredComponents (16ms)
+	FinalizeReload (1548ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (964ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			SetLoadedEditorAssemblies (7ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (221ms)
+			ProcessInitializeOnLoadAttributes (650ms)
+			ProcessInitializeOnLoadMethodAttributes (69ms)
+			AfterProcessingInitializeOnLoad (8ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (20ms)
+Refreshing native plugins compatible for Editor in 5.70 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.0 KB). Loaded Objects now: 6482.
+Memory consumption went from 206.3 MB to 205.9 MB.
+Total: 4.215500 ms (FindLiveObjects: 0.426700 ms CreateObjectMapping: 0.221400 ms MarkObjects: 3.379600 ms  DeleteObjects: 0.185900 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.969 seconds
+Refreshing native plugins compatible for Editor in 5.24 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.426 seconds
+Domain Reload Profiling: 2394ms
+	BeginReloadAssembly (192ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (65ms)
+	RebuildCommonClasses (55ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (69ms)
+	LoadAllAssembliesAndSetupDomain (637ms)
+		LoadAssemblies (348ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (371ms)
+			TypeCache.Refresh (341ms)
+				TypeCache.ScanAssembly (329ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (30ms)
+	FinalizeReload (1427ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (824ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (9ms)
+			SetLoadedEditorAssemblies (13ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (201ms)
+			ProcessInitializeOnLoadAttributes (531ms)
+			ProcessInitializeOnLoadMethodAttributes (61ms)
+			AfterProcessingInitializeOnLoad (7ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (17ms)
+Refreshing native plugins compatible for Editor in 5.19 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.1 KB). Loaded Objects now: 6499.
+Memory consumption went from 206.4 MB to 206.0 MB.
+Total: 3.910700 ms (FindLiveObjects: 0.461500 ms CreateObjectMapping: 0.263500 ms MarkObjects: 3.034700 ms  DeleteObjects: 0.149200 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 1294.429826 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_2.fbx
+  artifactKey: Guid(9a6c19a3076702c42a39188086de50f6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_2.fbx using Guid(9a6c19a3076702c42a39188086de50f6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '70c01942cc4ecf2fb372fe058a473507') in 0.028018 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 5.989639 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_1.fbx
+  artifactKey: Guid(0fbee866c6f37ae49a165736ba628d6a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_1.fbx using Guid(0fbee866c6f37ae49a165736ba628d6a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '447d713b692b87e0c4f0e064eb85e2a2') in 0.002479 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 3.981988 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_3.fbx
+  artifactKey: Guid(8af87c20aad9971469d2bf22427dadc4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_3.fbx using Guid(8af87c20aad9971469d2bf22427dadc4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '18b11f3ba266bd60ce91984946aae3a3') in 0.003700 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 16.691096 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_4.fbx
+  artifactKey: Guid(37a1539b9c851a54da30f7d575f5e5b0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_4.fbx using Guid(37a1539b9c851a54da30f7d575f5e5b0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b1f9d64db27062e6f4f74da3c461ae55') in 0.002702 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 4.432473 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_5.fbx
+  artifactKey: Guid(1e2bb557bb605484592e0d669d91945f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_5.fbx using Guid(1e2bb557bb605484592e0d669d91945f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '26b98444b3625a37841c7b02538221ae') in 0.002591 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 4.031127 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_6.fbx
+  artifactKey: Guid(e5164b4ae828e8c4e98bfe59fc153735) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/One Hand Up/Shield/OneHand_Up_Shield_Block_Hit_6.fbx using Guid(e5164b4ae828e8c4e98bfe59fc153735) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7500d180eaa3dd3ee6257763388ab910') in 0.002418 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 15.800449 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Movement/Block A Walk Slow/TwoHand_Up_Block_Walk_Slow_B_InPlace.fbx
+  artifactKey: Guid(855cfbbb10ad24844a237b6ec73785bd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Movement/Block A Walk Slow/TwoHand_Up_Block_Walk_Slow_B_InPlace.fbx using Guid(855cfbbb10ad24844a237b6ec73785bd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9649201708a34db8b1599a0affaf89b8') in 0.002407 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 14.447464 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Movement/Block A Walk Slow/TwoHand_Up_Block_Walk_Slow_B_R45_InPlace.fbx
+  artifactKey: Guid(d01986499c4db434e87fdc72b525a9af) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Movement/Block A Walk Slow/TwoHand_Up_Block_Walk_Slow_B_R45_InPlace.fbx using Guid(d01986499c4db434e87fdc72b525a9af) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aaf6da035bcb156236118bf2c6d9420f') in 0.002264 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 0.888866 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Movement/Block A Walk Slow/TwoHand_Up_Block_Walk_Slow_F.fbx
+  artifactKey: Guid(067980af089e6c24da487c44950bc865) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Movement/Block A Walk Slow/TwoHand_Up_Block_Walk_Slow_F.fbx using Guid(067980af089e6c24da487c44950bc865) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1595d03486d2be043d870b2631aa8bc0') in 0.002389 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 19.242629 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Movement/Block A Walk Slow/TwoHand_Up_Block_Walk_Slow_R_InPlace.fbx
+  artifactKey: Guid(2d18502f46ff74f4f9e7ff75e2ca6121) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Movement/Block A Walk Slow/TwoHand_Up_Block_Walk_Slow_R_InPlace.fbx using Guid(2d18502f46ff74f4f9e7ff75e2ca6121) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a3ce4b79dfbf7b908dde9e97572a7659') in 0.002401 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 44.098204 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Base/Movement/Block B Walk Slow/TwoHand_Base_Block_Walk_Slow_F_L45_InPlace.fbx
+  artifactKey: Guid(46baee0b20514e54e82779bbbad7007b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Base/Movement/Block B Walk Slow/TwoHand_Base_Block_Walk_Slow_F_L45_InPlace.fbx using Guid(46baee0b20514e54e82779bbbad7007b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e1a12d6d9d07c72abc8c56c9a02fbc95') in 0.002580 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 8.616405 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Base/Block/Block_B_Hit_2.fbx
+  artifactKey: Guid(175ca492dc8516f46a10b3bc24841aff) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Base/Block/Block_B_Hit_2.fbx using Guid(175ca492dc8516f46a10b3bc24841aff) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '86809342fea95ada189129c07e00f7be') in 0.003377 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 11.522709 seconds.
+  path: Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Block/Block_A_Hit_1.fbx
+  artifactKey: Guid(903d747df4a6e30448aa254afb2dfc05) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/DoubleL/FBX_Animations/Two Hand Up/Block/Block_A_Hit_1.fbx using Guid(903d747df4a6e30448aa254afb2dfc05) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a1c6eecd91d5a7d2b536f04993294ca8') in 0.002265 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 144
+========================================================================
+Received Import Request.
+  Time since last request: 18.277631 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims
+  artifactKey: Guid(02e7fa2f1cce3f14d8edb7f9bb7beae0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims using Guid(02e7fa2f1cce3f14d8edb7f9bb7beae0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4b7f1e7036a4847d02297a196103a829') in 0.000470 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 8.098859 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Idle_To_Block_A.anim
+  artifactKey: Guid(dfe851cf4293a2a45ad4f50da5e7396e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Idle_To_Block_A.anim using Guid(dfe851cf4293a2a45ad4f50da5e7396e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b2d125a7c15ac769348d8f12bef31a09') in 0.003380 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.058167 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_L.anim
+  artifactKey: Guid(98bd71615c2f989408a7ac8556b061c6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_L.anim using Guid(98bd71615c2f989408a7ac8556b061c6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'da481846e5b7591cf58489c116b6d3f0') in 0.004331 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.715001 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_R_InPlace.anim
+  artifactKey: Guid(50e334ad2a15b5e488e129f3d322626f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_R_InPlace.anim using Guid(50e334ad2a15b5e488e129f3d322626f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '48a2f41e495379b592d6cfdc493fe932') in 0.004120 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 1.130501 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_L45.anim
+  artifactKey: Guid(6d4d8cd10e3b0b34e8570c401cdfd73c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_L45.anim using Guid(6d4d8cd10e3b0b34e8570c401cdfd73c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '15ce867eff7cc137ae39b84c266082fa') in 0.003889 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 1.321785 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_3_InPlace.anim
+  artifactKey: Guid(37e3899aefd6b5c41aa50b8a60e3f176) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_3_InPlace.anim using Guid(37e3899aefd6b5c41aa50b8a60e3f176) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '658968c8e778c6774e53f4dbfbb88a60') in 0.009442 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.369941 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_4_InPlace.anim
+  artifactKey: Guid(c930fb422033c0e458067a76cd4cdd17) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_4_InPlace.anim using Guid(c930fb422033c0e458067a76cd4cdd17) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ce0a416556968cfdba73a98e0316d7c4') in 0.007692 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 9.027891 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Shield_Block_End.anim
+  artifactKey: Guid(aaf034a895dbfbb4ebe1ed1402243535) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Shield_Block_End.anim using Guid(aaf034a895dbfbb4ebe1ed1402243535) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '734b2226ef7f5f4e0a58f059f6a81231') in 0.005192 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 7.092045 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_End.anim
+  artifactKey: Guid(169e99aa1e7ff68428e5fddfb0b0402c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_End.anim using Guid(169e99aa1e7ff68428e5fddfb0b0402c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ed625eccfda6f8e012ee8410b63080e9') in 0.005301 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 1.761936 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_6_InPlace.anim
+  artifactKey: Guid(89d8f1e730da8484d8d67b772e22aaca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_6_InPlace.anim using Guid(89d8f1e730da8484d8d67b772e22aaca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '57796b6187cca85a75c0d81e8ac49777') in 0.005527 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 1.042647 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_InPlace.anim
+  artifactKey: Guid(cacbe8db29a32c048857d6295dcf436c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_InPlace.anim using Guid(cacbe8db29a32c048857d6295dcf436c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0dab4e39068c3a8f3b9fc4770bb1a00f') in 0.003747 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.359020 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_R45_InPlace.anim
+  artifactKey: Guid(ce20637f6a79deb44b0d6bf37eeb7e0d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_R45_InPlace.anim using Guid(ce20637f6a79deb44b0d6bf37eeb7e0d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'afb7ee7b764c4464f210eb9b42eed190') in 0.003963 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 4.462104 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_1.anim
+  artifactKey: Guid(41bc7b874353bd142a45856ec4287ac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_1.anim using Guid(41bc7b874353bd142a45856ec4287ac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7bfcf1d8efe86c6c91ddd862cdc60dbf') in 0.003918 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 16.336146 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_3.anim
+  artifactKey: Guid(e61932408aeec1c48b0d377be1ac7df8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_3.anim using Guid(e61932408aeec1c48b0d377be1ac7df8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '518bd50ecbcdbe911b8719b459dbb924') in 0.006502 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 1.671407 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_1_InPlace.anim
+  artifactKey: Guid(c84594e0a82de1c4bb62ad5f2cc0e27b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_1_InPlace.anim using Guid(c84594e0a82de1c4bb62ad5f2cc0e27b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '76893a7bbea13888cbd00d4ecad15d79') in 0.003464 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.498567 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_2.anim
+  artifactKey: Guid(be13b68a85108f44ca4e2bb96a5711cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_2.anim using Guid(be13b68a85108f44ca4e2bb96a5711cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bdf35a176553d38057093aafd7dc22da') in 0.005412 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.024132 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_2_InPlace.anim
+  artifactKey: Guid(f54a3ff6dad1bf34ab7d760f4d45a23b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_2_InPlace.anim using Guid(f54a3ff6dad1bf34ab7d760f4d45a23b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9f2e8ba37ac9613f68f7b2775c3fb92a') in 0.005457 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.063836 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_3_InPlace.anim
+  artifactKey: Guid(64d718a298e70de4cbf36d4b79e17f4f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_3_InPlace.anim using Guid(64d718a298e70de4cbf36d4b79e17f4f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c5779f8cfb8a14f675e60495a13aa779') in 0.007497 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.026932 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_Idle.anim
+  artifactKey: Guid(921f9c94e6d96ee4d8a23391cfc529a8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_A_Hit_Idle.anim using Guid(921f9c94e6d96ee4d8a23391cfc529a8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6627ecaac58b7c5337187fd71346b305') in 0.002348 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.027952 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_1.anim
+  artifactKey: Guid(686a7e69024506142bb69c250092b009) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_1.anim using Guid(686a7e69024506142bb69c250092b009) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4c7e5510529b263a6551ae0a795d7517') in 0.003558 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029855 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_2.anim
+  artifactKey: Guid(a77a6befa02cdf94fb2e8253085ee12b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_2.anim using Guid(a77a6befa02cdf94fb2e8253085ee12b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e14bed9f357033912d64a7a84542f697') in 0.005591 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.022404 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_2_InPlace.anim
+  artifactKey: Guid(5ac38d6e12c04d6498a4d8b7cbd13d65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_2_InPlace.anim using Guid(5ac38d6e12c04d6498a4d8b7cbd13d65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8a019a6123e90d76ffa229090b3095d1') in 0.004866 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.025354 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_3.anim
+  artifactKey: Guid(a3aa4c65f239da8409aba410f4235221) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_3.anim using Guid(a3aa4c65f239da8409aba410f4235221) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9b3ee137c53e64f124cad70c2ee02ad0') in 0.005452 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.026429 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_3_InPlace.anim
+  artifactKey: Guid(b74ef7f9ef873034fb441bac2d17a26b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_3_InPlace.anim using Guid(b74ef7f9ef873034fb441bac2d17a26b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8baddd0494711374e0e5fd0d6a88bbd9') in 0.005628 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.026073 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_Idle.anim
+  artifactKey: Guid(540ab1f2c4abebf40a2dcd238225ef44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_Idle.anim using Guid(540ab1f2c4abebf40a2dcd238225ef44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '87e08eea40535e4f8934f1f9abfbcaea') in 0.002323 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029973 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_End.anim
+  artifactKey: Guid(1e58db0ea48d1f44fa9b3d14d7f24f7a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_End.anim using Guid(1e58db0ea48d1f44fa9b3d14d7f24f7a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '99fb29c930340321f08f01290d38b5fe') in 0.003144 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029156 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_End_InPlace.anim
+  artifactKey: Guid(588247ed61bc44a4ea9cfea2e36d6ff3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_End_InPlace.anim using Guid(588247ed61bc44a4ea9cfea2e36d6ff3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c7e09b570a3a2155e3bf34d82777a189') in 0.003456 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029888 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_1_InPlace.anim
+  artifactKey: Guid(a3862896a1db3f346a5365a71785a646) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_1_InPlace.anim using Guid(a3862896a1db3f346a5365a71785a646) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e5bc772b97d7de434ac3980f95def34d') in 0.003249 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029011 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_2.anim
+  artifactKey: Guid(3791a4c395ac6b84a8d8d8cab590825e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_2.anim using Guid(3791a4c395ac6b84a8d8d8cab590825e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6af2464edf0b219fd34fadf7f3f5ee2e') in 0.005534 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.021630 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_2_InPlace.anim
+  artifactKey: Guid(87287ee849f123b4f8885c0940a859fe) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_2_InPlace.anim using Guid(87287ee849f123b4f8885c0940a859fe) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '456303e12f9f145fb3a1bec255b6a10e') in 0.005984 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.021269 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_3.anim
+  artifactKey: Guid(d02212f30dae49b46833e35307733f9c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_3.anim using Guid(d02212f30dae49b46833e35307733f9c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9bc69c43dfe8c746fb02d58baa086bc2') in 0.009932 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.060946 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_4.anim
+  artifactKey: Guid(c9d99881ed42ccd4d911d38562c4c986) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_4.anim using Guid(c9d99881ed42ccd4d911d38562c4c986) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a6bb40a801ab7cc78a270906a475cc36') in 0.008631 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.019200 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_5.anim
+  artifactKey: Guid(46b452a2972a4ea4e9056348de44c69f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_5.anim using Guid(46b452a2972a4ea4e9056348de44c69f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6a12ca48d62ca236adfdf2d727cf10c0') in 0.004180 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.025316 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_5_InPlace.anim
+  artifactKey: Guid(978d69215c64587438a85be35f4110a1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_5_InPlace.anim using Guid(978d69215c64587438a85be35f4110a1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '04c58433ec1d0ed458558353dd09e72d') in 0.004429 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.027409 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_6.anim
+  artifactKey: Guid(4f27b56ee9d99a94795838af6b34002a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_6.anim using Guid(4f27b56ee9d99a94795838af6b34002a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a2ff1742e171db6c99468b683428113d') in 0.005115 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.022422 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_6_InPlace.anim
+  artifactKey: Guid(8ff731760c74d864bb3fb429057880f2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_6_InPlace.anim using Guid(8ff731760c74d864bb3fb429057880f2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '440e300c1d02380d88462d81b837ecc2') in 0.005073 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.024727 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Idle.anim
+  artifactKey: Guid(13e75c187c66c66498396cbc7fd8d4f8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Idle.anim using Guid(13e75c187c66c66498396cbc7fd8d4f8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '66ac0dad480e764545f3109d248a7878') in 0.002913 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.030272 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Parry_1.anim
+  artifactKey: Guid(f35343b672722cf42a6ebae0f4572363) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Parry_1.anim using Guid(f35343b672722cf42a6ebae0f4572363) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a1eec08b9ca01edf7421b58641aa5b29') in 0.005292 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.022316 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Parry_2.anim
+  artifactKey: Guid(c8f37c2a6e80c6243aa009f892fbdc6a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Parry_2.anim using Guid(c8f37c2a6e80c6243aa009f892fbdc6a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ad3a52176badbecfde8b175182dfb0e1') in 0.005488 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.025061 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Parry_3.anim
+  artifactKey: Guid(52a2bd3136fee7242a9c6ce78cfee032) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Parry_3.anim using Guid(52a2bd3136fee7242a9c6ce78cfee032) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a33bdd830eb2a573c3cb9e1ee1506592') in 0.006296 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.028079 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Start_InPlace.anim
+  artifactKey: Guid(4ee81c88a52ba6c46b9d86d48edfd711) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Start_InPlace.anim using Guid(4ee81c88a52ba6c46b9d86d48edfd711) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c13d7f9b28ce8be67d21ad74bf46aaba') in 0.003171 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029886 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_End.anim
+  artifactKey: Guid(245c954627bf5004687915d4008fad26) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_End.anim using Guid(245c954627bf5004687915d4008fad26) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f837102bad38d60e9da11d4f7ab2e0b4') in 0.003100 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.028463 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_End_InPlace.anim
+  artifactKey: Guid(ccf02f84f59aa5e4088e8d3e5c9afd5d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_End_InPlace.anim using Guid(ccf02f84f59aa5e4088e8d3e5c9afd5d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7289bce38f4a214ad0733da4c9cbc670') in 0.003050 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.028728 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_1.anim
+  artifactKey: Guid(34058d4978cbd1e4aa4a6056e401fa7e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_1.anim using Guid(34058d4978cbd1e4aa4a6056e401fa7e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8c2dc22371f02dbbd06468c52d3d2efc') in 0.003133 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.031290 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_1_InPlace.anim
+  artifactKey: Guid(256cae148d4526549bd9405c3f7209ae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_1_InPlace.anim using Guid(256cae148d4526549bd9405c3f7209ae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '338772cde37a107cfbc44cf67690cee9') in 0.003537 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.035838 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_2_InPlace.anim
+  artifactKey: Guid(60f53a220821594468d19cf3c91facf6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_2_InPlace.anim using Guid(60f53a220821594468d19cf3c91facf6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e35487e1521691bd4c9508ec026b5be5') in 0.005351 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.035094 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_3.anim
+  artifactKey: Guid(cdcad26ccd85ac548be6ac9997b60ea6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_3.anim using Guid(cdcad26ccd85ac548be6ac9997b60ea6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '64e4909b4832e16275333e665904fce4') in 0.009219 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.019191 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_3_InPlace.anim
+  artifactKey: Guid(2b716c8f910ea4b4e9f2804b860d0a89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_3_InPlace.anim using Guid(2b716c8f910ea4b4e9f2804b860d0a89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5d0fdfe4f18dfd3cb9c0ab3fd9cc3ad0') in 0.009066 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.024938 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_4.anim
+  artifactKey: Guid(dc65eb0599de7bd4fbe117b6b5afeef2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_4.anim using Guid(dc65eb0599de7bd4fbe117b6b5afeef2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '68901ee8d2ab66f10e66f39c2fd8e3a0') in 0.006827 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.036702 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_5.anim
+  artifactKey: Guid(faf46b3809dcdc84888b761255ba207a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_5.anim using Guid(faf46b3809dcdc84888b761255ba207a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '71fa4ec5b22008a657c3fa472d5cad89') in 0.004041 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.036169 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_5_InPlace.anim
+  artifactKey: Guid(5068d3fc184fbb94c8eff3dfde0595ad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_5_InPlace.anim using Guid(5068d3fc184fbb94c8eff3dfde0595ad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0c10dd733b8b205d1d87926aca780748') in 0.003988 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.075324 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Idle.anim
+  artifactKey: Guid(bce528f509f2ca44aaa0ec687275c754) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Idle.anim using Guid(bce528f509f2ca44aaa0ec687275c754) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd3f9d9cc0003777ca83b37f0fa30445b') in 0.003513 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.033816 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Parry_1.anim
+  artifactKey: Guid(de2ad1e5def61524fa3153b83c69c76e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Parry_1.anim using Guid(de2ad1e5def61524fa3153b83c69c76e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '15d1aa00b0e88a3e869aa7166c1d856d') in 0.004823 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.032367 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Parry_3.anim
+  artifactKey: Guid(9e6fecd1af7cd2548b45bd19b6346aec) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Parry_3.anim using Guid(9e6fecd1af7cd2548b45bd19b6346aec) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7c3564488a1d570dc734d0cdc41172c5') in 0.006249 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.050741 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Start.anim
+  artifactKey: Guid(0334dcd73aa33fb40a6d7e1e5e74c8b2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Start.anim using Guid(0334dcd73aa33fb40a6d7e1e5e74c8b2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '01a222b959436bed978422ee433335f9') in 0.003127 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.065046 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_HitReaction01.anim
+  artifactKey: Guid(20ca944307b9e504fbeffff2391689ac) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_HitReaction01.anim using Guid(20ca944307b9e504fbeffff2391689ac) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c5a5dbd320eabdb1022b0e3dc10018f9') in 0.004492 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.023865 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_HitReaction02.anim
+  artifactKey: Guid(cd30981d372e90c42a9e06fea8157fbe) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_HitReaction02.anim using Guid(cd30981d372e90c42a9e06fea8157fbe) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ca8a43cce052dca251c90915322551c0') in 0.008029 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.021502 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_Loop.anim
+  artifactKey: Guid(6e71ef5ef9d861d4ba416d015041fd1e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_Loop.anim using Guid(6e71ef5ef9d861d4ba416d015041fd1e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '500aad9429100fe2dfd9a5b04fb0a31c') in 0.003842 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029275 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_Start.anim
+  artifactKey: Guid(ecdd7c4edf793794588659018fc3c6e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/SwordAndShield_Block_Start.anim using Guid(ecdd7c4edf793794588659018fc3c6e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4ceeb73c28fc698256f1e18f86f5f7fe') in 0.004223 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029948 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_InPlace.anim
+  artifactKey: Guid(1d60b62905a9ca847a5015ab55990dc9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_InPlace.anim using Guid(1d60b62905a9ca847a5015ab55990dc9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7cd3641aca7bc65853c8297c404745da') in 0.003680 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.020174 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_L45.anim
+  artifactKey: Guid(477743ada76bff34d902b40fe207f553) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_L45.anim using Guid(477743ada76bff34d902b40fe207f553) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'dbf85261107016efefd17a759dc19488') in 0.003363 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.026255 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_L45_InPlace.anim
+  artifactKey: Guid(7b5b42a6507f5fc4994bd23b2199c1e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_L45_InPlace.anim using Guid(7b5b42a6507f5fc4994bd23b2199c1e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ff94c067cf3bdd6f405ad4dded97f5fd') in 0.004215 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.028002 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_R45.anim
+  artifactKey: Guid(41fc4ae80c601e3468cb28c2cd46b919) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_R45.anim using Guid(41fc4ae80c601e3468cb28c2cd46b919) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9fa9120b5147dbd4b29697dac0bf4cea') in 0.003308 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029237 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_R45_InPlace.anim
+  artifactKey: Guid(3e37dfa04032bb9468c23be39eaf5c04) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B_R45_InPlace.anim using Guid(3e37dfa04032bb9468c23be39eaf5c04) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3792951d95f8ca48ce7b06a8ab04a09f') in 0.003706 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029183 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F.anim
+  artifactKey: Guid(c9810a966c74eb8468616b52c85b736c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F.anim using Guid(c9810a966c74eb8468616b52c85b736c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'cdcaf7660d0b65e70c80e7fdba7f9122') in 0.003446 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.062732 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_L45_InPlace.anim
+  artifactKey: Guid(431298710deeed240a4a4821ad3a1ef0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_L45_InPlace.anim using Guid(431298710deeed240a4a4821ad3a1ef0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ccb96e829d1bf581fd3619765f9e9fed') in 0.003629 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.066641 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_R45.anim
+  artifactKey: Guid(a1a0c440c2f5ab54b92e19b3f245e669) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_R45.anim using Guid(a1a0c440c2f5ab54b92e19b3f245e669) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7074752061fadc4cf321bbd5c0002a41') in 0.003626 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.548073 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_R45_InPlace.anim
+  artifactKey: Guid(e77c824009e37464c8841bac53895714) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_R45_InPlace.anim using Guid(e77c824009e37464c8841bac53895714) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4dc48d56d71f3897b89b9bd25ca5e7ab') in 0.003847 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.536231 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_L_InPlace.anim
+  artifactKey: Guid(e41ff5022ea3f1145b55589d45d28a00) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_L_InPlace.anim using Guid(e41ff5022ea3f1145b55589d45d28a00) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '23cc445887f937614c6441b582dc9d6e') in 0.004672 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.034848 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_R.anim
+  artifactKey: Guid(26fda9d2179428040bc6e42972cf52e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_R.anim using Guid(26fda9d2179428040bc6e42972cf52e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f358704e23231973a16a482364bb58bc') in 0.004237 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.071093 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B.anim
+  artifactKey: Guid(59ba799b6e273284a9cabe7e8700a4ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B.anim using Guid(59ba799b6e273284a9cabe7e8700a4ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e2df5f76e541d3f760efd3565f601e62') in 0.003497 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.021680 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_InPlace.anim
+  artifactKey: Guid(3ceb2e316155b6841ac16761d65c37ca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_InPlace.anim using Guid(3ceb2e316155b6841ac16761d65c37ca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '12617c794777cf130ab972113c6014bf') in 0.003576 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.025658 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_L45.anim
+  artifactKey: Guid(12eb0527e3581a24a8bb7ae10c776f2d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_L45.anim using Guid(12eb0527e3581a24a8bb7ae10c776f2d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3ce7efef0ea48687971ff6d4dc629f9d') in 0.003461 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029063 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_L45_InPlace.anim
+  artifactKey: Guid(fa149ac16ba56ce43968e13d5d584dbf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_L45_InPlace.anim using Guid(fa149ac16ba56ce43968e13d5d584dbf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b5cb08256476800fcf07741800acdf21') in 0.003610 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029654 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_R45.anim
+  artifactKey: Guid(cab1836a48401d849b31e893a881b2b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_R45.anim using Guid(cab1836a48401d849b31e893a881b2b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2ebd0116a9ce2afc719862e987692ff7') in 0.003415 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.031135 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_R45_InPlace.anim
+  artifactKey: Guid(a924b5816f833dd4caa284ea10211f34) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_B_R45_InPlace.anim using Guid(a924b5816f833dd4caa284ea10211f34) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8b7e2b6aef5b297d914b16396bf1a693') in 0.003251 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.028795 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F.anim
+  artifactKey: Guid(7d4d6e8a0149daf4fa1fe3751dfb3601) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F.anim using Guid(7d4d6e8a0149daf4fa1fe3751dfb3601) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '48451f9ae36394d678e3c42bd5fd49b6') in 0.003459 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.030242 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_L45.anim
+  artifactKey: Guid(eb44475c73cd60a48bdb480e63298c16) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_L45.anim using Guid(eb44475c73cd60a48bdb480e63298c16) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e3f0d420784fe6410e9c502d0fd5333e') in 0.003338 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.029382 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_L45_InPlace.anim
+  artifactKey: Guid(dca46f03aa58f2240918b52d4ad826cd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_L45_InPlace.anim using Guid(dca46f03aa58f2240918b52d4ad826cd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e7063317e3447fe91f333de58f708994') in 0.003681 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.030458 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_R45.anim
+  artifactKey: Guid(24bf9002466109e4fa27eaa9aa164924) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_F_R45.anim using Guid(24bf9002466109e4fa27eaa9aa164924) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0c2f4d5e14106c6cb514bc03335d5e1d') in 0.003436 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.063108 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_L.anim
+  artifactKey: Guid(c226cc9305e52e74b8582b3f6c7b3f1c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_L.anim using Guid(c226cc9305e52e74b8582b3f6c7b3f1c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7f98911f5611cc9190b8a083b4ffc00a') in 0.003968 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.023666 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_L_InPlace.anim
+  artifactKey: Guid(d8e2c2e6fa200604b89c8857ea8916e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_L_InPlace.anim using Guid(d8e2c2e6fa200604b89c8857ea8916e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7238324e1830bf5b61ae5ddfda3fa8de') in 0.004176 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.021582 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_R.anim
+  artifactKey: Guid(ddade46a75a508441b7add5a643ee073) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_R.anim using Guid(ddade46a75a508441b7add5a643ee073) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1a077dc0661d6588c308cb2b39290bdb') in 0.004471 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.647359 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_R_InPlace.anim
+  artifactKey: Guid(752a65836ba6fb744ac75370967dd355) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Up_Block_Walk_Slow_R_InPlace.anim using Guid(752a65836ba6fb744ac75370967dd355) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bd292a7f72c2344fe7077608ed7745ac') in 0.007880 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 1.010469 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Idle_To_Block_B.anim
+  artifactKey: Guid(7476a8b338ac3084ba2c1aae906aee12) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Idle_To_Block_B.anim using Guid(7476a8b338ac3084ba2c1aae906aee12) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f4341386dc3288baf1169ba320584f77') in 0.003668 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.288306 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_InPlace.anim
+  artifactKey: Guid(bb9bb453db7d1fc48ad9e7ed45d84612) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_F_InPlace.anim using Guid(bb9bb453db7d1fc48ad9e7ed45d84612) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b0d458d4ab30c8d0e8ebec1262eebeaf') in 0.003590 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.222302 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B.anim
+  artifactKey: Guid(b444afa8ca58306408127744e90f3187) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/TwoHand_Base_Block_Walk_Slow_B.anim using Guid(b444afa8ca58306408127744e90f3187) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b269e824d72a9a99acc7c382d11bffa4') in 0.003869 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.196726 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Start_InPlace.anim
+  artifactKey: Guid(d921d82bb8b47604eb496b4f23dd8819) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Start_InPlace.anim using Guid(d921d82bb8b47604eb496b4f23dd8819) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a912ddcf9be822c0575be0293241eb5c') in 0.003019 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.094373 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Parry_2.anim
+  artifactKey: Guid(7b8d99658cd98ea4aba48e873e4c4d12) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Parry_2.anim using Guid(7b8d99658cd98ea4aba48e873e4c4d12) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1cfaea5c984d030aa0da4adfbdaf0ea4') in 0.006242 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.095234 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_6.anim
+  artifactKey: Guid(616d05ed517499648be2ebc2f8ec302c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_6.anim using Guid(616d05ed517499648be2ebc2f8ec302c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f03a9cb94abbe4bb4a67f363d7f24de8') in 0.005212 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.110334 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_4_InPlace.anim
+  artifactKey: Guid(8e69d88375f0bf1498decd50a8b7ebd6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_4_InPlace.anim using Guid(8e69d88375f0bf1498decd50a8b7ebd6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f8b7b44f6847c8545a7c5bf70ba4e209') in 0.006562 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.138720 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_2.anim
+  artifactKey: Guid(dbba2ba550c5d4d438bd3e8c7096d168) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Up_Shield_Block_Hit_2.anim using Guid(dbba2ba550c5d4d438bd3e8c7096d168) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7c1087239b87e33e044bdc771bae014c') in 0.005312 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.193089 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Start.anim
+  artifactKey: Guid(71d8e196b6b9494419a944d62582c789) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Start.anim using Guid(71d8e196b6b9494419a944d62582c789) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '87310443453ca1eefb8277bdce320daa') in 0.003087 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.521124 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_1.anim
+  artifactKey: Guid(ebf3a16e57516774abf3ada06a010c87) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/OneHand_Base_Shield_Block_Hit_1.anim using Guid(ebf3a16e57516774abf3ada06a010c87) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1e970ec34f73d8a398216a4600100265') in 0.003422 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.267644 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_1_InPlace.anim
+  artifactKey: Guid(bea800ff233cd0749aa0bde2975a2cd7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Block_B_Hit_1_InPlace.anim using Guid(bea800ff233cd0749aa0bde2975a2cd7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3ae309e1898fa4e0135fca70932ac1ed') in 0.003862 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 9.034604 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit
+  artifactKey: Guid(adbc9cc4595b88c46ab9011b9fdb3130) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit using Guid(adbc9cc4595b88c46ab9011b9fdb3130) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '334d1fe8a5af487b59c321ff59aaf7b5') in 0.000517 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 33.059488 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_B_Hit_Idle.anim
+  artifactKey: Guid(540ab1f2c4abebf40a2dcd238225ef44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_B_Hit_Idle.anim using Guid(540ab1f2c4abebf40a2dcd238225ef44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '371d83142621fd0e3f11c34ad678afb8') in 0.002779 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 17.975966 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_Idle.anim
+  artifactKey: Guid(921f9c94e6d96ee4d8a23391cfc529a8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_Idle.anim using Guid(921f9c94e6d96ee4d8a23391cfc529a8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e7020bba781a53954f4c2e02dd0cc0ac') in 0.002597 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.715251 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_1.anim
+  artifactKey: Guid(41bc7b874353bd142a45856ec4287ac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_1.anim using Guid(41bc7b874353bd142a45856ec4287ac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7bc86d3947bd8191417792167e3c7147') in 0.003962 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 65.360797 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_B_Hit_2.anim
+  artifactKey: Guid(a77a6befa02cdf94fb2e8253085ee12b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_B_Hit_2.anim using Guid(a77a6befa02cdf94fb2e8253085ee12b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1e5e66981d0a2d25eea48801d7743cd0') in 0.006406 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.597953 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_3.anim
+  artifactKey: Guid(e61932408aeec1c48b0d377be1ac7df8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_3.anim using Guid(e61932408aeec1c48b0d377be1ac7df8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6da4571332e60e9cf71412202857665a') in 0.006845 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 6.331602 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_2.anim
+  artifactKey: Guid(be13b68a85108f44ca4e2bb96a5711cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_2.anim using Guid(be13b68a85108f44ca4e2bb96a5711cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6b4174e0a5f43b06b3343b61f33b32d4') in 0.006058 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 7.045532 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_2_InPlace.anim
+  artifactKey: Guid(f54a3ff6dad1bf34ab7d760f4d45a23b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_A_Hit_2_InPlace.anim using Guid(f54a3ff6dad1bf34ab7d760f4d45a23b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'de2b98619f230e742b72fa508335ee79') in 0.005611 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 176.718435 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_B_Hit_3.anim
+  artifactKey: Guid(a3aa4c65f239da8409aba410f4235221) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/Block_B_Hit_3.anim using Guid(a3aa4c65f239da8409aba410f4235221) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4587e1b2b0152d603355669a7e6cdb0a') in 0.006685 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 20.965567 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk
+  artifactKey: Guid(608cb73e0831f264188d84f25585b1f7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk using Guid(608cb73e0831f264188d84f25585b1f7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5a6abcb61f8438d27550cb8b06455bb8') in 0.000621 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 352.661076 seconds.
+  path: Assets/CSharp/ScriptableObjects/StateAsset/Created/Attack/Shield/FromAsset_1/State_BlockLoop_FromAsset_1 1.asset
+  artifactKey: Guid(9ec5fd76be6a2414f82f30b3477c988d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/StateAsset/Created/Attack/Shield/FromAsset_1/State_BlockLoop_FromAsset_1 1.asset using Guid(9ec5fd76be6a2414f82f30b3477c988d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bb88551cfe714011d61294d35fddec87') in 0.430237 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 4
+========================================================================
+Received Import Request.
+  Time since last request: 17.651007 seconds.
+  path: Assets/CSharp/ScriptableObjects/StateAsset/Created/Attack/Shield/FromAsset_1/State_BlockWalkFront_FromAsset_1.asset
+  artifactKey: Guid(9ec5fd76be6a2414f82f30b3477c988d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/StateAsset/Created/Attack/Shield/FromAsset_1/State_BlockWalkFront_FromAsset_1.asset using Guid(9ec5fd76be6a2414f82f30b3477c988d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '77f70448c6702487927b81aeb1ca9852') in 0.368974 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 4
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.935 seconds
+Refreshing native plugins compatible for Editor in 5.16 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.439 seconds
+Domain Reload Profiling: 2372ms
+	BeginReloadAssembly (165ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (56ms)
+	RebuildCommonClasses (41ms)
+	RebuildNativeTypeToScriptingClass (10ms)
+	initialDomainReloadingComplete (37ms)
+	LoadAllAssembliesAndSetupDomain (679ms)
+		LoadAssemblies (374ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (367ms)
+			TypeCache.Refresh (355ms)
+				TypeCache.ScanAssembly (344ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (12ms)
+	FinalizeReload (1440ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (767ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			SetLoadedEditorAssemblies (12ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (155ms)
+			ProcessInitializeOnLoadAttributes (526ms)
+			ProcessInitializeOnLoadMethodAttributes (59ms)
+			AfterProcessingInitializeOnLoad (6ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (20ms)
+Refreshing native plugins compatible for Editor in 4.07 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.1 KB). Loaded Objects now: 6516.
+Memory consumption went from 206.5 MB to 206.2 MB.
+Total: 3.714300 ms (FindLiveObjects: 0.438700 ms CreateObjectMapping: 0.238700 ms MarkObjects: 2.921600 ms  DeleteObjects: 0.114300 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 266.353604 seconds.
+  path: Assets/Resources/RuntimePrefab/Weapon/Shield.prefab
+  artifactKey: Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/RuntimePrefab/Weapon/Shield.prefab using Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6faf9c7b3f0e13f07b3c5bbcd2e5f535') in 0.460534 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 37
+========================================================================
+Received Import Request.
+  Time since last request: 3.123525 seconds.
+  path: Assets/Resources/RuntimePrefab/Weapon/Shield.prefab
+  artifactKey: Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/RuntimePrefab/Weapon/Shield.prefab using Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd7ddd03f4920da3f818c74b102f30e6f') in 0.448429 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 38
+========================================================================
+Received Import Request.
+  Time since last request: 5.207523 seconds.
+  path: Assets/Resources/RuntimePrefab/Weapon/Shield.prefab
+  artifactKey: Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/RuntimePrefab/Weapon/Shield.prefab using Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '721f80343462e4e2157f86672173125c') in 0.428831 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 38
+========================================================================
+Received Import Request.
+  Time since last request: 4.197669 seconds.
+  path: Assets/Resources/RuntimePrefab/Weapon/Shield.prefab
+  artifactKey: Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/RuntimePrefab/Weapon/Shield.prefab using Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '46119b4a368ac74437013bb5550347ee') in 0.437654 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 38
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.882 seconds
+Refreshing native plugins compatible for Editor in 3.75 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.390 seconds
+Domain Reload Profiling: 2268ms
+	BeginReloadAssembly (151ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (46ms)
+	RebuildCommonClasses (32ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (35ms)
+	LoadAllAssembliesAndSetupDomain (646ms)
+		LoadAssemblies (334ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (374ms)
+			TypeCache.Refresh (357ms)
+				TypeCache.ScanAssembly (341ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (17ms)
+	FinalizeReload (1390ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (794ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			SetLoadedEditorAssemblies (5ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (165ms)
+			ProcessInitializeOnLoadAttributes (555ms)
+			ProcessInitializeOnLoadMethodAttributes (55ms)
+			AfterProcessingInitializeOnLoad (5ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (20ms)
+Refreshing native plugins compatible for Editor in 5.74 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.1 KB). Loaded Objects now: 6534.
+Memory consumption went from 206.6 MB to 206.2 MB.
+Total: 4.337000 ms (FindLiveObjects: 0.502800 ms CreateObjectMapping: 0.267700 ms MarkObjects: 3.382500 ms  DeleteObjects: 0.182900 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 17.874781 seconds.
+  path: Assets/CSharp/ScriptableObjects/StateAsset/Created/Attack/Shield/FromAsset_1/State_BlockWalkFront_FromAsset_1.asset
+  artifactKey: Guid(9ec5fd76be6a2414f82f30b3477c988d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/StateAsset/Created/Attack/Shield/FromAsset_1/State_BlockWalkFront_FromAsset_1.asset using Guid(9ec5fd76be6a2414f82f30b3477c988d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8d62b66217c85dce384952cc8daf80a1') in 0.409878 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 4
+========================================================================
+Received Import Request.
+  Time since last request: 7.740145 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_B.anim
+  artifactKey: Guid(b444afa8ca58306408127744e90f3187) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_B.anim using Guid(b444afa8ca58306408127744e90f3187) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a2ab9cca99560775f8d22ad730393389') in 0.005848 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 3.545987 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_B_L45.anim
+  artifactKey: Guid(477743ada76bff34d902b40fe207f553) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_B_L45.anim using Guid(477743ada76bff34d902b40fe207f553) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c13f7b6aabec679aa6231bd6b2c95908') in 0.006052 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 1.175613 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_B_R45.anim
+  artifactKey: Guid(41fc4ae80c601e3468cb28c2cd46b919) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_B_R45.anim using Guid(41fc4ae80c601e3468cb28c2cd46b919) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd9b513f3224f16eaacee8687428517cf') in 0.003622 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.465571 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_F.anim
+  artifactKey: Guid(c9810a966c74eb8468616b52c85b736c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_F.anim using Guid(c9810a966c74eb8468616b52c85b736c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c2a0131e96c546db68a5caae25708a88') in 0.004098 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 10.752506 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Up_Block_Walk_Slow_B.anim
+  artifactKey: Guid(59ba799b6e273284a9cabe7e8700a4ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Up_Block_Walk_Slow_B.anim using Guid(59ba799b6e273284a9cabe7e8700a4ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '17507c225f6621bd518fa83476324b93') in 0.003778 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 3.340788 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Up_Block_Walk_Slow_F.anim
+  artifactKey: Guid(7d4d6e8a0149daf4fa1fe3751dfb3601) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Up_Block_Walk_Slow_F.anim using Guid(7d4d6e8a0149daf4fa1fe3751dfb3601) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0978ccfb0832423161b2764f3ce3d028') in 0.004016 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 31.876415 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/OneHand_Up_Shield_Block_Hit_2.anim
+  artifactKey: Guid(dbba2ba550c5d4d438bd3e8c7096d168) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Hit/OneHand_Up_Shield_Block_Hit_2.anim using Guid(dbba2ba550c5d4d438bd3e8c7096d168) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '918348ba5cea88a5f755b57ed6ca313c') in 0.005381 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 149.932918 seconds.
+  path: Assets/IgnoreResources/Sword_and_Shield_Anims/Art
+  artifactKey: Guid(99686f29425abd74b8b02973891be2a7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Sword_and_Shield_Anims/Art using Guid(99686f29425abd74b8b02973891be2a7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '50b729b30d9d2ba8daeb14191693e404') in 0.000705 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 14.109554 seconds.
+  path: Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_Back.fbx
+  artifactKey: Guid(79467acbddc19b94a933a6ee4e53382a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_Back.fbx using Guid(79467acbddc19b94a933a6ee4e53382a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4d20b376ecb53a437e99407996c7ffcf') in 0.002309 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 138
+========================================================================
+Received Import Request.
+  Time since last request: 9.651450 seconds.
+  path: Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_Right.fbx
+  artifactKey: Guid(1b72086b7ef8d2347940dd0a7a31b5d6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_Right.fbx using Guid(1b72086b7ef8d2347940dd0a7a31b5d6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '063aa6777e845324817ed70f3ca2ef24') in 0.002291 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 138
+========================================================================
+Received Import Request.
+  Time since last request: 15.001441 seconds.
+  path: Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_BackRight.fbx
+  artifactKey: Guid(a5c9e5b27e2b5fe4fb2290bc0c1c5f99) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_BackRight.fbx using Guid(a5c9e5b27e2b5fe4fb2290bc0c1c5f99) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd25952121308d8ecdf3ca04ca73a35fe') in 0.002303 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 138
+========================================================================
+Received Import Request.
+  Time since last request: 4.498218 seconds.
+  path: Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_BackLeft.fbx
+  artifactKey: Guid(acf71259acdc7334bb452e69bb1240d0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_BackLeft.fbx using Guid(acf71259acdc7334bb452e69bb1240d0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5dff322e553676335a3ba2be9eef12d5') in 0.002928 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 138
+========================================================================
+Received Import Request.
+  Time since last request: 2.205336 seconds.
+  path: Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_Forward.fbx
+  artifactKey: Guid(3e8e17ffa1132d64a95d96d49ab22e0c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_Forward.fbx using Guid(3e8e17ffa1132d64a95d96d49ab22e0c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5229ab3ea50ecfe82d8583177869a3cc') in 0.002561 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 138
+========================================================================
+Received Import Request.
+  Time since last request: 1.291905 seconds.
+  path: Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_ForwardRight.fbx
+  artifactKey: Guid(9d8f230929f7d604d9b9730d9502bf0c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/IgnoreResources/Sword_and_Shield_Anims/Art/Animations/SwordAndShield_Walk_ForwardRight.fbx using Guid(9d8f230929f7d604d9b9730d9502bf0c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '76bcfcddf7f4c23b65d66ce1ff9ea04a') in 0.002422 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 138
+========================================================================
+Received Import Request.
+  Time since last request: 25.093453 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Right.anim
+  artifactKey: Guid(879faeb9eaae35244bb9ba9982539726) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Right.anim using Guid(879faeb9eaae35244bb9ba9982539726) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c1ade1d6564f1eb422dea2623c74da23') in 0.006371 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.861517 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Left.anim
+  artifactKey: Guid(6f23b2ff66d3b484ca590cd3a2ef9d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Left.anim using Guid(6f23b2ff66d3b484ca590cd3a2ef9d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '273a471a4bf6f445b393ac04c66c09da') in 0.004396 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 5.162629 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_BackLeft.anim
+  artifactKey: Guid(17ca196baa501bb44b53b60048b7d797) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_BackLeft.anim using Guid(17ca196baa501bb44b53b60048b7d797) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '318e7e95fec3fe16b88bede8d3226fb9') in 0.004723 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.596682 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Back.anim
+  artifactKey: Guid(33f691b1c900ab14fb9b24676e494055) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Back.anim using Guid(33f691b1c900ab14fb9b24676e494055) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '319efc6f5f9666aaa1c6fbf24dbf3c6c') in 0.003962 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.659668 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_BackRight.anim
+  artifactKey: Guid(4c802da7ccfe3f747bd0a5f52ddb3b85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_BackRight.anim using Guid(4c802da7ccfe3f747bd0a5f52ddb3b85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '333ba197b5c89904120eade44ccf772b') in 0.004270 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 5.383197 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_ForwardRight.anim
+  artifactKey: Guid(d6328cf1511e28e4b8098b12751a698f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_ForwardRight.anim using Guid(d6328cf1511e28e4b8098b12751a698f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'af9fe74bde1a927030932de94c200b29') in 0.004308 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 6.100722 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_F_R45.anim
+  artifactKey: Guid(a1a0c440c2f5ab54b92e19b3f245e669) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/TwoHand_Base_Block_Walk_Slow_F_R45.anim using Guid(a1a0c440c2f5ab54b92e19b3f245e669) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e98d4cb355057480689dca22d42e6293') in 0.004203 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 14.599818 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Forward.anim
+  artifactKey: Guid(77582b03e5626ec4788c7a3f2f0211a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Forward.anim using Guid(77582b03e5626ec4788c7a3f2f0211a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '90396c86591e9886c5732f2cf30c9f59') in 0.004110 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.558734 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_ForwardLeft.anim
+  artifactKey: Guid(ea61f099c256b844d9cd6f1831b8dac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_ForwardLeft.anim using Guid(ea61f099c256b844d9cd6f1831b8dac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9b38269ecfa2326c2a9b6a517f0fb275') in 0.004807 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 13.955969 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Right.anim
+  artifactKey: Guid(879faeb9eaae35244bb9ba9982539726) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Right.anim using Guid(879faeb9eaae35244bb9ba9982539726) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ca86f545878f69b56029f8cf8d114e48') in 0.004938 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.614199 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Forward.anim
+  artifactKey: Guid(77582b03e5626ec4788c7a3f2f0211a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Forward.anim using Guid(77582b03e5626ec4788c7a3f2f0211a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '49a1da59d36b29ec2d7d867b29304572') in 0.004787 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 31.012627 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Back.anim
+  artifactKey: Guid(33f691b1c900ab14fb9b24676e494055) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Back.anim using Guid(33f691b1c900ab14fb9b24676e494055) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e9aefbdcd0833cd5c624c54b4ca77d09') in 0.004360 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 3.522557 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_Back.anim
+  artifactKey: Guid(33f691b1c900ab14fb9b24676e494055) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_Back.anim using Guid(33f691b1c900ab14fb9b24676e494055) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'de83b9719698483a976978120a8fa1c9') in 0.004260 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.367768 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_BackLeft.anim
+  artifactKey: Guid(17ca196baa501bb44b53b60048b7d797) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_BackLeft.anim using Guid(17ca196baa501bb44b53b60048b7d797) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bb00dc03102733f09c28742f89842397') in 0.005109 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 3.051850 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_BackLeft.anim
+  artifactKey: Guid(17ca196baa501bb44b53b60048b7d797) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_BackLeft.anim using Guid(17ca196baa501bb44b53b60048b7d797) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5b5bd14957687b41ca746809d3539925') in 0.004621 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.924179 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_BackRight.anim
+  artifactKey: Guid(4c802da7ccfe3f747bd0a5f52ddb3b85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_BackRight.anim using Guid(4c802da7ccfe3f747bd0a5f52ddb3b85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7803456a5cbd04767feefa101bb17ccb') in 0.004398 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.981751 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_BackRight.anim
+  artifactKey: Guid(4c802da7ccfe3f747bd0a5f52ddb3b85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_BackRight.anim using Guid(4c802da7ccfe3f747bd0a5f52ddb3b85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4f7591b2bd75805274616e4e8df55e5c') in 0.004428 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 4.573068 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_Forward.anim
+  artifactKey: Guid(77582b03e5626ec4788c7a3f2f0211a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_Forward.anim using Guid(77582b03e5626ec4788c7a3f2f0211a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b81220e6088785a1fc1b3b107bdcb9ad') in 0.004618 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.665488 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_ForwardLeft.anim
+  artifactKey: Guid(ea61f099c256b844d9cd6f1831b8dac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_ForwardLeft.anim using Guid(ea61f099c256b844d9cd6f1831b8dac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '58f8f09c8c6aa3cfbb04357975e26b6b') in 0.004281 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.833679 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_ForwardLeft.anim
+  artifactKey: Guid(ea61f099c256b844d9cd6f1831b8dac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_ForwardLeft.anim using Guid(ea61f099c256b844d9cd6f1831b8dac5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ff7aa4270af0d1c58dfb4f81b3f661e8') in 0.005020 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.464047 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_ForwardRight.anim
+  artifactKey: Guid(d6328cf1511e28e4b8098b12751a698f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_ForwardRight.anim using Guid(d6328cf1511e28e4b8098b12751a698f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '851d4c04d8c6a571ed09f12090f4374e') in 0.004416 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 2.956466 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_ForwardRight.anim
+  artifactKey: Guid(d6328cf1511e28e4b8098b12751a698f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_ForwardRight.anim using Guid(d6328cf1511e28e4b8098b12751a698f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '81c79ab27a1ae480e60313e9ab3545d8') in 0.005438 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.424472 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Left.anim
+  artifactKey: Guid(6f23b2ff66d3b484ca590cd3a2ef9d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/SwordAndShield_Walk_Left.anim using Guid(6f23b2ff66d3b484ca590cd3a2ef9d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9408d63643d66de348b448d501d1fd0b') in 0.004692 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 3.313830 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_Left.anim
+  artifactKey: Guid(6f23b2ff66d3b484ca590cd3a2ef9d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_Left.anim using Guid(6f23b2ff66d3b484ca590cd3a2ef9d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '261af435f782d659c888f543ccffcc52') in 0.004484 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 3.868227 seconds.
+  path: Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_Right.anim
+  artifactKey: Guid(879faeb9eaae35244bb9ba9982539726) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Anims/RPGPackConverted/BlockAnims/Walk/Shield_Walk_Right.anim using Guid(879faeb9eaae35244bb9ba9982539726) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5a8b6ac2459992a87943ad6b25809ed8') in 0.005188 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.966 seconds
+Refreshing native plugins compatible for Editor in 4.93 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.502 seconds
+Domain Reload Profiling: 2465ms
+	BeginReloadAssembly (171ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (8ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (57ms)
+	RebuildCommonClasses (43ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (32ms)
+	LoadAllAssembliesAndSetupDomain (708ms)
+		LoadAssemblies (376ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (398ms)
+			TypeCache.Refresh (382ms)
+				TypeCache.ScanAssembly (368ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (16ms)
+	FinalizeReload (1502ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (814ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (5ms)
+			SetLoadedEditorAssemblies (7ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (199ms)
+			ProcessInitializeOnLoadAttributes (532ms)
+			ProcessInitializeOnLoadMethodAttributes (62ms)
+			AfterProcessingInitializeOnLoad (8ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (25ms)
+Refreshing native plugins compatible for Editor in 3.49 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.0 KB). Loaded Objects now: 6551.
+Memory consumption went from 206.7 MB to 206.3 MB.
+Total: 4.500400 ms (FindLiveObjects: 0.441100 ms CreateObjectMapping: 0.341200 ms MarkObjects: 3.578800 ms  DeleteObjects: 0.138600 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 159.788783 seconds.
+  path: Assets/Resources/RuntimePrefab/Weapon/Shield.prefab
+  artifactKey: Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/RuntimePrefab/Weapon/Shield.prefab using Guid(215cc3026060dff4385326d9fad9e996) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bd6b0554c3c6c051af137f106de05625') in 0.472302 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 39
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.945 seconds
+Refreshing native plugins compatible for Editor in 4.54 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Error saving file Library/StateCache/LayerSettings/9e/9ecc5c3c162a7aba29bafa64c8b94b7c.json. Error: System.IO.IOException: Sharing violation on path C:\Users\rhsj\Desktop\Unity\ProjectNW\Library\StateCache\LayerSettings\9e\9ecc5c3c162a7aba29bafa64c8b94b7c.json
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding, System.Int32 bufferSize) [0x00055] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamWriter..ctor(string,bool,System.Text.Encoding)
+  at System.IO.File.WriteAllText (System.String path, System.String contents, System.Text.Encoding encoding) [0x00034] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at UnityEditor.StateCache`1[T].SetState (UnityEngine.Hash128 key, T obj) [0x0004b] in <da771086bc2e4cfc9ad0a72e083a7f98>:0 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.StateCache`1<UnityEditor.Tools/LayerSettings>:SetState (UnityEngine.Hash128,UnityEditor.Tools/LayerSettings)
+UnityEditor.Tools:set_lockedLayers (int)
+UnityEditor.Tools:OnEnable ()
+
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.458 seconds
+Domain Reload Profiling: 2398ms
+	BeginReloadAssembly (187ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (53ms)
+	RebuildCommonClasses (49ms)
+	RebuildNativeTypeToScriptingClass (16ms)
+	initialDomainReloadingComplete (43ms)
+	LoadAllAssembliesAndSetupDomain (644ms)
+		LoadAssemblies (373ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (356ms)
+			TypeCache.Refresh (343ms)
+				TypeCache.ScanAssembly (330ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (12ms)
+	FinalizeReload (1458ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (783ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (7ms)
+			SetLoadedEditorAssemblies (4ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (189ms)
+			ProcessInitializeOnLoadAttributes (515ms)
+			ProcessInitializeOnLoadMethodAttributes (60ms)
+			AfterProcessingInitializeOnLoad (8ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (30ms)
+Refreshing native plugins compatible for Editor in 4.57 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.2 KB). Loaded Objects now: 6568.
+Memory consumption went from 206.7 MB to 206.3 MB.
+Total: 4.787700 ms (FindLiveObjects: 0.619700 ms CreateObjectMapping: 0.535500 ms MarkObjects: 3.501600 ms  DeleteObjects: 0.129900 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.903 seconds
+Refreshing native plugins compatible for Editor in 5.21 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+Error saving file Library/StateCache/LayerSettings/9e/9ecc5c3c162a7aba29bafa64c8b94b7c.json. Error: System.IO.IOException: Sharing violation on path C:\Users\rhsj\Desktop\Unity\ProjectNW\Library\StateCache\LayerSettings\9e\9ecc5c3c162a7aba29bafa64c8b94b7c.json
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding, System.Int32 bufferSize) [0x00055] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamWriter..ctor(string,bool,System.Text.Encoding)
+  at System.IO.File.WriteAllText (System.String path, System.String contents, System.Text.Encoding encoding) [0x00034] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at UnityEditor.StateCache`1[T].SetState (UnityEngine.Hash128 key, T obj) [0x0004b] in <da771086bc2e4cfc9ad0a72e083a7f98>:0 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.StateCache`1<UnityEditor.Tools/LayerSettings>:SetState (UnityEngine.Hash128,UnityEditor.Tools/LayerSettings)
+UnityEditor.Tools:set_lockedLayers (int)
+UnityEditor.Tools:OnEnable ()
+UnityEngine.ScriptableObject:CreateInstance (System.Type)
+UnityEngine.ScriptableObject:CreateInstance<UnityEditor.Tools> ()
+UnityEditor.Tools:get_get ()
+UnityEditor.Tools:get_visibleLayers ()
+UnityEditor.Animations.Rigging.BoneRendererUtils:.cctor () (at ./Library/PackageCache/com.unity.animation.rigging@1.2.1/Editor/Utils/BoneRendererUtils.cs:121)
+System.Runtime.CompilerServices.RuntimeHelpers:RunClassConstructor (System.RuntimeTypeHandle)
+UnityEditor.EditorAssemblies:ProcessInitializeOnLoadAttributes (System.Type[])
+
+(Filename: ./Library/PackageCache/com.unity.animation.rigging@1.2.1/Editor/Utils/BoneRendererUtils.cs Line: 121)
+
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.624 seconds
+Domain Reload Profiling: 2524ms
+	BeginReloadAssembly (168ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (4ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (55ms)
+	RebuildCommonClasses (40ms)
+	RebuildNativeTypeToScriptingClass (24ms)
+	initialDomainReloadingComplete (31ms)
+	LoadAllAssembliesAndSetupDomain (637ms)
+		LoadAssemblies (338ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (368ms)
+			TypeCache.Refresh (343ms)
+				TypeCache.ScanAssembly (330ms)
+			ScanForSourceGeneratedMonoScriptInfo (8ms)
+			ResolveRequiredComponents (17ms)
+	FinalizeReload (1624ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1017ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			SetLoadedEditorAssemblies (8ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (220ms)
+			ProcessInitializeOnLoadAttributes (694ms)
+			ProcessInitializeOnLoadMethodAttributes (79ms)
+			AfterProcessingInitializeOnLoad (8ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (22ms)
+Refreshing native plugins compatible for Editor in 5.35 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.2 KB). Loaded Objects now: 6585.
+Memory consumption went from 206.7 MB to 206.3 MB.
+Total: 5.729500 ms (FindLiveObjects: 0.478400 ms CreateObjectMapping: 0.219400 ms MarkObjects: 4.890600 ms  DeleteObjects: 0.140200 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.956 seconds
+Refreshing native plugins compatible for Editor in 5.59 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Error saving file Library/StateCache/LayerSettings/9e/9ecc5c3c162a7aba29bafa64c8b94b7c.json. Error: System.IO.IOException: Sharing violation on path C:\Users\rhsj\Desktop\Unity\ProjectNW\Library\StateCache\LayerSettings\9e\9ecc5c3c162a7aba29bafa64c8b94b7c.json
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding, System.Int32 bufferSize) [0x00055] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding) [0x00000] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamWriter..ctor(string,bool,System.Text.Encoding)
+  at System.IO.File.WriteAllText (System.String path, System.String contents, System.Text.Encoding encoding) [0x00034] in <605bf8b31fcb444b85176da963870aa7>:0 
+  at UnityEditor.StateCache`1[T].SetState (UnityEngine.Hash128 key, T obj) [0x0004b] in <da771086bc2e4cfc9ad0a72e083a7f98>:0 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.StateCache`1<UnityEditor.Tools/LayerSettings>:SetState (UnityEngine.Hash128,UnityEditor.Tools/LayerSettings)
+UnityEditor.Tools:set_lockedLayers (int)
+UnityEditor.Tools:OnEnable ()
+
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.362 seconds
+Domain Reload Profiling: 2316ms
+	BeginReloadAssembly (180ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (57ms)
+	RebuildCommonClasses (50ms)
+	RebuildNativeTypeToScriptingClass (17ms)
+	initialDomainReloadingComplete (36ms)
+	LoadAllAssembliesAndSetupDomain (672ms)
+		LoadAssemblies (366ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (379ms)
+			TypeCache.Refresh (365ms)
+				TypeCache.ScanAssembly (351ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (14ms)
+	FinalizeReload (1363ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (800ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (7ms)
+			SetLoadedEditorAssemblies (7ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (193ms)
+			ProcessInitializeOnLoadAttributes (523ms)
+			ProcessInitializeOnLoadMethodAttributes (63ms)
+			AfterProcessingInitializeOnLoad (7ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (24ms)
+Refreshing native plugins compatible for Editor in 5.62 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 5744 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 50 unused Assets / (392.2 KB). Loaded Objects now: 6602.
+Memory consumption went from 206.7 MB to 206.3 MB.
+Total: 5.204500 ms (FindLiveObjects: 0.658100 ms CreateObjectMapping: 0.562600 ms MarkObjects: 3.839900 ms  DeleteObjects: 0.142800 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:scripting/monoscript/fileName/RayCastManager.cs: 24323114852ede92622f5cfc7eac7043 -> 90c7f884ae5eaf5458f6be26cf8ab8b2
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:scripting/monoscript/fileName/RenderDepthManager.cs: 395d209d57c1bfab8a789c6264fb0722 -> afd4af4092c814d15a83b938ef334115
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:scripting/monoscript/fileName/OnGUIManager.cs: bfbb118dbc8c17f2ca4100458d4ac9a6 -> 34cf57bd50628bd8f5690a407592521c
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:scripting/monoscript/fileName/Gunscript2.cs: 226e380b6cfd6ea5d07f769cb7dde619 -> 3ed40d7187cdaf59f235271c9b87599f
+  custom:scripting/monoscript/fileName/ItemCatcher.cs: 5f43b0da7d2ef6bde67a1e68cc4a7134 -> aad49cc0d233d870cf42c5a8c0ad52e6
+  custom:scripting/monoscript/fileName/DampingFollower2.cs: 5e8351f0378e5a20dd12935d677409b1 -> 55040f0337ac5c99e1f9ec3ed1633068
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RootmotionReset.cs: 0ba5e0e4c0de3c76a05a0d49ece6678d -> 
+  custom:scripting/monoscript/fileName/StateContoller.cs: 6dcb3a12fb622ce47fbb712cd5e6e99f -> 7397538833963b115405dd37d1945908
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:scripting/monoscript/fileName/RPMaterialLoader.cs: a1a5d8ed2867c776d4fc7494cbbf88e0 -> 
+  custom:scripting/monoscript/fileName/SimpleCameraController.cs: 9d5e45e836538af465ffb763b138c221 -> 

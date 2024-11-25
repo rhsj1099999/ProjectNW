@@ -110,11 +110,12 @@ public class StateLinkDesc
 public class StateDesc
 {
     public string _stataName;
-    public AnimationClip _stateAnimationClip;
+    public AnimationClip _stateAnimationClip = null;
     public bool _rightWeaponOverride = true;
     public bool _leftWeaponOverride = true;
     public bool _isAttackState = false;
     public bool _isLocoMotionToAttackAction = false;
+    public bool _isLoopState = false;
 
     public bool _stateLocked = false; //외부에서 상태변경이 들어와도 씹겠다.
     /*------------------------------------------------------------------------------
@@ -124,14 +125,17 @@ public class StateDesc
     public bool _canUseItem = false;
 
     public List<RepresentStateType> _stateType = new List<RepresentStateType>();
-    public List<StateActionType> _EnterStateActionTypes;
-    public List<StateActionType> _inStateActionTypes;
-    public List<StateActionType> _ExitStateActionTypes;
+    public List<StateActionType> _EnterStateActionTypes = new List<StateActionType>();
+    public List<StateActionType> _inStateActionTypes = new List<StateActionType>();
+    public List<StateActionType> _ExitStateActionTypes = new List<StateActionType>();
     public List<AdditionalBehaveType> _checkingBehaves = new List<AdditionalBehaveType>();
 
-    public List<StateLinkDesc> _linkedStates;
+    public List<ConditionDesc> _breakLoopStateCondition = null;
+    public List<StateLinkDesc> _linkedStates = new List<StateLinkDesc>();
     public AnimationClip _endStateIdleException = null; //상태의 애니메이션이 끝날때 예외 애니메이션
 }
+
+
 
 [Serializable]
 public class StateInitial
@@ -267,7 +271,8 @@ public class StateContoller : MonoBehaviour
 
         DoActions(_currState.GetStateDesc()._EnterStateActionTypes);
 
-        if (_currState.GetStateDesc()._isAttackState == true) //다음으로 넘어가려는 상태가 공격상태입니다.
+        if (_currState.GetStateDesc()._isAttackState == true && //다음으로 넘어가려는 상태가 공격상태입니다.
+            _currState.GetStateDesc()._isLoopState == false)  //반복상태도 아닙니다.
         {
             StartCoroutine("AttackStateAutoChangeCoroutine");
         }
@@ -290,6 +295,8 @@ public class StateContoller : MonoBehaviour
         {
             ChangeState(nextState);
         }
+
+
 
 
         //상태 변경이 완료됐고. 현재 상태들의 Action을 실행하려 합니다.
@@ -417,6 +424,11 @@ public class StateContoller : MonoBehaviour
 
             bool isSuccess = true;
 
+            if (targetState.GetLinkedState().Count <= 0)
+            {
+                isSuccess = false;
+            }
+
             foreach (KeyValuePair<State, List<ConditionDesc>> pair in targetState.GetLinkedState())
             {
                 isSuccess = true;
@@ -458,7 +470,24 @@ public class StateContoller : MonoBehaviour
 
             if (targetState == currentState)
             {
-                return null;
+                if (currentState.GetStateDesc()._isLoopState == true)
+                {
+                    foreach (ConditionDesc conditionDesc in currentState.GetStateDesc()._breakLoopStateCondition)
+                    {
+                        if (CheckCondition(conditionDesc) == false)
+                        {
+                            return null;
+                        }
+                    }
+
+                    targetState = _states[0];
+                    isSuccess = true;
+                }
+
+                if (isSuccess == false)
+                {
+                    return null;
+                }
             }
 
             if (isSuccess == true)

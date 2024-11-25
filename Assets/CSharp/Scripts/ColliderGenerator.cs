@@ -23,22 +23,6 @@ public class ColliderGenerator : MonoBehaviour
     [SerializeField] private List<CapsuleColliderDesc> _colliderDesc = new List<CapsuleColliderDesc>();
     private List<GameObject> _createdColliders = new List<GameObject>();
 
-    
-
-    private void OnValidate()
-    {
-        //Collider[] existingColliders = GetComponents<Collider>();
-        //foreach (var col in existingColliders)
-        //{
-        //    DestroyImmediate(col); // Editor 모드에서 즉시 제거
-        //}
-        
-        //foreach (var desc in _colliderDesc)
-        //{
-
-        //}
-    }
-
     public void GenerateCapsulecollider(CapsuleColliderDesc desc, string name, GameObject capsulePrefab)
     {
         GameObject createdCapsule = Instantiate(capsulePrefab);
