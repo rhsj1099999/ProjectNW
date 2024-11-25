@@ -278,7 +278,6 @@ public class StateContoller : MonoBehaviour
         }
 
         _ownerStateControllingComponent._owner.StateChanged();
-
     }
 
 
@@ -296,24 +295,20 @@ public class StateContoller : MonoBehaviour
             ChangeState(nextState);
         }
 
-
-
-
         //상태 변경이 완료됐고. 현재 상태들의 Action을 실행하려 합니다.
+
+        //공격을 할 수 있는 상태에서 공격키가 아무거나 눌렸습니다. 0.1초 뒤 공격 애니메이션으로 전환을 시도할겁니다.
+        if ((Input.GetKeyDown(_rightHandAttackKey) == true || Input.GetKeyDown(_leftHandAttackKey) == true) &&
+            _stateChangeCoroutineStarted == false &&
+            true/*넘어갈 수 있는 공격상태가 하나라도 존재한다*/)
         {
-            //공격을 할 수 있는 상태에서 공격키가 아무거나 눌렸습니다. 0.1초 뒤 공격 애니메이션으로 전환을 시도할겁니다.
-            if ((Input.GetKeyDown(_rightHandAttackKey) == true || Input.GetKeyDown(_leftHandAttackKey) == true) &&
-                _stateChangeCoroutineStarted == false &&
-                true/*넘어갈 수 있는 공격상태가 하나라도 존재한다*/)
-            {
-                StartCoroutine("AttackComboChangeCoroutine");
-            }
-
-            DoActions(_currState.GetStateDesc()._inStateActionTypes);
-
-            _prevStateTime = _currStateTime;
-            _currStateTime += Time.deltaTime;
+            StartCoroutine("AttackComboChangeCoroutine");
         }
+
+        DoActions(_currState.GetStateDesc()._inStateActionTypes);
+
+        _prevStateTime = _currStateTime;
+        _currStateTime += Time.deltaTime;
     }
 
 
