@@ -196,8 +196,14 @@ public class StateContoller : MonoBehaviour
 
 
 
-    Dictionary<StateAsset, List<LinkedStateAsset>> _currGraphStates = null;
+    List<LinkedStateAsset> _currLinkedStates = null;
     Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints = null;
+
+    List<LinkedStateAsset> _currLinkedStates_adiitional = null;
+    Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints_additional = null;
+
+    List<LinkedStateAsset> _currLinkedStates_DeepCopy = new List<LinkedStateAsset>();
+    Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints_DeepCopy = new Dictionary<StateGraphType, HashSet<StateAsset>>();
 
 
     private float _attackStateAutoChangeTime = 0.0f;
@@ -300,8 +306,26 @@ public class StateContoller : MonoBehaviour
 
         _currentGraphType = nextGraphType;
         _currState = nextState;
-        _currGraphStates = _stateGraphes[(int)_currentGraphType].GetGraphStates();
+
+        _currLinkedStates = _stateGraphes[(int)_currentGraphType].GetGraphStates()[_currState];
         _currInteractionPoints = _stateGraphes[(int)_currentGraphType].GetInteractionPoints();
+
+        _currLinkedStates_DeepCopy.Clear();
+        foreach (LinkedStateAsset linkedState in _currLinkedStates)
+        {
+            _currLinkedStates_DeepCopy.Add(linkedState);
+        }
+
+        _currInteractionPoints_DeepCopy.Clear();
+        foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints)
+        {
+            _currInteractionPoints_DeepCopy.Add(pair.Key, pair.Value);
+        }
+
+
+        _currLinkedStates_adiitional = null;
+        _currInteractionPoints_additional = null;
+
 
         AllStopCoroutine();
 
@@ -316,7 +340,7 @@ public class StateContoller : MonoBehaviour
 
         StateGraphType nextGraphType = StateGraphType.End;
 
-        StateAsset nextState = CheckChangeState_Recursion(_currState, _currentGraphType, out nextGraphType);
+        StateAsset nextState = CheckChangeState_Recursion(out nextGraphType);
 
         if (nextState != null)
         {
@@ -360,25 +384,18 @@ public class StateContoller : MonoBehaviour
 
 
 
-    public StateAsset CheckChangeState_Recursion(StateAsset currentState, StateGraphType currType, out StateGraphType resultType) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
+    public StateAsset CheckChangeState_Recursion(out StateGraphType nextGraphType) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
     {
-        resultType = currType;
-        if (_stateChangeCoroutineStarted == true)
-        {
-            return null; //공격 콤보 체크가 진행중이라 아무것도 안할꺼다
-        }
-
-        StateAsset targetState = currentState;
+        StateAsset targetState = _currState;
+        nextGraphType = _currentGraphType;
 
         int debugChangeCount = 0;
         bool isStateChangeGuaranted = false;
 
-
         //1. 지금 상태가 속한 그래프 내에서 다른 그래프 타입으로 교환 가능한 상태인지 검사
         {
-            StateGraphAsset currGraphAsset = _stateGraphes[(int)currType];
-
-            foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints)
+            //foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints)
+            foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints_DeepCopy)
             {
                 if (pair.Value.Contains(_currState) == false)
                 {
@@ -413,7 +430,7 @@ public class StateContoller : MonoBehaviour
 
                     if (isSuccess == true)
                     {
-                        resultType = pair.Key;
+                        nextGraphType = pair.Key;
                         return linkedStatePair.Value._linkedState;
                     }
                 }
@@ -432,21 +449,9 @@ public class StateContoller : MonoBehaviour
 
             bool isSuccess = true;
 
-            if (_currGraphStates.Count <= 0)
-            {
-                return null;
-            }
+            bool isRightSided = (_currentGraphType != StateGraphType.WeaponState_LeftGraph);
 
-            List<LinkedStateAsset> linkedStates = _currGraphStates[targetState];
-
-            if (linkedStates.Count <= 0)
-            {
-                isSuccess = false;
-            }
-
-            bool isRightSided = (currType != StateGraphType.WeaponState_LeftGraph);
-
-            foreach (var linkedStateAsset in linkedStates)
+            foreach (var linkedStateAsset in _currLinkedStates_DeepCopy)
             {
                 isSuccess = true;
 
@@ -462,6 +467,12 @@ public class StateContoller : MonoBehaviour
                 if (isSuccess == true)
                 {
                     targetState = linkedStateAsset._linkedState;
+                    //_currLinkedStates = _stateGraphes[(int)_currentGraphType].GetGraphStates()[targetState];
+                    _currLinkedStates_DeepCopy.Clear();
+                    foreach (LinkedStateAsset item in _stateGraphes[(int)_currentGraphType].GetGraphStates()[targetState])
+                    {
+                        _currLinkedStates_DeepCopy.Add(item);
+                    }
 
                     {
                         /*--------------------------------------------------------
@@ -481,7 +492,7 @@ public class StateContoller : MonoBehaviour
                 }
             }
 
-            if (targetState == currentState &&
+            if (targetState == _currState &&
                 isSuccess == false)
             {
                 return null;
@@ -707,29 +718,43 @@ public class StateContoller : MonoBehaviour
             if (target._timeACC >= target._timeTarget)
             {
                 //CopyIdlesState : LinkedState
-                Dictionary<StateAsset, List<LinkedStateAsset>> idleStateGraph = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetGraphStates();
-                foreach (KeyValuePair<StateAsset, List<LinkedStateAsset>> pair in idleStateGraph)
-                {
-                    if (_currGraphStates.ContainsKey(pair.Key) == true)
-                    {
-                        continue;
-                    }
+                List<LinkedStateAsset> idleLinkedStates = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates();
+                //_currLinkedStates_adiitional = idleLinkedStates;
+                //foreach (LinkedStateAsset linkedState in idleLinkedStates)
+                //{
+                //    if (_currLinkedStates.Contains(linkedState) == true)
+                //    {
+                //        continue;
+                //    }
 
-                    _currGraphStates.Add(pair.Key, pair.Value);
+                //    _currLinkedStates.Add(linkedState);
+                //}
+                foreach (LinkedStateAsset linkedStateAsset in idleLinkedStates)
+                {
+                    _currLinkedStates_DeepCopy.Add(linkedStateAsset);
                 }
+
 
                 //CopyIdlesState : InteractionPoints
                 Dictionary<StateGraphType, HashSet<StateAsset>> idleInteractionPoinst = _stateGraphes[(int)_currentGraphType].GetInteractionPoints();
+                //_currInteractionPoints_additional = idleInteractionPoinst;
+                //foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in idleInteractionPoinst)
+                //{
+                //    if (_currInteractionPoints.ContainsKey(pair.Key) == true)
+                //    {
+                //        continue;
+                //    }
+
+                //    _currInteractionPoints.Add(pair.Key, pair.Value);
+                //}
                 foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in idleInteractionPoinst)
                 {
-                    if (_currInteractionPoints.ContainsKey(pair.Key) == true)
+                    if (_currInteractionPoints_DeepCopy.ContainsKey(pair.Key) == true)
                     {
                         continue;
                     }
-
-                    _currInteractionPoints.Add(pair.Key, pair.Value);
+                    _currInteractionPoints_DeepCopy.Add(pair.Key, pair.Value);
                 }
-
 
                 break;
             }

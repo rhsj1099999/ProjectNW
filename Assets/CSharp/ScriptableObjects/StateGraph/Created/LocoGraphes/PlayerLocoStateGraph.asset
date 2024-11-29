@@ -137,6 +137,11 @@ MonoBehaviour:
     _stateAsset: {fileID: 11400000, guid: 1ebece2f354f25e43add2f6b95824516, type: 2}
     _entryCondition: []
     _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
+          type: 2}
+        _goal: 1
     - _linkedState: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
       _conditionAsset:
       - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
