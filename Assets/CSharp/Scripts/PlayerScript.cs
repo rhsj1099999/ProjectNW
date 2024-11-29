@@ -14,6 +14,7 @@ using static BodyPartBlendingWork;
 using static AnimatorBlendingDesc;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEditor.VersionControl;
+using UnityEngine.UIElements;
 
 public class CoroutineLock
 {
@@ -258,7 +259,7 @@ public class PlayerScript : MonoBehaviour, IHitable
         }
 
         //StateController에게 상태 변경 지시
-        _stateContoller.TryChangeState(representType);
+        //_stateContoller.TryChangeState(representType);
     }
 
 
@@ -358,7 +359,7 @@ public class PlayerScript : MonoBehaviour, IHitable
     //Animator Secton -> 이거 다른 컴포넌트로 빼세요
     private Animator _animator = null;
     private AnimatorOverrideController _overrideController = null;
-
+    
 
 
         //Animation_TotalBlendSection
@@ -445,8 +446,8 @@ public class PlayerScript : MonoBehaviour, IHitable
 
     private void Start()
     {
-        State currState = _stateContoller.GetCurrState();
-        AnimationClip currAnimationClip = currState.GetStateDesc()._stateAnimationClip;
+        StateAsset currState = _stateContoller.GetCurrState();
+        AnimationClip currAnimationClip = currState._myState._stateAnimationClip;
         _currAnimClip = currAnimationClip;
     }
 
@@ -548,6 +549,11 @@ public class PlayerScript : MonoBehaviour, IHitable
             _characterMoveScript2.GravityUpdate();
             _characterMoveScript2.ClearLatestVelocity();
         }
+    }
+
+    private void LateUpdate()
+    {
+        ChangeAnimation(_stateContoller.GetCurrState());
     }
 
 
@@ -760,10 +766,10 @@ public class PlayerScript : MonoBehaviour, IHitable
     }
 
 
-    public void StateChanged()
-    {
-        ChangeAnimation(_stateContoller.GetCurrState());
-    }
+    //public void StateChanged()
+    //{
+    //    ChangeAnimation(_stateContoller.GetCurrState());
+    //}
 
 
     private void ReadyAimSystem()
@@ -791,13 +797,18 @@ public class PlayerScript : MonoBehaviour, IHitable
     }
 
 
-    public void ChangeAnimation(State nextState)
+    public void ChangeAnimation(StateAsset nextState)
     {
         /*----------------------------------------------------
         |NOTI| 모든 애니메이션은 RightHand 기준으로 녹화됐습니다.
         ------------------------------------------------------*/
 
-        AnimationClip targetClip = nextState.GetStateDesc()._stateAnimationClip;
+        AnimationClip targetClip = nextState._myState._stateAnimationClip;
+
+        if (targetClip == _currAnimClip) 
+        {
+            return;
+        }
 
         //디버그
         {
@@ -857,7 +868,7 @@ public class PlayerScript : MonoBehaviour, IHitable
 
 
 
-    public void WeaponLayerChange_EnterAttack(State currState)
+    public void WeaponLayerChange_EnterAttack(StateAsset currState)
     {
         bool isAttackState = true;
         
@@ -939,7 +950,7 @@ public class PlayerScript : MonoBehaviour, IHitable
                     _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
                     _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
 
-                    if (currState.GetStateDesc()._isAttackState == true)
+                    if (currState._myState._isAttackState == true)
                     {
                         _animator.SetBool("IsMirroring", isMirrored);
                     }
@@ -962,7 +973,7 @@ public class PlayerScript : MonoBehaviour, IHitable
 
 
 
-    public void WeaponLayerChange_ExitAttack(State currState)
+    public void WeaponLayerChange_ExitAttack(StateAsset currState)
     {
         bool isAttackState = false;
 
@@ -1044,7 +1055,7 @@ public class PlayerScript : MonoBehaviour, IHitable
                     _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
                     _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
 
-                    if (currState.GetStateDesc()._isAttackState == true)
+                    if (currState._myState._isAttackState == true)
                     {
                         _animator.SetBool("IsMirroring", isMirrored);
                     }
@@ -1273,7 +1284,7 @@ public class PlayerScript : MonoBehaviour, IHitable
                         return;
                     }
 
-                    if (_stateContoller.GetCurrState().GetStateDesc()._canUseItem == false)
+                    if (_stateContoller.GetCurrState()._myState._canUseItem == false)
                     {
                         return;
                     }
@@ -2092,6 +2103,19 @@ public class PlayerScript : MonoBehaviour, IHitable
             {
                 _tempCurrLeftWeapon = newObject;
             }
+
+
+            StateGraphAsset stateGraphAsset = nextWeaponScript._weaponStateGraph;
+
+            if (stateGraphAsset != null)
+            {
+                StateGraphAsset.StateGraphType stateGraphType = (tempIsRightWeapon == true)
+                    ? StateGraphAsset.StateGraphType.WeaponState_RightGraph
+                    : StateGraphAsset.StateGraphType.WeaponState_LeftGraph;
+
+                //장착한 후, 상태그래프를 교체한다.
+                _stateContoller.EquipStateGraph(stateGraphAsset, stateGraphType);
+            }
         }
 
         return null;
@@ -2168,6 +2192,8 @@ public class PlayerScript : MonoBehaviour, IHitable
                 _tempCurrLeftWeapon = newObject;
             }
         }
+
+
     }
 
 

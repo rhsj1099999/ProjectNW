@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using static State;
+using static StateGraphAsset;
 using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public enum FrameCheckType
@@ -14,7 +16,8 @@ public enum FrameCheckType
 
 public enum FrameDataType
 {
-    NextAttackMotion, StateChange,
+    NextAttackMotion,
+    StateChangeReadyLikeIdle, //Act Like IdleState
     End,
 }
 
@@ -67,7 +70,7 @@ public class AnimationHipCurve
     {
         Debug.Assert(clip != null, "clip이 null입니다");
 
-        const string _unityName_HipBone = "Hips";
+        //const string _unityName_HipBone = "Hips";
         const string _unityName_HipBoneLocalPositionX = "RootT.x";
         const string _unityName_HipBoneLocalPositionY = "RootT.y";
         const string _unityName_HipBoneLocalPositionZ = "RootT.z";
@@ -133,7 +136,7 @@ public class ResourceDataManager : SubManager
         ReadyAnimationFrameData();
         ReadyStateData();
         ReadyZeroFrameAnimations();
-
+        StateGraphAssets();
     }
 
     /*-----------------------------------
@@ -259,8 +262,6 @@ public class ResourceDataManager : SubManager
     -----------------------------------*/
     [SerializeField] private List<AnimationClip> _totalZeroFrameAnimations = new List<AnimationClip>();
     private Dictionary<string, AnimationClip> _zeroFrameAnimationClips = new Dictionary<string, AnimationClip>();
-
-
     private void ReadyZeroFrameAnimations()
     {
         string zeroFrame = "_ZeroFrame";
@@ -290,5 +291,20 @@ public class ResourceDataManager : SubManager
         Debug.Assert(_zeroFrameAnimationClips.ContainsKey(animationClipName) == true, "찾으려는 0프레임 애니메이션이 없습니다");
 
         return _zeroFrameAnimationClips[animationClipName];
+    }
+
+
+
+    /*-----------------------------------
+    Data Section _ State GraphSection
+    -----------------------------------*/
+    public List<StateGraphAsset> _stateGraphAssets = new List<StateGraphAsset>();
+
+    private void StateGraphAssets()
+    {
+        foreach (StateGraphAsset stateGraphAsset in _stateGraphAssets)
+        {
+            stateGraphAsset.InitlaizeGraphAsset();
+        }
     }
 }

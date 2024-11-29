@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 {
-    [SerializeField] private GameObject _itemUIPrefab = null;
+    //[SerializeField] private GameObject _itemUIPrefab = null;
     [SerializeField] private GameObject _equipmentUIObjectPrefab = null;
     private GameObject _ownerCharacter = null;
 

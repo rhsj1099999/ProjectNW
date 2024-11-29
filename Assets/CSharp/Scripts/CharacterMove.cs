@@ -3,13 +3,13 @@ using UnityEngine;
 public class CharacterMoveScript2 : MonoBehaviour
 {
     private CharacterController _characterController = null;
-    private UIComponent _inventory = null;
+    //private UIComponent _inventory = null;
 
-    [SerializeField] private float _mass = 30.0f;
+    //[SerializeField] private float _mass = 30.0f;
     [SerializeField] private float _speed = 5.0f;
     [SerializeField] private float _rotatingSpeed_DEG = 90.0f;
     [SerializeField] private float _jumpForce = 3.0f;
-    [SerializeField] private float _inAirThreshould = 0.05f;
+    //[SerializeField] private float _inAirThreshould = 0.05f;
     
 
     private Vector3 _latestPlaneVelocityDontUseY = Vector3.zero;
@@ -18,7 +18,7 @@ public class CharacterMoveScript2 : MonoBehaviour
     private bool _isInAir = false;
     private float _verticalSpeedAcc = 0.0f;
     private bool _moveTriggerd = false;
-    private int _notGroundedCount = 0;
+    //private int _notGroundedCount = 0;
 
     private float _inAirSlopeLimit = 0.0f;
     private float _inGroundSlopeLimit = 45.0f;
@@ -77,7 +77,7 @@ public class CharacterMoveScript2 : MonoBehaviour
             _characterController.slopeLimit = _inGroundSlopeLimit;
 
             _verticalSpeedAcc = 0.0f;
-            _notGroundedCount = 0;
+            //_notGroundedCount = 0;
 
             _isJumping = false;
             _isInAir = false;
@@ -88,7 +88,7 @@ public class CharacterMoveScript2 : MonoBehaviour
             _characterController.slopeLimit = _inAirSlopeLimit;
 
             _isInAir = true;
-            _notGroundedCount = 0;
+            //_notGroundedCount = 0;
         }
     }
 
@@ -104,7 +104,7 @@ public class CharacterMoveScript2 : MonoBehaviour
 
         _verticalSpeedAcc = _jumpForce;
 
-        _notGroundedCount = 0;
+        //_notGroundedCount = 0;
         _isJumping = true;
         _isInAir = true;
     }

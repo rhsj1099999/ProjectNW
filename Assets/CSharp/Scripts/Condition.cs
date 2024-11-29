@@ -14,7 +14,7 @@ public class Condition
     }
 
     private ConditionDesc _conditionDesc; //Copy From ScriptableObject
-    private PlayerScript _owner = null;
+    //private PlayerScript _owner = null;
 
 
     public ConditionDesc GetConditionDesc() { return _conditionDesc; }

@@ -12,7 +12,7 @@ public class DampingFollower : MonoBehaviour
 
     [SerializeField] GameObject _lookAtObject = null;
 
-    private bool _hardLimitUpdated = false;
+    //private bool _hardLimitUpdated = false;
 
     private void Awake()
     {

@@ -12,7 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3172b3879607b484db00242c8af3e1d1, type: 3}
   m_Name: Condition_MoveDesired
   m_EditorClassIdentifier: 
-  _myCondition:
-    _conditions:
-    - _condition: 0
-      _goal: 1
+  _condition:
+    _singleConditionType: 0
+    _weaponTypeGoal: 0
+    _keyInputConditionTarget: []
+    _commandInputConditionTarget: []
+    _animationFrameDataType: 2
+    _comboStrainedTime: -1
+    _mustNotBusyLayers: 
+    _mustNotBusyLayers_BitShift: 1

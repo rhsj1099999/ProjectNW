@@ -22,17 +22,17 @@ public enum AimState
 public class CharacterMoveScript : MonoBehaviour
 {
     [SerializeField] private GameObject _debuggingCornerSpherePrefab = null;
-    [SerializeField] private GameObject _debuggingCornerCapsulePrefab = null;
+    //[SerializeField] private GameObject _debuggingCornerCapsulePrefab = null;
     private List<GameObject> _createdDebuggingCornerSphere = new List<GameObject>();
     private List<GameObject> _createdDebuggingCornerCapsule = new List<GameObject>();
     private List<GameObject> _createdDebuggingCornerSphereReverse = new List<GameObject>();
     private List<GameObject> _createdDebuggingCornerCapsuleReverse = new List<GameObject>();
-    private float _navModifier = 0.14f;
+    //private float _navModifier = 0.14f;
     private NavMeshHit _navMeshHit;
-    private NavMeshPath _navMeshPath = null;
+    //private NavMeshPath _navMeshPath = null;
     private List<Vector3> _passedNavPositions = new List<Vector3>();
-    private int _targetPathPositionIndex = 0;
-    private NavMeshAgent _navAgent = null;
+    //private int _targetPathPositionIndex = 0;
+    //private NavMeshAgent _navAgent = null;
 
     private Vector3 _animDir = Vector3.zero;
 

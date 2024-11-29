@@ -76,6 +76,7 @@ public class CustomKeyManager : SubManager
     public void LinkPlayer(PlayerScript player) {_playerOnlyOne = player;}
     private LinkedList<ComboCommandKeyDesc> _comboCommandRecorder = new LinkedList<ComboCommandKeyDesc>();
     public LinkedList<ComboCommandKeyDesc> GetComboCommandKeyDescs() { return _comboCommandRecorder; }
+    public void ClearKeyRecord() { _comboCommandRecorder.Clear(); }
 
 
     

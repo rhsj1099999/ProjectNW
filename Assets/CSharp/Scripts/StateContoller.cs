@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using static State;
-using static StateNodeDesc;
+//using static StateNodeDesc;
 using static UnityEngine.Rendering.DebugUI;
+using static StateGraphAsset;
+using static AnimationClipEditor;
 
 public enum StateActionType
 {
@@ -24,6 +26,9 @@ public enum StateActionType
     CheckBehaves,
     CalculateWeaponLayer_EnterAttack,
     CalculateWeaponLayer_ExitAttack,
+    DummyState_EnterLocoStateGraph, //DummyState를 안쓴다면, AnimationEndCoroutine_ReturnToIdle로 구현할 수 있다.
+    AddCoroutine_ChangeToIdleState,
+    AddCoroutine_StateChangeReady,
 }
 
 public enum ConditionType
@@ -64,6 +69,13 @@ public enum RepresentStateType
     End,
 }
 
+public enum StateActionCoroutineType
+{
+    ChangeToIdle,
+    StateChangeReady,
+    End,
+}
+
 [Serializable]
 public class ComboKeyCommandDesc
 {
@@ -78,9 +90,8 @@ public class ComboKeyCommandDesc
 [Serializable]
 public class KeyInputConditionDesc
 {
-    public KeyCode _targetKeyCode;
-    public KeyPressType _targetState;
-    public bool _keyInpuyGoal;
+    public InputKeyAsset _targetKey = null;
+    public KeyPressType _targetState = KeyPressType.None;
     public float _keyHoldGoal = 0.0f;
 }
 
@@ -88,7 +99,6 @@ public class KeyInputConditionDesc
 public class ConditionDesc
 {
     public ConditionType _singleConditionType;
-    public bool _componentConditionGoal;
     public ItemInfo.WeaponType _weaponTypeGoal;
     public List<KeyInputConditionDesc> _keyInputConditionTarget;
     public List<ComboKeyCommandDesc> _commandInputConditionTarget;
@@ -96,14 +106,6 @@ public class ConditionDesc
     public float _comboStrainedTime = -1.0f; //n초 내에 완성시켜야 하는 콤보
     public List<AnimatorLayerTypes> _mustNotBusyLayers;
     public int _mustNotBusyLayers_BitShift = 1;
-}
-
-[Serializable]
-public class StateLinkDesc
-{
-    public List<ConditionDesc> _multiConditionAsset; //MultiCondition
-    public StateAsset _stateAsset;
-    private int _autoLinkWeight = 0; //각 조건들을 자동으로 계산하는 가중치 변수
 }
 
 [Serializable]
@@ -116,23 +118,23 @@ public class StateDesc
     public bool _isAttackState = false;
     public bool _isLocoMotionToAttackAction = false;
     public bool _isLoopState = false;
-
+    public bool _canUseItem = false;
     public bool _stateLocked = false; //외부에서 상태변경이 들어와도 씹겠다.
     /*------------------------------------------------------------------------------
     |NOTI| !_isAttackState = _isLocoMotionToAttackAction의 개념일거같지만 지금은 아니다
     ------------------------------------------------------------------------------*/
 
-    public bool _canUseItem = false;
 
-    public List<RepresentStateType> _stateType = new List<RepresentStateType>();
+    public RepresentStateType _stateType = RepresentStateType.End;
+
     public List<StateActionType> _EnterStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _inStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _ExitStateActionTypes = new List<StateActionType>();
+
     public List<AdditionalBehaveType> _checkingBehaves = new List<AdditionalBehaveType>();
 
     public List<ConditionDesc> _breakLoopStateCondition = null;
-    public List<StateLinkDesc> _linkedStates = new List<StateLinkDesc>();
-    public AnimationClip _endStateIdleException = null; //상태의 애니메이션이 끝날때 예외 애니메이션
+    //public AnimationClip _endStateIdleException = null; //상태의 애니메이션이 끝날때 예외 애니메이션
 }
 
 
@@ -165,28 +167,59 @@ public class StateContoller : MonoBehaviour
     }
     private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
 
+
+    public class StateActionCoroutineWrapper
+    {
+        public Coroutine _runningCoroutine = null;
+        public float _timeACC = 0.0f;
+        public float _timeTarget = 0.0f;
+    }
+
+
+    private StateAsset _currState;
+    public StateAsset GetCurrState() { return _currState; }
+
     [SerializeField] private float _stateChangeTime = 0.085f;
-    private float _stateChangeTimeAcc = 0.0f;
     private bool _stateChangeCoroutineStarted = false;
-    private State _reservedNextWeaponState = null;
+    
+
+
+    [SerializeField] private List<StateGraphAsset> _initialStateGraphes = new List<StateGraphAsset>();
+    private List<StateGraphAsset> _stateGraphes = new List<StateGraphAsset>();
+    private StateGraphType _currentGraphType = StateGraphType.LocoStateGraph;
+
+    private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
+
+
+    private float _currStateTime = 0.0f;
+    private float _prevStateTime = 0.0f;
+
+
+
+    Dictionary<StateAsset, List<LinkedStateAsset>> _currGraphStates = null;
+    Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints = null;
 
 
     private float _attackStateAutoChangeTime = 0.0f;
     private float _attackStateAutoChangeTimeAcc = 0.0f;
     private bool _attackStateAutoChangeTimeCoroutineStarted = false;
 
-
-    [SerializeField] private List<StateInitialPair> _stateInitial = new List<StateInitialPair>();
-    private Dictionary<RepresentStateType, State> _states = new Dictionary<RepresentStateType, State>();
-
-    private State _currState;
-    public State GetCurrState() { return _currState; }
-
-    private float _currStateTime = 0.0f;
-    private float _prevStateTime = 0.0f;
-
     private KeyCode _rightHandAttackKey = KeyCode.Mouse0;
     private KeyCode _leftHandAttackKey = KeyCode.Mouse1;
+    private float _stateChangeTimeAcc = 0.0f;
+    private Dictionary<RepresentStateType, State> _states = new Dictionary<RepresentStateType, State>();
+    //private StateAsset _reservedNextWeaponState = null;
+
+
+
+
+
+
+
+
+
+
+
 
 
     private void Awake()
@@ -195,89 +228,84 @@ public class StateContoller : MonoBehaviour
 
         _ownerStateControllingComponent._owner = playerScript;
 
-        for (int i = 0; i < _stateInitial.Count; ++i)
+        for (int i = 0; i < (int)StateGraphType.End; i++)
         {
-            Debug.Assert(_states.ContainsKey(_stateInitial[i]._stateRepresentType) == false, "StateRepresent가 겹칩니다");
-
-            State newState = ResourceDataManager.Instance.GetState(_stateInitial[i]._stateAsset);
-            
-            newState.SettingOwnerComponent(playerScript, _ownerStateControllingComponent);
-
-            _states.Add(_stateInitial[i]._stateRepresentType, newState);
+            _stateGraphes.Add(null);
         }
 
-        foreach (KeyValuePair<RepresentStateType, State> statePair in _states)
+        if (_initialStateGraphes.Count <= 0)
         {
-            statePair.Value.LinkingStates(ref _states);
+            Debug.Assert(false, "최소한 LocoState (Idle이 있는) 그래프 하나는 준비돼야 합니다");
+            Debug.Break();
         }
 
-        ChangeState(_states[RepresentStateType.Idle]);
+        foreach (StateGraphAsset stateGraphAsset in _initialStateGraphes)
+        {
+            StateGraphType type = stateGraphAsset._graphType;
+
+            if (type == StateGraphType.End)
+            {
+                Debug.Assert(false, "StateGraphType End는 쓰면 안됩니다");
+                Debug.Break();
+            }
+
+            if (_stateGraphes[(int)type] != null)
+            {
+                Debug.Assert(false, "해당 상태가 이미 있습니다");
+                Debug.Break();
+            }
+
+            _stateGraphes[(int)type] = stateGraphAsset;
+            _stateGraphes[(int)type].SettingOwnerComponent(_ownerStateControllingComponent, _ownerStateControllingComponent._owner);
+        }
+
+        for (int i = 0; i < (int)StateActionCoroutineType.End; i++)
+        {
+            _stateActionCoroutines.Add(null);
+        }
+
+        ChangeState(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState);
     }
 
 
-    public void TryChangeState(RepresentStateType representType)
-    {
-        if (_states.ContainsKey(representType) == false)
-        {
-            Debug.Log("해당 상태를 사용하지 않습니다");
-            return;
-        }
+    //public void TryChangeState(RepresentStateType representType)
+    //{
+    //    if (_states.ContainsKey(representType) == false)
+    //    {
+    //        Debug.Log("해당 상태를 사용하지 않습니다");
+    //        return;
+    //    }
 
-        ChangeState(_states[representType]);
-    }
+    //    ChangeState(_states[representType]);
+    //}
 
 
     private void StatedWillBeChanged()
     {
-        if (_stateChangeCoroutineStarted == true)
-        {
-            /*--------------------------------------------------------------
-            |NOTI| 이 코루틴이 실행중이였다면 플레이어는 지연체크를 하려는거였고.
-            피격같은 외부에서 강제로 변경한 상태여만 합니다.
-            --------------------------------------------------------------*/
-            StopCoroutine("AttackComboChangeCoroutine");
-            _stateChangeCoroutineStarted = false;
-            CustomKeyManager.Instance.SetAttackKeyRestrained(false);
-        }
-
-        if (_attackStateAutoChangeTimeCoroutineStarted == true)
-        {
-            /*--------------------------------------------------------------
-            |NOTI| 공격이 끝나든, 피격돼서 끝나든, 플레이어 의지로 끝나든 상태가
-            변경되면 이 코루틴은 끝나야하는게 맞습니다.
-            --------------------------------------------------------------*/
-            StopCoroutine("AttackStateAutoChangeCoroutine");
-            _attackStateAutoChangeTimeCoroutineStarted = false;
-        }
-
-        _reservedNextWeaponState = null;
+        //_reservedNextWeaponState = null;
         _currStateTime = 0.0f;
+        StopAllCoroutines();
     }
 
-    private void ChangeState(State nextState)
+    private void ChangeState(StateGraphType nextGraphType, StateAsset nextState)
     {
-        //Debug.Assert(nextState != _currState, "같은 상태로 변경하려는 진입접이 있습니까?"); 네
-
         StatedWillBeChanged();
 
-        Debug.Log("State Changed : " + nextState.GetStateDesc()._stataName);
+        Debug.Log("State Changed : " + nextState._myState._stataName);
 
         if (_currState != null)
         {
-            DoActions(_currState.GetStateDesc()._ExitStateActionTypes);
+            DoActions(_currState._myState._ExitStateActionTypes);
         }
 
+        _currentGraphType = nextGraphType;
         _currState = nextState;
+        _currGraphStates = _stateGraphes[(int)_currentGraphType].GetGraphStates();
+        _currInteractionPoints = _stateGraphes[(int)_currentGraphType].GetInteractionPoints();
 
-        DoActions(_currState.GetStateDesc()._EnterStateActionTypes);
+        AllStopCoroutine();
 
-        if (_currState.GetStateDesc()._isAttackState == true && //다음으로 넘어가려는 상태가 공격상태입니다.
-            _currState.GetStateDesc()._isLoopState == false)  //반복상태도 아닙니다.
-        {
-            StartCoroutine("AttackStateAutoChangeCoroutine");
-        }
-
-        _ownerStateControllingComponent._owner.StateChanged();
+        DoActions(_currState._myState._EnterStateActionTypes);
     }
 
 
@@ -286,80 +314,44 @@ public class StateContoller : MonoBehaviour
     {
         Debug.Assert(_currState != null, "스테이트 null입니다");
 
-        State nextState = (_reservedNextWeaponState != null)
-            ? _reservedNextWeaponState
-            : CheckChangeState_Recursion(_currState);
+        StateGraphType nextGraphType = StateGraphType.End;
+
+        StateAsset nextState = CheckChangeState_Recursion(_currState, _currentGraphType, out nextGraphType);
 
         if (nextState != null)
         {
-            ChangeState(nextState);
+            ChangeState(nextGraphType, nextState);
         }
 
-        //상태 변경이 완료됐고. 현재 상태들의 Action을 실행하려 합니다.
 
-        //공격을 할 수 있는 상태에서 공격키가 아무거나 눌렸습니다. 0.1초 뒤 공격 애니메이션으로 전환을 시도할겁니다.
-        if ((Input.GetKeyDown(_rightHandAttackKey) == true || Input.GetKeyDown(_leftHandAttackKey) == true) &&
-            _stateChangeCoroutineStarted == false &&
-            true/*넘어갈 수 있는 공격상태가 하나라도 존재한다*/)
+        /*---------------------------------------------------------------
+        |TODO| 다른방식으로 구현해야만 합니다
+        ---------------------------------------------------------------*/
         {
-            StartCoroutine("AttackComboChangeCoroutine");
+            ////공격을 할 수 있는 상태에서 공격키가 아무거나 눌렸습니다. 0.1초 뒤 공격 애니메이션으로 전환을 시도할겁니다.
+            //if ((Input.GetKeyDown(_rightHandAttackKey) == true || Input.GetKeyDown(_leftHandAttackKey) == true) &&
+            //    _stateChangeCoroutineStarted == false &&
+            //    true/*넘어갈 수 있는 공격상태가 하나라도 존재한다*/)
+            //{
+            //    StartCoroutine("AttackComboChangeCoroutine");
+            //}
         }
 
-        DoActions(_currState.GetStateDesc()._inStateActionTypes);
+
+        DoActions(_currState._myState._inStateActionTypes);
 
         _prevStateTime = _currStateTime;
         _currStateTime += Time.deltaTime;
     }
 
 
-    private IEnumerator AttackComboChangeCoroutine()
+
+
+    public void EquipStateGraph(StateGraphAsset graphAsset, StateGraphType graphType)
     {
-        _stateChangeTimeAcc = 0.0f;
-        _stateChangeCoroutineStarted = true;
-        Debug.Log("Attack Try Coroutine Started");
-        CustomKeyManager.Instance.SetAttackKeyRestrained(true);
+        _stateGraphes[(int)graphType] = graphAsset;
 
-        while (true) 
-        {
-            _stateChangeTimeAcc += Time.deltaTime;
-            if (_stateChangeTimeAcc >= _stateChangeTime)
-            {
-                Debug.Log("Attack Try Coroutine End Well");
-                CalculateNextWeaponState(_currState.GetStateDesc()._isLocoMotionToAttackAction);
-                break;
-            }
-
-            yield return null;
-        }
-
-        CustomKeyManager.Instance.SetAttackKeyRestrained(false);
-        _stateChangeCoroutineStarted = false;
-    }
-
-
-
-
-
-    private IEnumerator AttackStateAutoChangeCoroutine()
-    {
-        _attackStateAutoChangeTimeAcc = 0.0f;
-        _attackStateAutoChangeTime = _currState.GetStateDesc()._stateAnimationClip.length;
-        _attackStateAutoChangeTimeCoroutineStarted = true;
-
-        while (true)
-        {
-            _attackStateAutoChangeTimeAcc += Time.deltaTime;
-
-            if (_attackStateAutoChangeTimeAcc >= _attackStateAutoChangeTime)
-            {
-                CalculateAfterAttackState();
-                break;
-            }
-
-            yield return null;
-        }
-
-        _attackStateAutoChangeTimeCoroutineStarted = false;
+        graphAsset.SettingOwnerComponent(_ownerStateControllingComponent, _ownerStateControllingComponent._owner);
     }
 
 
@@ -368,46 +360,67 @@ public class StateContoller : MonoBehaviour
 
 
 
-    private void CalculateAfterAttackState()
+    public StateAsset CheckChangeState_Recursion(StateAsset currentState, StateGraphType currType, out StateGraphType resultType) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
     {
-        /*----------------------------------------------------
-        |NOTI| 무기 공격을 끝내면 기본적으로 Idle로 간다고 처리하는 구조임
-        이것은 불완전하다. 나중에 문제가 생길 수 있다
-        -----------------------------------------------------*/
-
-        State nextState = (_reservedNextWeaponState != null)
-            ? _reservedNextWeaponState
-            : CheckChangeState_Recursion(_states[0]);
-
-        if (nextState == null) 
-        {
-            ChangeState(_states[0]);
-        }
-
-        else if (nextState != _currState)
-        {
-            ChangeState(nextState);
-        }
-    }
-
-
-
-
-
-
-
-    public State CheckChangeState_Recursion(State currentState) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
-    {
+        resultType = currType;
         if (_stateChangeCoroutineStarted == true)
         {
             return null; //공격 콤보 체크가 진행중이라 아무것도 안할꺼다
         }
 
-        State targetState = currentState;
+        StateAsset targetState = currentState;
 
         int debugChangeCount = 0;
         bool isStateChangeGuaranted = false;
 
+
+        //1. 지금 상태가 속한 그래프 내에서 다른 그래프 타입으로 교환 가능한 상태인지 검사
+        {
+            StateGraphAsset currGraphAsset = _stateGraphes[(int)currType];
+
+            foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints)
+            {
+                if (pair.Value.Contains(_currState) == false)
+                {
+                    continue; //지금 내 상태는 stateGraphType(Key)로 넘어갈 수 없습니다
+                }
+
+                StateGraphAsset anotherStateGraph = _stateGraphes[(int)pair.Key];
+
+                if (anotherStateGraph == null)
+                {
+                    continue; //넘어갈수는 있는데 해당 상태가 없습니다.(공격했는데 무기가 없는경우 같은거)
+                }
+
+                SortedDictionary<int, LinkedStateAsset> entryStates = anotherStateGraph.GetEntryStates_Ordered();
+
+                bool tempIsRightWeapon = (pair.Key != StateGraphType.WeaponState_LeftGraph);
+
+                foreach (KeyValuePair<int, LinkedStateAsset> linkedStatePair in entryStates)
+                {
+                    List<ConditionAssetWrapper> conditionAssetWrappers = linkedStatePair.Value._conditionAsset;
+
+                    bool isSuccess = true;
+
+                    foreach (ConditionAssetWrapper condition in conditionAssetWrappers)
+                    {
+                        if (CheckCondition(condition, tempIsRightWeapon) == false)
+                        {
+                            isSuccess = false;
+                            break;
+                        }
+                    }
+
+                    if (isSuccess == true)
+                    {
+                        resultType = pair.Key;
+                        return linkedStatePair.Value._linkedState;
+                    }
+                }
+            }
+        }
+
+        //2. 해당하지 않는다면 자신의 그래프내에서 다른 상태로 갈 수 있는지 검사...는 아래 이미 구현됐다.
         while (true)
         {
             if (debugChangeCount > 100)
@@ -419,18 +432,27 @@ public class StateContoller : MonoBehaviour
 
             bool isSuccess = true;
 
-            if (targetState.GetLinkedState().Count <= 0)
+            if (_currGraphStates.Count <= 0)
+            {
+                return null;
+            }
+
+            List<LinkedStateAsset> linkedStates = _currGraphStates[targetState];
+
+            if (linkedStates.Count <= 0)
             {
                 isSuccess = false;
             }
 
-            foreach (KeyValuePair<State, List<ConditionDesc>> pair in targetState.GetLinkedState())
+            bool isRightSided = (currType != StateGraphType.WeaponState_LeftGraph);
+
+            foreach (var linkedStateAsset in linkedStates)
             {
                 isSuccess = true;
 
-                foreach (ConditionDesc conditionDesc in pair.Value)
+                foreach (ConditionAssetWrapper conditionAssetWrapper in linkedStateAsset._conditionAsset)
                 {
-                    if (CheckCondition(conditionDesc) == false)
+                    if (CheckCondition(conditionAssetWrapper, isRightSided) == false)
                     {
                         isSuccess = false;
                         break; //멀티컨디션에서 하나라도 삑났다.
@@ -439,18 +461,14 @@ public class StateContoller : MonoBehaviour
 
                 if (isSuccess == true)
                 {
-                    targetState = pair.Key;
-                    
+                    targetState = linkedStateAsset._linkedState;
+
                     {
                         /*--------------------------------------------------------
                         |TODO| 점프상태라면 연쇄 검사를 하지않도록 임시방편 처리. 이거 지우는 구조 생각해볼것
                         이유는 점프로 바뀌어야 y변화가 있는데 그전에 착지를 했다고 판정해버려서임
                         --------------------------------------------------------*/
-                        if (targetState.GetStateDesc()._EnterStateActionTypes.Count > 0 &&
-                            targetState.GetStateDesc()._EnterStateActionTypes[0] == StateActionType.Jump)
-                        {
-                            return targetState;
-                        }
+                        if (targetState._myState._EnterStateActionTypes.Count > 0 && targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump) {return targetState;}
                     }
 
                     if (isStateChangeGuaranted == false)
@@ -463,26 +481,10 @@ public class StateContoller : MonoBehaviour
                 }
             }
 
-            if (targetState == currentState)
+            if (targetState == currentState &&
+                isSuccess == false)
             {
-                if (currentState.GetStateDesc()._isLoopState == true)
-                {
-                    foreach (ConditionDesc conditionDesc in currentState.GetStateDesc()._breakLoopStateCondition)
-                    {
-                        if (CheckCondition(conditionDesc) == false)
-                        {
-                            return null;
-                        }
-                    }
-
-                    targetState = _states[0];
-                    isSuccess = true;
-                }
-
-                if (isSuccess == false)
-                {
-                    return null;
-                }
+                return null;
             }
 
             if (isSuccess == true)
@@ -541,23 +543,24 @@ public class StateContoller : MonoBehaviour
                     {
                         float currentSecond = _currStateTime;
 
+                        AnimationHipCurve animationHipCurve = ResourceDataManager.Instance.GetHipCurve(_currState._myState._stateAnimationClip);
                         Vector3 currentUnityLocalHip = new Vector3
                             (
-                            _currState.GetStateAnimActionInfo()._myAnimationCurve._animationHipCurveX.Evaluate(currentSecond),
-                            _currState.GetStateAnimActionInfo()._myAnimationCurve._animationHipCurveY.Evaluate(currentSecond),
-                            _currState.GetStateAnimActionInfo()._myAnimationCurve._animationHipCurveZ.Evaluate(currentSecond)
+                            animationHipCurve._animationHipCurveX.Evaluate(currentSecond),
+                            animationHipCurve._animationHipCurveY.Evaluate(currentSecond),
+                            animationHipCurve._animationHipCurveZ.Evaluate(currentSecond)
                             );
 
                         float prevSecond = _prevStateTime;
 
                         if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
-                        {prevSecond = 0.0f;}
+                        { prevSecond = 0.0f; }
 
                         Vector3 prevUnityLocalHip = new Vector3
                             (
-                            _currState.GetStateAnimActionInfo()._myAnimationCurve._animationHipCurveX.Evaluate(prevSecond),
-                            _currState.GetStateAnimActionInfo()._myAnimationCurve._animationHipCurveY.Evaluate(prevSecond),
-                            _currState.GetStateAnimActionInfo()._myAnimationCurve._animationHipCurveZ.Evaluate(prevSecond)
+                            animationHipCurve._animationHipCurveX.Evaluate(prevSecond),
+                            animationHipCurve._animationHipCurveY.Evaluate(prevSecond),
+                            animationHipCurve._animationHipCurveZ.Evaluate(prevSecond)
                             );
 
                         Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
@@ -572,8 +575,6 @@ public class StateContoller : MonoBehaviour
 
                         worldDelta.y = 0.0f;
                         _ownerStateControllingComponent._ownerCharacterComponent.Move(worldDelta);
-
-                        _currState.GetStateAnimActionInfo()._prevReadedSecond = currentSecond;
                     }
                     break;
 
@@ -598,7 +599,7 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.CheckBehaves:
                     {
-                        foreach (var type in _currState.GetStateDesc()._checkingBehaves)
+                        foreach (var type in _currState._myState._checkingBehaves)
                         {
                             _ownerStateControllingComponent._owner.CheckBehave(type);
                         }
@@ -617,10 +618,138 @@ public class StateContoller : MonoBehaviour
                     }
                     break;
 
+                case StateActionType.DummyState_EnterLocoStateGraph:
+                    {
+                        ChangeState(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState);
+                    }
+                    break;
+
+                case StateActionType.AddCoroutine_ChangeToIdleState:
+                    AddStateActionCoroutine(StateActionCoroutineType.ChangeToIdle);
+                    break;
+
+                case StateActionType.AddCoroutine_StateChangeReady:
+                    AddStateActionCoroutine(StateActionCoroutineType.StateChangeReady);
+                    break;
+
                 default:
                     Debug.Assert(false, "데이터가 추가됐습니까?");
                     break;
             }
+        }
+    }
+
+    private void AllStopCoroutine()
+    {
+        for (int i = 0; i < (int)StateActionCoroutineType.End; i++)
+        {
+            if (_stateActionCoroutines[i] != null)
+            {
+                StopCoroutine(_stateActionCoroutines[i]._runningCoroutine);
+                _stateActionCoroutines[i] = null;
+            }
+        }
+    }
+
+
+    private void AddStateActionCoroutine(StateActionCoroutineType type)
+    {
+        if (_stateActionCoroutines[(int)type] != null)
+        {
+            StopCoroutine(_stateActionCoroutines[(int)type]._runningCoroutine);
+            _stateActionCoroutines[(int)type] = null;
+        }
+
+        StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper();
+
+        switch (type)
+        {
+            case StateActionCoroutineType.ChangeToIdle:
+                {
+                    newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
+                    newCoroutineWrapper._runningCoroutine = StartCoroutine(ChangeToIdleCoroutine(newCoroutineWrapper));
+                }
+                break;
+
+            case StateActionCoroutineType.StateChangeReady:
+                {
+                    FrameData animationFrameData = ResourceDataManager.Instance.GetAnimationFrameData(_currState._myState._stateAnimationClip, FrameDataType.StateChangeReadyLikeIdle);
+
+                    if (animationFrameData == null)
+                    {
+                        Debug.Assert(false, "FrameData가 설정돼있지 않습니다");
+                        Debug.Break();
+                        return;
+                    }
+
+                    newCoroutineWrapper._timeTarget = (float)animationFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
+                    newCoroutineWrapper._runningCoroutine = StartCoroutine(StateChangeReadyCoroutine(newCoroutineWrapper));
+                }
+                break;
+
+            default:
+                {
+                    Debug.Assert(false, "type이 제대로 지정되지 않았습니다");
+                    Debug.Break();
+                }
+                break;
+        }
+        
+        _stateActionCoroutines[(int)type] = newCoroutineWrapper;
+    }
+
+    private IEnumerator StateChangeReadyCoroutine(StateActionCoroutineWrapper target)
+    {
+        while (true)
+        {
+            target._timeACC += Time.deltaTime;
+
+            if (target._timeACC >= target._timeTarget)
+            {
+                //CopyIdlesState : LinkedState
+                Dictionary<StateAsset, List<LinkedStateAsset>> idleStateGraph = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetGraphStates();
+                foreach (KeyValuePair<StateAsset, List<LinkedStateAsset>> pair in idleStateGraph)
+                {
+                    if (_currGraphStates.ContainsKey(pair.Key) == true)
+                    {
+                        continue;
+                    }
+
+                    _currGraphStates.Add(pair.Key, pair.Value);
+                }
+
+                //CopyIdlesState : InteractionPoints
+                Dictionary<StateGraphType, HashSet<StateAsset>> idleInteractionPoinst = _stateGraphes[(int)_currentGraphType].GetInteractionPoints();
+                foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in idleInteractionPoinst)
+                {
+                    if (_currInteractionPoints.ContainsKey(pair.Key) == true)
+                    {
+                        continue;
+                    }
+
+                    _currInteractionPoints.Add(pair.Key, pair.Value);
+                }
+
+
+                break;
+            }
+            yield return null;
+        }
+    }
+
+
+    private IEnumerator ChangeToIdleCoroutine(StateActionCoroutineWrapper target)
+    {
+        while (true)
+        {
+            target._timeACC += Time.deltaTime;
+
+            if (target._timeACC >= target._timeTarget)
+            {
+                ChangeState(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState);
+                break;
+            }
+            yield return null;
         }
     }
 
@@ -631,18 +760,18 @@ public class StateContoller : MonoBehaviour
 
 
 
-
-
-
-    public bool CheckCondition(ConditionDesc conditionDesc, bool isRightHandWeapon = false/*TODO : 이 변수는 CommandCheck 하나때문에 있습니다. 빼야합니다*/)
+    public bool CheckCondition(ConditionAssetWrapper conditionAssetWrapper, bool isRightSided)
     {
         bool ret = false;
+
+        ConditionDesc conditionDesc = conditionAssetWrapper._conditionAsset._conditionDesc;
+        bool stateGoal = conditionAssetWrapper._goal;
 
         switch (conditionDesc._singleConditionType)
         {
             case ConditionType.MoveDesired:
                 {
-                    if(_ownerStateControllingComponent._ownerInputController == null)
+                    if (_ownerStateControllingComponent._ownerInputController == null)
                     {
                         _ownerStateControllingComponent._ownerInputController = _ownerStateControllingComponent._owner.GetComponent<InputController>();
                     }
@@ -653,23 +782,18 @@ public class StateContoller : MonoBehaviour
                         ret = true;
                     }
 
-                    return (ret == conditionDesc._componentConditionGoal);
+                    return (ret == stateGoal);
                 }
 
             case ConditionType.AnimationEnd:
                 {
-                    //if (_ownerStateControllingComponent._owner.GetCurrAnimationLoopCount() >= 1)
-                    //{
-                    //    return true;
-                    //}
-
-                    float animationLength = _currState.GetStateDesc()._stateAnimationClip.length;
-                    if (animationLength - Time.deltaTime < _currStateTime) 
+                    float animationLength = _currState._myState._stateAnimationClip.length;
+                    if (animationLength - Time.deltaTime < _currStateTime)
                     {
-                        return true;
+                        ret = true;
                     }
 
-                    return false;
+                    return (ret == stateGoal);
                 }
 
             case ConditionType.InAir:
@@ -684,7 +808,7 @@ public class StateContoller : MonoBehaviour
                         ret = true;
                     }
 
-                    return (ret == conditionDesc._componentConditionGoal);
+                    return (ret == stateGoal);
                 }
 
             case ConditionType.KeyInput:
@@ -693,36 +817,16 @@ public class StateContoller : MonoBehaviour
 
                     for (int i = 0; i < conditionDesc._keyInputConditionTarget.Count; ++i)
                     {
-                        switch (conditionDesc._keyInputConditionTarget[i]._targetState)
+                        KeyPressType type = conditionDesc._keyInputConditionTarget[i]._targetState;
+                        InputKeyAsset keyAsset = conditionDesc._keyInputConditionTarget[i]._targetKey;
+                        bool goal = stateGoal;
+
+                        isSuccess = (keyAsset.GetKeyState(type) == goal);
+
+                        if (isSuccess == false)
                         {
-                            case KeyPressType.Pressed:
-                                if (Input.GetKeyDown(conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal)
-                                {
-                                    isSuccess = false;
-                                }
-                                break;
-
-                            case KeyPressType.Hold:
-                                if (Input.GetKey(conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal ||
-                                    CustomKeyManager.Instance.GetKeyInputDesc(conditionDesc._keyInputConditionTarget[i]._targetKeyCode)._holdedSecond < conditionDesc._keyInputConditionTarget[i]._keyHoldGoal)
-                                {
-                                    isSuccess = false;
-                                }
-                                break;
-
-                            case KeyPressType.Released:
-                                if (Input.GetKeyUp(conditionDesc._keyInputConditionTarget[i]._targetKeyCode) != conditionDesc._keyInputConditionTarget[i]._keyInpuyGoal)
-                                {
-                                    isSuccess = false;
-                                }
-                                break;
-
-                            default:
-                                Debug.Log("KeyState목표값이 없습니다.");
-                                break;
+                            return false; //한개라도 틀렸다
                         }
-
-                        if (isSuccess == false) { return false; }
                     }
 
                     return isSuccess;
@@ -743,177 +847,35 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AnimationFrame:
                 {
-                    StateDesc currStateDesc = _currState.GetStateDesc();
-                    
+                    StateDesc currStateDesc = _currState._myState;
+
+                    FrameData stateAnimFrameData = ResourceDataManager.Instance.GetAnimationFrameData(currStateDesc._stateAnimationClip, conditionDesc._animationFrameDataType);
+
                     int currOnwerAnimationFrame = (int)(_currStateTime * currStateDesc._stateAnimationClip.frameRate);
 
-                    StateAnimActionInfo currStateAnimInfo = _currState.GetStateAnimActionInfo();
-
-                    if (currStateAnimInfo._myFrameData == null)
-                    {
-                        //한번은 찾아본다
-                        currStateAnimInfo._myFrameData = ResourceDataManager.Instance.GetAnimationFrameData(currStateDesc._stateAnimationClip, conditionDesc._animationFrameDataType);
-
-                        Debug.Assert(currStateAnimInfo._myFrameData != null, "Condition이 AnimationFrame인데, FrameData가 null입니다.");
-                    }
-
-                    return currStateAnimInfo._myFrameData.FrameCheck(currOnwerAnimationFrame);
+                    return stateAnimFrameData.FrameCheck(currOnwerAnimationFrame);
                 }
 
             case ConditionType.RightHandWeaponSignaled:
-                {
-
-                }
                 break;
 
             case ConditionType.LeftHandWeaponSignaled:
-                {
-
-                }
                 break;
 
             case ConditionType.RightAttackTry:
-                {
-                    //bool rightHandGrabCondition = true;
-
-                    //switch (_ownerStateControllingComponent._owner.GetGrabFocusType())
-                    //{
-                    //    case WeaponGrabFocus.Normal:
-                    //        {
-                    //            if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null)
-                    //            {
-                    //                rightHandGrabCondition = false;
-                    //            }
-                    //        }
-                    //        break;
-                    //    case WeaponGrabFocus.RightHandFocused:
-                    //        {
-                    //            if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null)
-                    //            {
-                    //                rightHandGrabCondition = false;
-                    //            }
-                    //        }
-                    //        break;
-                    //    case WeaponGrabFocus.LeftHandFocused:
-                    //        {
-                    //            if (_ownerStateControllingComponent._owner.GetLeftWeaponPrefab() == null)
-                    //            {
-                    //                rightHandGrabCondition = false;
-                    //            }
-                    //        }
-                    //        break;
-                    //    case WeaponGrabFocus.DualGrab:
-                    //        {
-                    //            if (_ownerStateControllingComponent._owner.GetRightWeaponPrefab() == null ||
-                    //                _ownerStateControllingComponent._owner.GetLeftWeaponPrefab() == null)
-                    //            {
-                    //                rightHandGrabCondition = false;
-                    //            }
-                    //        }
-                    //        break;
-
-                    //    default:
-                    //        break;
-                    //}
-
-                    //if (rightHandGrabCondition == false)
-                    //{
-                    //    return false;
-                    //}
-
-                    //if (CustomKeyManager.Instance.GetKeyInputDesc(_rightHandAttackKey)._pressType == KeyPressType.Pressed)
-                    //{
-                    //    return true;
-                    //}
-                }
                 break;
 
             case ConditionType.LeftAttackTry:
-                {
-                    //if (CustomKeyManager.Instance.GetKeyInputDesc(_leftHandAttackKey)._pressType == KeyPressType.Pressed)
-                    //{
-                    //    //공격 키 둘중에 하나라도 눌렸다.
-                    //    return true;
-                    //}
-                }
                 break;
 
             case ConditionType.AttackTry:
-                {
-
-                }
                 break;
 
             case ConditionType.isTargeting:
                 break;
 
             case ConditionType.ComboKeyCommand:
-                {
-                    LinkedList<ComboCommandKeyDesc> currCommand = CustomKeyManager.Instance.GetComboCommandKeyDescs();
-                    List<ComboKeyCommandDesc> stateComboKeyCommand = conditionDesc._commandInputConditionTarget;
-                    if (stateComboKeyCommand.Count <= 0)
-                    {
-                        Debug.Assert(false, "CommandCondition인데 키가 하나도 없습니다");
-                    }
-
-                    int KeyRecoredeCount = currCommand.Count - 1;
-                    int CommandCount = stateComboKeyCommand.Count - 1;
-
-                    WeaponGrabFocus ownerGrabType = _ownerStateControllingComponent._owner.GetGrabFocusType();
-                    WeaponUseType weaponComboType = WeaponUseType.MainUse;
-                    ComboCommandKeyType recordedType = ComboCommandKeyType.TargetingBack;
-
-                    int index = 0;
-
-                    if (CommandCount > KeyRecoredeCount)
-                    {
-                        return false; //콤보를 확인할만큼 키가 없다.
-                    }
-
-                    for (LinkedListNode<ComboCommandKeyDesc> node = currCommand.Last; node != null; node = node.Previous)
-                    {
-                        if ((CommandCount - index) < 0)
-                        {
-                            break; //콤보를 다 검사했다. 이상이 없었다면 return을 안했음
-                        }
-
-                        recordedType = node.Value._type; //입력된 키
-
-                        //조합 키 체크
-                        for (int i = 0; i < stateComboKeyCommand[CommandCount - index]._targetCommandKeys.Count; i++)
-                        {
-                            weaponComboType = stateComboKeyCommand[CommandCount - index]._targetCommandKeys[i];
-
-                            if (weaponComboType == WeaponUseType.MainUse || weaponComboType == WeaponUseType.SubUse || weaponComboType == WeaponUseType.SpecialUse)
-                            {
-                                if (recordedType == ComboCommandKeyType.TargetingBack || recordedType == ComboCommandKeyType.TargetingFront || recordedType == ComboCommandKeyType.TargetingLeft || recordedType == ComboCommandKeyType.TargetingRight)
-                                { return false; }
-
-                                ComboCommandKeyType targetType = KeyConvert(weaponComboType, ownerGrabType, isRightHandWeapon);
-
-                                if (targetType <= ComboCommandKeyType.TargetingRight)
-                                {
-                                    return false; //치환에 실패했다
-                                }
-
-                                if (CustomKeyManager.Instance.AttackKeyRestrainedExist(targetType) == false)
-                                {
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                if ((ComboCommandKeyType)weaponComboType != recordedType)
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-
-                        index++;
-                    }
-                }
-                return true;
+                return PartailFunc_ComboCommandCheck(conditionDesc, isRightSided);
 
             case ConditionType.FocusedWeapon:
                 break;
@@ -952,6 +914,132 @@ public class StateContoller : MonoBehaviour
 
 
 
+
+    private bool PartailFunc_ComboCommandCheck(ConditionDesc conditionDesc, bool isRightSided)
+    {
+        if (false/*뭔가의 현재 공격을 시도하지 않았습니다 로직...구현하자*/)
+        {
+            return false;
+        }
+
+        bool ret = false;
+
+        //1. 해당 손을 먼저 검사
+        {
+            if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
+            {
+                return false;
+            }
+
+            ret = CommandCheck(conditionDesc, isRightSided);
+        }
+
+        //2. 반대 손을 검사
+        if (ret == false)
+        {
+            isRightSided = !isRightSided;
+
+            bool latestSide = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
+
+            //상태 그래프를 돌려쓰는데, 같은무기를 왼손, 오른손에 쥐었을때,
+            //왼쪽 쓰가다 오른쪽 쓰면 그대로 점프하는 현상을 방지하기 위함임.
+            if (latestSide != isRightSided) 
+            {
+                return false;
+            }
+            
+            if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
+            {
+                return false;
+            }
+
+            ret = CommandCheck(conditionDesc, isRightSided);
+        }
+
+        if (ret == true)
+        {
+            _ownerStateControllingComponent._owner.SetLatestWeaponUse(isRightSided);
+            CustomKeyManager.Instance.ClearKeyRecord();
+        }
+
+        return ret;
+    }
+
+    private bool CommandCheck(ConditionDesc conditionDesc, bool isRightSided)
+    {
+        List<ComboKeyCommandDesc> stateComboKeyCommand = conditionDesc._commandInputConditionTarget;
+        if (stateComboKeyCommand.Count <= 0)
+        {
+            Debug.Assert(false, "CommandCondition인데 키가 하나도 없습니다");
+            return false;
+        }
+
+        LinkedList<ComboCommandKeyDesc> currCommand = CustomKeyManager.Instance.GetComboCommandKeyDescs();
+
+        int KeyRecoredeCount = currCommand.Count - 1;
+        int CommandCount = stateComboKeyCommand.Count - 1;
+
+        if (CommandCount > KeyRecoredeCount)
+        {
+            return false; //콤보를 확인할만큼 키가 없다.
+        }
+
+        int index = 0;
+
+        WeaponGrabFocus ownerGrabType = _ownerStateControllingComponent._owner.GetGrabFocusType();
+        WeaponUseType weaponComboType = WeaponUseType.MainUse;
+        ComboCommandKeyType recordedType = ComboCommandKeyType.TargetingBack;
+
+        for (LinkedListNode<ComboCommandKeyDesc> node = currCommand.Last; node != null; node = node.Previous)
+        {
+            if ((CommandCount - index) < 0)
+            {
+                break; //콤보를 다 검사했다. 이상이 없었다면 return을 안했음
+            }
+
+            recordedType = node.Value._type; //입력된 키
+
+            //조합 키 체크
+            for (int i = 0; i < stateComboKeyCommand[CommandCount - index]._targetCommandKeys.Count; i++)
+            {
+                weaponComboType = stateComboKeyCommand[CommandCount - index]._targetCommandKeys[i];
+
+                if (weaponComboType == WeaponUseType.MainUse || weaponComboType == WeaponUseType.SubUse || weaponComboType == WeaponUseType.SpecialUse)
+                {
+                    if (recordedType == ComboCommandKeyType.TargetingBack || recordedType == ComboCommandKeyType.TargetingFront || recordedType == ComboCommandKeyType.TargetingLeft || recordedType == ComboCommandKeyType.TargetingRight)
+                    { return false; }
+
+                    ComboCommandKeyType targetType = KeyConvert(weaponComboType, ownerGrabType, isRightSided);
+
+                    if (targetType <= ComboCommandKeyType.TargetingRight)
+                    {
+                        return false; //치환에 실패했다
+                    }
+
+                    //if (CustomKeyManager.Instance.AttackKeyRestrainedExist(targetType) == false)
+                    //{
+                    //    return false;
+                    //}
+
+                    if (targetType != recordedType)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if ((ComboCommandKeyType)weaponComboType != recordedType)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            index++;
+        }
+
+        return true;
+    }
 
 
     private ComboCommandKeyType KeyConvert(WeaponUseType target, WeaponGrabFocus ownerGrabType, bool isRightHandWeapon)
@@ -1084,115 +1172,199 @@ public class StateContoller : MonoBehaviour
 
     //isCheckingWeaponEntry == T -> Weapon Motion 이 아닌데 Weapon Motion을 쓰려고하는경우
     //isCheckingWeaponEntry == F -> Weapon Motion 에서  Weapon Motion을 쓰려고하는경우
-    private void CalculateNextWeaponState(bool isCheckingWeaponEntry) 
-    {
-        if (isCheckingWeaponEntry == true)
-        {
-            WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(true);
+    //private void CalculateNextWeaponState(bool isCheckingWeaponEntry) 
+    //{
+        //if (isCheckingWeaponEntry == true)
+        //{
+        //    WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(true);
 
-            SortedDictionary<int, List<LinkedState>> targetDict = null;
+        //    SortedDictionary<int, List<LinkedState>> targetDict = null;
 
-            //오른손 먼저 검사
-            if (weaponScript != null)
-            {
-                targetDict = weaponScript.GetEntryStates();
+        //    //오른손 먼저 검사
+        //    if (weaponScript != null)
+        //    {
+        //        targetDict = weaponScript.GetEntryStates();
 
-                _reservedNextWeaponState = CheckNextWeaponState(targetDict, true);
-            }
+        //        _reservedNextWeaponState = CheckNextWeaponState(targetDict, true);
+        //    }
 
-            if (_reservedNextWeaponState != null)
-            {
-                _ownerStateControllingComponent._owner.SetLatestWeaponUse(true);
-                return;
-            }
+        //    if (_reservedNextWeaponState != null)
+        //    {
+        //        _ownerStateControllingComponent._owner.SetLatestWeaponUse(true);
+        //        return;
+        //    }
 
-            weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(false);
+        //    weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(false);
 
-            if (weaponScript == null)
-            {
-                return;
-            }
+        //    if (weaponScript == null)
+        //    {
+        //        return;
+        //    }
 
-            targetDict = weaponScript.GetEntryStates();
+        //    targetDict = weaponScript.GetEntryStates();
 
-            _reservedNextWeaponState = CheckNextWeaponState(targetDict, false);
-            _ownerStateControllingComponent._owner.SetLatestWeaponUse(false);
-        }
-        else 
-        {
-            //공격 -> 공격을 하려는 경우다
+        //    _reservedNextWeaponState = CheckNextWeaponState(targetDict, false);
+        //    _ownerStateControllingComponent._owner.SetLatestWeaponUse(false);
+        //}
+        //else 
+        //{
+        //    //공격 -> 공격을 하려는 경우다
 
-            bool isLatestRightHandUse = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
-            WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(isLatestRightHandUse);
-            SortedDictionary<int, List<LinkedState>> targetDict = null;
+        //    bool isLatestRightHandUse = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
+        //    WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(isLatestRightHandUse);
+        //    SortedDictionary<int, List<LinkedState>> targetDict = null;
 
-            //최근공격을 했던 손의 연결 상태 먼저 검사
-            {
-                if (weaponScript != null)
-                {
-                    //targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
-                    targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
+        //    //최근공격을 했던 손의 연결 상태 먼저 검사
+        //    {
+        //        if (weaponScript != null)
+        //        {
+        //            //targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
+        //            targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
 
-                    _reservedNextWeaponState = CheckNextWeaponState(targetDict, isLatestRightHandUse);
-                }
+        //            _reservedNextWeaponState = CheckNextWeaponState(targetDict, isLatestRightHandUse);
+        //        }
 
-                if (_reservedNextWeaponState != null)
-                {
-                    _ownerStateControllingComponent._owner.SetLatestWeaponUse(isLatestRightHandUse);
-                    return;
-                }
-            }
-
-
-            //반대손의 Entry를 검사
-            {
-                weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(!isLatestRightHandUse);
-
-                if (weaponScript != null)
-                {
-                    targetDict = weaponScript.GetEntryStates();
-
-                    _reservedNextWeaponState = CheckNextWeaponState(targetDict, !isLatestRightHandUse);
-                }
-
-                if (_reservedNextWeaponState != null)
-                {
-                    _ownerStateControllingComponent._owner.SetLatestWeaponUse(!isLatestRightHandUse);
-                    return;
-                }
-            }
-        }
-    }
+        //        if (_reservedNextWeaponState != null)
+        //        {
+        //            _ownerStateControllingComponent._owner.SetLatestWeaponUse(isLatestRightHandUse);
+        //            return;
+        //        }
+        //    }
 
 
+        //    //반대손의 Entry를 검사
+        //    {
+        //        weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(!isLatestRightHandUse);
 
-    private State CheckNextWeaponState(SortedDictionary<int, List<LinkedState>> targetDict, bool isRightHandWeapon)
-    {
-        foreach (KeyValuePair<int, List<LinkedState>> stateList in targetDict)
-        {
-            foreach (LinkedState entryState in stateList.Value)
-            {
-                //이미 어려운거부터 정렬돼있다고 가정한다. 그렇지 않다면 정렬로직의 문제다. 여기서 신경쓰지 않는다
-                bool stateCheckPassed = true;
+        //        if (weaponScript != null)
+        //        {
+        //            targetDict = weaponScript.GetEntryStates();
 
-                foreach (ConditionDesc condition in entryState._multiConditions)
-                {
-                    if (CheckCondition(condition, isRightHandWeapon) == false)
-                    {
-                        stateCheckPassed = false;
-                        break;
-                    }
-                }
+        //            _reservedNextWeaponState = CheckNextWeaponState(targetDict, !isLatestRightHandUse);
+        //        }
 
-                if (stateCheckPassed == true)
-                {
-                    return entryState._state;
-                }
-            }
-        }
+        //        if (_reservedNextWeaponState != null)
+        //        {
+        //            _ownerStateControllingComponent._owner.SetLatestWeaponUse(!isLatestRightHandUse);
+        //            return;
+        //        }
+        //    }
+        //}
+    //}
 
-        return null;
-    }
+
+
+    //private IEnumerator AttackComboChangeCoroutine()
+    //{
+    //    _stateChangeTimeAcc = 0.0f;
+    //    _stateChangeCoroutineStarted = true;
+    //    Debug.Log("Attack Try Coroutine Started");
+    //    CustomKeyManager.Instance.SetAttackKeyRestrained(true);
+
+    //    while (true) 
+    //    {
+    //        _stateChangeTimeAcc += Time.deltaTime;
+    //        if (_stateChangeTimeAcc >= _stateChangeTime)
+    //        {
+    //            Debug.Log("Attack Try Coroutine End Well");
+    //            //CalculateNextWeaponState(_currState.GetStateDesc()._isLocoMotionToAttackAction);
+    //            break;
+    //        }
+
+    //        yield return null;
+    //    }
+
+    //    CustomKeyManager.Instance.SetAttackKeyRestrained(false);
+    //    _stateChangeCoroutineStarted = false;
+    //}
+
+
+
+
+
+    //private IEnumerator AttackStateAutoChangeCoroutine()
+    //{
+    //    _attackStateAutoChangeTimeAcc = 0.0f;
+    //    _attackStateAutoChangeTime = _currState._myState._stateAnimationClip.length;
+    //    _attackStateAutoChangeTimeCoroutineStarted = true;
+
+    //    while (true)
+    //    {
+    //        _attackStateAutoChangeTimeAcc += Time.deltaTime;
+
+    //        if (_attackStateAutoChangeTimeAcc >= _attackStateAutoChangeTime)
+    //        {
+    //            CalculateAfterAttackState();
+    //            break;
+    //        }
+
+    //        yield return null;
+    //    }
+
+    //    _attackStateAutoChangeTimeCoroutineStarted = false;
+    //}
+
+
+
+
+
+
+
+    //private void CalculateAfterAttackState()
+    //{
+    //    /*----------------------------------------------------
+    //    |NOTI| 무기 공격을 끝내면 기본적으로 Idle로 간다고 처리하는 구조임
+    //    이것은 불완전하다. 나중에 문제가 생길 수 있다
+    //    -----------------------------------------------------*/
+
+    //    StateAsset locoStateFirstEntry = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState;
+    //    StateGraphType nextGraphType = StateGraphType.End;
+
+    //    StateAsset nextState = (_reservedNextWeaponState != null)
+    //        ? _reservedNextWeaponState
+    //        : CheckChangeState_Recursion(locoStateFirstEntry, StateGraphType.LocoStateGraph, out nextGraphType);
+
+    //    if (nextState == null) 
+    //    {
+    //        ChangeState(nextGraphType, locoStateFirstEntry);
+    //    }
+
+    //    else if (nextState != _currState)
+    //    {
+    //        ChangeState(nextGraphType, nextState);
+    //    }
+    //}
+
+
+
+
+    //private State CheckNextWeaponState(SortedDictionary<int, List<LinkedState>> targetDict, bool isRightHandWeapon)
+    //{
+    //    //foreach (KeyValuePair<int, List<LinkedState>> stateList in targetDict)
+    //    //{
+    //    //    foreach (LinkedState entryState in stateList.Value)
+    //    //    {
+    //    //        //이미 어려운거부터 정렬돼있다고 가정한다. 그렇지 않다면 정렬로직의 문제다. 여기서 신경쓰지 않는다
+    //    //        bool stateCheckPassed = true;
+
+    //    //        foreach (ConditionDesc condition in entryState._multiConditions)
+    //    //        {
+    //    //            if (CheckCondition(condition, isRightHandWeapon) == false)
+    //    //            {
+    //    //                stateCheckPassed = false;
+    //    //                break;
+    //    //            }
+    //    //        }
+
+    //    //        if (stateCheckPassed == true)
+    //    //        {
+    //    //            return entryState._state;
+    //    //        }
+    //    //    }
+    //    //}
+
+    //    return null;
+    //}
 
 
 

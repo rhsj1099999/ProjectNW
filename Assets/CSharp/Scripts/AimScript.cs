@@ -9,7 +9,7 @@ public class AimScript : MonoBehaviour
     private GameObject _aimmingCharacter = null;
 
     [SerializeField] private Vector2 _aimSpeed = new Vector2(1.0f, 1.0f);
-    [SerializeField] private string _aimKey = "Fire2";
+    //[SerializeField] private string _aimKey = "Fire2";
     [SerializeField] private Vector2 smoothTime = new Vector2(0.05f, 0.05f); // 부드럽게 회전할 시간
 
     public CinemachineVirtualCameraBase _sightCamera = null;

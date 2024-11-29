@@ -8,7 +8,7 @@ public class DampingFollower2 : MonoBehaviour
     [SerializeField] private Vector3 _hardLimitRadius = new Vector3(0.1f, 0.1f, 0.1f);
     [SerializeField] private float _hardLimitRadius2 = 0.1f;
     [SerializeField] private Vector3 _deadzoneRadius = Vector3.zero;
-    [SerializeField] private float _deadzoneRadius2 = 0.001f;
+    //[SerializeField] private float _deadzoneRadius2 = 0.001f;
     [SerializeField] private Vector3 _dampingTime = new Vector3(0.1f, 0.1f, 0.1f);
     [SerializeField] private float _dampingTime2 = 0.01f;
 
@@ -16,9 +16,9 @@ public class DampingFollower2 : MonoBehaviour
 
     [SerializeField] GameObject _lookAtObject = null;
 
-    private float _dampingRefX = 0.0f;
-    private float _dampingRefY = 0.0f;
-    private float _dampingRefZ = 0.0f;
+    //private float _dampingRefX = 0.0f;
+    //private float _dampingRefY = 0.0f;
+    //private float _dampingRefZ = 0.0f;
     private Vector3 _dampingRef = new Vector3();
 
     private bool _hardLimitUpdated = false;

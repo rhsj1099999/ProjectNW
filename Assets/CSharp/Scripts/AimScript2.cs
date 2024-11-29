@@ -31,7 +31,7 @@ public class AimScript2 : MonoBehaviour
     [SerializeField] private Vector2 _aimSpeed = new Vector2(1.0f, 1.0f);
     [SerializeField] private string _aimKey = "Fire2";
     [SerializeField] private Vector2 smoothTime = new Vector2(0.05f, 0.05f); // 부드럽게 회전할 시간
-    [SerializeField] private GameObject _aimSatelliteDebuggingPrefab = null;
+    //[SerializeField] private GameObject _aimSatelliteDebuggingPrefab = null;
 
 
     private void OnDisable()
