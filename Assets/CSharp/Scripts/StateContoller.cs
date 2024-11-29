@@ -414,11 +414,12 @@ public class StateContoller : MonoBehaviour
 
                 bool tempIsRightWeapon = (pair.Key != StateGraphType.WeaponState_LeftGraph);
 
+                bool isSuccess = true;
+
                 foreach (KeyValuePair<int, LinkedStateAsset> linkedStatePair in entryStates)
                 {
                     List<ConditionAssetWrapper> conditionAssetWrappers = linkedStatePair.Value._conditionAsset;
 
-                    bool isSuccess = true;
 
                     foreach (ConditionAssetWrapper condition in conditionAssetWrappers)
                     {
@@ -432,7 +433,17 @@ public class StateContoller : MonoBehaviour
                     if (isSuccess == true)
                     {
                         nextGraphType = pair.Key;
-                        return linkedStatePair.Value._linkedState;
+                        targetState = linkedStatePair.Value._linkedState;
+
+                        {
+                            _currLinkedStates_DeepCopy.Clear();
+                            Dictionary<StateAsset, List<LinkedStateAsset>> currentGraph = _stateGraphes[(int)nextGraphType].GetGraphStates();
+                            foreach (LinkedStateAsset item in currentGraph[targetState])
+                            {
+                                _currLinkedStates_DeepCopy.Add(item);
+                            }
+                        }
+                        break;
                     }
                 }
             }
@@ -514,7 +525,6 @@ public class StateContoller : MonoBehaviour
                                 nextGraphType = graphAsset._graphType;
                             }
 
-                            
                             foreach (LinkedStateAsset item in currentGraph[targetState])
                             {
                                 _currLinkedStates_DeepCopy.Add(item);
@@ -1005,40 +1015,6 @@ public class StateContoller : MonoBehaviour
         }
 
         ret = CommandCheck(conditionDesc, isRightSided);
-
-        {
-            ////1. 해당 손을 먼저 검사
-            //{
-            //    if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
-            //    {
-            //        return false;
-            //    }
-
-            //    ret = CommandCheck(conditionDesc, isRightSided);
-            //}
-
-            ////2. 반대 손을 검사
-            //if (ret == false)
-            //{
-            //    isRightSided = !isRightSided;
-
-            //    bool latestSide = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
-
-            //    //상태 그래프를 돌려쓰는데, 같은무기를 왼손, 오른손에 쥐었을때,
-            //    //왼쪽 쓰가다 오른쪽 쓰면 그대로 점프하는 현상을 방지하기 위함임.
-            //    if (latestSide != isRightSided) 
-            //    {
-            //        return false;
-            //    }
-
-            //    if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
-            //    {
-            //        return false;
-            //    }
-
-            //    ret = CommandCheck(conditionDesc, isRightSided);
-            //}
-        }
 
         if (ret == true)
         {
