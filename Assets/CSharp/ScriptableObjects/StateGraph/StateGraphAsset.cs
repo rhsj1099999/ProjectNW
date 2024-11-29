@@ -13,8 +13,8 @@ public class StateGraphAsset : ScriptableObject
     public enum StateGraphType
     {
         LocoStateGraph,
-        WeaponState_LeftGraph,
         WeaponState_RightGraph,
+        WeaponState_LeftGraph,
         HitStateGraph,
         FlyStateGraph,
         End,

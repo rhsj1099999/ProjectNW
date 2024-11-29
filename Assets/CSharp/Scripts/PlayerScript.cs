@@ -2107,15 +2107,12 @@ public class PlayerScript : MonoBehaviour, IHitable
 
             StateGraphAsset stateGraphAsset = nextWeaponScript._weaponStateGraph;
 
-            if (stateGraphAsset != null)
-            {
-                StateGraphAsset.StateGraphType stateGraphType = (tempIsRightWeapon == true)
-                    ? StateGraphAsset.StateGraphType.WeaponState_RightGraph
-                    : StateGraphAsset.StateGraphType.WeaponState_LeftGraph;
+            StateGraphAsset.StateGraphType stateGraphType = (tempIsRightWeapon == true)
+                ? StateGraphAsset.StateGraphType.WeaponState_RightGraph
+                : StateGraphAsset.StateGraphType.WeaponState_LeftGraph;
 
-                //장착한 후, 상태그래프를 교체한다.
-                _stateContoller.EquipStateGraph(stateGraphAsset, stateGraphType);
-            }
+            //장착한 후, 상태그래프를 교체한다.
+            _stateContoller.EquipStateGraph(stateGraphAsset, stateGraphType);
         }
 
         return null;

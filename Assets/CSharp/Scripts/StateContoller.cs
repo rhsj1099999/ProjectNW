@@ -322,10 +322,8 @@ public class StateContoller : MonoBehaviour
             _currInteractionPoints_DeepCopy.Add(pair.Key, pair.Value);
         }
 
-
         _currLinkedStates_adiitional = null;
         _currInteractionPoints_additional = null;
-
 
         AllStopCoroutine();
 
@@ -375,7 +373,10 @@ public class StateContoller : MonoBehaviour
     {
         _stateGraphes[(int)graphType] = graphAsset;
 
-        graphAsset.SettingOwnerComponent(_ownerStateControllingComponent, _ownerStateControllingComponent._owner);
+        if (graphAsset != null)
+        {
+            graphAsset.SettingOwnerComponent(_ownerStateControllingComponent, _ownerStateControllingComponent._owner);
+        }
     }
 
 
@@ -451,6 +452,11 @@ public class StateContoller : MonoBehaviour
 
             bool isRightSided = (_currentGraphType != StateGraphType.WeaponState_LeftGraph);
 
+            if (_currLinkedStates_DeepCopy.Count <= 0)
+            {
+                isSuccess = false;
+            }
+
             foreach (var linkedStateAsset in _currLinkedStates_DeepCopy)
             {
                 isSuccess = true;
@@ -467,19 +473,54 @@ public class StateContoller : MonoBehaviour
                 if (isSuccess == true)
                 {
                     targetState = linkedStateAsset._linkedState;
-                    //_currLinkedStates = _stateGraphes[(int)_currentGraphType].GetGraphStates()[targetState];
-                    _currLinkedStates_DeepCopy.Clear();
-                    foreach (LinkedStateAsset item in _stateGraphes[(int)_currentGraphType].GetGraphStates()[targetState])
-                    {
-                        _currLinkedStates_DeepCopy.Add(item);
-                    }
-
                     {
                         /*--------------------------------------------------------
                         |TODO| 점프상태라면 연쇄 검사를 하지않도록 임시방편 처리. 이거 지우는 구조 생각해볼것
                         이유는 점프로 바뀌어야 y변화가 있는데 그전에 착지를 했다고 판정해버려서임
                         --------------------------------------------------------*/
-                        if (targetState._myState._EnterStateActionTypes.Count > 0 && targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump) {return targetState;}
+                        if (targetState._myState._EnterStateActionTypes.Count > 0 && targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump) { return targetState; }
+                    }
+
+                    //_currLinkedStates = _stateGraphes[(int)_currentGraphType].GetGraphStates()[targetState];
+                    /*-------------------------------------------------------------------------
+                    |TODO| 아래 코드 반드시 고쳐야한다.
+                    목적은 ReadyIdle 코루틴 실행시키면 링크스테이트가 섞이는데
+                    임시로 나누는 코드임
+                    -------------------------------------------------------------------------*/
+                    {
+                        _currLinkedStates_DeepCopy.Clear();
+                        foreach (StateGraphAsset graphAsset in _stateGraphes)
+                        {
+                            if (graphAsset == null)
+                            {
+                                continue;
+                            }
+
+                            Dictionary<StateAsset, List<LinkedStateAsset>> currentGraph = graphAsset.GetGraphStates();
+                            if (currentGraph.ContainsKey(targetState) == false)
+                            {
+                                continue;
+                            }
+
+                            if (graphAsset._graphType == StateGraphType.WeaponState_RightGraph ||
+                                graphAsset._graphType == StateGraphType.WeaponState_LeftGraph)
+                            {
+                                nextGraphType = (isRightSided == true)
+                                    ? StateGraphType.WeaponState_RightGraph
+                                    : StateGraphType.WeaponState_LeftGraph;
+                            }
+                            else
+                            {
+                                nextGraphType = graphAsset._graphType;
+                            }
+
+                            
+                            foreach (LinkedStateAsset item in currentGraph[targetState])
+                            {
+                                _currLinkedStates_DeepCopy.Add(item);
+                            }
+                            break;
+                        }
                     }
 
                     if (isStateChangeGuaranted == false)
@@ -718,7 +759,7 @@ public class StateContoller : MonoBehaviour
             if (target._timeACC >= target._timeTarget)
             {
                 //CopyIdlesState : LinkedState
-                List<LinkedStateAsset> idleLinkedStates = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates();
+                List<LinkedStateAsset> idleLinkedStates = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetGraphStates()[_stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState];
                 //_currLinkedStates_adiitional = idleLinkedStates;
                 //foreach (LinkedStateAsset linkedState in idleLinkedStates)
                 //{
@@ -788,6 +829,7 @@ public class StateContoller : MonoBehaviour
     public bool CheckCondition(ConditionAssetWrapper conditionAssetWrapper, bool isRightSided)
     {
         bool ret = false;
+        bool forcedValue = false;
 
         ConditionDesc conditionDesc = conditionAssetWrapper._conditionAsset._conditionDesc;
         bool stateGoal = conditionAssetWrapper._goal;
@@ -806,9 +848,8 @@ public class StateContoller : MonoBehaviour
                     {
                         ret = true;
                     }
-
-                    return (ret == stateGoal);
                 }
+                break;
 
             case ConditionType.AnimationEnd:
                 {
@@ -817,9 +858,8 @@ public class StateContoller : MonoBehaviour
                     {
                         ret = true;
                     }
-
-                    return (ret == stateGoal);
                 }
+                break;
 
             case ConditionType.InAir:
                 {
@@ -832,13 +872,13 @@ public class StateContoller : MonoBehaviour
                     {
                         ret = true;
                     }
-
-                    return (ret == stateGoal);
                 }
+                break;
 
             case ConditionType.KeyInput:
                 {
-                    bool isSuccess = true;
+                    ret = true;
+                    forcedValue = true;
 
                     for (int i = 0; i < conditionDesc._keyInputConditionTarget.Count; ++i)
                     {
@@ -846,16 +886,16 @@ public class StateContoller : MonoBehaviour
                         InputKeyAsset keyAsset = conditionDesc._keyInputConditionTarget[i]._targetKey;
                         bool goal = stateGoal;
 
-                        isSuccess = (keyAsset.GetKeyState(type) == goal);
+                        ret = (keyAsset.GetKeyState(type) == goal);
 
-                        if (isSuccess == false)
+                        if (ret == false)
                         {
-                            return false; //한개라도 틀렸다
+                            break;
                         }
                     }
 
-                    return isSuccess;
                 }
+                break;
 
             case ConditionType.EquipWeaponByType:
                 {
@@ -878,8 +918,9 @@ public class StateContoller : MonoBehaviour
 
                     int currOnwerAnimationFrame = (int)(_currStateTime * currStateDesc._stateAnimationClip.frameRate);
 
-                    return stateAnimFrameData.FrameCheck(currOnwerAnimationFrame);
+                    ret = stateAnimFrameData.FrameCheck(currOnwerAnimationFrame);
                 }
+                break;
 
             case ConditionType.RightHandWeaponSignaled:
                 break;
@@ -900,41 +941,50 @@ public class StateContoller : MonoBehaviour
                 break;
 
             case ConditionType.ComboKeyCommand:
-                return PartailFunc_ComboCommandCheck(conditionDesc, isRightSided);
+                {
+                    forcedValue = true;
+                    ret = PartailFunc_ComboCommandCheck(conditionDesc, isRightSided);
+                }
+                break;
 
             case ConditionType.FocusedWeapon:
                 break;
 
             case ConditionType.AnimatorLayerNotBusy:
                 {
-                    if (conditionDesc._mustNotBusyLayers.Count <= 0)
-                    {
-                        return true;
-                    }
+                    //if (conditionDesc._mustNotBusyLayers.Count <= 0)
+                    //{
+                    //    return true;
+                    //}
 
-                    if (conditionDesc._mustNotBusyLayers_BitShift == -1)
-                    {
-                        foreach (AnimatorLayerTypes item in conditionDesc._mustNotBusyLayers)
-                        {
-                            conditionDesc._mustNotBusyLayers_BitShift = (conditionDesc._mustNotBusyLayers_BitShift | (1 << (int)item));
-                        }
-                    }
+                    //if (conditionDesc._mustNotBusyLayers_BitShift == -1)
+                    //{
+                    //    foreach (AnimatorLayerTypes item in conditionDesc._mustNotBusyLayers)
+                    //    {
+                    //        conditionDesc._mustNotBusyLayers_BitShift = (conditionDesc._mustNotBusyLayers_BitShift | (1 << (int)item));
+                    //    }
+                    //}
 
-                    int ownerBusyLayer_Bitshift = _ownerStateControllingComponent._owner.GetCurrentBusyAnimatorLayer_BitShift();
+                    //int ownerBusyLayer_Bitshift = _ownerStateControllingComponent._owner.GetCurrentBusyAnimatorLayer_BitShift();
 
-                    if ((ownerBusyLayer_Bitshift & conditionDesc._mustNotBusyLayers_BitShift) == 0)
-                    {
-                        return true;
-                    }
+                    //if ((ownerBusyLayer_Bitshift & conditionDesc._mustNotBusyLayers_BitShift) == 0)
+                    //{
+                    //    return true;
+                    //}
                 }
-                return false;
+                break;
 
             default:
                 Debug.Assert(false, "데이터가 추가됐습니까?");
                 break;
         }
 
-        return false;
+        if (forcedValue == true)
+        {
+            return ret;
+        }
+
+        return (ret == stateGoal);
     }
 
 
@@ -949,36 +999,45 @@ public class StateContoller : MonoBehaviour
 
         bool ret = false;
 
-        //1. 해당 손을 먼저 검사
+        if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
         {
-            if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
-            {
-                return false;
-            }
-
-            ret = CommandCheck(conditionDesc, isRightSided);
+            return false;
         }
 
-        //2. 반대 손을 검사
-        if (ret == false)
+        ret = CommandCheck(conditionDesc, isRightSided);
+
         {
-            isRightSided = !isRightSided;
+            ////1. 해당 손을 먼저 검사
+            //{
+            //    if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
+            //    {
+            //        return false;
+            //    }
 
-            bool latestSide = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
+            //    ret = CommandCheck(conditionDesc, isRightSided);
+            //}
 
-            //상태 그래프를 돌려쓰는데, 같은무기를 왼손, 오른손에 쥐었을때,
-            //왼쪽 쓰가다 오른쪽 쓰면 그대로 점프하는 현상을 방지하기 위함임.
-            if (latestSide != isRightSided) 
-            {
-                return false;
-            }
-            
-            if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
-            {
-                return false;
-            }
+            ////2. 반대 손을 검사
+            //if (ret == false)
+            //{
+            //    isRightSided = !isRightSided;
 
-            ret = CommandCheck(conditionDesc, isRightSided);
+            //    bool latestSide = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
+
+            //    //상태 그래프를 돌려쓰는데, 같은무기를 왼손, 오른손에 쥐었을때,
+            //    //왼쪽 쓰가다 오른쪽 쓰면 그대로 점프하는 현상을 방지하기 위함임.
+            //    if (latestSide != isRightSided) 
+            //    {
+            //        return false;
+            //    }
+
+            //    if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
+            //    {
+            //        return false;
+            //    }
+
+            //    ret = CommandCheck(conditionDesc, isRightSided);
+            //}
         }
 
         if (ret == true)
@@ -1029,9 +1088,9 @@ public class StateContoller : MonoBehaviour
             {
                 weaponComboType = stateComboKeyCommand[CommandCount - index]._targetCommandKeys[i];
 
-                if (weaponComboType == WeaponUseType.MainUse || weaponComboType == WeaponUseType.SubUse || weaponComboType == WeaponUseType.SpecialUse)
+                if (weaponComboType >= WeaponUseType.MainUse && weaponComboType <= WeaponUseType.SpecialUseUp)
                 {
-                    if (recordedType == ComboCommandKeyType.TargetingBack || recordedType == ComboCommandKeyType.TargetingFront || recordedType == ComboCommandKeyType.TargetingLeft || recordedType == ComboCommandKeyType.TargetingRight)
+                    if (recordedType >= ComboCommandKeyType.TargetingBack && recordedType <= ComboCommandKeyType.TargetingRight)
                     { return false; }
 
                     ComboCommandKeyType targetType = KeyConvert(weaponComboType, ownerGrabType, isRightSided);
@@ -1175,6 +1234,114 @@ public class StateContoller : MonoBehaviour
                             if (isRightHandWeapon == false)
                             {
                                 convertedRet = ComboCommandKeyType.CtrlLeftClick;
+                            }
+                        }
+                        break;
+                }
+                break;
+
+            case WeaponUseType.MainUseUp: //무기의 콤보가 주사용 클릭이다
+                switch (ownerGrabType)
+                {
+                    case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
+                        {
+                            if (isRightHandWeapon == true)
+                            {
+                                convertedRet = ComboCommandKeyType.RightUp;
+                            }
+                            else
+                            {
+                                convertedRet = ComboCommandKeyType.LeftUp;
+                            }
+                        }
+                        break;
+
+                    case WeaponGrabFocus.RightHandFocused: //무기를 오른편에 양손으로 잡고있다.
+                        {
+                            if (isRightHandWeapon == true)
+                            {
+                                convertedRet = ComboCommandKeyType.RightUp;
+                            }
+                        }
+                        break;
+
+                    case WeaponGrabFocus.LeftHandFocused:
+                        {
+                            if (isRightHandWeapon == false)
+                            {
+                                convertedRet = ComboCommandKeyType.LeftUp;
+                            }
+                        }
+                        break;
+                }
+                break;
+
+            case WeaponUseType.SubUseUp:  //무기의 콤보가 보조 사용 클릭이다
+                switch (ownerGrabType)
+                {
+                    case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
+                        {
+                            if (isRightHandWeapon == true)
+                            {
+                                convertedRet = ComboCommandKeyType.SubRightUp;
+                            }
+                            else
+                            {
+                                convertedRet = ComboCommandKeyType.SubLeftUp;
+                            }
+                        }
+                        break;
+
+                    case WeaponGrabFocus.RightHandFocused: //무기를 오른편에 양손으로 잡고있다.
+                        {
+                            if (isRightHandWeapon == true)
+                            {
+                                convertedRet = ComboCommandKeyType.LeftUp;
+                            }
+                        }
+                        break;
+
+                    case WeaponGrabFocus.LeftHandFocused:
+                        {
+                            if (isRightHandWeapon == false)
+                            {
+                                convertedRet = ComboCommandKeyType.RightUp;
+                            }
+                        }
+                        break;
+                }
+                break;
+
+            case WeaponUseType.SpecialUseUp:  //무기의 콤보가 특수 사용 클릭이다
+                switch (ownerGrabType)
+                {
+                    case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
+                        {
+                            if (isRightHandWeapon == true)
+                            {
+                                convertedRet = ComboCommandKeyType.CtrlRightUp;
+                            }
+                            else
+                            {
+                                convertedRet = ComboCommandKeyType.CtrlLeftUp;
+                            }
+                        }
+                        break;
+
+                    case WeaponGrabFocus.RightHandFocused: //무기를 오른편에 양손으로 잡고있다.
+                        {
+                            if (isRightHandWeapon == true)
+                            {
+                                convertedRet = ComboCommandKeyType.CtrlRightUp;
+                            }
+                        }
+                        break;
+
+                    case WeaponGrabFocus.LeftHandFocused:
+                        {
+                            if (isRightHandWeapon == false)
+                            {
+                                convertedRet = ComboCommandKeyType.CtrlLeftUp;
                             }
                         }
                         break;

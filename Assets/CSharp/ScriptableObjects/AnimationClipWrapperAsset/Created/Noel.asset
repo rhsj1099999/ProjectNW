@@ -18,26 +18,46 @@ MonoBehaviour:
     - _frameDataType: 0
       _dataAsset:
         _frameUp: 30
-        _frameUnder: 100
+        _frameUnder: 60
         _frameCheckType: 2
+    - _frameDataType: 1
+      _dataAsset:
+        _frameUp: 70
+        _frameUnder: 0
+        _frameCheckType: 0
   - _animationClip: {fileID: 7400000, guid: 0d4a586e2eabaa24b965a643b3a80e4d, type: 2}
     _dataAssetWrapper:
     - _frameDataType: 0
       _dataAsset:
-        _frameUp: 80
-        _frameUnder: 120
+        _frameUp: 50
+        _frameUnder: 80
         _frameCheckType: 2
+    - _frameDataType: 1
+      _dataAsset:
+        _frameUp: 100
+        _frameUnder: 0
+        _frameCheckType: 0
   - _animationClip: {fileID: 7400000, guid: 3755eed2c621b2f489367bd06aa5fde0, type: 2}
     _dataAssetWrapper:
     - _frameDataType: 0
       _dataAsset:
         _frameUp: 60
-        _frameUnder: 100
+        _frameUnder: 90
         _frameCheckType: 2
+    - _frameDataType: 1
+      _dataAsset:
+        _frameUp: 100
+        _frameUnder: 0
+        _frameCheckType: 0
   - _animationClip: {fileID: 7400000, guid: e9745c9de8d160c48808c82d89035544, type: 2}
     _dataAssetWrapper:
     - _frameDataType: 0
       _dataAsset:
-        _frameUp: 90
-        _frameUnder: 120
+        _frameUp: 50
+        _frameUnder: 80
         _frameCheckType: 2
+    - _frameDataType: 1
+      _dataAsset:
+        _frameUp: 110
+        _frameUnder: 0
+        _frameCheckType: 0

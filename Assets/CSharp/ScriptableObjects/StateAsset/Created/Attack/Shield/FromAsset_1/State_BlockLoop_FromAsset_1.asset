@@ -20,60 +20,12 @@ MonoBehaviour:
     _leftWeaponOverride: 0
     _isAttackState: 1
     _isLocoMotionToAttackAction: 0
-    _isLoopState: 1
-    _stateLocked: 0
+    _isLoopState: 0
     _canUseItem: 0
-    _stateType: 
+    _stateLocked: 0
+    _stateType: 0
     _EnterStateActionTypes: 0d000000
     _inStateActionTypes: 06000000
     _ExitStateActionTypes: 0e000000
     _checkingBehaves: 
-    _breakLoopStateCondition:
-    - _singleConditionType: 3
-      _componentConditionGoal: 0
-      _weaponTypeGoal: 0
-      _keyInputConditionTarget:
-      - _targetKeyCode: 113
-        _targetState: 2
-        _keyInpuyGoal: 1
-        _keyHoldGoal: 0
-      _commandInputConditionTarget: []
-      _animationFrameDataType: 0
-      _comboStrainedTime: 0
-      _mustNotBusyLayers: 
-      _mustNotBusyLayers_BitShift: 0
-    _linkedStates:
-    - _multiConditionAsset:
-      - _singleConditionType: 3
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget:
-        - _targetKeyCode: 113
-          _targetState: 0
-          _keyInpuyGoal: 1
-          _keyHoldGoal: 0
-        _commandInputConditionTarget: []
-        _animationFrameDataType: 2
-        _comboStrainedTime: -1
-        _mustNotBusyLayers: 
-        _mustNotBusyLayers_BitShift: 1
-      - _singleConditionType: 5
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameDataType: 2
-        _comboStrainedTime: -1
-        _mustNotBusyLayers: 
-        _mustNotBusyLayers_BitShift: 1
-      - _singleConditionType: 6
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameDataType: 2
-        _comboStrainedTime: -1
-        _mustNotBusyLayers: 
-        _mustNotBusyLayers_BitShift: 1
-      _stateAsset: {fileID: 11400000, guid: 449438a2a0aee6d46b449c98d2730db0, type: 2}
-    _endStateIdleException: {fileID: 0}
+    _breakLoopStateCondition: []

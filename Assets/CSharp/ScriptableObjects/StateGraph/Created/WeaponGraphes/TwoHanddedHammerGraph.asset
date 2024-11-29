@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9967d1ee22a1d6946bac0890bae4d073, type: 3}
-  m_Name: LightSwordStateGraph
+  m_Name: TwoHanddedHammerGraph
   m_EditorClassIdentifier: 
   _graphType: 2
   _usingStates:
   - _isEntryState: 1
-    _stateAsset: {fileID: 11400000, guid: 3247c4a465725ba4d8ec11b96631fb44, type: 2}
+    _stateAsset: {fileID: 11400000, guid: fab3ce3a87806f645b0dd77aa8b9db23, type: 2}
     _entryCondition:
     - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
         type: 2}
       _goal: 1
     _linkedStates:
-    - _linkedState: {fileID: 11400000, guid: 449438a2a0aee6d46b449c98d2730db0, type: 2}
+    - _linkedState: {fileID: 11400000, guid: 9ea200e215dd72e469aca5ff8f358171, type: 2}
       _conditionAsset:
       - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
           type: 2}
@@ -30,10 +30,13 @@ MonoBehaviour:
           type: 2}
         _goal: 1
   - _isEntryState: 0
-    _stateAsset: {fileID: 11400000, guid: 449438a2a0aee6d46b449c98d2730db0, type: 2}
-    _entryCondition: []
+    _stateAsset: {fileID: 11400000, guid: 9ea200e215dd72e469aca5ff8f358171, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+        type: 2}
+      _goal: 1
     _linkedStates:
-    - _linkedState: {fileID: 11400000, guid: a93c5e8ae3dae1e419b0d146f05fb9a7, type: 2}
+    - _linkedState: {fileID: 11400000, guid: 1271f2a38a8dfe949a21c1ead41debf5, type: 2}
       _conditionAsset:
       - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
           type: 2}
@@ -42,10 +45,13 @@ MonoBehaviour:
           type: 2}
         _goal: 1
   - _isEntryState: 0
-    _stateAsset: {fileID: 11400000, guid: a93c5e8ae3dae1e419b0d146f05fb9a7, type: 2}
-    _entryCondition: []
+    _stateAsset: {fileID: 11400000, guid: 1271f2a38a8dfe949a21c1ead41debf5, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+        type: 2}
+      _goal: 1
     _linkedStates:
-    - _linkedState: {fileID: 11400000, guid: 5fc0bda2d8dcded4ba00cf45b315a571, type: 2}
+    - _linkedState: {fileID: 11400000, guid: b39df297fb6c30e4bbcaf675b4f5a406, type: 2}
       _conditionAsset:
       - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
           type: 2}
@@ -54,22 +60,13 @@ MonoBehaviour:
           type: 2}
         _goal: 1
   - _isEntryState: 0
-    _stateAsset: {fileID: 11400000, guid: 5fc0bda2d8dcded4ba00cf45b315a571, type: 2}
-    _entryCondition: []
+    _stateAsset: {fileID: 11400000, guid: b39df297fb6c30e4bbcaf675b4f5a406, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+        type: 2}
+      _goal: 1
     _linkedStates:
-    - _linkedState: {fileID: 11400000, guid: d0826422c33c20340b750a09ccd2cb6a, type: 2}
-      _conditionAsset:
-      - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
-          type: 2}
-        _goal: 1
-      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
-          type: 2}
-        _goal: 1
-  - _isEntryState: 0
-    _stateAsset: {fileID: 11400000, guid: d0826422c33c20340b750a09ccd2cb6a, type: 2}
-    _entryCondition: []
-    _linkedStates:
-    - _linkedState: {fileID: 11400000, guid: 3247c4a465725ba4d8ec11b96631fb44, type: 2}
+    - _linkedState: {fileID: 11400000, guid: fab3ce3a87806f645b0dd77aa8b9db23, type: 2}
       _conditionAsset:
       - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
           type: 2}

@@ -18,6 +18,9 @@ public enum WeaponUseType
     MainUse, //Å¬¸¯
     SubUse,
     SpecialUse,
+    MainUseUp, //¼Õ¶¼±â
+    SubUseUp,
+    SpecialUseUp,
 }
 
 
