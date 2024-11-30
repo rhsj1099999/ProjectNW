@@ -167,8 +167,6 @@ public class StateContoller : MonoBehaviour
         public CharacterMoveScript2 _ownerMoveScript = null;
         public CharacterController _ownerCharacterComponent = null;
     }
-    private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
-
 
     public class StateActionCoroutineWrapper
     {
@@ -176,34 +174,6 @@ public class StateContoller : MonoBehaviour
         public float _timeACC = 0.0f;
         public float _timeTarget = 0.0f;
     }
-
-
-    private StateAsset _currState;
-    public StateAsset GetCurrState() { return _currState; }
-
-    [SerializeField] private float _stateChangeTime = 0.085f;
-    private bool _stateChangeCoroutineStarted = false;
-    
-
-
-    [SerializeField] private List<StateGraphAsset> _initialStateGraphes = new List<StateGraphAsset>();
-    private List<StateGraphAsset> _stateGraphes = new List<StateGraphAsset>();
-    private StateGraphType _currentGraphType = StateGraphType.LocoStateGraph;
-
-    private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
-
-
-    private float _currStateTime = 0.0f;
-    private float _prevStateTime = 0.0f;
-
-
-
-    //List<LinkedStateAsset> _currLinkedStates = null;
-    //Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints = null;
-    //List<LinkedStateAsset> _currLinkedStates_adiitional = null;
-    //Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints_additional = null;
-    //List<LinkedStateAsset> _currLinkedStates_DeepCopy = new List<LinkedStateAsset>();
-    //Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints_DeepCopy = new Dictionary<StateGraphType, HashSet<StateAsset>>();
 
     public class LinkedStateAssetWrapper
     {
@@ -220,7 +190,29 @@ public class StateContoller : MonoBehaviour
         public LinkedStateAsset _linkedState = null;
         public List<ConditionAssetWrapper> _additionalCondition = null;
     }
-    List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>(); //결국 내가 검사해야할 연결상태는 이거 하나로 결정되야한다
+
+
+    private StateAsset _currState;
+    public StateAsset GetCurrState() { return _currState; }
+
+    [SerializeField] private float _stateChangeTime = 0.085f;
+    private bool _stateChangeCoroutineStarted = false;
+
+    [SerializeField] private List<StateGraphAsset> _initialStateGraphes = new List<StateGraphAsset>();
+    private List<StateGraphAsset> _stateGraphes = new List<StateGraphAsset>();
+    private StateGraphType _currentGraphType = StateGraphType.LocoStateGraph;
+
+    private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
+
+
+    private float _currStateTime = 0.0f;
+    private float _prevStateTime = 0.0f;
+    private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
+    List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
+
+
+
+
 
     private float _attackStateAutoChangeTime = 0.0f;
     private float _attackStateAutoChangeTimeAcc = 0.0f;
@@ -232,6 +224,11 @@ public class StateContoller : MonoBehaviour
     private Dictionary<RepresentStateType, State> _states = new Dictionary<RepresentStateType, State>();
     //private StateAsset _reservedNextWeaponState = null;
 
+
+    public StateAsset GetMyIdleStateAsset()
+    {
+        return _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState;
+    }
 
 
 
@@ -289,7 +286,7 @@ public class StateContoller : MonoBehaviour
         {
             _stateActionCoroutines.Add(null);
         }
-
+        ReadyLinkedStates(StateGraphType.LocoStateGraph, GetMyIdleStateAsset(), true);
         ChangeState(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState);
     }
 
@@ -328,8 +325,6 @@ public class StateContoller : MonoBehaviour
         _currentGraphType = nextGraphType;
         _currState = nextState;
 
-        ReadyLinkedStates(nextGraphType, nextState);
-
         _ownerStateControllingComponent._owner.ChangeAnimation(_currState);
 
         AllStopCoroutine();
@@ -339,48 +334,47 @@ public class StateContoller : MonoBehaviour
 
 
 
-    private void ReadyLinkedStates(StateGraphType currentGraphType, StateAsset currState)
+    private void ReadyLinkedStates(StateGraphType currentGraphType, StateAsset currState, bool isClear)
     {
-        _currLinkedStates.Clear();
+        if (isClear == true)
+        {
+            _currLinkedStates.Clear();
+        }
 
         //Interaction Point를 먼저 검사해야하기 때문에 먼저 담는다.
+        StateGraphAsset currentGraphAsset = _stateGraphes[(int)currentGraphType];
+
+        Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> currentInteractionPoints = currentGraphAsset.GetInteractionPoints();
+
+        foreach (KeyValuePair<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> pair in currentInteractionPoints)
         {
-            StateGraphAsset currentGraphAsset = _stateGraphes[(int)currentGraphType];
+            int keyIndex = (int)pair.Key;
 
-            Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> currentInteractionPoints = currentGraphAsset.GetInteractionPoints();
-
-            foreach (KeyValuePair<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> pair in currentInteractionPoints)
+            if (_stateGraphes[keyIndex] == null)
             {
-                int keyIndex = (int)pair.Key;
+                continue;
+            }
 
-                if (_stateGraphes[keyIndex] == null)
+            Dictionary<StateAsset, List<ConditionAssetWrapper>> interactionState = pair.Value;
+
+            foreach (LinkedStateAsset entryStates in _stateGraphes[keyIndex].GetEntryStates())
+            {
+                List<ConditionAssetWrapper> additionalCondition = null;
+
+                if (interactionState.ContainsKey(currState) == true)
                 {
-                    continue;
+                    additionalCondition = interactionState[currState];
                 }
 
-                Dictionary<StateAsset, List<ConditionAssetWrapper>> interactionState = pair.Value;
-
-                foreach (LinkedStateAsset entryStates in _stateGraphes[keyIndex].GetEntryStates())
-                {
-                    List<ConditionAssetWrapper> additionalCondition = null;
-
-                    if (interactionState.ContainsKey(currState) == true)
-                    {
-                        additionalCondition = interactionState[currState];
-                    }
-
-                    _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, pair.Key, entryStates, additionalCondition));
-                }
+                _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, pair.Key, entryStates, additionalCondition));
             }
         }
 
         //InGraphState를 담는다
+        List<LinkedStateAsset> linkedStates = _stateGraphes[(int)currentGraphType].GetGraphStates()[currState];
+        foreach (var linkedState in linkedStates)
         {
-            List<LinkedStateAsset> linkedStates = _stateGraphes[(int)currentGraphType].GetGraphStates()[currState];
-            foreach (var linkedState in linkedStates)
-            {
-                _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, currentGraphType, linkedState, null));
-            }
+            _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, currentGraphType, linkedState, null));
         }
     }
 
@@ -396,23 +390,6 @@ public class StateContoller : MonoBehaviour
         int successCount = 0;
         bool isStateChangeGuaranted = false;
         bool isSuccess = false;
-
-        if (Input.GetKeyDown(KeyCode.Mouse0) == true)
-        {
-            int a = 10;
-        }
-        if (Input.GetKeyUp(KeyCode.Mouse0) == true)
-        {
-            int a = 10;
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse1) == true)
-        {
-            int a = 10;
-        }
-        if (Input.GetKeyUp(KeyCode.Mouse1) == true)
-        {
-            int a = 10;
-        }
 
         while (true)
         {
@@ -466,7 +443,7 @@ public class StateContoller : MonoBehaviour
 
                     targetState = linkedStateAssetWrapper._linkedState._linkedState;
                     nextGraphType = linkedStateAssetWrapper._goalType;
-                    ReadyLinkedStates(nextGraphType, targetState);
+                    ReadyLinkedStates(nextGraphType, targetState, true);
 
                     if (targetState._myState._EnterStateActionTypes.Count > 0 && targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump) { return targetState; }
                     break;
@@ -523,18 +500,8 @@ public class StateContoller : MonoBehaviour
             graphAsset.SettingOwnerComponent(_ownerStateControllingComponent, _ownerStateControllingComponent._owner);
         }
 
-        ReadyLinkedStates(_currentGraphType, _currState);
+        ReadyLinkedStates(_currentGraphType, _currState, true);
     }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -738,6 +705,10 @@ public class StateContoller : MonoBehaviour
         _stateActionCoroutines[(int)type] = newCoroutineWrapper;
     }
 
+
+
+
+
     private IEnumerator StateChangeReadyCoroutine(StateActionCoroutineWrapper target)
     {
         while (true)
@@ -746,43 +717,44 @@ public class StateContoller : MonoBehaviour
 
             if (target._timeACC >= target._timeTarget)
             {
-                //Idle의 InteractionPoint를 담는다
-                Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> currentInteractionPoints = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetInteractionPoints();
-                foreach (KeyValuePair<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> pair in currentInteractionPoints)
                 {
-                    int graphTypeIndex = (int)pair.Key;
+                    ////Idle의 InteractionPoint를 담는다
+                    //Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> currentInteractionPoints = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetInteractionPoints();
+                    //foreach (KeyValuePair<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> pair in currentInteractionPoints)
+                    //{
+                    //    int graphTypeIndex = (int)pair.Key;
 
-                    if (_stateGraphes[graphTypeIndex] == null)
-                    {
-                        continue;
-                    }
+                    //    if (_stateGraphes[graphTypeIndex] == null)
+                    //    {
+                    //        continue;
+                    //    }
 
-                    List<LinkedStateAsset> linkedStateAssets = _stateGraphes[graphTypeIndex].GetEntryStates();
+                    //    List<LinkedStateAsset> linkedStateAssets = _stateGraphes[graphTypeIndex].GetEntryStates();
 
-                    Dictionary<StateAsset, List<ConditionAssetWrapper>> interactionPoint = pair.Value;
+                    //    Dictionary<StateAsset, List<ConditionAssetWrapper>> interactionPoint = pair.Value;
 
-                    foreach (LinkedStateAsset linkedStateAsset in linkedStateAssets)
-                    {
-                        List<ConditionAssetWrapper> additionalCondition = null;
-                        if (interactionPoint.ContainsKey(_currState) == true)
-                        {
-                            additionalCondition = interactionPoint[_currState];
-                        }
-                        _currLinkedStates.Add(new LinkedStateAssetWrapper(_currentGraphType, pair.Key, linkedStateAsset, additionalCondition));
-                    }
+                    //    foreach (LinkedStateAsset linkedStateAsset in linkedStateAssets)
+                    //    {
+                    //        List<ConditionAssetWrapper> additionalCondition = null;
+                    //        if (interactionPoint.ContainsKey(_currState) == true)
+                    //        {
+                    //            additionalCondition = interactionPoint[_currState];
+                    //        }
+                    //        _currLinkedStates.Add(new LinkedStateAssetWrapper(_currentGraphType, pair.Key, linkedStateAsset, additionalCondition));
+                    //    }
+                    //}
+
+
+                    ////Idle의 Linked State를 담는다.
+                    //StateAsset idleStateInsuranced = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState;
+                    //List<LinkedStateAsset> idleStateLinked = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetGraphStates()[idleStateInsuranced];
+                    //foreach (LinkedStateAsset linkedState in idleStateLinked)
+                    //{
+                    //    _currLinkedStates.Add(new LinkedStateAssetWrapper(_currentGraphType, StateGraphType.LocoStateGraph, linkedState, null));
+                    //}
                 }
 
-
-                //Idle의 Linked State를 담는다.
-                StateAsset idleStateInsuranced = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState;
-
-                List<LinkedStateAsset> idleStateLinked = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetGraphStates()[idleStateInsuranced];
-
-                foreach (LinkedStateAsset linkedState in idleStateLinked)
-                {
-                    _currLinkedStates.Add(new LinkedStateAssetWrapper(_currentGraphType, StateGraphType.LocoStateGraph, linkedState, null));
-                }
-
+                ReadyLinkedStates(StateGraphType.LocoStateGraph, GetMyIdleStateAsset(), false);
                 break;
             }
             yield return null;
@@ -804,8 +776,6 @@ public class StateContoller : MonoBehaviour
             yield return null;
         }
     }
-
-
 
 
 
