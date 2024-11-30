@@ -134,6 +134,8 @@ public class StateDesc
     public List<AdditionalBehaveType> _checkingBehaves = new List<AdditionalBehaveType>();
 
     public List<ConditionDesc> _breakLoopStateCondition = null;
+    //public List<AnimationClip> _bsAnimations = null; //선딜 애니메이션
+    //public List<AnimationClip> _asAnimations = null; //후딜 애니메이션
     //public AnimationClip _endStateIdleException = null; //상태의 애니메이션이 끝날때 예외 애니메이션
 }
 
@@ -222,6 +224,10 @@ public class StateContoller : MonoBehaviour
 
 
 
+    private bool _readyDebugging = false;
+
+
+
 
 
 
@@ -290,6 +296,7 @@ public class StateContoller : MonoBehaviour
     {
         //_reservedNextWeaponState = null;
         _currStateTime = 0.0f;
+        _prevStateTime = 0.0f;
         StopAllCoroutines();
     }
 
@@ -310,6 +317,9 @@ public class StateContoller : MonoBehaviour
         _currLinkedStates = _stateGraphes[(int)_currentGraphType].GetGraphStates()[_currState];
         _currInteractionPoints = _stateGraphes[(int)_currentGraphType].GetInteractionPoints();
 
+        _currLinkedStates_adiitional = null;
+        _currInteractionPoints_additional = null;
+
         _currLinkedStates_DeepCopy.Clear();
         foreach (LinkedStateAsset linkedState in _currLinkedStates)
         {
@@ -322,12 +332,13 @@ public class StateContoller : MonoBehaviour
             _currInteractionPoints_DeepCopy.Add(pair.Key, pair.Value);
         }
 
-        _currLinkedStates_adiitional = null;
-        _currInteractionPoints_additional = null;
+        _ownerStateControllingComponent._owner.ChangeAnimation(_currState);
 
         AllStopCoroutine();
 
         DoActions(_currState._myState._EnterStateActionTypes);
+
+        _readyDebugging = true;
     }
 
 
@@ -398,16 +409,18 @@ public class StateContoller : MonoBehaviour
             //foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints)
             foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints_DeepCopy)
             {
-                if (pair.Value.Contains(_currState) == false)
-                {
-                    continue; //지금 내 상태는 stateGraphType(Key)로 넘어갈 수 없습니다
-                }
-
                 StateGraphAsset anotherStateGraph = _stateGraphes[(int)pair.Key];
 
-                if (anotherStateGraph == null)
                 {
-                    continue; //넘어갈수는 있는데 해당 상태가 없습니다.(공격했는데 무기가 없는경우 같은거)
+                    //if (pair.Value.Contains(_currState) == false)
+                    //{
+                    //    continue; //지금 내 상태는 stateGraphType(Key)로 넘어갈 수 없습니다
+                    //}
+
+                    if (anotherStateGraph == null)
+                    {
+                        continue; //넘어갈수는 있는데 해당 상태가 없습니다.(공격했는데 무기가 없는경우 같은거)
+                    }
                 }
 
                 SortedDictionary<int, LinkedStateAsset> entryStates = anotherStateGraph.GetEntryStates_Ordered();
@@ -420,7 +433,6 @@ public class StateContoller : MonoBehaviour
                 {
                     List<ConditionAssetWrapper> conditionAssetWrappers = linkedStatePair.Value._conditionAsset;
 
-
                     foreach (ConditionAssetWrapper condition in conditionAssetWrappers)
                     {
                         if (CheckCondition(condition, tempIsRightWeapon) == false)
@@ -432,6 +444,7 @@ public class StateContoller : MonoBehaviour
 
                     if (isSuccess == true)
                     {
+                        debugChangeCount++;
                         nextGraphType = pair.Key;
                         targetState = linkedStatePair.Value._linkedState;
 
@@ -461,7 +474,7 @@ public class StateContoller : MonoBehaviour
 
             bool isSuccess = true;
 
-            bool isRightSided = (_currentGraphType != StateGraphType.WeaponState_LeftGraph);
+            bool isRightSided = (nextGraphType != StateGraphType.WeaponState_LeftGraph);
 
             if (_currLinkedStates_DeepCopy.Count <= 0)
             {
@@ -483,6 +496,7 @@ public class StateContoller : MonoBehaviour
 
                 if (isSuccess == true)
                 {
+                    debugChangeCount++;
                     targetState = linkedStateAsset._linkedState;
                     {
                         /*--------------------------------------------------------
@@ -490,6 +504,11 @@ public class StateContoller : MonoBehaviour
                         이유는 점프로 바뀌어야 y변화가 있는데 그전에 착지를 했다고 판정해버려서임
                         --------------------------------------------------------*/
                         if (targetState._myState._EnterStateActionTypes.Count > 0 && targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump) { return targetState; }
+                    }
+
+                    if (targetState._myState._stataName.Contains("Dummy") == true)
+                    {
+                        int a = 10;
                     }
 
                     //_currLinkedStates = _stateGraphes[(int)_currentGraphType].GetGraphStates()[targetState];
@@ -546,12 +565,18 @@ public class StateContoller : MonoBehaviour
             if (targetState == _currState &&
                 isSuccess == false)
             {
-                return null;
+                if (debugChangeCount > 0)
+                {
+                    return targetState;
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             if (isSuccess == true)
             {
-                debugChangeCount++;
                 continue;
             }
 
@@ -603,32 +628,35 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.RootMove:
                     {
-                        float currentSecond = _currStateTime;
+                        float currentSecond = MyUtil.FloatMod(_currStateTime, _currState._myState._stateAnimationClip.length);
+                        float prevSecond = MyUtil.FloatMod(_prevStateTime, _currState._myState._stateAnimationClip.length);
 
                         AnimationHipCurve animationHipCurve = ResourceDataManager.Instance.GetHipCurve(_currState._myState._stateAnimationClip);
+
                         Vector3 currentUnityLocalHip = new Vector3
-                            (
+                        (
                             animationHipCurve._animationHipCurveX.Evaluate(currentSecond),
                             animationHipCurve._animationHipCurveY.Evaluate(currentSecond),
                             animationHipCurve._animationHipCurveZ.Evaluate(currentSecond)
-                            );
-
-                        float prevSecond = _prevStateTime;
+                        );
 
                         if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
-                        { prevSecond = 0.0f; }
+                        {
+                            prevSecond = 0.0f;
+                        }
 
                         Vector3 prevUnityLocalHip = new Vector3
-                            (
+                        (
                             animationHipCurve._animationHipCurveX.Evaluate(prevSecond),
                             animationHipCurve._animationHipCurveY.Evaluate(prevSecond),
                             animationHipCurve._animationHipCurveZ.Evaluate(prevSecond)
-                            );
+                        );
 
                         Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
+
                         Vector3 worldDelta = _ownerStateControllingComponent._ownerCharacterComponent.transform.localToWorldMatrix * deltaLocalHip;
 
-                        //Root 모션의 y값은 모델에 적용
+                        //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
                         {
                             Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition;
                             modelLocalPosition.y = worldDelta.y;
@@ -769,7 +797,6 @@ public class StateContoller : MonoBehaviour
             if (target._timeACC >= target._timeTarget)
             {
                 //CopyIdlesState : LinkedState
-                List<LinkedStateAsset> idleLinkedStates = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetGraphStates()[_stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState];
                 //_currLinkedStates_adiitional = idleLinkedStates;
                 //foreach (LinkedStateAsset linkedState in idleLinkedStates)
                 //{
@@ -780,14 +807,8 @@ public class StateContoller : MonoBehaviour
 
                 //    _currLinkedStates.Add(linkedState);
                 //}
-                foreach (LinkedStateAsset linkedStateAsset in idleLinkedStates)
-                {
-                    _currLinkedStates_DeepCopy.Add(linkedStateAsset);
-                }
-
 
                 //CopyIdlesState : InteractionPoints
-                Dictionary<StateGraphType, HashSet<StateAsset>> idleInteractionPoinst = _stateGraphes[(int)_currentGraphType].GetInteractionPoints();
                 //_currInteractionPoints_additional = idleInteractionPoinst;
                 //foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in idleInteractionPoinst)
                 //{
@@ -798,6 +819,15 @@ public class StateContoller : MonoBehaviour
 
                 //    _currInteractionPoints.Add(pair.Key, pair.Value);
                 //}
+
+
+                List<LinkedStateAsset> idleLinkedStates = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetGraphStates()[_stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState];
+                foreach (LinkedStateAsset linkedStateAsset in idleLinkedStates)
+                {
+                    _currLinkedStates_DeepCopy.Add(linkedStateAsset);
+                }
+
+                Dictionary<StateGraphType, HashSet<StateAsset>> idleInteractionPoinst = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetInteractionPoints();
                 foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in idleInteractionPoinst)
                 {
                     if (_currInteractionPoints_DeepCopy.ContainsKey(pair.Key) == true)

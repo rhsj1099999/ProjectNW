@@ -11,16 +11,27 @@ using UnityEngine;
 
 public enum WeaponUseType
 {
+    TargetingMoveStart_DontUseThis,
     TargetingFront,
     TargetingBack,
     TargetingLeft,
     TargetingRight,
+    TargetingMoveEnd_DontUseThis,
+
+    WeaponUseStart_DontUseThis,
     MainUse, //클릭
     SubUse,
     SpecialUse,
     MainUseUp, //손떼기
     SubUseUp,
     SpecialUseUp,
+    OppositeMainUse, //반대손 클릭
+    OppositeSubUse,
+    OppositeSpecialUse,
+    OppositeMainUseUp, //반대손 클릭
+    OppositeSubUseUp,
+    OppositeSpecialUseUp,
+    WeaponUseEnd_DontUseThis,
 }
 
 

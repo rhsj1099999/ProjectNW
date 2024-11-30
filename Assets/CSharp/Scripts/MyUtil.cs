@@ -35,5 +35,8 @@ public static class MyUtil
         "Layer19",
     };
 
-
+    public static float FloatMod(float a, float b)
+    {
+        return (a % b + b) % b;
+    }
 }

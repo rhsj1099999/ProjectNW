@@ -553,7 +553,7 @@ public class PlayerScript : MonoBehaviour, IHitable
 
     private void LateUpdate()
     {
-        ChangeAnimation(_stateContoller.GetCurrState());
+        //ChangeAnimation(_stateContoller.GetCurrState());
     }
 
 
@@ -805,10 +805,10 @@ public class PlayerScript : MonoBehaviour, IHitable
 
         AnimationClip targetClip = nextState._myState._stateAnimationClip;
 
-        if (targetClip == _currAnimClip) 
-        {
-            return;
-        }
+        //if (targetClip == _currAnimClip) 
+        //{
+        //    return;
+        //}
 
         //µð¹ö±×
         {
