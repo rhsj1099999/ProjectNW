@@ -148,19 +148,31 @@ MonoBehaviour:
           type: 2}
         _goal: 1
   _interactionPointsInitial:
-  - _anotherType: 1
-    _interactionStates:
-    - {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
-    - {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
-    - {fileID: 11400000, guid: bbe06f87d4b556f4083ec1977ee3eb23, type: 2}
-    - {fileID: 11400000, guid: 2d4223264dd6f374fa05bc7da6665b3f, type: 2}
-    - {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
-    - {fileID: 11400000, guid: 1ebece2f354f25e43add2f6b95824516, type: 2}
   - _anotherType: 2
     _interactionStates:
-    - {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
-    - {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
-    - {fileID: 11400000, guid: bbe06f87d4b556f4083ec1977ee3eb23, type: 2}
-    - {fileID: 11400000, guid: 2d4223264dd6f374fa05bc7da6665b3f, type: 2}
-    - {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
-    - {fileID: 11400000, guid: 1ebece2f354f25e43add2f6b95824516, type: 2}
+    - _linkedState: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: bbe06f87d4b556f4083ec1977ee3eb23, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: 1ebece2f354f25e43add2f6b95824516, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: 2d4223264dd6f374fa05bc7da6665b3f, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
+      _conditionAsset: []
+  - _anotherType: 1
+    _interactionStates:
+    - _linkedState: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: 1ebece2f354f25e43add2f6b95824516, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: 2d4223264dd6f374fa05bc7da6665b3f, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: bbe06f87d4b556f4083ec1977ee3eb23, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
+      _conditionAsset: []

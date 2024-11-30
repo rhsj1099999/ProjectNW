@@ -50,7 +50,7 @@ public class StateGraphAsset : ScriptableObject
     [Serializable] public class InteractionPoint
     {
         public StateGraphType _anotherType = StateGraphType.End;
-        public List<StateAsset> _interactionStates = new List<StateAsset>();
+        public List<LinkedStateAsset> _interactionStates = new List<LinkedStateAsset>();
     }
 
 
@@ -62,7 +62,7 @@ public class StateGraphAsset : ScriptableObject
     private SortedDictionary<int, LinkedStateAsset> _entryStates_Ordered = new SortedDictionary<int, LinkedStateAsset>(new DescendingComparer<int>());
     private Dictionary<StateAsset, List<LinkedStateAsset>> _states = new Dictionary<StateAsset, List<LinkedStateAsset>>();
     private Dictionary<StateAsset, SortedDictionary<int,LinkedStateAsset>> _states_Ordered = new Dictionary<StateAsset, SortedDictionary<int, LinkedStateAsset>>();
-    private Dictionary<StateGraphType, HashSet<StateAsset>> _interactionPoints = new Dictionary<StateGraphType, HashSet<StateAsset>>();
+    private Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> _interactionPoints = new Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>>();
     //private StateAnimActionInfo _stateAnimActionInfo = new StateAnimActionInfo();
 
     
@@ -71,7 +71,7 @@ public class StateGraphAsset : ScriptableObject
     public SortedDictionary<int, LinkedStateAsset> GetEntryStates_Ordered() { return _entryStates_Ordered; }
     public Dictionary<StateAsset, List<LinkedStateAsset>> GetGraphStates() { return _states; }
     public Dictionary<StateAsset, SortedDictionary<int, LinkedStateAsset>> GetGraphStates_Ordered() { return _states_Ordered; }
-    public Dictionary<StateGraphType, HashSet<StateAsset>> GetInteractionPoints() { return _interactionPoints; }
+    public Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> GetInteractionPoints() { return _interactionPoints; }
     //public StateAnimActionInfo GetStateAnimActionInfo() { return _stateAnimActionInfo; }
 
 
@@ -95,7 +95,7 @@ public class StateGraphAsset : ScriptableObject
         _entryStates_Ordered = new SortedDictionary<int, LinkedStateAsset>();
         _states = new Dictionary<StateAsset, List<LinkedStateAsset>>();
         _states_Ordered = new Dictionary<StateAsset, SortedDictionary<int, LinkedStateAsset>>();
-        _interactionPoints = new Dictionary<StateGraphType, HashSet<StateAsset>>();
+        _interactionPoints = new Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>>();
     }
 
 
@@ -179,24 +179,27 @@ public class StateGraphAsset : ScriptableObject
         {
             StateGraphType anotherGraphType = interactionPoint._anotherType;
 
-            if (_interactionPoints.ContainsKey(anotherGraphType) == true)
+            if (_interactionPoints.ContainsKey(anotherGraphType) == false)
             {
-                Debug.Assert(false, "교환점이 이미 있습니다");
-                Debug.Break();
+                _interactionPoints.Add(anotherGraphType, new Dictionary<StateAsset, List<ConditionAssetWrapper>>());
             }
 
-            HashSet<StateAsset> interactionStateAsset = new HashSet<StateAsset>();
-            foreach (StateAsset stateAsset in interactionPoint._interactionStates)
+            Dictionary<StateAsset, List<ConditionAssetWrapper>> interactionPointDic = _interactionPoints[anotherGraphType];
+
+            foreach (LinkedStateAsset stateAsset in interactionPoint._interactionStates)
             {
-                if (interactionStateAsset.Contains(stateAsset) == true)
+                StateAsset state = stateAsset._linkedState;
+                List<ConditionAssetWrapper> pushCondition = stateAsset._conditionAsset;
+
+                if (interactionPointDic.ContainsKey(state) == true)
                 {
-                    Debug.Assert(false, "교환점의 상태가 이미 있습니다");
+                    Debug.Assert(false, "Interaction Point가 겹칩니다");
                     Debug.Break();
+                    return;
                 }
-                interactionStateAsset.Add(stateAsset);
-            }
 
-            _interactionPoints.Add(anotherGraphType, interactionStateAsset);
+                interactionPointDic.Add(state, pushCondition);
+            }
         }
     }
 

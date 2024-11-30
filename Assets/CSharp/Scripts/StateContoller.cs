@@ -198,15 +198,29 @@ public class StateContoller : MonoBehaviour
 
 
 
-    List<LinkedStateAsset> _currLinkedStates = null;
-    Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints = null;
+    //List<LinkedStateAsset> _currLinkedStates = null;
+    //Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints = null;
+    //List<LinkedStateAsset> _currLinkedStates_adiitional = null;
+    //Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints_additional = null;
+    //List<LinkedStateAsset> _currLinkedStates_DeepCopy = new List<LinkedStateAsset>();
+    //Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints_DeepCopy = new Dictionary<StateGraphType, HashSet<StateAsset>>();
 
-    List<LinkedStateAsset> _currLinkedStates_adiitional = null;
-    Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints_additional = null;
+    public class LinkedStateAssetWrapper
+    {
+        public LinkedStateAssetWrapper(StateGraphType fromType, StateGraphType goalType, LinkedStateAsset linkedStateAsset, List<ConditionAssetWrapper> additionalCondition)
+        {
+            _fromType = fromType;
+            _goalType = goalType;
+            _linkedState = linkedStateAsset;
+            _additionalCondition = additionalCondition;
+        }
 
-    List<LinkedStateAsset> _currLinkedStates_DeepCopy = new List<LinkedStateAsset>();
-    Dictionary<StateGraphType, HashSet<StateAsset>> _currInteractionPoints_DeepCopy = new Dictionary<StateGraphType, HashSet<StateAsset>>();
-
+        public StateGraphType _fromType = StateGraphType.End;
+        public StateGraphType _goalType = StateGraphType.End;
+        public LinkedStateAsset _linkedState = null;
+        public List<ConditionAssetWrapper> _additionalCondition = null;
+    }
+    List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>(); //결국 내가 검사해야할 연결상태는 이거 하나로 결정되야한다
 
     private float _attackStateAutoChangeTime = 0.0f;
     private float _attackStateAutoChangeTimeAcc = 0.0f;
@@ -314,31 +328,166 @@ public class StateContoller : MonoBehaviour
         _currentGraphType = nextGraphType;
         _currState = nextState;
 
-        _currLinkedStates = _stateGraphes[(int)_currentGraphType].GetGraphStates()[_currState];
-        _currInteractionPoints = _stateGraphes[(int)_currentGraphType].GetInteractionPoints();
-
-        _currLinkedStates_adiitional = null;
-        _currInteractionPoints_additional = null;
-
-        _currLinkedStates_DeepCopy.Clear();
-        foreach (LinkedStateAsset linkedState in _currLinkedStates)
-        {
-            _currLinkedStates_DeepCopy.Add(linkedState);
-        }
-
-        _currInteractionPoints_DeepCopy.Clear();
-        foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints)
-        {
-            _currInteractionPoints_DeepCopy.Add(pair.Key, pair.Value);
-        }
+        ReadyLinkedStates(nextGraphType, nextState);
 
         _ownerStateControllingComponent._owner.ChangeAnimation(_currState);
 
         AllStopCoroutine();
 
         DoActions(_currState._myState._EnterStateActionTypes);
+    }
 
-        _readyDebugging = true;
+
+
+    private void ReadyLinkedStates(StateGraphType currentGraphType, StateAsset currState)
+    {
+        _currLinkedStates.Clear();
+
+        //Interaction Point를 먼저 검사해야하기 때문에 먼저 담는다.
+        {
+            StateGraphAsset currentGraphAsset = _stateGraphes[(int)currentGraphType];
+
+            Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> currentInteractionPoints = currentGraphAsset.GetInteractionPoints();
+
+            foreach (KeyValuePair<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> pair in currentInteractionPoints)
+            {
+                int keyIndex = (int)pair.Key;
+
+                if (_stateGraphes[keyIndex] == null)
+                {
+                    continue;
+                }
+
+                Dictionary<StateAsset, List<ConditionAssetWrapper>> interactionState = pair.Value;
+
+                foreach (LinkedStateAsset entryStates in _stateGraphes[keyIndex].GetEntryStates())
+                {
+                    List<ConditionAssetWrapper> additionalCondition = null;
+
+                    if (interactionState.ContainsKey(currState) == true)
+                    {
+                        additionalCondition = interactionState[currState];
+                    }
+
+                    _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, pair.Key, entryStates, additionalCondition));
+                }
+            }
+        }
+
+        //InGraphState를 담는다
+        {
+            List<LinkedStateAsset> linkedStates = _stateGraphes[(int)currentGraphType].GetGraphStates()[currState];
+            foreach (var linkedState in linkedStates)
+            {
+                _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, currentGraphType, linkedState, null));
+            }
+        }
+    }
+
+
+
+
+
+    public StateAsset CheckChangeState_Recursion2(out StateGraphType nextGraphType) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
+    {
+        StateAsset targetState = _currState;
+        nextGraphType = _currentGraphType;
+
+        int successCount = 0;
+        bool isStateChangeGuaranted = false;
+        bool isSuccess = false;
+
+        if (Input.GetKeyDown(KeyCode.Mouse0) == true)
+        {
+            int a = 10;
+        }
+        if (Input.GetKeyUp(KeyCode.Mouse0) == true)
+        {
+            int a = 10;
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse1) == true)
+        {
+            int a = 10;
+        }
+        if (Input.GetKeyUp(KeyCode.Mouse1) == true)
+        {
+            int a = 10;
+        }
+
+        while (true)
+        {
+            if (successCount > 100)
+            {
+                Debug.Assert(false, "상태가 계속 바뀌려합니다");
+                Debug.Break();
+                return null;
+            }
+
+            foreach (LinkedStateAssetWrapper linkedStateAssetWrapper in _currLinkedStates)
+            {
+                isSuccess = true;
+
+                StateGraphType nextStateGraphtype = linkedStateAssetWrapper._fromType;
+                LinkedStateAsset linkedState = linkedStateAssetWrapper._linkedState;
+                List<ConditionAssetWrapper> conditionAssetWrappers = linkedState._conditionAsset;
+
+                bool isRightSided = (linkedStateAssetWrapper._goalType != StateGraphType.WeaponState_LeftGraph && linkedStateAssetWrapper._fromType != StateGraphType.WeaponState_LeftGraph);
+
+                foreach (ConditionAssetWrapper conditionAssetWrapper in conditionAssetWrappers)
+                {
+                    if (CheckCondition(targetState, conditionAssetWrapper, isRightSided) == false)
+                    {
+                        isSuccess = false;
+                        break;
+                    }
+                }
+
+                if (linkedStateAssetWrapper._additionalCondition != null &&
+                    linkedStateAssetWrapper._additionalCondition.Count > 0)
+                {
+                    foreach (ConditionAssetWrapper conditionAssetWrapper in linkedStateAssetWrapper._additionalCondition)
+                    {
+                        if (CheckCondition(targetState, conditionAssetWrapper, isRightSided) == false)
+                        {
+                            isSuccess = false;
+                            break;
+                        }
+                    }
+                }
+
+
+                if (isSuccess == true)
+                {
+                    if (isStateChangeGuaranted == false)
+                    {
+                        StatedWillBeChanged();
+                        isStateChangeGuaranted = true;
+                    }
+
+                    targetState = linkedStateAssetWrapper._linkedState._linkedState;
+                    nextGraphType = linkedStateAssetWrapper._goalType;
+                    ReadyLinkedStates(nextGraphType, targetState);
+
+                    if (targetState._myState._EnterStateActionTypes.Count > 0 && targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump) { return targetState; }
+                    break;
+                }
+            }
+
+            if (isSuccess == true)
+            {
+                successCount++;
+                continue;
+            }
+
+            break;
+        }
+
+        if (targetState == _currState)
+        {
+            return null;
+        }
+
+        return targetState;
     }
 
 
@@ -349,27 +498,12 @@ public class StateContoller : MonoBehaviour
 
         StateGraphType nextGraphType = StateGraphType.End;
 
-        StateAsset nextState = CheckChangeState_Recursion(out nextGraphType);
+        StateAsset nextState = CheckChangeState_Recursion2(out nextGraphType);
 
         if (nextState != null)
         {
             ChangeState(nextGraphType, nextState);
         }
-
-
-        /*---------------------------------------------------------------
-        |TODO| 다른방식으로 구현해야만 합니다
-        ---------------------------------------------------------------*/
-        {
-            ////공격을 할 수 있는 상태에서 공격키가 아무거나 눌렸습니다. 0.1초 뒤 공격 애니메이션으로 전환을 시도할겁니다.
-            //if ((Input.GetKeyDown(_rightHandAttackKey) == true || Input.GetKeyDown(_leftHandAttackKey) == true) &&
-            //    _stateChangeCoroutineStarted == false &&
-            //    true/*넘어갈 수 있는 공격상태가 하나라도 존재한다*/)
-            //{
-            //    StartCoroutine("AttackComboChangeCoroutine");
-            //}
-        }
-
 
         DoActions(_currState._myState._inStateActionTypes);
 
@@ -388,6 +522,8 @@ public class StateContoller : MonoBehaviour
         {
             graphAsset.SettingOwnerComponent(_ownerStateControllingComponent, _ownerStateControllingComponent._owner);
         }
+
+        ReadyLinkedStates(_currentGraphType, _currState);
     }
 
 
@@ -396,193 +532,7 @@ public class StateContoller : MonoBehaviour
 
 
 
-    public StateAsset CheckChangeState_Recursion(out StateGraphType nextGraphType) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
-    {
-        StateAsset targetState = _currState;
-        nextGraphType = _currentGraphType;
 
-        int debugChangeCount = 0;
-        bool isStateChangeGuaranted = false;
-
-        //1. 지금 상태가 속한 그래프 내에서 다른 그래프 타입으로 교환 가능한 상태인지 검사
-        {
-            //foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints)
-            foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints_DeepCopy)
-            {
-                StateGraphAsset anotherStateGraph = _stateGraphes[(int)pair.Key];
-
-                {
-                    //if (pair.Value.Contains(_currState) == false)
-                    //{
-                    //    continue; //지금 내 상태는 stateGraphType(Key)로 넘어갈 수 없습니다
-                    //}
-
-                    if (anotherStateGraph == null)
-                    {
-                        continue; //넘어갈수는 있는데 해당 상태가 없습니다.(공격했는데 무기가 없는경우 같은거)
-                    }
-                }
-
-                SortedDictionary<int, LinkedStateAsset> entryStates = anotherStateGraph.GetEntryStates_Ordered();
-
-                bool tempIsRightWeapon = (pair.Key != StateGraphType.WeaponState_LeftGraph);
-
-                bool isSuccess = true;
-
-                foreach (KeyValuePair<int, LinkedStateAsset> linkedStatePair in entryStates)
-                {
-                    List<ConditionAssetWrapper> conditionAssetWrappers = linkedStatePair.Value._conditionAsset;
-
-                    foreach (ConditionAssetWrapper condition in conditionAssetWrappers)
-                    {
-                        if (CheckCondition(condition, tempIsRightWeapon) == false)
-                        {
-                            isSuccess = false;
-                            break;
-                        }
-                    }
-
-                    if (isSuccess == true)
-                    {
-                        debugChangeCount++;
-                        nextGraphType = pair.Key;
-                        targetState = linkedStatePair.Value._linkedState;
-
-                        {
-                            _currLinkedStates_DeepCopy.Clear();
-                            Dictionary<StateAsset, List<LinkedStateAsset>> currentGraph = _stateGraphes[(int)nextGraphType].GetGraphStates();
-                            foreach (LinkedStateAsset item in currentGraph[targetState])
-                            {
-                                _currLinkedStates_DeepCopy.Add(item);
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        //2. 해당하지 않는다면 자신의 그래프내에서 다른 상태로 갈 수 있는지 검사...는 아래 이미 구현됐다.
-        while (true)
-        {
-            if (debugChangeCount > 100)
-            {
-                Debug.Assert(false, "상태가 계속 바뀌려합니다. 로직에 문제가 있습니까?");
-                Debug.Break();
-                return null;
-            }
-
-            bool isSuccess = true;
-
-            bool isRightSided = (nextGraphType != StateGraphType.WeaponState_LeftGraph);
-
-            if (_currLinkedStates_DeepCopy.Count <= 0)
-            {
-                isSuccess = false;
-            }
-
-            foreach (var linkedStateAsset in _currLinkedStates_DeepCopy)
-            {
-                isSuccess = true;
-
-                foreach (ConditionAssetWrapper conditionAssetWrapper in linkedStateAsset._conditionAsset)
-                {
-                    if (CheckCondition(conditionAssetWrapper, isRightSided) == false)
-                    {
-                        isSuccess = false;
-                        break; //멀티컨디션에서 하나라도 삑났다.
-                    }
-                }
-
-                if (isSuccess == true)
-                {
-                    debugChangeCount++;
-                    targetState = linkedStateAsset._linkedState;
-                    {
-                        /*--------------------------------------------------------
-                        |TODO| 점프상태라면 연쇄 검사를 하지않도록 임시방편 처리. 이거 지우는 구조 생각해볼것
-                        이유는 점프로 바뀌어야 y변화가 있는데 그전에 착지를 했다고 판정해버려서임
-                        --------------------------------------------------------*/
-                        if (targetState._myState._EnterStateActionTypes.Count > 0 && targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump) { return targetState; }
-                    }
-
-                    if (targetState._myState._stataName.Contains("Dummy") == true)
-                    {
-                        int a = 10;
-                    }
-
-                    //_currLinkedStates = _stateGraphes[(int)_currentGraphType].GetGraphStates()[targetState];
-                    /*-------------------------------------------------------------------------
-                    |TODO| 아래 코드 반드시 고쳐야한다.
-                    목적은 ReadyIdle 코루틴 실행시키면 링크스테이트가 섞이는데
-                    임시로 나누는 코드임
-                    -------------------------------------------------------------------------*/
-                    {
-                        _currLinkedStates_DeepCopy.Clear();
-                        foreach (StateGraphAsset graphAsset in _stateGraphes)
-                        {
-                            if (graphAsset == null)
-                            {
-                                continue;
-                            }
-
-                            Dictionary<StateAsset, List<LinkedStateAsset>> currentGraph = graphAsset.GetGraphStates();
-                            if (currentGraph.ContainsKey(targetState) == false)
-                            {
-                                continue;
-                            }
-
-                            if (graphAsset._graphType == StateGraphType.WeaponState_RightGraph ||
-                                graphAsset._graphType == StateGraphType.WeaponState_LeftGraph)
-                            {
-                                nextGraphType = (isRightSided == true)
-                                    ? StateGraphType.WeaponState_RightGraph
-                                    : StateGraphType.WeaponState_LeftGraph;
-                            }
-                            else
-                            {
-                                nextGraphType = graphAsset._graphType;
-                            }
-
-                            foreach (LinkedStateAsset item in currentGraph[targetState])
-                            {
-                                _currLinkedStates_DeepCopy.Add(item);
-                            }
-                            break;
-                        }
-                    }
-
-                    if (isStateChangeGuaranted == false)
-                    {
-                        StatedWillBeChanged();
-                        isStateChangeGuaranted = true;
-                    }
-
-                    break; //다시 검사하러 간다
-                }
-            }
-
-            if (targetState == _currState &&
-                isSuccess == false)
-            {
-                if (debugChangeCount > 0)
-                {
-                    return targetState;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            if (isSuccess == true)
-            {
-                continue;
-            }
-
-            return targetState;
-        }
-    }
 
 
 
@@ -796,45 +746,41 @@ public class StateContoller : MonoBehaviour
 
             if (target._timeACC >= target._timeTarget)
             {
-                //CopyIdlesState : LinkedState
-                //_currLinkedStates_adiitional = idleLinkedStates;
-                //foreach (LinkedStateAsset linkedState in idleLinkedStates)
-                //{
-                //    if (_currLinkedStates.Contains(linkedState) == true)
-                //    {
-                //        continue;
-                //    }
-
-                //    _currLinkedStates.Add(linkedState);
-                //}
-
-                //CopyIdlesState : InteractionPoints
-                //_currInteractionPoints_additional = idleInteractionPoinst;
-                //foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in idleInteractionPoinst)
-                //{
-                //    if (_currInteractionPoints.ContainsKey(pair.Key) == true)
-                //    {
-                //        continue;
-                //    }
-
-                //    _currInteractionPoints.Add(pair.Key, pair.Value);
-                //}
-
-
-                List<LinkedStateAsset> idleLinkedStates = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetGraphStates()[_stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState];
-                foreach (LinkedStateAsset linkedStateAsset in idleLinkedStates)
+                //Idle의 InteractionPoint를 담는다
+                Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> currentInteractionPoints = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetInteractionPoints();
+                foreach (KeyValuePair<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> pair in currentInteractionPoints)
                 {
-                    _currLinkedStates_DeepCopy.Add(linkedStateAsset);
-                }
+                    int graphTypeIndex = (int)pair.Key;
 
-                Dictionary<StateGraphType, HashSet<StateAsset>> idleInteractionPoinst = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetInteractionPoints();
-                foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in idleInteractionPoinst)
-                {
-                    if (_currInteractionPoints_DeepCopy.ContainsKey(pair.Key) == true)
+                    if (_stateGraphes[graphTypeIndex] == null)
                     {
                         continue;
                     }
-                    _currInteractionPoints_DeepCopy.Add(pair.Key, pair.Value);
+
+                    List<LinkedStateAsset> linkedStateAssets = _stateGraphes[graphTypeIndex].GetEntryStates();
+
+                    Dictionary<StateAsset, List<ConditionAssetWrapper>> interactionPoint = pair.Value;
+
+                    foreach (LinkedStateAsset linkedStateAsset in linkedStateAssets)
+                    {
+                        List<ConditionAssetWrapper> additionalCondition = null;
+                        if (interactionPoint.ContainsKey(_currState) == true)
+                        {
+                            additionalCondition = interactionPoint[_currState];
+                        }
+                        _currLinkedStates.Add(new LinkedStateAssetWrapper(_currentGraphType, pair.Key, linkedStateAsset, additionalCondition));
+                    }
+                }
+
+
+                //Idle의 Linked State를 담는다.
+                StateAsset idleStateInsuranced = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState;
+
+                List<LinkedStateAsset> idleStateLinked = _stateGraphes[(int)StateGraphType.LocoStateGraph].GetGraphStates()[idleStateInsuranced];
+
+                foreach (LinkedStateAsset linkedState in idleStateLinked)
+                {
+                    _currLinkedStates.Add(new LinkedStateAssetWrapper(_currentGraphType, StateGraphType.LocoStateGraph, linkedState, null));
                 }
 
                 break;
@@ -866,7 +812,7 @@ public class StateContoller : MonoBehaviour
 
 
 
-    public bool CheckCondition(ConditionAssetWrapper conditionAssetWrapper, bool isRightSided)
+    public bool CheckCondition(StateAsset stateAsset, ConditionAssetWrapper conditionAssetWrapper, bool isRightSided)
     {
         bool ret = false;
         bool forcedValue = false;
@@ -893,7 +839,7 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AnimationEnd:
                 {
-                    float animationLength = _currState._myState._stateAnimationClip.length;
+                    float animationLength = stateAsset._myState._stateAnimationClip.length;
                     if (animationLength - Time.deltaTime < _currStateTime)
                     {
                         ret = true;
@@ -952,7 +898,7 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AnimationFrame:
                 {
-                    StateDesc currStateDesc = _currState._myState;
+                    StateDesc currStateDesc = stateAsset._myState;
 
                     FrameData stateAnimFrameData = ResourceDataManager.Instance.GetAnimationFrameData(currStateDesc._stateAnimationClip, conditionDesc._animationFrameDataType);
 
@@ -1049,7 +995,6 @@ public class StateContoller : MonoBehaviour
         if (ret == true)
         {
             _ownerStateControllingComponent._owner.SetLatestWeaponUse(isRightSided);
-            CustomKeyManager.Instance.ClearKeyRecord();
         }
 
         return ret;
@@ -1128,6 +1073,7 @@ public class StateContoller : MonoBehaviour
             index++;
         }
 
+        CustomKeyManager.Instance.ClearKeyRecord();
         return true;
     }
 
@@ -1363,7 +1309,337 @@ public class StateContoller : MonoBehaviour
 
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //public StateAsset CheckChangeState_Recursion(out StateGraphType nextGraphType) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
+    //{
+    //    StateAsset targetState = _currState;
+    //    nextGraphType = _currentGraphType;
+
+    //    int debugChangeCount = 0;
+    //    bool isStateChangeGuaranted = false;
+
+    //    //1. 지금 상태가 속한 그래프 내에서 다른 그래프 타입으로 교환 가능한 상태인지 검사
+    //    {
+    //        //foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints)
+    //        foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints_DeepCopy)
+    //        {
+    //            StateGraphAsset anotherStateGraph = _stateGraphes[(int)pair.Key];
+
+    //            {
+    //                if (pair.Value.Contains(_currState) == false)
+    //                {
+    //                    continue; //지금 내 상태는 stateGraphType(Key)로 넘어갈 수 없습니다
+    //                }
+
+    //                if (anotherStateGraph == null)
+    //                {
+    //                    continue; //넘어갈수는 있는데 해당 상태가 없습니다.(공격했는데 무기가 없는경우 같은거)
+    //                }
+    //            }
+
+    //            SortedDictionary<int, LinkedStateAsset> entryStates = anotherStateGraph.GetEntryStates_Ordered();
+
+    //            bool tempIsRightWeapon = (pair.Key != StateGraphType.WeaponState_LeftGraph);
+
+    //            bool isSuccess = true;
+
+    //            foreach (KeyValuePair<int, LinkedStateAsset> linkedStatePair in entryStates)
+    //            {
+    //                List<ConditionAssetWrapper> conditionAssetWrappers = linkedStatePair.Value._conditionAsset;
+
+    //                foreach (ConditionAssetWrapper condition in conditionAssetWrappers)
+    //                {
+    //                    if (CheckCondition(targetState, condition, tempIsRightWeapon) == false)
+    //                    {
+    //                        isSuccess = false;
+    //                        break;
+    //                    }
+    //                }
+
+    //                if (isSuccess == true)
+    //                {
+    //                    debugChangeCount++;
+    //                    nextGraphType = pair.Key;
+    //                    targetState = linkedStatePair.Value._linkedState;
+
+    //                    {
+    //                        _currLinkedStates_DeepCopy.Clear();
+    //                        Dictionary<StateAsset, List<LinkedStateAsset>> currentGraph = _stateGraphes[(int)nextGraphType].GetGraphStates();
+    //                        foreach (LinkedStateAsset item in currentGraph[targetState])
+    //                        {
+    //                            _currLinkedStates_DeepCopy.Add(item);
+    //                        }
+    //                    }
+    //                    break;
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //    //2. 해당하지 않는다면 자신의 그래프내에서 다른 상태로 갈 수 있는지 검사...는 아래 이미 구현됐다.
+    //    while (true)
+    //    {
+    //        if (debugChangeCount > 100)
+    //        {
+    //            Debug.Assert(false, "상태가 계속 바뀌려합니다. 로직에 문제가 있습니까?");
+    //            Debug.Break();
+    //            return null;
+    //        }
+
+    //        bool isSuccess = true;
+
+    //        bool isRightSided = (nextGraphType != StateGraphType.WeaponState_LeftGraph);
+
+    //        if (_currLinkedStates_DeepCopy.Count <= 0)
+    //        {
+    //            isSuccess = false;
+    //        }
+
+    //        foreach (var linkedStateAsset in _currLinkedStates_DeepCopy)
+    //        {
+    //            isSuccess = true;
+
+    //            foreach (ConditionAssetWrapper conditionAssetWrapper in linkedStateAsset._conditionAsset)
+    //            {
+    //                if (CheckCondition(targetState, conditionAssetWrapper, isRightSided) == false)
+    //                {
+    //                    isSuccess = false;
+    //                    break; //멀티컨디션에서 하나라도 삑났다.
+    //                }
+    //            }
+
+    //            if (isSuccess == true)
+    //            {
+    //                debugChangeCount++;
+    //                targetState = linkedStateAsset._linkedState;
+    //                {
+    //                    /*--------------------------------------------------------
+    //                    |TODO| 점프상태라면 연쇄 검사를 하지않도록 임시방편 처리. 이거 지우는 구조 생각해볼것
+    //                    이유는 점프로 바뀌어야 y변화가 있는데 그전에 착지를 했다고 판정해버려서임
+    //                    --------------------------------------------------------*/
+    //                    if (targetState._myState._EnterStateActionTypes.Count > 0 && targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump) { return targetState; }
+    //                }
+
+    //                //_currLinkedStates = _stateGraphes[(int)_currentGraphType].GetGraphStates()[targetState];
+    //                /*-------------------------------------------------------------------------
+    //                |TODO| 아래 코드 반드시 고쳐야한다.
+    //                목적은 ReadyIdle 코루틴 실행시키면 링크스테이트가 섞이는데
+    //                임시로 나누는 코드임
+    //                -------------------------------------------------------------------------*/
+    //                {
+    //                    _currLinkedStates_DeepCopy.Clear();
+    //                    foreach (StateGraphAsset graphAsset in _stateGraphes)
+    //                    {
+    //                        if (graphAsset == null)
+    //                        {
+    //                            continue;
+    //                        }
+
+    //                        Dictionary<StateAsset, List<LinkedStateAsset>> currentGraph = graphAsset.GetGraphStates();
+    //                        if (currentGraph.ContainsKey(targetState) == false)
+    //                        {
+    //                            continue;
+    //                        }
+
+    //                        if (graphAsset._graphType == StateGraphType.WeaponState_RightGraph ||
+    //                            graphAsset._graphType == StateGraphType.WeaponState_LeftGraph)
+    //                        {
+    //                            nextGraphType = (isRightSided == true)
+    //                                ? StateGraphType.WeaponState_RightGraph
+    //                                : StateGraphType.WeaponState_LeftGraph;
+    //                        }
+    //                        else
+    //                        {
+    //                            nextGraphType = graphAsset._graphType;
+    //                        }
+
+    //                        foreach (LinkedStateAsset item in currentGraph[targetState])
+    //                        {
+    //                            _currLinkedStates_DeepCopy.Add(item);
+    //                        }
+    //                        break;
+    //                    }
+    //                }
+
+    //                if (isStateChangeGuaranted == false)
+    //                {
+    //                    StatedWillBeChanged();
+    //                    isStateChangeGuaranted = true;
+    //                }
+
+    //                break; //다시 검사하러 간다
+    //            }
+    //        }
+
+    //        if (targetState == _currState &&
+    //            isSuccess == false)
+    //        {
+    //            if (debugChangeCount > 0)
+    //            {
+    //                return targetState;
+    //            }
+
+    //            return null;
+    //        }
+
+    //        if (isSuccess == true)
+    //        {
+    //            continue;
+    //        }
+
+    //        return targetState;
+    //    }
+    //}
+
+
+
+
+
+
+
+
+
+
+    //private bool CheckChangeStatePartial_InteractionPointCheck(StateAsset targetState, out StateAsset resultState, out StateGraphType resultGraphType)
+    //{
+    //    bool isSuccess = true;
+
+    //    resultState = targetState;
+    //    resultGraphType = _currentGraphType;
+
+    //    foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> pair in _currInteractionPoints_DeepCopy)
+    //    {
+    //        isSuccess = true;
+
+    //        if (pair.Value.Contains(targetState) == false)
+    //        {
+    //            continue; //지금 내 상태는 stateGraphType(Key)로 넘어갈 수 없습니다
+    //        }
+
+    //        StateGraphAsset anotherStateGraph = _stateGraphes[(int)pair.Key];
+
+    //        if (anotherStateGraph == null)
+    //        {
+    //            continue; //넘어갈수는 있는데 해당 상태가 없습니다.(공격했는데 무기가 없는경우 같은거)
+    //        }
+
+    //        bool isRightSided = (pair.Key != StateGraphType.WeaponState_LeftGraph);
+
+    //        SortedDictionary<int, LinkedStateAsset> entryStates = anotherStateGraph.GetEntryStates_Ordered();
+
+    //        foreach (KeyValuePair<int, LinkedStateAsset> linkedStatePair in entryStates)
+    //        {
+    //            List<ConditionAssetWrapper> conditionAssetWrappers = linkedStatePair.Value._conditionAsset;
+
+    //            foreach (ConditionAssetWrapper condition in conditionAssetWrappers)
+    //            {
+    //                if (CheckCondition(targetState, condition, isRightSided) == false)
+    //                {
+    //                    isSuccess = false;
+    //                    break;
+    //                }
+    //            }
+
+    //            if (isSuccess == true)
+    //            {
+    //                resultState = linkedStatePair.Value._linkedState;
+    //                resultGraphType = pair.Key;
+    //                return true;
+    //            }
+    //        }
+    //    }
+
+    //    return false;
+    //}
+
+    //private void CheckChangeStatePartial_ReadyNextState(StateGraphType nextGraphType, StateAsset targetState)
+    //{
+    //    //연쇄 검사를 위해 LinkedState들을 준비한다
+    //    {
+    //        _currLinkedStates_DeepCopy.Clear();
+
+    //        foreach (StateGraphAsset graphAsset in _stateGraphes)
+    //        {
+    //            if (graphAsset == null)
+    //            {
+    //                continue;
+    //            }
+
+    //            Dictionary<StateAsset, List<LinkedStateAsset>> currentGraph = graphAsset.GetGraphStates();
+
+    //            if (currentGraph.ContainsKey(targetState) == false)
+    //            {
+    //                continue;
+    //            }
+
+    //            foreach (LinkedStateAsset item in currentGraph[targetState])
+    //            {
+    //                _currLinkedStates_DeepCopy.Add(item);
+    //            }
+    //            break;
+    //        }
+    //    }
+
+    //    //연쇄 검사를 위해 InteractionPoint들을 준비한다
+    //    {
+    //        _currInteractionPoints_DeepCopy.Clear();
+    //        _currInteractionPoints = _stateGraphes[(int)nextGraphType].GetInteractionPoints();
+    //        foreach (KeyValuePair<StateGraphType, HashSet<StateAsset>> interactionPoints in _currInteractionPoints)
+    //        {
+    //            HashSet<StateAsset> newHashSet = new HashSet<StateAsset>();
+    //            foreach (var stateAsset in interactionPoints.Value)
+    //            {
+    //                newHashSet.Add(stateAsset);
+    //            }
+    //            _currInteractionPoints_DeepCopy.Add(interactionPoints.Key, newHashSet);
+    //        }
+    //    }
+    //}
+
+    //private bool CheckChangeStatePartial_InGraphCheck(StateAsset targetState, out StateAsset resultState, bool isRightSided)
+    //{
+    //    bool isSuccess = true;
+
+    //    resultState = targetState;
+
+    //    foreach (var linkedStateAsset in _currLinkedStates_DeepCopy)
+    //    {
+    //        isSuccess = true;
+
+    //        foreach (ConditionAssetWrapper conditionAssetWrapper in linkedStateAsset._conditionAsset)
+    //        {
+    //            if (CheckCondition(targetState, conditionAssetWrapper, isRightSided) == false)
+    //            {
+    //                isSuccess = false;
+    //                break; //멀티컨디션에서 하나라도 삑났다.
+    //            }
+    //        }
+
+    //        if (isSuccess == true) 
+    //        {
+    //            resultState = linkedStateAsset._linkedState;
+    //            return true;
+    //        }
+    //    }
+
+    //    return false;
+    //}
+
+
+
+
 
 
 
@@ -1372,82 +1648,82 @@ public class StateContoller : MonoBehaviour
     //isCheckingWeaponEntry == F -> Weapon Motion 에서  Weapon Motion을 쓰려고하는경우
     //private void CalculateNextWeaponState(bool isCheckingWeaponEntry) 
     //{
-        //if (isCheckingWeaponEntry == true)
-        //{
-        //    WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(true);
+    //if (isCheckingWeaponEntry == true)
+    //{
+    //    WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(true);
 
-        //    SortedDictionary<int, List<LinkedState>> targetDict = null;
+    //    SortedDictionary<int, List<LinkedState>> targetDict = null;
 
-        //    //오른손 먼저 검사
-        //    if (weaponScript != null)
-        //    {
-        //        targetDict = weaponScript.GetEntryStates();
+    //    //오른손 먼저 검사
+    //    if (weaponScript != null)
+    //    {
+    //        targetDict = weaponScript.GetEntryStates();
 
-        //        _reservedNextWeaponState = CheckNextWeaponState(targetDict, true);
-        //    }
+    //        _reservedNextWeaponState = CheckNextWeaponState(targetDict, true);
+    //    }
 
-        //    if (_reservedNextWeaponState != null)
-        //    {
-        //        _ownerStateControllingComponent._owner.SetLatestWeaponUse(true);
-        //        return;
-        //    }
+    //    if (_reservedNextWeaponState != null)
+    //    {
+    //        _ownerStateControllingComponent._owner.SetLatestWeaponUse(true);
+    //        return;
+    //    }
 
-        //    weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(false);
+    //    weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(false);
 
-        //    if (weaponScript == null)
-        //    {
-        //        return;
-        //    }
+    //    if (weaponScript == null)
+    //    {
+    //        return;
+    //    }
 
-        //    targetDict = weaponScript.GetEntryStates();
+    //    targetDict = weaponScript.GetEntryStates();
 
-        //    _reservedNextWeaponState = CheckNextWeaponState(targetDict, false);
-        //    _ownerStateControllingComponent._owner.SetLatestWeaponUse(false);
-        //}
-        //else 
-        //{
-        //    //공격 -> 공격을 하려는 경우다
+    //    _reservedNextWeaponState = CheckNextWeaponState(targetDict, false);
+    //    _ownerStateControllingComponent._owner.SetLatestWeaponUse(false);
+    //}
+    //else 
+    //{
+    //    //공격 -> 공격을 하려는 경우다
 
-        //    bool isLatestRightHandUse = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
-        //    WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(isLatestRightHandUse);
-        //    SortedDictionary<int, List<LinkedState>> targetDict = null;
+    //    bool isLatestRightHandUse = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
+    //    WeaponScript weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(isLatestRightHandUse);
+    //    SortedDictionary<int, List<LinkedState>> targetDict = null;
 
-        //    //최근공격을 했던 손의 연결 상태 먼저 검사
-        //    {
-        //        if (weaponScript != null)
-        //        {
-        //            //targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
-        //            targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
+    //    //최근공격을 했던 손의 연결 상태 먼저 검사
+    //    {
+    //        if (weaponScript != null)
+    //        {
+    //            //targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
+    //            targetDict = weaponScript.FindLinkedStateNodeDesc(_currState).GetLinkecStates();
 
-        //            _reservedNextWeaponState = CheckNextWeaponState(targetDict, isLatestRightHandUse);
-        //        }
+    //            _reservedNextWeaponState = CheckNextWeaponState(targetDict, isLatestRightHandUse);
+    //        }
 
-        //        if (_reservedNextWeaponState != null)
-        //        {
-        //            _ownerStateControllingComponent._owner.SetLatestWeaponUse(isLatestRightHandUse);
-        //            return;
-        //        }
-        //    }
+    //        if (_reservedNextWeaponState != null)
+    //        {
+    //            _ownerStateControllingComponent._owner.SetLatestWeaponUse(isLatestRightHandUse);
+    //            return;
+    //        }
+    //    }
 
 
-        //    //반대손의 Entry를 검사
-        //    {
-        //        weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(!isLatestRightHandUse);
+    //    //반대손의 Entry를 검사
+    //    {
+    //        weaponScript = _ownerStateControllingComponent._owner.GetWeaponScript(!isLatestRightHandUse);
 
-        //        if (weaponScript != null)
-        //        {
-        //            targetDict = weaponScript.GetEntryStates();
+    //        if (weaponScript != null)
+    //        {
+    //            targetDict = weaponScript.GetEntryStates();
 
-        //            _reservedNextWeaponState = CheckNextWeaponState(targetDict, !isLatestRightHandUse);
-        //        }
+    //            _reservedNextWeaponState = CheckNextWeaponState(targetDict, !isLatestRightHandUse);
+    //        }
 
-        //        if (_reservedNextWeaponState != null)
-        //        {
-        //            _ownerStateControllingComponent._owner.SetLatestWeaponUse(!isLatestRightHandUse);
-        //            return;
-        //        }
-        //    }
-        //}
+    //        if (_reservedNextWeaponState != null)
+    //        {
+    //            _ownerStateControllingComponent._owner.SetLatestWeaponUse(!isLatestRightHandUse);
+    //            return;
+    //        }
+    //    }
+    //}
     //}
 
 
