@@ -260,14 +260,14 @@ public class ZombieStart : MonoBehaviour, IHitable
 
 
 
-    public void DealMe(int damage, GameObject caller)
+    public void DealMe(DamageDesc damage, GameObject caller)
     {
         if (_hp <= 0)
         {
             return; //ÀÌ¹Ì Á×¾ú´Ù.
         }
 
-        _hp -= damage;
+        //_hp -= damage;
 
         if (_hp <= 0)
         {

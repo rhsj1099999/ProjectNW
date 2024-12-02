@@ -138,7 +138,7 @@ public class Gunscript2 : WeaponScript
             return;
         }
 
-        hitable.DealMe(1, gameObject);
+        //hitable.DealMe(1, gameObject);
     }
 
     public IEnumerator AimShakeCoroutine()

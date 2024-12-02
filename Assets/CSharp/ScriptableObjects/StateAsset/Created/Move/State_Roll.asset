@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: State_Roll
   m_EditorClassIdentifier: 
   _myState:
+    _stateType: 0
     _stataName: State_Roll
     _stateAnimationClip: {fileID: 7400000, guid: a0389fb433ff4bf40b8516234acf6c62,
       type: 2}
@@ -23,8 +24,8 @@ MonoBehaviour:
     _isLoopState: 0
     _canUseItem: 1
     _stateLocked: 0
-    _stateType: 0
-    _EnterStateActionTypes: 11000000
+    _isBlockState: 0
+    _EnterStateActionTypes: 1100000007000000
     _inStateActionTypes: 06000000
     _ExitStateActionTypes: 
     _checkingBehaves: 

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: State_HitL
   m_EditorClassIdentifier: 
   _myState:
+    _stateType: 11
     _stataName: HitL_FromBoy
     _stateAnimationClip: {fileID: 7400000, guid: 1d3ab9c2c5329c34e9409449863b077c,
       type: 2}
@@ -20,19 +21,12 @@ MonoBehaviour:
     _leftWeaponOverride: 0
     _isAttackState: 0
     _isLocoMotionToAttackAction: 0
+    _isLoopState: 0
+    _canUseItem: 0
     _stateLocked: 0
-    _stateType: 
+    _isBlockState: 0
     _EnterStateActionTypes: 
     _inStateActionTypes: 
     _ExitStateActionTypes: 
-    _linkedStates:
-    - _multiConditionAsset:
-      - _singleConditionType: 1
-        _componentConditionGoal: 1
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameDataType: 2
-        _comboStrainedTime: -1
-      _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
-    _endStateIdleException: {fileID: 0}
+    _checkingBehaves: 
+    _breakLoopStateCondition: []

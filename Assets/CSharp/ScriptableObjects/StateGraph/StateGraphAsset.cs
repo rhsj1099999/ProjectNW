@@ -65,6 +65,7 @@ public class StateGraphAsset : ScriptableObject
     private Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> _interactionPoints = new Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>>();
     //private StateAnimActionInfo _stateAnimActionInfo = new StateAnimActionInfo();
 
+    private Dictionary<RepresentStateType, StateAsset> _usingRepresentStateTypes = new Dictionary<RepresentStateType, StateAsset>();
     
 
     public List<LinkedStateAsset> GetEntryStates() { return _entryStates; }
@@ -72,6 +73,14 @@ public class StateGraphAsset : ScriptableObject
     public Dictionary<StateAsset, List<LinkedStateAsset>> GetGraphStates() { return _states; }
     public Dictionary<StateAsset, SortedDictionary<int, LinkedStateAsset>> GetGraphStates_Ordered() { return _states_Ordered; }
     public Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> GetInteractionPoints() { return _interactionPoints; }
+    public StateAsset GetRepresentStateAsset(RepresentStateType stateType) 
+    {
+        if (_usingRepresentStateTypes.ContainsKey(stateType) == false)
+        {
+            return null;
+        }
+        return _usingRepresentStateTypes[stateType];
+    }
     //public StateAnimActionInfo GetStateAnimActionInfo() { return _stateAnimActionInfo; }
 
 
@@ -104,6 +113,22 @@ public class StateGraphAsset : ScriptableObject
         foreach (StateAssetWrapper state in _usingStates)
         {
             StateAsset stateAsset = state._stateAsset;
+
+            //대표상태준비
+            {
+                RepresentStateType stateType = stateAsset._myState._stateType;
+                if (_usingRepresentStateTypes.ContainsKey(stateType) == true)
+                {
+                    Debug.Log("상태가 중복됩니다.");
+                    //Debug.Assert(false, "상태가 중복됩니다.");
+                    //Debug.Break();
+                    //return;
+                }
+                else
+                {
+                    _usingRepresentStateTypes.Add(stateType, stateAsset);
+                }
+            }
 
             //진입점 준비
             {
@@ -470,6 +495,22 @@ public class StateGraphAsset : ScriptableObject
                     break;
 
                 case StateActionType.AddCoroutine_StateChangeReady:
+                    break;
+
+                case StateActionType.CharacterRotate:
+                    {
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerInputController == null)
+                        {
+                            _ownerActionComponent._ownerInputController = owner.GetComponent<InputController>();
+                            Debug.Assert(_ownerActionComponent._ownerInputController != null, "Input행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
                     break;
 
                 default:

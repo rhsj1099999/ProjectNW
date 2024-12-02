@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9967d1ee22a1d6946bac0890bae4d073, type: 3}
+  m_Name: PlayerHitStateGraph
+  m_EditorClassIdentifier: 
+  _graphType: 3
+  _usingStates:
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: e6aec1f9f653cf04d98601e9a3f2e227, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: fb3b5bd7ecfdfff4bbd7b8e08167a5bd, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 9ff76ee5dee75444595cd735947f206d, type: 2}
+    _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 9bd347ca29a6eb2458b270c0249662ae, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 7e868d010ef516e4288ddc956f191407, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
+          type: 2}
+        _goal: 0
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 9bd347ca29a6eb2458b270c0249662ae, type: 2}
+    _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 7e868d010ef516e4288ddc956f191407, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
+          type: 2}
+        _goal: 0
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 7e868d010ef516e4288ddc956f191407, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  _interactionPointsInitial:
+  - _anotherType: 0
+    _interactionStates:
+    - _linkedState: {fileID: 11400000, guid: fb3b5bd7ecfdfff4bbd7b8e08167a5bd, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: e6aec1f9f653cf04d98601e9a3f2e227, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 7e868d010ef516e4288ddc956f191407, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
+          type: 2}
+        _goal: 1

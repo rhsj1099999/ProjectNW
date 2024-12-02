@@ -29,6 +29,7 @@ public enum StateActionType
     DummyState_EnterLocoStateGraph, //DummyState를 안쓴다면, AnimationEndCoroutine_ReturnToIdle로 구현할 수 있다.
     AddCoroutine_ChangeToIdleState,
     AddCoroutine_StateChangeReady,
+    CharacterRotate,
 }
 
 public enum ConditionType
@@ -48,6 +49,8 @@ public enum ConditionType
     ComboKeyCommand,
     FocusedWeapon, //양손으로 잡아야만 한다.
     AnimatorLayerNotBusy,
+    ReturnFalse, //무조건 False를 반환합니다.
+    EnterStatetimeThreshould,
 }
 
 
@@ -60,12 +63,18 @@ public enum RepresentStateType
     Jump,
     Attack,
     InAir,
-    Hit_L,
-    Hit_H,
-    Hit_Fall,
-    Hit_FallDropDown,
-    Hit_FallGround,
     RollFront,
+    Guard_Lvl_0, //일반 가드
+    Guard_Lvl_1, //앉아서 가드
+    Guard_Lvl_2, //앉아서 가드 + 잠금
+    Hit_Lvl_0, //움찔하는정도
+    Hit_Lvl_1, //자세가 무너지고 휘청거림
+    Hit_Lvl_2, //날라감
+
+    Blocked_Reaction, //잘 막았음
+    Blocked_Sliding, //미끄러짐
+    Blocked_Crash, //자세가 무너짐
+
     End,
 }
 
@@ -106,11 +115,14 @@ public class ConditionDesc
     public float _comboStrainedTime = -1.0f; //n초 내에 완성시켜야 하는 콤보
     public List<AnimatorLayerTypes> _mustNotBusyLayers;
     public int _mustNotBusyLayers_BitShift = 1;
+    public float _enterStatetimeThreshould = 0.0f;
 }
 
 [Serializable]
 public class StateDesc
 {
+    public RepresentStateType _stateType = RepresentStateType.End;
+
     public string _stataName;
     public AnimationClip _stateAnimationClip = null;
     public bool _rightWeaponOverride = true;
@@ -123,9 +135,7 @@ public class StateDesc
     /*------------------------------------------------------------------------------
     |NOTI| !_isAttackState = _isLocoMotionToAttackAction의 개념일거같지만 지금은 아니다
     ------------------------------------------------------------------------------*/
-
-
-    public RepresentStateType _stateType = RepresentStateType.End;
+    public bool _isBlockState = false; //가드상태입니다.
 
     public List<StateActionType> _EnterStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _inStateActionTypes = new List<StateActionType>();
@@ -201,6 +211,8 @@ public class StateContoller : MonoBehaviour
     [SerializeField] private List<StateGraphAsset> _initialStateGraphes = new List<StateGraphAsset>();
     private List<StateGraphAsset> _stateGraphes = new List<StateGraphAsset>();
     private StateGraphType _currentGraphType = StateGraphType.LocoStateGraph;
+    public StateGraphType GetCurrStateGraphType() { return _currentGraphType; }
+    public StateGraphAsset GetCurrStateGraph() { return _stateGraphes[(int)_currentGraphType]; }
 
     private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
 
@@ -218,10 +230,9 @@ public class StateContoller : MonoBehaviour
     private float _attackStateAutoChangeTimeAcc = 0.0f;
     private bool _attackStateAutoChangeTimeCoroutineStarted = false;
 
-    private KeyCode _rightHandAttackKey = KeyCode.Mouse0;
-    private KeyCode _leftHandAttackKey = KeyCode.Mouse1;
+
     private float _stateChangeTimeAcc = 0.0f;
-    private Dictionary<RepresentStateType, State> _states = new Dictionary<RepresentStateType, State>();
+    //private Dictionary<RepresentStateType, State> _states = new Dictionary<RepresentStateType, State>();
     //private StateAsset _reservedNextWeaponState = null;
 
 
@@ -291,16 +302,36 @@ public class StateContoller : MonoBehaviour
     }
 
 
-    //public void TryChangeState(RepresentStateType representType)
-    //{
-    //    if (_states.ContainsKey(representType) == false)
-    //    {
-    //        Debug.Log("해당 상태를 사용하지 않습니다");
-    //        return;
-    //    }
+    public void TryChangeState(StateGraphType graphType, RepresentStateType representType)
+    {
+        StateGraphAsset targetGraphAsset = _stateGraphes[(int)graphType];
 
-    //    ChangeState(_states[representType]);
-    //}
+        if (targetGraphAsset == null)
+        {
+            return; //해당 그래프가 없다.
+        }
+
+        StateAsset targetAsset = targetGraphAsset.GetRepresentStateAsset(representType);
+
+        if (targetAsset == null) 
+        {
+            return; //그래프에 해당 상태가 없다.
+        }
+
+        ChangeState(graphType, targetAsset);
+    }
+
+    public void TryChangeState(StateGraphType graphType, StateAsset targetAsset)
+    {
+        StateGraphAsset targetGraphAsset = _stateGraphes[(int)graphType];
+
+        if (targetGraphAsset == null)
+        {
+            return; //해당 그래프가 없다.
+        }
+
+        ChangeState(graphType, targetAsset);
+    }
 
 
     private void StatedWillBeChanged()
@@ -324,6 +355,8 @@ public class StateContoller : MonoBehaviour
 
         _currentGraphType = nextGraphType;
         _currState = nextState;
+
+        ReadyLinkedStates(_currentGraphType, _currState, true);
 
         _ownerStateControllingComponent._owner.ChangeAnimation(_currState);
 
@@ -359,6 +392,11 @@ public class StateContoller : MonoBehaviour
 
             foreach (LinkedStateAsset entryStates in _stateGraphes[keyIndex].GetEntryStates())
             {
+                if (interactionState.ContainsKey(currState) == false)
+                {
+                    continue;
+                }
+
                 List<ConditionAssetWrapper> additionalCondition = null;
 
                 if (interactionState.ContainsKey(currState) == true)
@@ -390,6 +428,14 @@ public class StateContoller : MonoBehaviour
         int successCount = 0;
         bool isStateChangeGuaranted = false;
         bool isSuccess = false;
+
+
+        if (targetState._myState._stataName.Contains("Parry") == true)
+        {
+            int a = 10;
+        }
+
+
 
         while (true)
         {
@@ -435,6 +481,7 @@ public class StateContoller : MonoBehaviour
 
                 if (isSuccess == true)
                 {
+
                     if (isStateChangeGuaranted == false)
                     {
                         StatedWillBeChanged();
@@ -442,6 +489,12 @@ public class StateContoller : MonoBehaviour
                     }
 
                     targetState = linkedStateAssetWrapper._linkedState._linkedState;
+
+                    if (targetState._myState._stataName.Contains("Parry") == true)
+                    {
+                        int a = 10;
+                    }
+
                     nextGraphType = linkedStateAssetWrapper._goalType;
                     ReadyLinkedStates(nextGraphType, targetState, true);
 
@@ -637,6 +690,12 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.AddCoroutine_StateChangeReady:
                     AddStateActionCoroutine(StateActionCoroutineType.StateChangeReady);
+                    break;
+
+                case StateActionType.CharacterRotate:
+                    {
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(_ownerStateControllingComponent._ownerInputController._pr_directionByInput, 1.0f);
+                    }
                     break;
 
                 default:
@@ -930,6 +989,19 @@ public class StateContoller : MonoBehaviour
                 }
                 break;
 
+            case ConditionType.ReturnFalse:
+                {
+                    forcedValue = true;
+                    ret = false;
+                }
+                break;
+
+            case ConditionType.EnterStatetimeThreshould:
+                {
+                    ret = (_currStateTime > conditionDesc._enterStatetimeThreshould);
+                }
+                break;
+
             default:
                 Debug.Assert(false, "데이터가 추가됐습니까?");
                 break;
@@ -1009,7 +1081,7 @@ public class StateContoller : MonoBehaviour
             {
                 weaponComboType = stateComboKeyCommand[CommandCount - index]._targetCommandKeys[i];
 
-                if (weaponComboType >= WeaponUseType.MainUse && weaponComboType <= WeaponUseType.SpecialUseUp)
+                if (weaponComboType >= WeaponUseType.WeaponUseStart_DontUseThis && weaponComboType <= WeaponUseType.WeaponUseEnd_DontUseThis)
                 {
                     if (recordedType >= ComboCommandKeyType.TargetingBack && recordedType <= ComboCommandKeyType.TargetingRight)
                     { return false; }
@@ -1264,6 +1336,42 @@ public class StateContoller : MonoBehaviour
                             if (isRightHandWeapon == false)
                             {
                                 convertedRet = ComboCommandKeyType.CtrlLeftUp;
+                            }
+                        }
+                        break;
+                }
+                break;
+
+            case WeaponUseType.OppositeMainUse:
+                switch (ownerGrabType)
+                {
+                    case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
+                        {
+                            if (isRightHandWeapon == true)
+                            {
+                                convertedRet = ComboCommandKeyType.LeftClick;
+                            }
+                            else
+                            {
+                                convertedRet = ComboCommandKeyType.RightClick;
+                            }
+                        }
+                        break;
+
+                    case WeaponGrabFocus.RightHandFocused: //무기를 오른편에 양손으로 잡고있다.
+                        {
+                            if (isRightHandWeapon == true)
+                            {
+                                convertedRet = ComboCommandKeyType.LeftClick;
+                            }
+                        }
+                        break;
+
+                    case WeaponGrabFocus.LeftHandFocused:
+                        {
+                            if (isRightHandWeapon == false)
+                            {
+                                convertedRet = ComboCommandKeyType.RightClick;
                             }
                         }
                         break;

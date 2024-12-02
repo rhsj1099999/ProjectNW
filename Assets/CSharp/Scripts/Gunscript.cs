@@ -96,7 +96,7 @@ public class Gunscript : MonoBehaviour
             return;
         }
 
-        hitable.DealMe(1, this.gameObject);
+        //hitable.DealMe(1, this.gameObject);
     }
 
     public IEnumerator AimRestoreCoroutine()

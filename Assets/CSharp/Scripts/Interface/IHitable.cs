@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface IHitable
 {
-    public void DealMe(int damage, GameObject caller);
+    public void DealMe(DamageDesc damage, GameObject caller);
 }

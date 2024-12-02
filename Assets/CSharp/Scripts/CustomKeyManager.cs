@@ -2,6 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum KeyPressType
+{
+    Pressed,
+    Hold,
+    Released,
+    None,
+};
+
 public enum ComboCommandKeyType
 {
     TargetingFront,
@@ -36,13 +44,7 @@ public class ComboCommandKeyDesc
     public float _inputtedTime = 0.0f;
 }
 
-public enum KeyPressType
-{
-    Pressed,
-    Hold,
-    Released,
-    None,
-};
+
 
 public class CustomKeyManager : SubManager
 {

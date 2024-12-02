@@ -15,12 +15,27 @@ using static AnimatorBlendingDesc;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEditor.VersionControl;
 using UnityEngine.UIElements;
+using static StateGraphAsset;
 
 public class CoroutineLock
 {
     public bool _isEnd = false;
 }
 
+public class DamageDesc
+{
+    public enum DamageType
+    {
+        Damage_Lvl_0 = 0,
+        Damage_Lvl_1,
+        Damage_Lvl_2,
+        Damage_Lvl_3,
+    }
+    public int _damage = 0;
+    public int _damagePower = 1;
+    public int _dagingStamina = 0;
+    public DamageType _damageType = DamageType.Damage_Lvl_0;
+}
 
 public enum AnimatorLayerTypes
 {
@@ -233,40 +248,18 @@ public class AnimatorBlendingDesc
 
 public class PlayerScript : MonoBehaviour, IHitable
 {
-    /*----------------------------------
-    HitAble Section
-    ----------------------------------*/
-    public void DealMe(int damage, GameObject caller)
-    {
-        Debug.Assert(_stateContoller != null, "StateController가 null이여서는 안된다");
-
-        RepresentStateType representType = RepresentStateType.Hit_Fall;
-
-        //데미지를 가지고 얼마나 아프게 맞았는지 계산
-        {
-            if (damage < 2)
-            {
-                representType = RepresentStateType.Hit_L;
-            }
-            else if (damage < 5)
-            {
-                representType = RepresentStateType.Hit_H;
-            }
-            else
-            {
-                representType = RepresentStateType.Hit_Fall;
-            }
-        }
-
-        //StateController에게 상태 변경 지시
-        //_stateContoller.TryChangeState(representType);
-    }
 
 
     //델리게이트 타입들
     public delegate void Action_Int(int param0);
     public delegate void Action_LayerType(AnimatorLayerTypes layerType);
 
+
+
+
+    //Buff 관련 컴포넌트들
+    private Dictionary<BuffTypes, BuffScript> _currBuffs = new Dictionary<BuffTypes, BuffScript>();
+    private StatScript _myStat = new StatScript();
 
 
 
@@ -478,19 +471,39 @@ public class PlayerScript : MonoBehaviour, IHitable
         {
             if (Input.GetKeyDown(KeyCode.H) == true)
             {
-                DealMe(1, this.gameObject);
+                DamageDesc tempTestDamage = new DamageDesc();
+                tempTestDamage._damage = 0;
+                tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl0;
+                tempTestDamage._damageType = DamageDesc.DamageType.Damage_Lvl_0;
+                DealMe(tempTestDamage, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.J) == true)
             {
-                DealMe(4, this.gameObject);
-                // Hit_L로 변경
+                DamageDesc tempTestDamage = new DamageDesc();
+                tempTestDamage._damage = 0;
+                tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1;
+                tempTestDamage._damageType = DamageDesc.DamageType.Damage_Lvl_1;
+                DealMe(tempTestDamage, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.K) == true)
             {
-                DealMe(100, this.gameObject);
-                // Hit_Fall로 변경
+                DamageDesc tempTestDamage = new DamageDesc();
+                tempTestDamage._damage = 0;
+                tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl2;
+                tempTestDamage._damageType = DamageDesc.DamageType.Damage_Lvl_2;
+                DealMe(tempTestDamage, this.gameObject);
+            }
+
+            if (Input.GetKeyDown(KeyCode.M) == true)
+            {
+                DamageDesc tempTestDamage = new DamageDesc();
+                tempTestDamage._damage = 0;
+                tempTestDamage._dagingStamina = 200;
+                tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl0;
+                tempTestDamage._damageType = DamageDesc.DamageType.Damage_Lvl_0;
+                DealMe(tempTestDamage, this.gameObject);
             }
         }
 
@@ -2195,12 +2208,126 @@ public class PlayerScript : MonoBehaviour, IHitable
 
 
 
+    /*----------------------------------
+    HitAble Section
+    ----------------------------------*/
+    public void DealMe(DamageDesc damage, GameObject caller)
+    {
+        StateGraphType nextGraphType = StateGraphType.HitStateGraph;
+        RepresentStateType representType = RepresentStateType.Hit_Lvl_0;
+
+        int willUsingHP = damage._damage;
+        int willUsingStamina = damage._dagingStamina;
+        int willUsingRoughness = damage._damagePower;
+
+        //현재 스텟, 버프, 데미지 타입등을 비교해봄
+        {
+            //체력이 더 달거나, 덜 달거나
+
+
+            //BuffScript guardBuff = null;
+            //_currBuffs.TryGetValue(BuffTypes./* TARGET BUFF*/ , out guardBuff);
+            //if (guardBuff != null)
+            //{
+            //    GameObject result = guardBuff.CallFunc();
+            //}
+
+            //representType이 변경된다
+            //willUsingHealthPoint가 변경된다
+            //willUsingStaminaPoint가 변경된다.
+        }
 
 
 
 
+        StateAsset currState = _stateContoller.GetCurrState();
+        StateDesc currStateDesc = _stateContoller.GetCurrState()._myState;
 
+        //가드중이였나?
+        if (currStateDesc._isBlockState == true)
+        {
+            //스테미나도 충분하고 강인도도 충분합니다
+            if (_myStat._currStamina >= willUsingStamina &&
+                _myStat._currRoughness >= willUsingRoughness)
+            {
+                nextGraphType = _stateContoller.GetCurrStateGraphType();
+                representType = RepresentStateType.Blocked_Reaction;
+            }
 
+            //스테미나는 충분한데 강인도가 부족합니다.
+            else if (_myStat._currStamina >= willUsingStamina &&
+                _myStat._currRoughness < willUsingRoughness)
+            {
+                nextGraphType = _stateContoller.GetCurrStateGraphType();
+                representType = RepresentStateType.Blocked_Sliding;
+            }
+
+            //강인도는 충분한데 스테미나가 부족합니다.
+            else if (_myStat._currStamina < willUsingStamina &&
+                _myStat._currRoughness >= willUsingRoughness)
+            {
+                nextGraphType = _stateContoller.GetCurrStateGraphType();
+                representType = RepresentStateType.Blocked_Crash;
+            }
+
+            //연결된 상태들을 가져와봄
+            StateAsset nextStateAsseet = null;
+            List<LinkedStateAsset> linkedStates = _stateContoller.GetCurrStateGraph().GetGraphStates()[currState];
+            foreach (LinkedStateAsset linkedState in linkedStates)
+            {
+                if (linkedState._linkedState._myState._stateType == representType)
+                {
+                    nextStateAsseet = linkedState._linkedState;
+                    break;
+                }
+            }
+
+            //스테미나가 부족하고 강인도도 부족합니다. 혹은 연결상태가 존재하지 않습니다
+            if ((_myStat._currStamina < willUsingStamina && _myStat._currRoughness < willUsingRoughness) ||
+                nextStateAsseet == null)
+            {
+                //맞는 상태로 가긴 할건데
+                nextGraphType = StateGraphType.HitStateGraph;
+
+                int deltaRoughness = willUsingRoughness - _myStat._currRoughness;
+
+                if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
+                {
+                    representType = RepresentStateType.Hit_Lvl_0;
+                }
+                else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
+                {
+                    representType = RepresentStateType.Hit_Lvl_1;
+                }
+                else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
+                {
+                    representType = RepresentStateType.Hit_Lvl_2;
+                }
+            }
+        }
+        else
+        {
+            //맞는 상태로 가긴 할건데
+            nextGraphType = StateGraphType.HitStateGraph;
+
+            int deltaRoughness = willUsingRoughness - _myStat._currRoughness;
+
+            if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
+            {
+                representType = RepresentStateType.Hit_Lvl_0;
+            }
+            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
+            {
+                representType = RepresentStateType.Hit_Lvl_1;
+            }
+            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
+            {
+                representType = RepresentStateType.Hit_Lvl_2;
+            }
+        }
+
+        _stateContoller.TryChangeState(nextGraphType, representType);
+    }
 
 
 
