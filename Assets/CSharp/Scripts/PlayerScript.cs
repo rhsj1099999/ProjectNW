@@ -13,6 +13,9 @@ public class PlayerScript : CharacterScript
     [SerializeField] protected InputController _inputController = null;
 
 
+
+
+
     protected override void Awake()
     {
         base.Awake();

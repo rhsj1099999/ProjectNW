@@ -176,6 +176,8 @@ public class StateContoller : MonoBehaviour
         public InputController _ownerInputController = null;
         public CharacterMoveScript2 _ownerMoveScript = null;
         public CharacterController _ownerCharacterComponent = null;
+
+        public CharacterAnimatorScript _ownerCharacterAnimatorScript = null;
     }
 
     public class StateActionCoroutineWrapper
@@ -335,7 +337,7 @@ public class StateContoller : MonoBehaviour
 
         ReadyLinkedStates(_currentGraphType, _currState, true);
 
-        _ownerStateControllingComponent._owner.ChangeAnimation(_currState);
+        _ownerStateControllingComponent._owner.StateChanged(_currState);
 
         AllStopCoroutine();
 
@@ -633,13 +635,13 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.CalculateWeaponLayer_EnterAttack:
                     {
-                        _ownerStateControllingComponent._owner.WeaponLayerChange_EnterAttack(_currState);
+                        //_ownerStateControllingComponent._owner.WeaponLayerChange_EnterAttack(_currState);
                     }
                     break;
 
                 case StateActionType.CalculateWeaponLayer_ExitAttack:
                     {
-                        _ownerStateControllingComponent._owner.WeaponLayerChange_ExitAttack(_currState);
+                        //_ownerStateControllingComponent._owner.WeaponLayerChange_ExitAttack(_currState);
                     }
                     break;
 
