@@ -214,7 +214,7 @@ public class WeaponScript : MonoBehaviour
     ------------------------------------------*/
     public Transform _socketTranform = null;
     private bool _isRightHandWeapon = false;
-    public PlayerScript _owner = null;
+    public CharacterScript _owner = null;
 
 
 
@@ -280,7 +280,7 @@ public class WeaponScript : MonoBehaviour
 
 
 
-    virtual public void Equip(PlayerScript itemOwner, Transform followTransform)
+    virtual public void Equip(CharacterScript itemOwner, Transform followTransform)
     {
         _owner = itemOwner;
         _ownerAnimator = itemOwner.gameObject.GetComponentInChildren<Animator>();

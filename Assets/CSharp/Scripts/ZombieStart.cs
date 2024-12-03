@@ -184,8 +184,9 @@ public class ZombieStart : MonoBehaviour, IHitable
     private void InitEnemy()
     {
         //매 프레임마다 오브젝트를 하이라키에서 찾고 거리를 비교하는게 아니라.
-        //미리 자기가 적대적으로 생각하는 오브젝트를 캐싱합니다. //Destory(Object) 호출시 자동으로 null참조입니다 (댕글링 포인터가 아니라네?)
+        //미리 자기가 적대적으로 생각하는 오브젝트를 캐싱합니다. 
         //|TODO| 이와 관련하여 Alias 매니저를 만들자. 런타임중 추가로 몬스터나 동료가 생성되면 enemy설정을 해주는 매니저
+
         foreach (var tag in _enemyTags)
         {
             foreach (var enemy in GameObject.FindGameObjectsWithTag(tag))
@@ -209,6 +210,7 @@ public class ZombieStart : MonoBehaviour, IHitable
 
         return true;
     }
+
 
     private bool InBattleCheck()
     {
@@ -262,19 +264,19 @@ public class ZombieStart : MonoBehaviour, IHitable
 
     public void DealMe(DamageDesc damage, GameObject caller)
     {
-        if (_hp <= 0)
-        {
-            return; //이미 죽었다.
-        }
+        //if (_hp <= 0)
+        //{
+        //    return; //이미 죽었다.
+        //}
 
-        //_hp -= damage;
+        ////_hp -= damage;
 
-        if (_hp <= 0)
-        {
-            _hp = 0; //죽었다
+        //if (_hp <= 0)
+        //{
+        //    _hp = 0; //죽었다
 
-            Dead();
-        }
+        //    Dead();
+        //}
     }
 
 

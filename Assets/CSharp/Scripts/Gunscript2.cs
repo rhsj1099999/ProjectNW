@@ -75,7 +75,7 @@ public class Gunscript2 : WeaponScript
     }
 
 
-    override public void Equip(PlayerScript itemOwner, Transform followTransform) 
+    override public void Equip(CharacterScript itemOwner, Transform followTransform) 
     {
         base.Equip(itemOwner, followTransform);
         _shoulderStock_Unity = _ownerAnimator.GetBoneTransform(HumanBodyBones.RightShoulder);

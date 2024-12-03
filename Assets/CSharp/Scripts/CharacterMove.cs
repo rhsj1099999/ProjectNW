@@ -18,7 +18,6 @@ public class CharacterMoveScript2 : MonoBehaviour
     private bool _isInAir = false;
     private float _verticalSpeedAcc = 0.0f;
     private bool _moveTriggerd = false;
-    //private int _notGroundedCount = 0;
 
     private float _inAirSlopeLimit = 0.0f;
     private float _inGroundSlopeLimit = 45.0f;
@@ -32,19 +31,6 @@ public class CharacterMoveScript2 : MonoBehaviour
     public bool GetIsInAir() { return _isInAir; }
     public Vector3 GetLatestVelocity() { return _latestPlaneVelocityDontUseY; }
     public void ResetLatestVelocity() { _latestPlaneVelocityDontUseY = Vector3.zero; }
-
-    private void Update()
-    {
-        //if (_isInAir == false)
-        //{
-        //    Debug.Log("Grounded");
-        //}
-        //else
-        //{
-        //    Debug.Log("Not Grounded");
-        //}
-        //Debug.Log("CurrStepOffset : " + _characterController.stepOffset);
-    }
 
     private void Awake()
     {
@@ -77,7 +63,6 @@ public class CharacterMoveScript2 : MonoBehaviour
             _characterController.slopeLimit = _inGroundSlopeLimit;
 
             _verticalSpeedAcc = 0.0f;
-            //_notGroundedCount = 0;
 
             _isJumping = false;
             _isInAir = false;
@@ -88,7 +73,6 @@ public class CharacterMoveScript2 : MonoBehaviour
             _characterController.slopeLimit = _inAirSlopeLimit;
 
             _isInAir = true;
-            //_notGroundedCount = 0;
         }
     }
 

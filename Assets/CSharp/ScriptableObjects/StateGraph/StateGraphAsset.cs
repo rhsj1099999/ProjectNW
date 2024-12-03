@@ -63,7 +63,6 @@ public class StateGraphAsset : ScriptableObject
     private Dictionary<StateAsset, List<LinkedStateAsset>> _states = new Dictionary<StateAsset, List<LinkedStateAsset>>();
     private Dictionary<StateAsset, SortedDictionary<int,LinkedStateAsset>> _states_Ordered = new Dictionary<StateAsset, SortedDictionary<int, LinkedStateAsset>>();
     private Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> _interactionPoints = new Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>>();
-    //private StateAnimActionInfo _stateAnimActionInfo = new StateAnimActionInfo();
 
     private Dictionary<RepresentStateType, StateAsset> _usingRepresentStateTypes = new Dictionary<RepresentStateType, StateAsset>();
     
@@ -81,7 +80,6 @@ public class StateGraphAsset : ScriptableObject
         }
         return _usingRepresentStateTypes[stateType];
     }
-    //public StateAnimActionInfo GetStateAnimActionInfo() { return _stateAnimActionInfo; }
 
 
 
@@ -331,7 +329,7 @@ public class StateGraphAsset : ScriptableObject
 
 
 
-    public void SettingOwnerComponent(StateContollerComponentDesc ownerComponent, PlayerScript caller)
+    public void SettingOwnerComponent(StateContollerComponentDesc ownerComponent, CharacterScript caller)
     {
         foreach (StateAssetWrapper stateAssetWrapper in _usingStates)
         {
@@ -343,7 +341,7 @@ public class StateGraphAsset : ScriptableObject
 
 
 
-    private void InitPartial(StateContollerComponentDesc _ownerActionComponent, List<StateActionType> list, PlayerScript owner)
+    private void InitPartial(StateContollerComponentDesc _ownerActionComponent, List<StateActionType> list, CharacterScript owner)
     {
         foreach (var actions in list)
         {
