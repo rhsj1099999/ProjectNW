@@ -537,7 +537,6 @@ public class StateContoller : MonoBehaviour
                         _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(_ownerStateControllingComponent._ownerInputController._pr_directionByInput, 1.0f);
                         _ownerStateControllingComponent._ownerMoveScript.CharacterMove(_ownerStateControllingComponent._ownerInputController._pr_directionByInput, 1.0f);
                     }
-
                     break;
 
                 case StateActionType.Attack:
@@ -635,13 +634,23 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.CalculateWeaponLayer_EnterAttack:
                     {
-                        //_ownerStateControllingComponent._owner.WeaponLayerChange_EnterAttack(_currState);
+                        _ownerStateControllingComponent._ownerCharacterAnimatorScript.WeaponLayerChange_EnterAttack
+                            (
+                            _ownerStateControllingComponent._owner.GetGrabFocusType(),
+                            _currState,
+                            _ownerStateControllingComponent._owner.GetLatestWeaponUse()
+                            );
                     }
                     break;
 
                 case StateActionType.CalculateWeaponLayer_ExitAttack:
                     {
-                        //_ownerStateControllingComponent._owner.WeaponLayerChange_ExitAttack(_currState);
+                        _ownerStateControllingComponent._ownerCharacterAnimatorScript.WeaponLayerChange_ExitAttack
+                            (
+                            _ownerStateControllingComponent._owner.GetGrabFocusType(),
+                            _currState,
+                            _ownerStateControllingComponent._owner.GetLatestWeaponUse()
+                            );
                     }
                     break;
 
@@ -652,11 +661,15 @@ public class StateContoller : MonoBehaviour
                     break;
 
                 case StateActionType.AddCoroutine_ChangeToIdleState:
-                    AddStateActionCoroutine(StateActionCoroutineType.ChangeToIdle);
+                    {
+                        AddStateActionCoroutine(StateActionCoroutineType.ChangeToIdle);
+                    }
                     break;
 
                 case StateActionType.AddCoroutine_StateChangeReady:
-                    AddStateActionCoroutine(StateActionCoroutineType.StateChangeReady);
+                    {
+                        AddStateActionCoroutine(StateActionCoroutineType.StateChangeReady);
+                    }
                     break;
 
                 case StateActionType.CharacterRotate:
@@ -954,7 +967,7 @@ public class StateContoller : MonoBehaviour
 
         bool ret = false;
 
-        if (_ownerStateControllingComponent._owner.GetWeaponScript(isRightSided) == null)
+        if (_ownerStateControllingComponent._owner.GetCurrentWeaponScript(isRightSided) == null)
         {
             return false;
         }

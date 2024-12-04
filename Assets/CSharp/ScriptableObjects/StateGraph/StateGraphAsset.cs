@@ -481,9 +481,15 @@ public class StateGraphAsset : ScriptableObject
                     break;
 
                 case StateActionType.CalculateWeaponLayer_EnterAttack:
-                    break;
-
                 case StateActionType.CalculateWeaponLayer_ExitAttack:
+                    {
+                        _ownerActionComponent._ownerCharacterAnimatorScript = owner.GetComponentInChildren<CharacterAnimatorScript>();
+                        if (_ownerActionComponent._ownerCharacterAnimatorScript == null)
+                        {
+                            Debug.Assert(false, "CalculateWeaponLayer_EnterAttack Action인데, 컴포넌트가 없다");
+                            Debug.Break();
+                        }
+                    }
                     break;
 
                 case StateActionType.DummyState_EnterLocoStateGraph:
