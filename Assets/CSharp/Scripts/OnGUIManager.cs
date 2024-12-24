@@ -6,10 +6,15 @@ using UnityEngine.UI;
 
 public class OnGUIManager : SubManager
 {
+    private static OnGUIManager _instance = null;
+
     private GUIStyle _style = null;
     private List<int> _frameDebug = new List<int>();
     private int _currentFrame = 0;
     private float _currentTimeAcc = 0;
+    private Dictionary<string, string> _debugStrings = new Dictionary<string, string>();
+    private float _fontSize = 10.0f;
+    private float _lineSize = 5.0f;
 
     public static OnGUIManager Instance
     {
@@ -41,8 +46,8 @@ public class OnGUIManager : SubManager
         DontDestroyOnLoad(this.gameObject);
 
         _style = new GUIStyle();
-        _style.fontSize = 20;
-        _style.normal.textColor = Color.white;
+        _style.fontSize = 10;
+        _style.normal.textColor = Color.red;
     }
 
     override public void SubManagerUpdate()
@@ -91,20 +96,20 @@ public class OnGUIManager : SubManager
         if (_style != null)
         {
             Rect messageStartRect = new Rect(10, 10, 200, -99999); //Height 무관하다
-
+            float totalHeight = _fontSize + _lineSize;
             /*---------------------
              기본 메세지들
             ---------------------*/
-            ShowString("디버깅용", ref messageStartRect, 35.0f);
+            ShowString("디버깅용", ref messageStartRect, totalHeight);
 
-            ShowString("겹친UI 개수 : " + GetUIElementsUnderMouse().Count, ref messageStartRect, 35.0f);
+            ShowString("겹친UI 개수 : " + GetUIElementsUnderMouse().Count, ref messageStartRect, totalHeight);
             Vector2 mousePosition = Input.mousePosition;
-            ShowString("마우스InputPosition : X|" + mousePosition.x + " Y|" + mousePosition.y, ref messageStartRect, 35.0f);
-            ShowString("현재프레임 : " + _currentFrame + "FPS", ref messageStartRect, 35.0f);
+            ShowString("마우스InputPosition : X|" + mousePosition.x + " Y|" + mousePosition.y, ref messageStartRect, totalHeight);
+            ShowString("현재프레임 : " + _currentFrame + "FPS", ref messageStartRect, totalHeight);
 
             foreach (KeyValuePair<string, string> pair in _debugStrings)
             {
-                GUI.Label(new Rect(10, 10, 200, 50), "키|-|" + pair.Key + "|-|값:" + pair.Value, _style);
+                ShowString(pair.Key + pair.Value, ref messageStartRect, totalHeight);
             }
         }
     }
@@ -116,22 +121,20 @@ public class OnGUIManager : SubManager
         messagePosition.y += yFontSize;
     }
 
-    private Dictionary<string, string> _debugStrings = new Dictionary<string, string>();
 
-    private static OnGUIManager _instance = null;
 
     public void AddDebugString(string key, string val)
     {
-        if ( _debugStrings.ContainsKey(key) )
+        if ( _debugStrings.ContainsKey(key) == true)
         {
-            Debug.Assert(_debugStrings[key] == null ); //제목이 이미 있다
+            _debugStrings[key] = val;
             return;
         }
 
         _debugStrings.Add(key, val);
     }
 
-    public void DeletaDebugString(string key)
+    public void DeleteDebugString(string key)
     {
         if (_debugStrings.ContainsKey(key) == false)
         {

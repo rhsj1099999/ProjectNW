@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - HitCollider
+  - Monster
+  - BodyAttachedCollider
+  - WeaponAttachedCollider
   layers:
   - Default
   - TransparentFX
@@ -14,10 +17,10 @@ TagManager:
   - UI
   - StaticNavMeshLayer
   - HitCollider
-  - 
-  - 
-  - 
-  - 
+  - CharacterHeart
+  - Monster
+  - WeaponCollider
+  - Player
   - 
   - 
   - 

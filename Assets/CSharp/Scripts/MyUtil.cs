@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System;
+using static StateGraphAsset;
+using UnityEngine;
 
 class DescendingComparer<T> : IComparer<T> where T : IComparable<T>
 {
@@ -14,6 +16,7 @@ public static class MyUtil
     public const int deltaRoughness_lvl0 = 3;
     public const int deltaRoughness_lvl1 = 6;
     public const int deltaRoughness_lvl2 = 9;
+    public const int deltaRoughness_lvl3 = 12;
     public static readonly string[] _motionChangingAnimationNames =
     {
         "Layer0",
@@ -43,6 +46,20 @@ public static class MyUtil
         return (a % b + b) % b;
     }
 
+    public static Quaternion LootAtPercentageRotation(Transform transform, Vector3 targetPosition, float percentage)
+    {
+        Quaternion currentRotation = transform.rotation;
+
+        Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
+
+        Quaternion halfwayRotation = Quaternion.Lerp(currentRotation, targetRotation, percentage);
+        
+        return halfwayRotation;
+    }
+
+
+
+
     public static void GuardAndDamageTypeConverter(DamageDesc.DamageType damageType, RepresentStateType curGuardType, RepresentStateType guardStateLvl)
     {
         guardStateLvl = 0;
@@ -56,5 +73,88 @@ public static class MyUtil
         //데미지 타입이 더 크다.
             //밀려난다. 혹은 가드가 부서진다.
     }
-    
+
+
+
+    public static int CalculateConditionWeight(List<ConditionAssetWrapper> conditions)
+    {
+        int retWeight = 0;
+
+        foreach (ConditionAssetWrapper condition in conditions)
+        {
+            ConditionDesc conditionDesc = condition._conditionAsset._conditionDesc;
+            //기본적으로 조건이 하나 걸려있으면 가중치 +1입니다.
+            //콤보 키, KeyInput경우에는 키가 어려울수록 가중치가 더들어갑니다.
+            switch (conditionDesc._singleConditionType)
+            {
+                default:
+                    retWeight++;
+                    break;
+
+                case ConditionType.KeyInput:
+                    {
+                        //총 키 개수 ... ver 1
+                        List<KeyInputConditionDesc> keys = conditionDesc._keyInputConditionTarget;
+                        retWeight += keys.Count;
+                    }
+                    break;
+
+                case ConditionType.ComboKeyCommand:
+                    {
+                        //조합키들 총 개수 + 콤보개수 ... ver 1
+                        List<ComboKeyCommandDesc> comboKeys = conditionDesc._commandInputConditionTarget;
+                        foreach (ComboKeyCommandDesc command in comboKeys)
+                        {
+                            retWeight += command._targetCommandKeys.Count;
+                        }
+                        retWeight += conditionDesc._commandInputConditionTarget.Count;
+                    }
+                    break;
+            }
+        }
+
+        return retWeight;
+    }
+
+
+
+
+    public static int CalculateConditionWeight(List<ConditionDesc> conditions)
+    {
+        int retWeight = 0;
+
+        foreach (ConditionDesc condition in conditions)
+        {
+            //기본적으로 조건이 하나 걸려있으면 가중치 +1입니다.
+            //콤보 키, KeyInput경우에는 키가 어려울수록 가중치가 더들어갑니다.
+            switch (condition._singleConditionType)
+            {
+                default:
+                    retWeight++;
+                    break;
+
+                case ConditionType.KeyInput:
+                    {
+                        //총 키 개수 ... ver 1
+                        List<KeyInputConditionDesc> keys = condition._keyInputConditionTarget;
+                        retWeight += keys.Count;
+                    }
+                    break;
+
+                case ConditionType.ComboKeyCommand:
+                    {
+                        //조합키들 총 개수 + 콤보개수 ... ver 1
+                        List<ComboKeyCommandDesc> comboKeys = condition._commandInputConditionTarget;
+                        foreach (ComboKeyCommandDesc command in comboKeys)
+                        {
+                            retWeight += command._targetCommandKeys.Count;
+                        }
+                        retWeight += condition._commandInputConditionTarget.Count;
+                    }
+                    break;
+            }
+        }
+
+        return retWeight;
+    }
 }

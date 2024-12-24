@@ -10,6 +10,10 @@ using static StateContoller;
 [CreateAssetMenu(fileName = "StateGraphAsset", menuName = "Scriptable Object/CreateStateGraphAsset", order = int.MinValue)]
 public class StateGraphAsset : ScriptableObject
 {
+    /*---------------------------------------------------
+    |TODO| 어느정도 몬스터 완료되면 그래프 툴 만들어서 하나의
+    그래프로 펼쳐놓고 작업하는게 좋을듯
+    ---------------------------------------------------*/
     public enum StateGraphType
     {
         LocoStateGraph,
@@ -17,8 +21,14 @@ public class StateGraphAsset : ScriptableObject
         WeaponState_LeftGraph,
         HitStateGraph,
         FlyStateGraph,
+        AI_AggresiveGraph,
+        AI_SharpnessGraph,
+        AI_WeaknessGraph,
+        AI_GuardGraph,
         End,
     };
+
+
 
     [Serializable]
     public class ConditionAssetWrapper
@@ -136,7 +146,7 @@ public class StateGraphAsset : ScriptableObject
 
                     _entryStates.Add(newLinkedState);
 
-                    int priority = CalculateConditionWeight(state._entryCondition);
+                    int priority = MyUtil.CalculateConditionWeight(state._entryCondition);
 
                     while (true)
                     {
@@ -175,7 +185,7 @@ public class StateGraphAsset : ScriptableObject
 
                 foreach (LinkedStateAsset linkedState in state._linkedStates)
                 {
-                    int priority = CalculateConditionWeight(linkedState._conditionAsset);
+                    int priority = MyUtil.CalculateConditionWeight(linkedState._conditionAsset);
 
                     while (true)
                     {
@@ -216,7 +226,7 @@ public class StateGraphAsset : ScriptableObject
 
                 if (interactionPointDic.ContainsKey(state) == true)
                 {
-                    Debug.Assert(false, "Interaction Point가 겹칩니다");
+                    Debug.Assert(false, "Interaction Point가 겹칩니다" + state.name);
                     Debug.Break();
                     return;
                 }
@@ -233,99 +243,20 @@ public class StateGraphAsset : ScriptableObject
         foreach (StateAssetWrapper stateAssetWrapper in _usingStates)
         {
             ResourceDataManager.Instance.AddHipCurve(stateAssetWrapper._stateAsset._myState._stateAnimationClip);
-        }
-    }
 
+            SubAnimationStateMachine subAnimationStateMachine = stateAssetWrapper._stateAsset._myState._subAnimationStateMachine;
 
-
-
-
-
-
-
-
-
-    public int CalculateConditionWeight(List<ConditionAssetWrapper> conditions)
-    {
-        int retWeight = 0;
-
-        foreach (ConditionAssetWrapper condition in conditions)
-        {
-            ConditionDesc conditionDesc = condition._conditionAsset._conditionDesc;
-            //기본적으로 조건이 하나 걸려있으면 가중치 +1입니다.
-            //콤보 키, KeyInput경우에는 키가 어려울수록 가중치가 더들어갑니다.
-            switch (conditionDesc._singleConditionType)
+            if (subAnimationStateMachine != null)
             {
-                default:
-                    retWeight++;
-                    break;
-
-                case ConditionType.KeyInput:
-                    {
-                        //총 키 개수 ... ver 1
-                        List<KeyInputConditionDesc> keys = conditionDesc._keyInputConditionTarget;
-                        retWeight += keys.Count;
-                    }
-                    break;
-
-                case ConditionType.ComboKeyCommand:
-                    {
-                        //조합키들 총 개수 + 콤보개수 ... ver 1
-                        List<ComboKeyCommandDesc> comboKeys = conditionDesc._commandInputConditionTarget;
-                        foreach (ComboKeyCommandDesc command in comboKeys)
-                        {
-                            retWeight += command._targetCommandKeys.Count;
-                        }
-                        retWeight += conditionDesc._commandInputConditionTarget.Count;
-                    }
-                    break;
+                foreach (AnimationClip animationClip in subAnimationStateMachine._animations)
+                {
+                    ResourceDataManager.Instance.AddHipCurve(animationClip);
+                }
             }
         }
-
-        return retWeight;
     }
 
-
-
-
-    public int CalculateConditionWeight(List<ConditionDesc> conditions)
-    {
-        int retWeight = 0;
-
-        foreach (ConditionDesc condition in conditions)
-        {
-            //기본적으로 조건이 하나 걸려있으면 가중치 +1입니다.
-            //콤보 키, KeyInput경우에는 키가 어려울수록 가중치가 더들어갑니다.
-            switch (condition._singleConditionType)
-            {
-                default:
-                    retWeight++;
-                    break;
-
-                case ConditionType.KeyInput:
-                    {
-                        //총 키 개수 ... ver 1
-                        List<KeyInputConditionDesc> keys = condition._keyInputConditionTarget;
-                        retWeight += keys.Count;
-                    }
-                    break;
-
-                case ConditionType.ComboKeyCommand:
-                    {
-                        //조합키들 총 개수 + 콤보개수 ... ver 1
-                        List<ComboKeyCommandDesc> comboKeys = condition._commandInputConditionTarget;
-                        foreach (ComboKeyCommandDesc command in comboKeys)
-                        {
-                            retWeight += command._targetCommandKeys.Count;
-                        }
-                        retWeight += condition._commandInputConditionTarget.Count;
-                    }
-                    break;
-            }
-        }
-
-        return retWeight;
-    }
+    
 
 
 
@@ -513,6 +444,228 @@ public class StateGraphAsset : ScriptableObject
                         {
                             _ownerActionComponent._ownerInputController = owner.GetComponent<InputController>();
                             Debug.Assert(_ownerActionComponent._ownerInputController != null, "Input행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.AI_CharacterRotateToEnemy:
+                    {
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerEnemyAIScript == null)
+                        {
+                            _ownerActionComponent._ownerEnemyAIScript = owner.GetComponent<EnemyAIScript>();
+                            Debug.Assert(_ownerActionComponent._ownerEnemyAIScript != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.AI_ChaseToEnemy:
+                    {
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerEnemyAIScript == null)
+                        {
+                            _ownerActionComponent._ownerEnemyAIScript = owner.GetComponent<EnemyAIScript>();
+                            Debug.Assert(_ownerActionComponent._ownerEnemyAIScript != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.AI_ForcedLookAtEnemy:
+                    break;
+
+                case StateActionType.AI_ReArrangeStateGraph:
+                    {
+                        if (_ownerActionComponent._ownerEnemyAIScript == null)
+                        {
+                            _ownerActionComponent._ownerEnemyAIScript = owner.GetComponent<EnemyAIScript>();
+                            if (_ownerActionComponent._ownerEnemyAIScript == null)
+                            {
+                                Debug.Assert(false, "AI_ReArrangeStateGraph 행동에 컴포넌트가 없습니다");
+                                Debug.Break();
+                                return;
+                            }
+                        }
+                        
+                    }
+                    break;
+
+                case StateActionType.AI_UpdateAttackRange:
+                    {
+                        if (_ownerActionComponent._ownerEnemyAIScript == null)
+                        {
+                            _ownerActionComponent._ownerEnemyAIScript = owner.GetComponent<EnemyAIScript>();
+                            if (_ownerActionComponent._ownerEnemyAIScript == null)
+                            {
+                                Debug.Assert(false, "AI_UpdateAttackRange 행동에 컴포넌트가 없습니다");
+                                Debug.Break();
+                                return;
+                            }
+                        }
+                    }
+                    break;
+
+                case StateActionType.Move_WithOutRotate:
+                    {
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerInputController == null)
+                        {
+                            _ownerActionComponent._ownerInputController = owner.GetComponent<InputController>();
+                            Debug.Assert(_ownerActionComponent._ownerInputController != null, "Input행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.LookAtLockOnTarget:
+                    {
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerAimScript == null)
+                        {
+                            _ownerActionComponent._ownerAimScript = owner.GetComponent<AimScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerAimScript != null, "LookAtLockOnTarget 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.RotateToLockOnTarget:
+                    {
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerAimScript == null)
+                        {
+                            _ownerActionComponent._ownerAimScript = owner.GetComponent<AimScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerAimScript != null, "RotateToLockOnTarget 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.RootMove_WithOutRotate:
+                    {
+                        if (_ownerActionComponent._ownerAnimator == null)
+                        {
+                            _ownerActionComponent._ownerAnimator = owner.GetComponentInChildren<Animator>();
+                            Debug.Assert(_ownerActionComponent._ownerAnimator != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerModelObjectOrigin == null)
+                        {
+                            _ownerActionComponent._ownerModelObjectOrigin = _ownerActionComponent._ownerAnimator.gameObject;
+                            Debug.Assert(_ownerActionComponent._ownerModelObjectOrigin != null, "RootMove행동이 있는데 모델이 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerCharacterComponent == null)
+                        {
+                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.CharacterRotateToCameraLook:
+                    {
+                        if (_ownerActionComponent._ownerAnimator == null)
+                        {
+                            _ownerActionComponent._ownerAnimator = owner.GetComponentInChildren<Animator>();
+                            Debug.Assert(_ownerActionComponent._ownerAnimator != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerModelObjectOrigin == null)
+                        {
+                            _ownerActionComponent._ownerModelObjectOrigin = _ownerActionComponent._ownerAnimator.gameObject;
+                            Debug.Assert(_ownerActionComponent._ownerModelObjectOrigin != null, "RootMove행동이 있는데 모델이 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerCharacterComponent == null)
+                        {
+                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.EnterGunAiming:
+                    break;
+
+                case StateActionType.ExitGunAiming:
+                    break;
+
+                case StateActionType.Move_WithOutRotate_Gun:
+                    {
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerInputController == null)
+                        {
+                            _ownerActionComponent._ownerInputController = owner.GetComponent<InputController>();
+                            Debug.Assert(_ownerActionComponent._ownerInputController != null, "Move_WithOutRotate_Gun행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.LookAtLockOnTarget_Gun:
+                    {
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "LookAtLockOnTarget_Gun행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerAimScript == null)
+                        {
+                            _ownerActionComponent._ownerAimScript = owner.GetComponent<AimScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerAimScript != null, "LookAtLockOnTarget_Gun 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.AnimationAttack:
+                    {
+                        if (_ownerActionComponent._ownerCharacterColliderScript == null)
+                        {
+                            _ownerActionComponent._ownerCharacterColliderScript = owner.GetComponent<CharacterColliderScript>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterColliderScript != null, "AnimationAttack 행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+                    }
+                    break;
+
+                case StateActionType.AttackLookAtLockOnTarget:
+                    {
+                        if (_ownerActionComponent._ownerMoveScript == null)
+                        {
+                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "LookAtLockOnTarget_Gun행동이 있는데 이 컴포넌트가 없습니다");
+                        }
+
+                        if (_ownerActionComponent._ownerAimScript == null)
+                        {
+                            _ownerActionComponent._ownerAimScript = owner.GetComponent<AimScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerAimScript != null, "LookAtLockOnTarget_Gun 있는데 이 컴포넌트가 없습니다");
                         }
                     }
                     break;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AnimationAttackFrameAsset;
 using static AnimatorBlendingDesc;
 using static BodyPartBlendingWork;
 using static StateGraphAsset;
@@ -63,256 +64,63 @@ public class DamageDesc
 
 public class CharacterScript : MonoBehaviour, IHitable
 {
+    //기본변수
+    /*-------------------------------------------------
+    |NOTI| 활성화 되는순간 더이상 참조하지말것. 사라져야합니다
+    -------------------------------------------------*/
+    private bool _odjectWillDead = false;
+    public bool GetDead() { return _odjectWillDead; }
+
+    public void DeadCall() 
+    {
+        _odjectWillDead = true;
+
+        //객체가 사라질 준비를 시작한다.
+        {
+
+        }
+    }
+
+
+
     //델리게이트 타입들
     public delegate void Action_Int(int param0);
     public delegate void Action_LayerType(AnimatorLayerTypes layerType);
 
 
     //Buff 관련 컴포넌트들
-    protected Dictionary<BuffTypes, BuffScript> _currBuffs = new Dictionary<BuffTypes, BuffScript>();
-    protected StatScript _myStat = new StatScript();
+
 
 
     //대표 컴포넌트
     [SerializeField] protected StateContoller _stateContoller = null;
     [SerializeField] protected CharacterMoveScript2 _characterMoveScript2 = null;
     [SerializeField] protected CharacterAnimatorScript _characterAnimatorScript = null;
+    [SerializeField] protected CharacterController _charactercontroller = null;
+    [SerializeField] protected GameObject _characterHeart = null;
+    [SerializeField] protected CharacterColliderScript _characterColliderScript = null;
+
     protected GameObject _characterModelObject = null; //애니메이터는 얘가 갖고있다
     public GameObject GetCharacterModleObject() { return _characterModelObject; }
-
-
-
-    //Aim System
+    public StateContoller GetStateContoller() { return _stateContoller; }
+    protected StatScript _myStat = new StatScript();
     protected AimScript2 _aimScript = null;
-    protected bool _isAim = false;
-    protected bool _isTargeting = false;
-    public bool GetIsTargeting() { return _isTargeting; }
+
+    protected void ReadyAimSystem()
+    {
+        if (_aimScript == null)
+        {
+            _aimScript = transform.gameObject.AddComponent<AimScript2>();
+        }
+        _aimScript.enabled = true;
+    }
 
 
-
-
-
-
-    #region WeaponSection
     /*---------------------------------------------------
     |TODO| Weapon과 관련된 스크립트를 만들어서 밖으로 빼세요
     //Weapon Section -> 이거 다른 컴포넌트로 빼세요(현재 만들어져있는건 EquipmentBoard 혹은 Inventory)
     ---------------------------------------------------*/
-
-    public void DestroyWeapon(AnimatorLayerTypes layerType)
-    {
-        if (layerType == AnimatorLayerTypes.RightHand && _tempCurrRightWeapon != null)
-        {
-            Destroy(_tempCurrRightWeapon);
-            _tempCurrRightWeapon = null;
-        }
-        else if (layerType == AnimatorLayerTypes.LeftHand && _tempCurrLeftWeapon != null)
-        {
-            Destroy(_tempCurrLeftWeapon);
-            _tempCurrLeftWeapon = null;
-        }
-    }
-
-    public void WeaponSwitchHand(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
-    {
-        WeaponScript targetWeaponScript = (layerType == AnimatorLayerTypes.RightHand)
-            ? _tempCurrRightWeapon.GetComponent<WeaponScript>()
-            : _tempCurrLeftWeapon.GetComponent<WeaponScript>();
-
-        targetWeaponScript.Equip_OnSocket(work._weaponEquipTransform);
-    }
-
-    public void ChangeGrabFocusType(WeaponGrabFocus targetType)
-    {
-        _tempGrabFocusType = targetType;
-    }
-
-    public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, GameObject nextWeaponPrefab)
-    {
-        if (layerType != AnimatorLayerTypes.RightHand &&
-            layerType != AnimatorLayerTypes.LeftHand)
-        {
-            return;
-        }
-
-        WeaponSocketScript.SideType targetSide = (layerType == AnimatorLayerTypes.RightHand)
-            ? WeaponSocketScript.SideType.Right
-            : WeaponSocketScript.SideType.Left;
-
-        WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
-
-        Debug.Assert(nextWeaponScript != null, "무기는 WeaponScript가 있어야 한다");
-
-        //소켓 찾기
-        Transform correctSocket = null;
-        {
-            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
-
-            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
-
-            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
-
-
-            ItemInfo.WeaponType targetType = nextWeaponScript._weaponType;
-
-            foreach (var socketComponent in weaponSockets)
-            {
-                if (socketComponent._sideType != targetSide)
-                {
-                    continue;
-                }
-
-                foreach (var type in socketComponent._equippableWeaponTypes)
-                {
-                    if (type == targetType)
-                    {
-                        correctSocket = socketComponent.gameObject.transform;
-                        break;
-                    }
-                }
-            }
-
-            Debug.Assert(correctSocket != null, "무기를 붙일 수 있는 소켓이 없습니다");
-        }
-
-        //아이템 프리팹 생성, 장착
-        GameObject newObject = Instantiate(nextWeaponPrefab);
-        {
-            nextWeaponScript = newObject.GetComponent<WeaponScript>();
-            nextWeaponScript._weaponType = ItemInfo.WeaponType.MediumGun;
-            nextWeaponScript.Equip(this, correctSocket);
-            newObject.transform.SetParent(transform);
-
-            if (layerType == AnimatorLayerTypes.RightHand)
-            {
-                _tempCurrRightWeapon = newObject;
-            }
-            else
-            {
-                _tempCurrLeftWeapon = newObject;
-            }
-
-            StateGraphAsset stateGraphAsset = nextWeaponScript._weaponStateGraph;
-
-            StateGraphAsset.StateGraphType stateGraphType = (layerType == AnimatorLayerTypes.RightHand == true)
-                ? StateGraphAsset.StateGraphType.WeaponState_RightGraph
-                : StateGraphAsset.StateGraphType.WeaponState_LeftGraph;
-
-            //장착한 후, 상태그래프를 교체한다.
-            _stateContoller.EquipStateGraph(stateGraphAsset, stateGraphType);
-        }
-    }
-
-    #region GetNextWeaponPrefab
-    public GameObject GetNextWeaponPrefab(AnimatorLayerTypes layerType)
-    {
-        if (layerType != AnimatorLayerTypes.LeftHand &&
-            layerType != AnimatorLayerTypes.RightHand)
-        {
-            return null;
-        }
-
-        int nextWeaponIndex = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _currLeftWeaponIndex + 1
-            : _currRightWeaponIndex + 1;
-
-        if (nextWeaponIndex >= _tempMaxWeaponSlot)
-        {
-            nextWeaponIndex = nextWeaponIndex % _tempMaxWeaponSlot;
-        }
-
-        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _tempLeftWeaponPrefabs[nextWeaponIndex]
-            : _tempRightWeaponPrefabs[nextWeaponIndex];
-
-        return weaponPrefab;
-    }
-    #endregion GetNextWeaponPrefab
-
-    #region GetNextWeaponScript
-    public WeaponScript GetNextWeaponScript(AnimatorLayerTypes layerType)
-    {
-        if (layerType != AnimatorLayerTypes.LeftHand &&
-            layerType != AnimatorLayerTypes.RightHand)
-        {
-            return null;
-        }
-
-        int nextWeaponIndex = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _currLeftWeaponIndex + 1
-            : _currRightWeaponIndex + 1;
-
-        if (nextWeaponIndex >= _tempMaxWeaponSlot)
-        {
-            nextWeaponIndex = nextWeaponIndex % _tempMaxWeaponSlot;
-        }
-
-        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _tempLeftWeaponPrefabs[nextWeaponIndex]
-            : _tempRightWeaponPrefabs[nextWeaponIndex];
-
-        if (weaponPrefab == null)
-        {
-            return null;
-        }
-
-        return weaponPrefab.GetComponent<WeaponScript>();
-    }
-    #endregion GetNextWeaponScript
-
-    #region GetCurrentWeaponPrefab
-    public GameObject GetCurrWeaponPrefab(AnimatorLayerTypes layerType)
-    {
-        if (layerType != AnimatorLayerTypes.LeftHand &&
-            layerType != AnimatorLayerTypes.RightHand)
-        {
-            return null;
-        }
-
-        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _tempCurrLeftWeapon
-            : _tempCurrRightWeapon;
-
-        return weaponPrefab;
-    }
-    #endregion GetCurrentWeaponPrefab
-
-    #region GetCurrentWeaponScript
-    public WeaponScript GetCurrentWeaponScript(AnimatorLayerTypes layerType)
-    {
-        if (layerType != AnimatorLayerTypes.LeftHand &&
-            layerType != AnimatorLayerTypes.RightHand)
-        {
-            return null;
-        }
-
-        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _tempCurrLeftWeapon
-            : _tempCurrRightWeapon;
-
-        if (weaponPrefab == null)
-        {
-            return null;
-        }
-
-        return weaponPrefab.GetComponent<WeaponScript>();
-    }
-
-    public WeaponScript GetCurrentWeaponScript(bool isRightHand)
-    {
-        GameObject weaponPrefab = (isRightHand == true)
-            ? _tempCurrRightWeapon
-            : _tempCurrLeftWeapon;
-
-        if (weaponPrefab == null)
-        {
-            return null;
-        }
-
-        return weaponPrefab.GetComponent<WeaponScript>();
-    }
-    #endregion GetCurrentWeaponScript
-
+    #region WeaponSection
 
     [SerializeField] protected List<GameObject> _tempLeftWeaponPrefabs = new List<GameObject>();
     [SerializeField] protected List<GameObject> _tempRightWeaponPrefabs = new List<GameObject>();
@@ -324,7 +132,7 @@ public class CharacterScript : MonoBehaviour, IHitable
     protected KeyCode _useItemKeyCode4 = KeyCode.Period;
     protected int _currLeftWeaponIndex = 0;
     protected int _currRightWeaponIndex = 0;
-    protected int _tempMaxWeaponSlot = 3;
+    protected int _tempMaxWeaponSlot = 5;
     protected GameObject _tempCurrLeftWeapon = null;
     protected GameObject _tempCurrRightWeapon = null;
     public GameObject GetLeftWeapon() { return _tempCurrLeftWeapon; }
@@ -398,12 +206,262 @@ public class CharacterScript : MonoBehaviour, IHitable
             //_tempCurrRightWeapon = _tempRightWeaponPrefabs[_currRightWeaponIndex];
         }
     }
+    public bool _isRightWeaponAimed = false;
+    public bool _isLeftWeaponAimed = false;
+
+
+    public void DestroyWeapon(AnimatorLayerTypes layerType)
+    {
+        if (layerType == AnimatorLayerTypes.RightHand && _tempCurrRightWeapon != null)
+        {
+            Destroy(_tempCurrRightWeapon);
+            _tempCurrRightWeapon = null;
+        }
+        else if (layerType == AnimatorLayerTypes.LeftHand && _tempCurrLeftWeapon != null)
+        {
+            Destroy(_tempCurrLeftWeapon);
+            _tempCurrLeftWeapon = null;
+        }
+    }
+
+    public void WeaponSwitchHand(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    {
+        WeaponScript targetWeaponScript = (layerType == AnimatorLayerTypes.RightHand)
+            ? _tempCurrRightWeapon.GetComponent<WeaponScript>()
+            : _tempCurrLeftWeapon.GetComponent<WeaponScript>();
+
+        targetWeaponScript.Equip_OnSocket(work._weaponEquipTransform);
+    }
+
+    public void ChangeGrabFocusType(WeaponGrabFocus targetType)
+    {
+        _tempGrabFocusType = targetType;
+    }
+
+    public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, GameObject nextWeaponPrefab)
+    {
+        if (layerType != AnimatorLayerTypes.RightHand &&
+            layerType != AnimatorLayerTypes.LeftHand)
+        {
+            return;
+        }
+
+        WeaponSocketScript.SideType targetSide = (layerType == AnimatorLayerTypes.RightHand)
+            ? WeaponSocketScript.SideType.Right
+            : WeaponSocketScript.SideType.Left;
+
+        WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
+
+        Debug.Assert(nextWeaponScript != null, "무기는 WeaponScript가 있어야 한다");
+
+        //소켓 찾기
+        Transform correctSocket = null;
+        {
+            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+
+            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+
+            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+            ItemInfo.WeaponType targetType = nextWeaponScript._weaponType;
+
+            foreach (var socketComponent in weaponSockets)
+            {
+                if (socketComponent._sideType != targetSide)
+                {
+                    continue;
+                }
+
+                foreach (var type in socketComponent._equippableWeaponTypes)
+                {
+                    if (type == targetType)
+                    {
+                        correctSocket = socketComponent.gameObject.transform;
+                        break;
+                    }
+                }
+            }
+
+            if (correctSocket == null)
+            {
+                Debug.Assert(false, "무기를 붙일 수 있는 소켓이 없습니다");
+                Debug.Break();
+                return;
+            }
+            
+        }
+
+        //아이템 프리팹 생성, 장착
+        GameObject newObject = Instantiate(nextWeaponPrefab);
+        {
+            nextWeaponScript = newObject.GetComponent<WeaponScript>();
+            nextWeaponScript._weaponType = ItemInfo.WeaponType.MediumGun;
+            nextWeaponScript.Equip(this, correctSocket);
+            newObject.transform.SetParent(transform);
+
+            if (layerType == AnimatorLayerTypes.RightHand)
+            {
+                _tempCurrRightWeapon = newObject;
+            }
+            else
+            {
+                _tempCurrLeftWeapon = newObject;
+            }
+
+            StateGraphAsset stateGraphAsset = nextWeaponScript._weaponStateGraph;
+
+            StateGraphAsset.StateGraphType stateGraphType = (layerType == AnimatorLayerTypes.RightHand == true)
+                ? StateGraphAsset.StateGraphType.WeaponState_RightGraph
+                : StateGraphAsset.StateGraphType.WeaponState_LeftGraph;
+
+            //장착한 후, 상태그래프를 교체한다.
+            _stateContoller.EquipStateGraph(stateGraphAsset, stateGraphType);
+
+
+            //장착한 후, 콜라이더를 업데이트 한다.
+            Transform colliderTransform = nextWeaponScript.transform.Find("Collider");
+            if (colliderTransform != null) 
+            {
+                AnimationAttackFrameAsset.ColliderAttachType colliderType = CalculateAttachType(layerType);
+                _characterColliderScript.ChangeCollider(colliderType, colliderTransform.gameObject);
+                colliderTransform.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public virtual AnimationAttackFrameAsset.ColliderAttachType CalculateAttachType(AnimatorLayerTypes layerType)
+    {
+        AnimationAttackFrameAsset.ColliderAttachType type = AnimationAttackFrameAsset.ColliderAttachType.ENEND;
+
+        switch (layerType) 
+        {
+            case AnimatorLayerTypes.LeftHand:
+                type = AnimationAttackFrameAsset.ColliderAttachType.HumanoidLeftHandWeapon;
+                break;
+
+            case AnimatorLayerTypes.RightHand:
+                type = AnimationAttackFrameAsset.ColliderAttachType.HumanoidRightHandWeapon;
+                break;
+
+            default:
+                {
+                    Debug.Assert(false, "로직을 수정할때가 왔다");
+                    Debug.Break();
+                }
+                break;
+        }
+
+        return type;
+    }
+
+    public GameObject GetNextWeaponPrefab(AnimatorLayerTypes layerType)
+    {
+        if (layerType != AnimatorLayerTypes.LeftHand &&
+            layerType != AnimatorLayerTypes.RightHand)
+        {
+            return null;
+        }
+
+        int nextWeaponIndex = (layerType == AnimatorLayerTypes.LeftHand)
+            ? _currLeftWeaponIndex + 1
+            : _currRightWeaponIndex + 1;
+
+        if (nextWeaponIndex >= _tempMaxWeaponSlot)
+        {
+            nextWeaponIndex = nextWeaponIndex % _tempMaxWeaponSlot;
+        }
+
+        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
+            ? _tempLeftWeaponPrefabs[nextWeaponIndex]
+            : _tempRightWeaponPrefabs[nextWeaponIndex];
+
+        return weaponPrefab;
+    }
+
+    public WeaponScript GetNextWeaponScript(AnimatorLayerTypes layerType)
+    {
+        if (layerType != AnimatorLayerTypes.LeftHand &&
+            layerType != AnimatorLayerTypes.RightHand)
+        {
+            return null;
+        }
+
+        int nextWeaponIndex = (layerType == AnimatorLayerTypes.LeftHand)
+            ? _currLeftWeaponIndex + 1
+            : _currRightWeaponIndex + 1;
+
+        if (nextWeaponIndex >= _tempMaxWeaponSlot)
+        {
+            nextWeaponIndex = nextWeaponIndex % _tempMaxWeaponSlot;
+        }
+
+        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
+            ? _tempLeftWeaponPrefabs[nextWeaponIndex]
+            : _tempRightWeaponPrefabs[nextWeaponIndex];
+
+        if (weaponPrefab == null)
+        {
+            return null;
+        }
+
+        return weaponPrefab.GetComponent<WeaponScript>();
+    }
+
+    public GameObject GetCurrWeaponPrefab(AnimatorLayerTypes layerType)
+    {
+        if (layerType != AnimatorLayerTypes.LeftHand &&
+            layerType != AnimatorLayerTypes.RightHand)
+        {
+            return null;
+        }
+
+        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
+            ? _tempCurrLeftWeapon
+            : _tempCurrRightWeapon;
+
+        return weaponPrefab;
+    }
+
+    public WeaponScript GetCurrentWeaponScript(AnimatorLayerTypes layerType)
+    {
+        if (layerType != AnimatorLayerTypes.LeftHand &&
+            layerType != AnimatorLayerTypes.RightHand)
+        {
+            return null;
+        }
+
+        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
+            ? _tempCurrLeftWeapon
+            : _tempCurrRightWeapon;
+
+        if (weaponPrefab == null)
+        {
+            return null;
+        }
+
+        return weaponPrefab.GetComponent<WeaponScript>();
+    }
+
+    public WeaponScript GetCurrentWeaponScript(bool isRightHand)
+    {
+        GameObject weaponPrefab = (isRightHand == true)
+            ? _tempCurrRightWeapon
+            : _tempCurrLeftWeapon;
+
+        if (weaponPrefab == null)
+        {
+            return null;
+        }
+
+        return weaponPrefab.GetComponent<WeaponScript>();
+    }
+
     #endregion WeaponSection
 
-
-
-
-
+    public virtual LayerMask CalculateWeaponColliderExcludeLayerMask(ColliderAttachType type, GameObject targetObject)
+    {
+        return 0;
+    }
 
     protected virtual void Awake()
     {
@@ -413,8 +471,103 @@ public class CharacterScript : MonoBehaviour, IHitable
         _stateContoller = GetComponent<StateContoller>();
         Debug.Assert(_stateContoller != null, "StateController가 없다");
 
+        _characterMoveScript2 = GetComponent<CharacterMoveScript2>();
+        Debug.Assert(_characterMoveScript2 != null, "CharacterMove 컴포넌트 없다");
+
+        _charactercontroller = GetComponent<CharacterController>();
+        Debug.Assert(_charactercontroller != null, "CharacterController 컴포넌트가 없습니다");
+
         Animator animator = GetComponentInChildren<Animator>();
         _characterModelObject = animator.gameObject;
+    }
+
+    private void TriggerEnterWithWeapon(Collider other)
+    {
+        gameObject.transform.LookAt(other.gameObject.GetComponentInParent<CharacterScript>().gameObject.transform.position);
+
+        //Damage는 어떻게 결정될 것인가?
+        /*-------------------------------------------------------
+        기본->StatComponent
+         |
+        애니메이션 배수->CurrState
+         |
+        무기 배수->CurrWeaponScript
+         |
+        양손 잡기 배수->CurrFocusType
+         |
+        버프 관련 배수->BuffComponent
+        -------------------------------------------------------*/
+        DamageDesc tempDamageDesc = new DamageDesc();
+        StateContoller otherStateController = other.gameObject.transform.root.gameObject.GetComponent<StateContoller>();
+
+        if (other.gameObject.transform.root.name == "Zombie" &&
+            otherStateController.GetCurrState().name.Contains("Thump") == true)
+        {
+            tempDamageDesc._damage = 0;
+            tempDamageDesc._damagePower = MyUtil.deltaRoughness_lvl3;
+            tempDamageDesc._damageType = DamageDesc.DamageType.Damage_Lvl_3;
+        }
+        else if (other.gameObject.transform.root.name == "Zombie" &&
+            otherStateController.GetCurrState().name.Contains("Punch") == true)
+        {
+            tempDamageDesc._damage = 0;
+            tempDamageDesc._damagePower = MyUtil.deltaRoughness_lvl0;
+            tempDamageDesc._damageType = DamageDesc.DamageType.Damage_Lvl_0;
+        }
+        else
+        {
+            tempDamageDesc._damage = 0;
+            tempDamageDesc._damagePower = MyUtil.deltaRoughness_lvl2;
+            tempDamageDesc._damageType = DamageDesc.DamageType.Damage_Lvl_2;
+        }
+        DealMe(tempDamageDesc, other.gameObject);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        bool isPlayer = false;
+        if (gameObject.name == "PlayerCharacter3")
+        {
+            isPlayer = true;
+        }
+
+        string tag = other.tag;
+
+        if (tag == "WeaponAttachedCollider") 
+        {
+            //나를 적대시하는 캐릭터가 들고있는 무기와 부딪혔습니다.
+
+            if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == true)
+            {
+                Debug.Log("무기와 부딪혔다");
+                TriggerEnterWithWeapon(other);
+            }
+            else
+            {
+                Debug.Log("하지만 씹혔다");
+            }
+        }
+    }
+
+    protected virtual void Start()
+    {
+        _characterHeart = new GameObject("CharacterHeart");
+        Vector3 myPosition = transform.position;
+        myPosition.y += _charactercontroller.height / 1.75f;
+        _characterHeart.transform.position = myPosition;
+        _characterHeart.transform.SetParent(transform);
+        _characterHeart.layer = LayerMask.NameToLayer("CharacterHeart");
+        SphereCollider heartCollider = _characterHeart.AddComponent<SphereCollider>();
+        heartCollider.radius = 0.1f;
+        heartCollider.includeLayers = 0;
+        heartCollider.excludeLayers = ~0;
+        heartCollider.isTrigger = true;
+    }
+
+
+    public float GetStateChangingPercentage()
+    {
+        return _characterAnimatorScript.GetStateChangingPercentage();
     }
 
     protected virtual void Update()
@@ -434,23 +587,9 @@ public class CharacterScript : MonoBehaviour, IHitable
 
     public void StateChanged(StateAsset nextState)
     {
-        _characterAnimatorScript.StateChanged(nextState._myState._stateAnimationClip);
+        _characterAnimatorScript.StateChanged(nextState, _stateContoller);
+        _characterColliderScript.StateChanged();
     }
-
-
-
-
-
-
-    protected void ReadyAimSystem()
-    {
-        if (_aimScript == null)
-        {
-            _aimScript = transform.gameObject.AddComponent<AimScript2>();
-        }
-        _aimScript.enabled = true;
-    }
-
 
     public void CheckBehave(AdditionalBehaveType additionalBehaveType)
     {
@@ -613,18 +752,6 @@ public class CharacterScript : MonoBehaviour, IHitable
                     {
                         newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
                     }
-                    else if (Input.GetKeyDown(_useItemKeyCode2) == true)
-                    {
-                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
-                    }
-                    else if (Input.GetKeyDown(_useItemKeyCode3) == true)
-                    {
-                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
-                    }
-                    else if (Input.GetKeyDown(_useItemKeyCode4) == true)
-                    {
-                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
-                    }
 
                     if (newTestingItem == null)
                     {
@@ -692,5 +819,116 @@ public class CharacterScript : MonoBehaviour, IHitable
 
     public virtual void DealMe(DamageDesc damage, GameObject caller)
     {
+        StateGraphType nextGraphType = StateGraphType.HitStateGraph;
+        RepresentStateType representType = RepresentStateType.Hit_Lvl_0;
+
+        int willUsingHP = damage._damage;
+        int willUsingStamina = damage._dagingStamina;
+        int willUsingRoughness = damage._damagePower;
+
+        //현재 스텟, 버프, 데미지 타입등을 비교해봄
+        {
+            //체력이 더 달거나, 덜 달거나
+
+
+            //BuffScript guardBuff = null;
+            //_currBuffs.TryGetValue(BuffTypes./* TARGET BUFF*/ , out guardBuff);
+            //if (guardBuff != null)
+            //{
+            //    GameObject result = guardBuff.CallFunc();
+            //}
+
+            //representType이 변경된다
+            //willUsingHealthPoint가 변경된다
+            //willUsingStaminaPoint가 변경된다.
+        }
+
+        StateAsset currState = _stateContoller.GetCurrState();
+        StateDesc currStateDesc = _stateContoller.GetCurrState()._myState;
+
+        //가드중이였나?
+        if (currStateDesc._isBlockState == true)
+        {
+            //스테미나도 충분하고 강인도도 충분합니다
+            if (_myStat._currStamina >= willUsingStamina &&
+                _myStat._currRoughness >= willUsingRoughness)
+            {
+                nextGraphType = _stateContoller.GetCurrStateGraphType();
+                representType = RepresentStateType.Blocked_Reaction;
+            }
+
+            //스테미나는 충분한데 강인도가 부족합니다.
+            else if (_myStat._currStamina >= willUsingStamina &&
+                _myStat._currRoughness < willUsingRoughness)
+            {
+                nextGraphType = _stateContoller.GetCurrStateGraphType();
+                representType = RepresentStateType.Blocked_Sliding;
+            }
+
+            //강인도는 충분한데 스테미나가 부족합니다.
+            else if (_myStat._currStamina < willUsingStamina &&
+                _myStat._currRoughness >= willUsingRoughness)
+            {
+                nextGraphType = _stateContoller.GetCurrStateGraphType();
+                representType = RepresentStateType.Blocked_Crash;
+            }
+
+            //연결된 상태들을 가져와봄
+            StateAsset nextStateAsseet = null;
+            List<LinkedStateAsset> linkedStates = _stateContoller.GetCurrStateGraph().GetGraphStates()[currState];
+            foreach (LinkedStateAsset linkedState in linkedStates)
+            {
+                if (linkedState._linkedState._myState._stateType == representType)
+                {
+                    nextStateAsseet = linkedState._linkedState;
+                    break;
+                }
+            }
+
+            //스테미나가 부족하고 강인도도 부족합니다. 혹은 연결상태가 존재하지 않습니다
+            if ((_myStat._currStamina < willUsingStamina && _myStat._currRoughness < willUsingRoughness) ||
+                nextStateAsseet == null)
+            {
+                //맞는 상태로 가긴 할건데
+                nextGraphType = StateGraphType.HitStateGraph;
+
+                int deltaRoughness = willUsingRoughness - _myStat._currRoughness;
+
+                if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
+                {
+                    representType = RepresentStateType.Hit_Lvl_0;
+                }
+                else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
+                {
+                    representType = RepresentStateType.Hit_Lvl_1;
+                }
+                else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
+                {
+                    representType = RepresentStateType.Hit_Lvl_2;
+                }
+            }
+        }
+        else
+        {
+            //맞는 상태로 가긴 할건데
+            nextGraphType = StateGraphType.HitStateGraph;
+
+            int deltaRoughness = willUsingRoughness - _myStat._currRoughness;
+
+            if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
+            {
+                representType = RepresentStateType.Hit_Lvl_0;
+            }
+            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
+            {
+                representType = RepresentStateType.Hit_Lvl_1;
+            }
+            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
+            {
+                representType = RepresentStateType.Hit_Lvl_2;
+            }
+        }
+
+        _stateContoller.TryChangeState(nextGraphType, representType);
     }
 }

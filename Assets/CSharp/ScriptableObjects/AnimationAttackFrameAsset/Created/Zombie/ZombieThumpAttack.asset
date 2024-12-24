@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7efbe4f951734ad4586c4f1c751faefd, type: 3}
+  m_Name: ZombieThumpAttack
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationAttackFrameDesc
+  _animation: {fileID: 7400000, guid: a81b4d48db61b05498395347039027d9, type: 2}
+  _frameDesc:
+  - _attachType: 1
+    _upFrame: 39
+    _underFrame: 47

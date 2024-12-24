@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6093c9ec13a0b014b93d5c1aefb6ffd7, type: 3}
+  m_Name: RifltAimedWalkSubStateMachine
+  m_EditorClassIdentifier: 
+  _calculateLogic: 0
+  _animations:
+  - {fileID: 7400000, guid: 889d1cfc9464fa746b59ee0b6cb83510, type: 2}
+  - {fileID: 7400000, guid: 8db6daed4c88ba64c8603b7fb88626f7, type: 2}
+  - {fileID: 7400000, guid: e270b9b3c05166c4eb7d28969caab50d, type: 2}
+  - {fileID: 7400000, guid: de0907a81dfd7db4d978104958b5d25a, type: 2}
+  - {fileID: 7400000, guid: 55f4db26ebbbfc84cb5e61eb99948ed3, type: 2}
+  - {fileID: 7400000, guid: 152760bf654e38841963d619995ecde8, type: 2}
+  - {fileID: 7400000, guid: 10c20433f9cc05149a70e6c5e7e56056, type: 2}
+  - {fileID: 7400000, guid: c8ed5ed9588d49f4dbd65366173500fd, type: 2}

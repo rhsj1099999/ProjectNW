@@ -163,11 +163,6 @@ public class Gunscript : MonoBehaviour
 
 
 
-    private void FixedUpdate()
-    {
-        
-    }
-
 
     void Update()
     {

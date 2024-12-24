@@ -8,6 +8,9 @@ using static State;
 using static UnityEngine.Rendering.DebugUI;
 using static StateGraphAsset;
 using static AnimationClipEditor;
+using System.Security.Policy;
+using Unity.Mathematics;
+using static MyUtil;
 
 public enum StateActionType
 {
@@ -30,6 +33,24 @@ public enum StateActionType
     AddCoroutine_ChangeToIdleState,
     AddCoroutine_StateChangeReady,
     CharacterRotate,
+    AI_CharacterRotateToEnemy,
+    AI_ChaseToEnemy,
+    AI_ForcedLookAtEnemy,
+    AI_ReArrangeStateGraph,
+    AI_UpdateAttackRange, //Chase의 경우, 달려가다가 원거리 공격이 가능하면 멀리서 멈춰서야한다.
+    Move_WithOutRotate,
+    LookAtLockOnTarget,
+    RotateToLockOnTarget,
+    RootMove_WithOutRotate,
+    CharacterRotateToCameraLook,
+    EnterGunAiming,
+    ExitGunAiming,
+
+    Move_WithOutRotate_Gun,
+    LookAtLockOnTarget_Gun,
+
+    AnimationAttack,
+    AttackLookAtLockOnTarget,
 }
 
 public enum ConditionType
@@ -51,6 +72,25 @@ public enum ConditionType
     AnimatorLayerNotBusy,
     ReturnFalse, //무조건 False를 반환합니다.
     EnterStatetimeThreshould,
+    AI_CheckEnemyInMySight,
+    AI_Check_I_CAN_ATTACK_MY_ENEMY,
+    AI_RandomChance,
+
+    AI_InAttackRange,   //상태의 사거리
+    AI_StateCoolTimeCheck, //상태 쿨타임
+    AI_EnemyDegreeRange, //각도편차
+
+    AI_EnemyIsExitst,
+    AI_ReadiedAttackExist, //하나라도 준비된 공격이 있나? 있으면 Chase 할거임. 준비는 됐는데 사거리가 짧은거니까
+    AI_ArriveInAttackRange,
+    AI_EnemyIsAttackState, //적이 공격중입니까
+    SameConditionDiveringChance,
+    AI_TryRandomChance, // n 퍼센트의 확률로 상태를 시도하려 합니다. 실패하면 락에 걸려, 상태가 바뀌기 전까지 시도할 수 없습니다.
+    AI_StateTimeThreshould, // n 퍼센트의 확률로 상태를 시도하려 합니다. 실패하면 락에 걸려, 상태가 바뀌기 전까지 시도할 수 없습니다.
+    
+    IsLockOnTarget, //락온을 한 상태입니다.
+
+    IsHoldingWeaponKey, //무기 사용키(왼클, 오른클)을 누르고 있습니다. 무기도 들고 있습니다.
 }
 
 
@@ -67,6 +107,7 @@ public enum RepresentStateType
     Guard_Lvl_0, //일반 가드
     Guard_Lvl_1, //앉아서 가드
     Guard_Lvl_2, //앉아서 가드 + 잠금
+
     Hit_Lvl_0, //움찔하는정도
     Hit_Lvl_1, //자세가 무너지고 휘청거림
     Hit_Lvl_2, //날라감
@@ -116,14 +157,39 @@ public class ConditionDesc
     public List<AnimatorLayerTypes> _mustNotBusyLayers;
     public int _mustNotBusyLayers_BitShift = 1;
     public float _enterStatetimeThreshould = 0.0f;
+    public int _randomChance = 1;
+    public float _degThreshould = 0.0f;
 }
+
+
+
+[Serializable]
+public class AIStateDesc
+{
+    public float _coolTime = -1.0f;
+    public float _randomChancePercentage = -1.0f;
+    public float _stateTimeThreshould = -1.0f;
+}
+
+
+
+[Serializable]
+public class AIAttackStateDesc
+{
+    public float _coolTime = -1.0f;
+    public float _range = -1.0f;
+    public DamageDesc _baseDamageDesc = new DamageDesc();
+}
+
+
+
+
 
 [Serializable]
 public class StateDesc
 {
     public RepresentStateType _stateType = RepresentStateType.End;
 
-    public string _stataName;
     public AnimationClip _stateAnimationClip = null;
     public bool _rightWeaponOverride = true;
     public bool _leftWeaponOverride = true;
@@ -137,6 +203,15 @@ public class StateDesc
     ------------------------------------------------------------------------------*/
     public bool _isBlockState = false; //가드상태입니다.
 
+
+    public bool _isAIAttackState = false;
+    public bool _isAIState = false;
+
+
+    public AIStateDesc _aiStateDesc = null;
+    public AIAttackStateDesc _aiAttackStateDesc = null;
+
+
     public List<StateActionType> _EnterStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _inStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _ExitStateActionTypes = new List<StateActionType>();
@@ -144,6 +219,12 @@ public class StateDesc
     public List<AdditionalBehaveType> _checkingBehaves = new List<AdditionalBehaveType>();
 
     public List<ConditionDesc> _breakLoopStateCondition = null;
+    public bool _isSubBlendTreeExist = false;
+    public SubBlendTreeAsset_2D _subBlendTree = null;
+
+    public bool _isSubAnimationStateMachineExist = false;
+    public SubAnimationStateMachine _subAnimationStateMachine = null;
+
     //public List<AnimationClip> _bsAnimations = null; //선딜 애니메이션
     //public List<AnimationClip> _asAnimations = null; //후딜 애니메이션
     //public AnimationClip _endStateIdleException = null; //상태의 애니메이션이 끝날때 예외 애니메이션
@@ -176,8 +257,11 @@ public class StateContoller : MonoBehaviour
         public InputController _ownerInputController = null;
         public CharacterMoveScript2 _ownerMoveScript = null;
         public CharacterController _ownerCharacterComponent = null;
-
         public CharacterAnimatorScript _ownerCharacterAnimatorScript = null;
+        public AINavigationScript _ownerNavigationScript = null;
+        public EnemyAIScript _ownerEnemyAIScript = null;
+        public AimScript2 _ownerAimScript = null;
+        public CharacterColliderScript _ownerCharacterColliderScript = null;
     }
 
     public class StateActionCoroutineWrapper
@@ -195,16 +279,23 @@ public class StateContoller : MonoBehaviour
             _goalType = goalType;
             _linkedState = linkedStateAsset;
             _additionalCondition = additionalCondition;
+            _hardness = CalculateConditionWeight(_linkedState._conditionAsset);
+
+            if (_additionalCondition != null)
+            {
+                _hardness += CalculateConditionWeight(additionalCondition);
+            }
         }
 
         public StateGraphType _fromType = StateGraphType.End;
         public StateGraphType _goalType = StateGraphType.End;
         public LinkedStateAsset _linkedState = null;
         public List<ConditionAssetWrapper> _additionalCondition = null;
+        public int _hardness = -1;
     }
 
-
-    private StateAsset _currState;
+    private StateAsset _currState = null;
+    private StateAsset _prevState = null;
     public StateAsset GetCurrState() { return _currState; }
 
     [SerializeField] private float _stateChangeTime = 0.085f;
@@ -213,16 +304,40 @@ public class StateContoller : MonoBehaviour
     [SerializeField] private List<StateGraphAsset> _initialStateGraphes = new List<StateGraphAsset>();
     private List<StateGraphAsset> _stateGraphes = new List<StateGraphAsset>();
     private StateGraphType _currentGraphType = StateGraphType.LocoStateGraph;
+    private StateGraphType _previousGraphType = StateGraphType.LocoStateGraph;
     public StateGraphType GetCurrStateGraphType() { return _currentGraphType; }
     public StateGraphAsset GetCurrStateGraph() { return _stateGraphes[(int)_currentGraphType]; }
+    public List<StateGraphAsset> GetStateGraphes() { return _stateGraphes; }
 
     private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
-
 
     private float _currStateTime = 0.0f;
     private float _prevStateTime = 0.0f;
     private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
     List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
+
+
+    private int _randomStateInstructIndex = -1;
+    private int _randomStateTryCount = 0;
+    private HashSet<StateAsset> _failedRandomChanceState = new HashSet<StateAsset>();
+    public void AddFailedRandomChanceState(StateAsset stateAsset)
+    {
+        _failedRandomChanceState.Add(stateAsset);
+    }
+    public bool FindFailedRandomChanceState(StateAsset stateAsset)
+    {
+        return _failedRandomChanceState.Contains(stateAsset);
+    }
+    public void ClearFailedRandomChanceState()
+    {
+        _failedRandomChanceState.Clear();
+    }
+
+
+    //---CoroutineTimer ...
+    /*---------------------------------------
+    |TODO| 없애는 구조를 한번 생각해볼것
+    ---------------------------------------*/
 
 
 
@@ -234,9 +349,15 @@ public class StateContoller : MonoBehaviour
 
     private void Awake()
     {
-        CharacterScript playerScript = GetComponent<CharacterScript>();
+        CharacterScript characterScript = GetComponent<CharacterScript>();
 
-        _ownerStateControllingComponent._owner = playerScript;
+        _ownerStateControllingComponent._owner = characterScript;
+
+        if (_ownerStateControllingComponent._owner == null)
+        {
+            Debug.Assert(false, "이 컴포넌트는 CharacterScript를 반드시 필요로 합니다");
+            Debug.Break();
+        }
 
         for (int i = 0; i < (int)StateGraphType.End; i++)
         {
@@ -273,6 +394,8 @@ public class StateContoller : MonoBehaviour
         {
             _stateActionCoroutines.Add(null);
         }
+
+        _ownerStateControllingComponent._ownerCharacterAnimatorScript = _ownerStateControllingComponent._owner.gameObject.GetComponent<CharacterAnimatorScript>();
     }
 
     protected virtual void Start()
@@ -280,7 +403,6 @@ public class StateContoller : MonoBehaviour
         ReadyLinkedStates(StateGraphType.LocoStateGraph, GetMyIdleStateAsset(), true);
         ChangeState(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState);
     }
-
 
     public void TryChangeState(StateGraphType graphType, RepresentStateType representType)
     {
@@ -299,6 +421,8 @@ public class StateContoller : MonoBehaviour
         }
 
         ChangeState(graphType, targetAsset);
+
+        ReadyLinkedStates(graphType, targetAsset, true);
     }
 
     public void TryChangeState(StateGraphType graphType, StateAsset targetAsset)
@@ -319,32 +443,105 @@ public class StateContoller : MonoBehaviour
         _currStateTime = 0.0f;
         _prevStateTime = 0.0f;
         StopAllCoroutines();
+        _failedRandomChanceState.Clear();
     }
 
     private void ChangeState(StateGraphType nextGraphType, StateAsset nextState)
     {
         StatedWillBeChanged();
 
-        Debug.Log("State Changed : " + nextState._myState._stataName);
+        if (gameObject.name == "PlayerCharacter3")
+        {
+            Debug.Log("State Changed : " + nextState.name);
+        }
 
         if (_currState != null)
         {
             DoActions(_currState._myState._ExitStateActionTypes);
         }
 
+        _prevState = _currState;
+        _previousGraphType = _currentGraphType;
+
         _currentGraphType = nextGraphType;
+
+
+
+
         _currState = nextState;
 
-        ReadyLinkedStates(_currentGraphType, _currState, true);
+        _randomStateInstructIndex = -1;
+        _randomStateTryCount = 0;
+        _failedRandomChanceState.Clear();
+        
 
         _ownerStateControllingComponent._owner.StateChanged(_currState);
 
         AllStopCoroutine();
 
+        if (_currentGraphType == StateGraphType.WeaponState_RightGraph)
+        {
+            _ownerStateControllingComponent._owner.SetLatestWeaponUse(true);
+        }
+        else if (_currentGraphType == StateGraphType.WeaponState_LeftGraph)
+        {
+            _ownerStateControllingComponent._owner.SetLatestWeaponUse(false);
+        }
+
         DoActions(_currState._myState._EnterStateActionTypes);
     }
 
 
+
+    public int SubAnimationStateIndex(StateAsset nextState)
+    {
+        SubAnimationStateMachine.CalculateLogic logic = nextState._myState._subAnimationStateMachine._calculateLogic;
+
+        int ret = -1;
+
+        switch (logic)
+        {
+            case SubAnimationStateMachine.CalculateLogic.MoveDesiredDirection:
+                {
+                    Vector3 moveDesiredDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
+                    float angle = Vector3.Angle(Vector3.forward, moveDesiredDir);
+
+                    if (angle <= 0.0f)
+                    {
+                        ret = 0;
+                        break;
+                    }
+
+                    angle /= 45.0f;
+                    ret = (int)angle;
+
+                    bool isOverPlane = (Vector3.Cross(Vector3.forward, moveDesiredDir).y < 0.0f);
+
+                    if (isOverPlane == true)
+                    {
+                        ret = 8 - ret;
+                    }
+
+                    if (_ownerStateControllingComponent._ownerAnimator.GetBool("IsMirroring") == true)
+                    {
+                        ret = 8 - ret;
+                    }
+                }
+                
+
+
+                break;
+
+            default:
+                {
+                    Debug.Assert(false, "데이터가 추가됐습니까?");
+                    Debug.Break();
+                }
+                break;
+        }
+
+        return ret;
+    }
 
     private void ReadyLinkedStates(StateGraphType currentGraphType, StateAsset currState, bool isClear)
     {
@@ -354,44 +551,53 @@ public class StateContoller : MonoBehaviour
         }
 
         //Interaction Point를 먼저 검사해야하기 때문에 먼저 담는다.
-        StateGraphAsset currentGraphAsset = _stateGraphes[(int)currentGraphType];
-
-        Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> currentInteractionPoints = currentGraphAsset.GetInteractionPoints();
-
-        foreach (KeyValuePair<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> pair in currentInteractionPoints)
         {
-            int keyIndex = (int)pair.Key;
+            StateGraphAsset currentGraphAsset = _stateGraphes[(int)currentGraphType];
 
-            if (_stateGraphes[keyIndex] == null)
+            Dictionary<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> currentInteractionPoints = currentGraphAsset.GetInteractionPoints();
+
+            foreach (KeyValuePair<StateGraphType, Dictionary<StateAsset, List<ConditionAssetWrapper>>> pair in currentInteractionPoints)
             {
-                continue;
-            }
+                int keyIndex = (int)pair.Key;
 
-            Dictionary<StateAsset, List<ConditionAssetWrapper>> interactionState = pair.Value;
-
-            foreach (LinkedStateAsset entryStates in _stateGraphes[keyIndex].GetEntryStates())
-            {
-                if (interactionState.ContainsKey(currState) == false)
+                if (_stateGraphes[keyIndex] == null)
                 {
                     continue;
                 }
 
-                List<ConditionAssetWrapper> additionalCondition = null;
+                Dictionary<StateAsset, List<ConditionAssetWrapper>> interactionState = pair.Value;
 
-                if (interactionState.ContainsKey(currState) == true)
+                foreach (LinkedStateAsset entryStates in _stateGraphes[keyIndex].GetEntryStates())
                 {
-                    additionalCondition = interactionState[currState];
-                }
+                    if (interactionState.ContainsKey(currState) == false)
+                    {
+                        continue;
+                    }
 
-                _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, pair.Key, entryStates, additionalCondition));
+                    List<ConditionAssetWrapper> additionalCondition = null;
+
+                    if (interactionState.ContainsKey(currState) == true)
+                    {
+                        additionalCondition = interactionState[currState];
+                    }
+
+                    _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, pair.Key, entryStates, additionalCondition));
+                }
             }
         }
 
-        //InGraphState를 담는다
-        List<LinkedStateAsset> linkedStates = _stateGraphes[(int)currentGraphType].GetGraphStates()[currState];
-        foreach (var linkedState in linkedStates)
+        //담고나서 어려운순서로 정렬
         {
-            _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, currentGraphType, linkedState, null));
+            _currLinkedStates.Sort((a, b) => b._hardness.CompareTo(a._hardness));
+        }
+
+        //InGraphState를 담는다
+        {
+            List<LinkedStateAsset> linkedStates = _stateGraphes[(int)currentGraphType].GetGraphStates()[currState];
+            foreach (var linkedState in linkedStates)
+            {
+                _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, currentGraphType, linkedState, null));
+            }
         }
     }
 
@@ -408,7 +614,6 @@ public class StateContoller : MonoBehaviour
         bool isStateChangeGuaranted = false;
         bool isSuccess = false;
 
-
         while (true)
         {
             if (successCount > 100)
@@ -416,6 +621,11 @@ public class StateContoller : MonoBehaviour
                 Debug.Assert(false, "상태가 계속 바뀌려합니다");
                 Debug.Break();
                 return null;
+            }
+
+            if (_currLinkedStates.Count <= 0)
+            {
+                isSuccess = false;
             }
 
             foreach (LinkedStateAssetWrapper linkedStateAssetWrapper in _currLinkedStates)
@@ -430,7 +640,7 @@ public class StateContoller : MonoBehaviour
 
                 foreach (ConditionAssetWrapper conditionAssetWrapper in conditionAssetWrappers)
                 {
-                    if (CheckCondition(targetState, conditionAssetWrapper, isRightSided) == false)
+                    if (CheckCondition(targetState, linkedStateAssetWrapper, conditionAssetWrapper, isRightSided) == false)
                     {
                         isSuccess = false;
                         break;
@@ -438,11 +648,12 @@ public class StateContoller : MonoBehaviour
                 }
 
                 if (linkedStateAssetWrapper._additionalCondition != null &&
-                    linkedStateAssetWrapper._additionalCondition.Count > 0)
+                    linkedStateAssetWrapper._additionalCondition.Count > 0 &&
+                    isSuccess == true)
                 {
                     foreach (ConditionAssetWrapper conditionAssetWrapper in linkedStateAssetWrapper._additionalCondition)
                     {
-                        if (CheckCondition(targetState, conditionAssetWrapper, isRightSided) == false)
+                        if (CheckCondition(targetState, linkedStateAssetWrapper, conditionAssetWrapper, isRightSided) == false)
                         {
                             isSuccess = false;
                             break;
@@ -453,7 +664,6 @@ public class StateContoller : MonoBehaviour
 
                 if (isSuccess == true)
                 {
-
                     if (isStateChangeGuaranted == false)
                     {
                         StatedWillBeChanged();
@@ -479,7 +689,8 @@ public class StateContoller : MonoBehaviour
             break;
         }
 
-        if (targetState == _currState)
+        if (targetState == _currState &&
+            successCount <= 0)
         {
             return null;
         }
@@ -497,12 +708,21 @@ public class StateContoller : MonoBehaviour
 
         StateAsset nextState = CheckChangeState_Recursion2(out nextGraphType);
 
+
+
         if (nextState != null)
         {
             ChangeState(nextGraphType, nextState);
         }
 
         DoActions(_currState._myState._inStateActionTypes);
+
+        AIAttackStateDesc aiAttackStateDesc = _currState._myState._aiAttackStateDesc;
+        if (aiAttackStateDesc != null &&
+            aiAttackStateDesc._coolTime >= 0.0f)
+        {
+            _ownerStateControllingComponent._ownerEnemyAIScript.AddCoolTimeCoroutine(_currState);
+        }
 
         _prevStateTime = _currStateTime;
         _currStateTime += Time.deltaTime;
@@ -534,8 +754,10 @@ public class StateContoller : MonoBehaviour
             {
                 case StateActionType.Move:
                     {
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(_ownerStateControllingComponent._ownerInputController._pr_directionByInput, 1.0f);
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterMove(_ownerStateControllingComponent._ownerInputController._pr_directionByInput, 1.0f);
+                        Vector3 characterInputDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
+                        characterInputDir = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(characterInputDir);
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(characterInputDir, 1.0f);
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterMove(characterInputDir, 1.0f);
                     }
                     break;
 
@@ -567,7 +789,13 @@ public class StateContoller : MonoBehaviour
                         float currentSecond = MyUtil.FloatMod(_currStateTime, _currState._myState._stateAnimationClip.length);
                         float prevSecond = MyUtil.FloatMod(_prevStateTime, _currState._myState._stateAnimationClip.length);
 
-                        AnimationHipCurve animationHipCurve = ResourceDataManager.Instance.GetHipCurve(_currState._myState._stateAnimationClip);
+
+                        AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true) 
+                            ?_ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrAnimationClip()
+                            :_currState._myState._stateAnimationClip;
+
+
+                        AnimationHipCurve animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
 
                         Vector3 currentUnityLocalHip = new Vector3
                         (
@@ -674,7 +902,313 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.CharacterRotate:
                     {
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(_ownerStateControllingComponent._ownerInputController._pr_directionByInput, 1.0f);
+                        Vector3 characterInputDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
+                        characterInputDir = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(characterInputDir);
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(characterInputDir, 1.0f);
+                    }
+                    break;
+
+                case StateActionType.AI_CharacterRotateToEnemy:
+                    {
+                        Vector3 enemyPosition = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy().gameObject.transform.position;
+                        Vector3 myPosition = transform.position;
+                        Vector3 toEnemyDir = (enemyPosition - myPosition).normalized;
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(toEnemyDir, 1.0f);
+                    }
+                    break;
+
+                case StateActionType.AI_ChaseToEnemy:
+                    {
+                        Vector3 myPosition = _ownerStateControllingComponent._owner.gameObject.transform.position;
+                        Vector3 enemyPosition = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy().gameObject.transform.position;
+                        Vector3 toEnemyPosition = (enemyPosition - myPosition).normalized;
+
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(toEnemyPosition, 1.0f);
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterMove(toEnemyPosition, 1.0f);
+                    }
+                    break;
+
+                case StateActionType.AI_ForcedLookAtEnemy:
+                    {
+                        Vector3 myPosition = _ownerStateControllingComponent._owner.gameObject.transform.position;
+                        Vector3 enemyPosition = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy().gameObject.transform.position;
+                        Vector3 dirToEnemy = (enemyPosition - myPosition).normalized;
+
+                        _ownerStateControllingComponent._owner.gameObject.transform.LookAt(dirToEnemy + myPosition);
+                    }
+                    break;
+
+                case StateActionType.AI_ReArrangeStateGraph:
+                    {
+                        EnemyAIScript aiScript = _ownerStateControllingComponent._ownerEnemyAIScript;
+                        aiScript.ReArrangeStateGraph(_currLinkedStates, this, _currState);
+                    }
+                    break;
+
+                case StateActionType.AI_UpdateAttackRange:
+                    {
+                        EnemyAIScript ownerEnemyAIScript = _ownerStateControllingComponent._ownerEnemyAIScript;
+                        StateGraphAsset aggressiveStateAsset = _stateGraphes[(int)StateGraphType.AI_AggresiveGraph];
+                        if (aggressiveStateAsset == null)
+                        {
+                            Debug.Assert(false, "AI_UpdateAttackRange행동에는 반드시 Aggressive StateGraph가 있어야 합니다");
+                            Debug.Break();
+                            return;
+                        }
+                        ownerEnemyAIScript.UpdateChasingDistance(ref aggressiveStateAsset);
+                    }
+                    break;
+
+                case StateActionType.Move_WithOutRotate:
+                    {
+                        Vector3 characterInputDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
+                        characterInputDir = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(characterInputDir);
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterMove_NoSimilarity(characterInputDir, 1.0f);
+                    }
+                    break;
+
+
+                case StateActionType.LookAtLockOnTarget:
+                    {
+                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+
+                        if (ownerAimScript.GetLockOnObject() == null)
+                        {
+                            continue;
+                        }
+
+                        Vector3 targetPosition = ownerAimScript.GetLockOnObject().transform.position;
+                        Vector3 ownerPosition = gameObject.transform.position;
+                        Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
+                        ownerToTargetPlaneVector.y = 0.0f;
+                        ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
+                        gameObject.transform.LookAt(ownerToTargetPlaneVector + ownerPosition);
+                    }
+                    break;
+
+                case StateActionType.RotateToLockOnTarget:
+                    {
+                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                        Vector3 targetPosition = ownerAimScript.GetLockOnObject().transform.position;
+                        Vector3 ownerPosition = gameObject.transform.position;
+                        Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
+                        ownerToTargetPlaneVector.y = 0.0f;
+                        ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
+
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(ownerToTargetPlaneVector);
+                    }
+                    break;
+
+                case StateActionType.RootMove_WithOutRotate:
+                    {
+                        float currentSecond = MyUtil.FloatMod(_currStateTime, _currState._myState._stateAnimationClip.length);
+                        float prevSecond = MyUtil.FloatMod(_prevStateTime, _currState._myState._stateAnimationClip.length);
+
+
+                        AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true)
+                            ? _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrAnimationClip()
+                            : _currState._myState._stateAnimationClip;
+
+
+                        AnimationHipCurve animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
+
+                        Vector3 currentUnityLocalHip = new Vector3
+                        (
+                            animationHipCurve._animationHipCurveX.Evaluate(currentSecond),
+                            animationHipCurve._animationHipCurveY.Evaluate(currentSecond),
+                            animationHipCurve._animationHipCurveZ.Evaluate(currentSecond)
+                        );
+
+                        if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
+                        {
+                            prevSecond = 0.0f;
+                        }
+
+                        Vector3 prevUnityLocalHip = new Vector3
+                        (
+                            animationHipCurve._animationHipCurveX.Evaluate(prevSecond),
+                            animationHipCurve._animationHipCurveY.Evaluate(prevSecond),
+                            animationHipCurve._animationHipCurveZ.Evaluate(prevSecond)
+                        );
+
+                        Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
+
+                        Vector3 worldDelta = _ownerStateControllingComponent._ownerCharacterComponent.transform.localToWorldMatrix * deltaLocalHip;
+
+                        //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
+                        {
+                            Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition;
+                            modelLocalPosition.y = worldDelta.y;
+                            _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition = modelLocalPosition;
+                        }
+
+                        worldDelta.y = 0.0f;
+                        _ownerStateControllingComponent._ownerCharacterComponent.Move(worldDelta);
+                    }
+                    break;
+
+                case StateActionType.CharacterRotateToCameraLook:
+                    {
+                        Vector3 cameraLook = Camera.main.transform.forward;
+                        cameraLook.y = 0.0f;
+                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(cameraLook.normalized, 1.0f);
+                    }
+                    break;
+
+                case StateActionType.EnterGunAiming:
+                    {
+                        bool isRightWeapon = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
+
+                        if (isRightWeapon == true)
+                        {
+                            _ownerStateControllingComponent._owner._isRightWeaponAimed = true;
+                        }
+                        else
+                        {
+                            _ownerStateControllingComponent._owner._isLeftWeaponAimed = true;
+                        }
+                    }
+                    break;
+
+                case StateActionType.ExitGunAiming:
+                    {
+                        bool isRightWeapon = (_currentGraphType == StateGraphType.WeaponState_RightGraph);
+
+                        if (isRightWeapon == true)
+                        {
+                            _ownerStateControllingComponent._owner._isRightWeaponAimed = false;
+                        }
+                        else
+                        {
+                            _ownerStateControllingComponent._owner._isLeftWeaponAimed = false;
+                        }
+                    }
+                    break;
+
+                case StateActionType.Move_WithOutRotate_Gun:
+                    {
+                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                        GameObject lockOnTarget = ownerAimScript.GetLockOnObject();
+
+                        if (lockOnTarget == null)
+                        {
+                            float currentSecond = MyUtil.FloatMod(_currStateTime, _currState._myState._stateAnimationClip.length);
+                            float prevSecond = MyUtil.FloatMod(_prevStateTime, _currState._myState._stateAnimationClip.length);
+
+
+                            AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true)
+                                ? _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrAnimationClip()
+                                : _currState._myState._stateAnimationClip;
+
+
+                            AnimationHipCurve animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
+
+                            Vector3 currentUnityLocalHip = new Vector3
+                            (
+                                animationHipCurve._animationHipCurveX.Evaluate(currentSecond),
+                                animationHipCurve._animationHipCurveY.Evaluate(currentSecond),
+                                animationHipCurve._animationHipCurveZ.Evaluate(currentSecond)
+                            );
+
+                            if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
+                            {
+                                prevSecond = 0.0f;
+                            }
+
+                            Vector3 prevUnityLocalHip = new Vector3
+                            (
+                                animationHipCurve._animationHipCurveX.Evaluate(prevSecond),
+                                animationHipCurve._animationHipCurveY.Evaluate(prevSecond),
+                                animationHipCurve._animationHipCurveZ.Evaluate(prevSecond)
+                            );
+
+                            Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
+
+                            Vector3 worldDelta = _ownerStateControllingComponent._ownerCharacterComponent.transform.localToWorldMatrix * deltaLocalHip;
+
+                            //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
+                            {
+                                Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition;
+                                modelLocalPosition.y = worldDelta.y;
+                                _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition = modelLocalPosition;
+                            }
+
+                            worldDelta.y = 0.0f;
+                            _ownerStateControllingComponent._ownerCharacterComponent.Move(worldDelta);
+                        }
+                        else 
+                        {
+                            Vector3 characterInputDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
+                            characterInputDir = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(characterInputDir);
+                            _ownerStateControllingComponent._ownerMoveScript.CharacterMove_NoSimilarity(characterInputDir, 1.0f);
+                        }
+                    }
+                    break;
+
+                case StateActionType.LookAtLockOnTarget_Gun:
+                    {
+                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                        GameObject lockOnTarget = ownerAimScript.GetLockOnObject();
+
+                        if (lockOnTarget == null)
+                        {
+                            Vector3 cameraLook = Camera.main.transform.forward;
+                            cameraLook.y = 0.0f;
+                            _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(cameraLook.normalized, 1.0f);
+                        }
+                        else
+                        {
+                            Vector3 targetPosition = ownerAimScript.GetLockOnObject().transform.position;
+                            Vector3 ownerPosition = gameObject.transform.position;
+                            Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
+                            ownerToTargetPlaneVector.y = 0.0f;
+                            ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
+                            gameObject.transform.LookAt(ownerToTargetPlaneVector + ownerPosition);
+                        }
+                    }
+                    break;
+
+                case StateActionType.AnimationAttack:
+                    {
+                        if (gameObject.name == "Zombie")
+                        {
+                            int a = 10;
+
+                        }
+                        List<AnimationAttackFrameAsset.AttackFrameDesc> frameDesc = 
+                        AnimationAttackManager.Instance.GetAttackFrameDesc(_currState._myState._stateAnimationClip);
+
+                        if (frameDesc == null)
+                        {
+                            Debug.Log("frameData 가 없다!"); //좆된거임
+                        }
+                        else
+                        {
+                            Debug.Log("frameData 가 있다!");
+                            _ownerStateControllingComponent._ownerCharacterColliderScript.ColliderWork(frameDesc, _currState);
+                        }
+                    }
+                    break;
+
+                case StateActionType.AttackLookAtLockOnTarget:
+                    {
+                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                        GameObject lockOnTarget = ownerAimScript.GetLockOnObject();
+
+                        if (lockOnTarget == null)
+                        {
+                            Vector3 convertedDirection = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(_ownerStateControllingComponent._ownerInputController._pr_directionByInput);
+                            gameObject.transform.LookAt(gameObject.transform.position + convertedDirection);
+                        }
+                        else
+                        {
+                            Vector3 targetPosition = ownerAimScript.GetLockOnObject().transform.position;
+                            Vector3 ownerPosition = gameObject.transform.position;
+                            Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
+                            ownerToTargetPlaneVector.y = 0.0f;
+                            ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
+                            gameObject.transform.LookAt(ownerToTargetPlaneVector + ownerPosition);
+                        }
                     }
                     break;
 
@@ -684,6 +1218,7 @@ public class StateContoller : MonoBehaviour
             }
         }
     }
+
 
     private void AllStopCoroutine()
     {
@@ -781,7 +1316,12 @@ public class StateContoller : MonoBehaviour
 
 
 
-    public bool CheckCondition(StateAsset stateAsset, ConditionAssetWrapper conditionAssetWrapper, bool isRightSided)
+
+
+
+
+
+    public bool CheckCondition(StateAsset currstateAsset, LinkedStateAssetWrapper nextStateAsset, ConditionAssetWrapper conditionAssetWrapper, bool isRightSided)
     {
         bool ret = false;
         bool forcedValue = false;
@@ -808,7 +1348,7 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AnimationEnd:
                 {
-                    float animationLength = stateAsset._myState._stateAnimationClip.length;
+                    float animationLength = currstateAsset._myState._stateAnimationClip.length;
                     if (animationLength - Time.deltaTime < _currStateTime)
                     {
                         ret = true;
@@ -867,7 +1407,7 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AnimationFrame:
                 {
-                    StateDesc currStateDesc = stateAsset._myState;
+                    StateDesc currStateDesc = currstateAsset._myState;
 
                     FrameData stateAnimFrameData = ResourceDataManager.Instance.GetAnimationFrameData(currStateDesc._stateAnimationClip, conditionDesc._animationFrameDataType);
 
@@ -942,6 +1482,405 @@ public class StateContoller : MonoBehaviour
                 }
                 break;
 
+            case ConditionType.AI_CheckEnemyInMySight:
+                {
+                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                    {
+                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.GetComponent<EnemyAIScript>();
+                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                        {
+                            Debug.Assert(false, "AICheckEnemyInMySight 조건에 필요한 컴포넌트가 없습니다");
+                            Debug.Break();
+                            ret = false;
+                        }
+                    }
+
+                    forcedValue = true;
+
+                    ret = _ownerStateControllingComponent._ownerEnemyAIScript.InBattleCheck();
+                }
+                break;
+
+            case ConditionType.AI_Check_I_CAN_ATTACK_MY_ENEMY:
+                {
+                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                    {
+                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.GetComponent<EnemyAIScript>();
+                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                        {
+                            Debug.Assert(false, "AICheckEnemyInMySight 조건에 필요한 컴포넌트가 없습니다");
+                            Debug.Break();
+                            ret = false;
+                        }
+                    }
+
+                    forcedValue = true;
+
+                    //ret = _ownerStateControllingComponent._ownerEnemyAIScript.InAttackRangeCheck(_currLinkedStates);
+                    ret = _ownerStateControllingComponent._ownerEnemyAIScript.InAttackRangeCheck(nextStateAsset._linkedState._linkedState);
+                }
+                break;
+
+            case ConditionType.AI_RandomChance:
+                {
+                    forcedValue = true;
+
+                    if (conditionDesc._randomChance <= 0)
+                    {
+                        Debug.Assert(false, "Random 확률의 분모는 1 이상이여야합니다");
+                        Debug.Break();
+                    }
+
+                    if (conditionDesc._randomChance == 1)
+                    {
+                        ret = true;
+                        break;
+                    }
+
+                    System.Random random = new System.Random();
+                    int randomNumber = random.Next(1, conditionDesc._randomChance + 1);
+
+                    if (randomNumber == conditionDesc._randomChance)
+                    {
+                        ret = true;
+                    }
+                }
+                break;
+
+            case ConditionType.AI_InAttackRange:
+                {
+                    forcedValue = true;
+                    CharacterScript enemyScript = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy();
+
+                    if (enemyScript == null) 
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    Vector3 enemyPosition = enemyScript.gameObject.transform.position;
+                    Vector3 myPosition = gameObject.transform.position;
+                    Vector3 distanceVector = enemyPosition - myPosition;
+
+                    if (_ownerStateControllingComponent._ownerCharacterComponent == null)
+                    {
+                        //한번은 찾아본다.
+                        _ownerStateControllingComponent._ownerCharacterComponent = gameObject.GetComponentInChildren<CharacterController>();
+
+                        if (_ownerStateControllingComponent._ownerCharacterComponent == null)
+                        {
+                            Debug.Assert(false, "해당 조건에는 CharacterController가 있어야합니다");
+                            Debug.Break();
+                            ret = false;
+                            break;
+                        }
+                    }
+
+                    float characterHeight = _ownerStateControllingComponent._ownerCharacterComponent.height;
+
+                    if (Mathf.Abs(distanceVector.y) >= characterHeight / 2.0f)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    Vector2 planeDistanceVector = new Vector2(distanceVector.x, distanceVector.z);
+
+                    float planeDistance = planeDistanceVector.magnitude;
+
+                    float attackRange = _ownerStateControllingComponent._ownerEnemyAIScript.GetBaseMeleeAttackRange();
+
+                    if (planeDistance >= attackRange)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    ret = true;
+                }
+                break;
+
+            case ConditionType.AI_StateCoolTimeCheck:
+                {
+                    EnemyAIScript ownerEnemyAIScript = _ownerStateControllingComponent._ownerEnemyAIScript;
+                    ret = ownerEnemyAIScript.FindCoolTimeCoroutine(nextStateAsset._linkedState._linkedState);
+                }
+                break;
+
+            case ConditionType.AI_EnemyDegreeRange:
+                {
+                    Vector3 myPosition = gameObject.transform.position;
+                    Vector3 enemyPosition = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy().transform.position;
+                    Vector3 direction = enemyPosition - myPosition;
+                    direction.y = 0.0f;
+                    float betweenDeg = Vector3.Angle(direction.normalized, gameObject.transform.forward.normalized);
+
+                    if (betweenDeg >= conditionDesc._degThreshould)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    ret = true;
+                }
+                break;
+
+            case ConditionType.AI_EnemyIsExitst:
+                {
+                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                    {
+                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.gameObject.GetComponentInChildren<EnemyAIScript>();
+
+                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                        {
+                            Debug.Assert(false, "EnemyAIScript가 없습니다");
+                            Debug.Break();
+                            ret = false;
+                        }
+                    }
+
+                    ret = (_ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy() != null);
+                }
+                break;
+
+            case ConditionType.AI_ReadiedAttackExist:
+                {
+                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                    {
+                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.gameObject.GetComponentInChildren<EnemyAIScript>();
+
+                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                        {
+                            Debug.Assert(false, "EnemyAIScript가 없습니다");
+                            Debug.Break();
+                            ret = false;
+                        }
+                    }
+
+                    StateGraphAsset aiAggressiveStateGraphAsset = _stateGraphes[(int)StateGraphType.AI_AggresiveGraph];
+
+                    if (aiAggressiveStateGraphAsset == null)
+                    {
+                        Debug.Assert(false, "AI_ReadiedAttackExist 조건에는 반드시 Aggressive Graph 에셋이 필요합니다");
+                        Debug.Break();
+                        return false;
+                    }
+
+                    ret = _ownerStateControllingComponent._ownerEnemyAIScript.IsAnyAttackReadied(ref aiAggressiveStateGraphAsset);
+                }
+                break;
+
+            case ConditionType.AI_ArriveInAttackRange:
+                {
+                    forcedValue = true;
+
+                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                    {
+                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.gameObject.GetComponentInChildren<EnemyAIScript>();
+
+                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                        {
+                            Debug.Assert(false, "EnemyAIScript가 없습니다");
+                            Debug.Break();
+                            ret = false;
+                        }
+                    }
+                    
+                    ret = _ownerStateControllingComponent._ownerEnemyAIScript.IsInAttackRange(_ownerStateControllingComponent._ownerCharacterComponent);
+                }
+                break;
+
+            case ConditionType.AI_EnemyIsAttackState:
+                {
+                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                    {
+                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.gameObject.GetComponentInChildren<EnemyAIScript>();
+
+                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
+                        {
+                            Debug.Assert(false, "AI_EnemyIsAttackState 조건에 EnemyAIScript가 없습니다");
+                            Debug.Break();
+                            ret = false;
+                        }
+                    }
+
+                    CharacterScript enemyCharacterScript = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy();
+                    if (enemyCharacterScript == null)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    StateContoller enemyStateController = enemyCharacterScript.GetStateContoller();
+                    if (enemyStateController == null)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    if (enemyStateController.GetCurrState()._myState._isAttackState == true)
+                    {
+                        ret = true;
+                        break;
+                    }
+
+                    ret = false;
+                }
+                break;
+
+            case ConditionType.SameConditionDiveringChance:
+                {
+                    if (_randomStateInstructIndex < 0)
+                    {
+                        //최근에 상태가 바뀐적이 있고, 랜덤을 계산한적이 없다 = 음수다
+                        
+                        int maxCount = 0;
+                        //Interaction Point를 제외한 연결 상태들의 개수를 파악한다
+                        foreach (LinkedStateAssetWrapper linkedStateAssetWrapper in _currLinkedStates)
+                        {
+                            if (linkedStateAssetWrapper._goalType == linkedStateAssetWrapper._fromType)
+                            {
+                                maxCount++;
+                            }
+                        }
+
+                        //난수를 생성한다
+                        _randomStateInstructIndex = UnityEngine.Random.Range(0, maxCount);
+                    }
+
+                    if (_randomStateTryCount > _randomStateInstructIndex)
+                    {
+                        //여러개중 하나는 반드시 성공해야 합니다
+                        Debug.Assert(false, "무작위 적중 로직이 이상합니다");
+                        Debug.Break();
+                        return false;
+                    }
+
+                    ret = (_randomStateTryCount == _randomStateInstructIndex);
+
+                    if (ret == false)
+                    {
+                        _randomStateTryCount++;
+                    }
+                }
+                break;
+
+            case ConditionType.AI_TryRandomChance:
+                {
+                    float randomValue = UnityEngine.Random.Range(0.0f, 100.0f); // 0.0f ~ 100.0f 범위의 float 생성
+
+                    if (nextStateAsset._linkedState._linkedState._myState._isAIState == false)
+                    {
+                        Debug.Assert(false, "AI_TryRandomChance 조건인데 해당 값이 false입니다");
+                        Debug.Break();
+                        return false;
+                    }
+
+                    if (_failedRandomChanceState.Contains(nextStateAsset._linkedState._linkedState) == true)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    if (nextStateAsset._linkedState._linkedState._myState._aiStateDesc._randomChancePercentage < 0.0f)
+                    {
+                        Debug.Assert(false, "AI_TryRandomChance 조건에는 확률에 유효한값이 있어야합니다" + nextStateAsset._linkedState._linkedState.name);
+                        Debug.Break();
+                        return false;
+                    }
+
+                    ret = (randomValue <= nextStateAsset._linkedState._linkedState._myState._aiStateDesc._randomChancePercentage);
+
+                    if (ret == false)
+                    {
+                        _failedRandomChanceState.Add(nextStateAsset._linkedState._linkedState);
+                    }
+                }
+                break;
+
+            case ConditionType.AI_StateTimeThreshould:
+                {
+                    if (currstateAsset._myState._isAIState == false)
+                    {
+                        Debug.Assert(false, "AI_StateTimeThreshould 조건인데 해당 값이 false입니다");
+                        Debug.Break();
+                        return false;
+                    }
+
+                    if (currstateAsset._myState._aiStateDesc._stateTimeThreshould < 0.0f)
+                    {
+                        Debug.Assert(false, "AI_StateTimeThreshould 조건에는 상한값에 유효한값이 있어야합니다");
+                        Debug.Break();
+                        return false;
+                    }
+
+                    ret = (_currStateTime >= currstateAsset._myState._aiStateDesc._stateTimeThreshould);
+                }
+                break;
+
+            case ConditionType.IsLockOnTarget:
+                {
+                    if (_ownerStateControllingComponent._ownerAimScript == null)
+                    {
+                        _ownerStateControllingComponent._ownerAimScript = _ownerStateControllingComponent._owner.GetComponent<AimScript2>();
+                        if (_ownerStateControllingComponent._ownerAimScript == null)
+                        {
+                            Debug.Assert(false, "IsLockOnTarget 조건인데 AimScript가 없습니다");
+                            Debug.Break();
+                            return false;
+                        }
+                    }
+
+                    AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+
+                    GameObject lockOnObject = ownerAimScript.GetLockOnObject();
+
+                    ret = (lockOnObject != null);
+                }
+                break;
+
+            case ConditionType.IsHoldingWeaponKey:
+                {
+                    StateGraphType nextStateGraphType = StateGraphType.End;
+
+                    if ((nextStateAsset._fromType == StateGraphType.WeaponState_RightGraph || nextStateAsset._fromType == StateGraphType.WeaponState_LeftGraph) &&
+                        (nextStateAsset._goalType == StateGraphType.WeaponState_RightGraph || nextStateAsset._goalType == StateGraphType.WeaponState_LeftGraph))
+                    {
+                        Debug.Assert(false, "goalType, fromeType이 둘다 무기일수는 없습니다.");
+                        Debug.Break();
+                        forcedValue = true;
+                        ret = false;
+                        break;
+                    }
+
+
+                    if (nextStateAsset._fromType == StateGraphType.WeaponState_RightGraph || nextStateAsset._fromType == StateGraphType.WeaponState_LeftGraph)
+                    {
+                        nextStateGraphType = nextStateAsset._fromType;
+                    }
+                    else
+                    {
+                        nextStateGraphType = nextStateAsset._goalType;
+                    }
+
+                    KeyCode targetKeyCode = (nextStateGraphType == StateGraphType.WeaponState_RightGraph)
+                        ? KeyCode.Mouse1
+                        : KeyCode.Mouse0;
+
+                    bool isRightWeapon = (nextStateGraphType == StateGraphType.WeaponState_RightGraph);
+
+                    WeaponScript currWeapon = _ownerStateControllingComponent._owner.GetCurrentWeaponScript(isRightWeapon);
+
+                    if (currWeapon == null)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    ret = Input.GetKey(targetKeyCode);
+                }
+                break;
+
             default:
                 Debug.Assert(false, "데이터가 추가됐습니까?");
                 break;
@@ -974,10 +1913,10 @@ public class StateContoller : MonoBehaviour
 
         ret = CommandCheck(conditionDesc, isRightSided);
 
-        if (ret == true)
-        {
-            _ownerStateControllingComponent._owner.SetLatestWeaponUse(isRightSided);
-        }
+        //if (ret == true)
+        //{
+        //    _ownerStateControllingComponent._owner.SetLatestWeaponUse(isRightSided);
+        //}
 
         return ret;
     }

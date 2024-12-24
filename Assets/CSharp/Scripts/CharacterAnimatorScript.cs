@@ -2,13 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.Playables;
 using static AnimatorBlendingDesc;
 using static BodyPartBlendingWork;
 using static CharacterScript;
-
-
-
-
 
 
 
@@ -88,10 +86,15 @@ public class CharacterAnimatorScript : MonoBehaviour
     [SerializeField] CharacterScript _owner = null;
 
     protected Animator _animator = null;
-
     protected AnimatorOverrideController _overrideController = null;
-
     protected AnimationClip _currAnimClip = null;
+    public AnimationClip GetCurrAnimationClip()
+    {
+        return _currAnimClip;
+    }
+    protected StateContoller _stateContoller = null;
+    private StateAsset _currStateAsset = null;
+    private int _currAnimIndex = -1;
 
     
 
@@ -109,6 +112,7 @@ public class CharacterAnimatorScript : MonoBehaviour
     [SerializeField] protected List<AnimatorLayerTypes> _usingBodyPart = new List<AnimatorLayerTypes>();
     protected List<AnimatorBlendingDesc> _partBlendingDesc = new List<AnimatorBlendingDesc>();
     protected List<LinkedList<BodyPartBlendingWork>> _bodyPartWorks = new List<LinkedList<BodyPartBlendingWork>>();
+
 
 
     private void Awake()
@@ -147,83 +151,75 @@ public class CharacterAnimatorScript : MonoBehaviour
     }
 
 
-    #region Coroutine StartFunc
-
-    protected void StartNextCoroutine(AnimatorLayerTypes layerType)
+    private void LateUpdate()
     {
-        LinkedList<BodyPartBlendingWork> target = _bodyPartWorks[(int)layerType];
-
-        target.RemoveFirst();
-
-        if (target.Count <= 0)
+        if (_currStateAsset._myState._isSubAnimationStateMachineExist == true)
         {
-            UpdateBusyAnimatorLayers(1 << (int)layerType, false);
-            return;
+            int animationIndex = _stateContoller.SubAnimationStateIndex(_currStateAsset);
+
+
+            if (animationIndex != _currAnimIndex)
+            {
+                AnimationClip nextAnimation = _currStateAsset._myState._subAnimationStateMachine._animations[animationIndex];
+                FullBodyAnimationChange(nextAnimation);
+                _currAnimIndex = animationIndex;
+            }
+        }
+    }
+
+
+    public void StateChanged(StateAsset nextState, StateContoller stateController)
+    {
+        _currStateAsset = nextState;
+
+        AnimationClip nextAnimation = nextState._myState._stateAnimationClip;
+
+        if (nextState._myState._isSubAnimationStateMachineExist == true)
+        {
+            //애니메이션을 다시 결정해야한다.
+
+            int animationIndex = stateController.SubAnimationStateIndex(nextState);
+
+            _currAnimIndex = animationIndex;
+
+            nextAnimation = nextState._myState._subAnimationStateMachine._animations[animationIndex];
+
+            if (_stateContoller == null)
+            {
+                _stateContoller = stateController;
+            }
         }
 
-        StartProceduralWork(layerType, target.First.Value);
+        FullBodyAnimationChange(nextAnimation);
     }
 
-    protected Coroutine StartCoroutine_CallBackAction(IEnumerator coroutine, Action_LayerType callBack, AnimatorLayerTypes layerType)
+    private void FullBodyAnimationChange(AnimationClip nextAnimation)
     {
-        return StartCoroutine(CoroutineWrapper(coroutine, callBack, layerType));
-    }
-
-    protected Coroutine StartCoroutine_CallBackAction(System.Func<IEnumerator> coroutine, Action_LayerType callBack, AnimatorLayerTypes layerType)
-    {
-        return StartCoroutine(CoroutineWrapper(coroutine, callBack, layerType));
-    }
-
-    protected IEnumerator CoroutineWrapper(IEnumerator coroutine, Action_LayerType callBack, AnimatorLayerTypes layerType)
-    {
-        yield return coroutine;
-
-        callBack.Invoke(layerType);
-    }
-
-    protected IEnumerator CoroutineWrapper(System.Func<IEnumerator> coroutine, Action_LayerType callBack, AnimatorLayerTypes layerType)
-    {
-        yield return coroutine;
-
-        callBack.Invoke(layerType);
-    }
-
-    #endregion Start CoroutineFunc
-
-
-
-    public void StateChanged(AnimationClip nextAnimation)
-    {
-        /*-------------------------------------------------------------------
-        |NOTI| FullBody는 특별합니다. 뭔가 일하고있다면 취소하고 진행해야 합니다.
-        -------------------------------------------------------------------*/
-
-        AnimatorLayerTypes fullBodyLayer = AnimatorLayerTypes.FullBody;
-        int fullBodyLayerIndex = (int)fullBodyLayer;
-
-        if (_currentBodyCoroutine[(int)AnimatorLayerTypes.FullBody] != null)
+        _currAnimClip = nextAnimation;
+        //FullBody Animation 변경
         {
-            StopCoroutine(_currentBodyCoroutine[(int)AnimatorLayerTypes.FullBody]);
-            _bodyPartWorks[fullBodyLayerIndex].Clear();
-        }
+            /*-------------------------------------------------------------------
+            |NOTI| FullBody는 특별합니다. 뭔가 일하고있다면 취소하고 진행해야 합니다.
+            -------------------------------------------------------------------*/
 
-        _bodyPartWorks[fullBodyLayerIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-        {
-            _bodyPartWorks[fullBodyLayerIndex].Last.Value._animationClip = nextAnimation;
-        }
-        _bodyPartWorks[fullBodyLayerIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            AnimatorLayerTypes fullBodyLayer = AnimatorLayerTypes.FullBody;
+            int fullBodyLayerIndex = (int)fullBodyLayer;
 
-        StartProceduralWork(fullBodyLayer, _bodyPartWorks[fullBodyLayerIndex].First.Value);
+            if (_currentBodyCoroutine[(int)AnimatorLayerTypes.FullBody] != null)
+            {
+                StopCoroutine(_currentBodyCoroutine[(int)AnimatorLayerTypes.FullBody]);
+                _bodyPartWorks[fullBodyLayerIndex].Clear();
+            }
+
+            _bodyPartWorks[fullBodyLayerIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            {
+                _bodyPartWorks[fullBodyLayerIndex].Last.Value._animationClip = nextAnimation;
+            }
+            _bodyPartWorks[fullBodyLayerIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+
+            StartProceduralWork(fullBodyLayer, _bodyPartWorks[fullBodyLayerIndex].First.Value);
+        }
     }
-
-
-
-
-
-
-
-
-
 
     protected void UpdateBusyAnimatorLayers(int willBusyLayers_BitShift, bool isOn)
     {
@@ -236,7 +232,6 @@ public class CharacterAnimatorScript : MonoBehaviour
             _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~willBusyLayers_BitShift);
         }
     }
-
 
     public void WeaponLayerChange_EnterAttack(WeaponGrabFocus grapFocusType, StateAsset currState, bool isUsingRightWeapon)
     {
@@ -322,9 +317,11 @@ public class CharacterAnimatorScript : MonoBehaviour
                     _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
                     _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
 
+                    _animator.SetBool("IsMirroring", isMirrored);
+
+
                     if (currState._myState._isAttackState == true)
                     {
-                        _animator.SetBool("IsMirroring", isMirrored);
                     }
                     else
                     {
@@ -442,8 +439,6 @@ public class CharacterAnimatorScript : MonoBehaviour
                 break;
         }
     }
-    
-
 
 
     public void CalculateBodyWorkType_ChangeWeapon(WeaponGrabFocus ownerWeaponGrabFocusType, bool isRightWeaponTrigger, int layerLockResult)
@@ -478,38 +473,8 @@ public class CharacterAnimatorScript : MonoBehaviour
                 }
                 else
                 {
-                    if (currentOppositeWeaponScript != null)
-                    {
-                        //무기를 꺼내는 Zero Frame애니메이션으로 바꾼다
-                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
-                        {
-                            _bodyPartWorks[(int)oppositePartType].Last.Value._animationClip = currentOppositeWeaponScript.GetDrawAnimation(oppositePartType);
-                        }
-
-                        //LayerWeight를 수정한다
-                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-                        //무기를 쥐어준다
-                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
-                        {
-                            _bodyPartWorks[(int)oppositePartType].Last.Value._attachObjectPrefab = _owner.GetCurrentWeaponPrefab(oppositePartType);
-                        }
-
-                        //무기를 꺼내는 애니메이션으로 바꾼다
-                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-                        {
-                            _bodyPartWorks[(int)oppositePartType].Last.Value._animationClip = currentOppositeWeaponScript.GetDrawAnimation(oppositePartType);
-                        }
-                        //LayerWeight를 수정한다
-                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-
-                        //다 재생할때까지 대기한다.
-                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
-                    }
-                    else
-                    {
-                        //반대손에 양손으로 잡으면서 집어넣은 무기가 없다.
-                        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
-                    }
+                    //반대손에 양손으로 잡으면서 집어넣은 무기가 없다.
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
                 }
 
                 lockCompares.Add(oppositePartIndex);
@@ -1268,7 +1233,48 @@ public class CharacterAnimatorScript : MonoBehaviour
     #endregion Coroutines
 
 
+    #region Coroutine StartFunc
 
+    protected void StartNextCoroutine(AnimatorLayerTypes layerType)
+    {
+        LinkedList<BodyPartBlendingWork> target = _bodyPartWorks[(int)layerType];
+
+        target.RemoveFirst();
+
+        if (target.Count <= 0)
+        {
+            UpdateBusyAnimatorLayers(1 << (int)layerType, false);
+            return;
+        }
+
+        StartProceduralWork(layerType, target.First.Value);
+    }
+
+    protected Coroutine StartCoroutine_CallBackAction(IEnumerator coroutine, Action_LayerType callBack, AnimatorLayerTypes layerType)
+    {
+        return StartCoroutine(CoroutineWrapper(coroutine, callBack, layerType));
+    }
+
+    protected Coroutine StartCoroutine_CallBackAction(System.Func<IEnumerator> coroutine, Action_LayerType callBack, AnimatorLayerTypes layerType)
+    {
+        return StartCoroutine(CoroutineWrapper(coroutine, callBack, layerType));
+    }
+
+    protected IEnumerator CoroutineWrapper(IEnumerator coroutine, Action_LayerType callBack, AnimatorLayerTypes layerType)
+    {
+        yield return coroutine;
+
+        callBack.Invoke(layerType);
+    }
+
+    protected IEnumerator CoroutineWrapper(System.Func<IEnumerator> coroutine, Action_LayerType callBack, AnimatorLayerTypes layerType)
+    {
+        yield return coroutine;
+
+        callBack.Invoke(layerType);
+    }
+
+    #endregion Start CoroutineFunc
 
     protected Coroutine StartProceduralWork(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
     {
@@ -1462,4 +1468,227 @@ public class CharacterAnimatorScript : MonoBehaviour
 
         return startedCoroutine;
     }
+
+
+    public float GetStateChangingPercentage()
+    {
+        float fullBodySubLayerWeight = _partBlendingDesc[(int)AnimatorLayerTypes.FullBody]._blendTarget_Sub;
+
+        if (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody]._isUsingFirstLayer == true)
+        {
+            fullBodySubLayerWeight = 1.0f - fullBodySubLayerWeight;
+        }
+
+        fullBodySubLayerWeight = Mathf.Clamp(fullBodySubLayerWeight, 0.0f, 1.0f);
+
+        if (_bodyPartWorks[(int)AnimatorLayerTypes.FullBody].Count > 0 && _bodyPartWorks[(int)AnimatorLayerTypes.FullBody].First.Value._workType == BodyPartWorkType.ChangeAnimation)
+        {
+            fullBodySubLayerWeight = Mathf.Clamp(fullBodySubLayerWeight, 0.01f, 0.99f);
+        }
+
+        return fullBodySubLayerWeight;
+    }
+
+    #region BlendTree...언젠간 해볼것
+    //private PlayableGraph _playableGraph;
+    //private AnimationLayerMixerPlayable _layerMixer;
+    //private Vector2 _blendTreeWeight = Vector2.zero;
+    //private AnimationPlayableOutput _playableOutput;
+    //private AnimatorControllerPlayable _controllerPlayable;
+
+    //private AnimationMixerPlayable _mixerPlayable_Main;
+    //private SubBlendTreeAsset_2D _currBlendTreeAsset_Main = null;
+
+    //private AnimationMixerPlayable _mixerPlayable_Sub;
+    //private SubBlendTreeAsset_2D _currBlendTreeAsset_Sub = null;
+
+
+    //private void Update()
+    //{
+
+    //}
+
+
+    //private void OnDestroy()
+    //{
+    //    //if (_playableGraph.IsValid() == true)
+    //    //{
+    //    //    _playableGraph.Stop();
+    //    //    _playableGraph.Destroy();
+    //    //}
+    //}
+
+
+    ////private void InitFullbodyBlendTree()
+    ////{
+    ////    _playableGraph = PlayableGraph.Create("BlendTreeGraph");
+    ////    _playableOutput = AnimationPlayableOutput.Create(_playableGraph, "Output", _animator);
+    ////    _layerMixer = AnimationLayerMixerPlayable.Create(_playableGraph, 3/*2개의 레이어를 사용합니다. 상수 뺄것*/);
+    ////    _controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, _animator.runtimeAnimatorController);
+
+    ////    _mixerPlayable_Main = AnimationMixerPlayable.Create(_playableGraph, 4/*4개의 애니메이션 사용합니다. 상수 뺄것*/);
+    ////    _mixerPlayable_Sub = AnimationMixerPlayable.Create(_playableGraph, 4/*4개의 애니메이션 사용합니다. 상수 뺄것*/);
+
+    ////    _playableGraph.Connect(_controllerPlayable, 0, _layerMixer, 0); // Layer 0
+    ////    _playableGraph.Connect(_mixerPlayable_Main, 0, _layerMixer, 1); // Layer 0
+    ////    _playableGraph.Connect(_mixerPlayable_Sub, 0, _layerMixer, 2); // Layer 1
+
+    ////    //_layerMixer.SetInputWeight((int)AnimatorLayerTypes.FullBody * 2, 0.0f);
+    ////    //_layerMixer.SetInputWeight((int)AnimatorLayerTypes.FullBody * 2 + 1, 0.0f);
+    ////    _layerMixer.SetInputWeight(0, 1.0f);
+    ////    _layerMixer.SetInputWeight(1, 0.0f);
+    ////    _layerMixer.SetInputWeight(2, 0.0f);
+
+
+    ////    _playableOutput.SetSourcePlayable(_layerMixer);
+    ////    _playableGraph.Stop();
+    ////}
+
+
+    ////private float CalculateBodyLayerWeight(AnimatorLayerTypes type)
+    ////{
+    ////    if (_partBlendingDesc[(int)type]._isUsingFirstLayer == true)
+    ////    {
+    ////        return _partBlendingDesc[(int)type]._blendTarget;
+    ////    }
+    ////    return _partBlendingDesc[(int)type]._blendTarget_Sub;
+    ////}
+
+    ////private int CalculateBodyLayerInder(AnimatorLayerTypes type)
+    ////{
+    ////    int currBodyTargetget = (_partBlendingDesc[(int)type]._isUsingFirstLayer == true)
+    ////        ? (int)type
+    ////        : (int)type + 1;
+
+    ////    return currBodyTargetget;
+    ////}
+
+
+    ////private AnimationMixerPlayable? CalculateBodyLayerMixer(AnimatorLayerTypes type)
+    ////{
+    ////    AnimationMixerPlayable? currMixer = (_partBlendingDesc[(int)type]._isUsingFirstLayer == true)
+    ////        ? _mixerPlayable_Main
+    ////        : _mixerPlayable_Sub;
+
+    ////    return currMixer;
+    ////}
+
+
+    ////private SubBlendTreeAsset_2D CalculateCurrBlendTree(AnimatorLayerTypes type)
+    ////{
+    ////    if (_partBlendingDesc[(int)type]._isUsingFirstLayer == true)
+    ////    {
+    ////        return _currBlendTreeAsset_Main;
+    ////    }
+
+    ////    return _currBlendTreeAsset_Sub;
+    ////}
+
+
+    ////public void ReadyBlendTree(SubBlendTreeAsset_2D blendTreeAsset)
+    ////{
+    ////    int currFullbodyTarget = CalculateBodyLayerInder(AnimatorLayerTypes.FullBody);
+    ////    AnimationMixerPlayable? currMixer = CalculateBodyLayerMixer(AnimatorLayerTypes.FullBody);
+
+    ////    if (currFullbodyTarget == 0)
+    ////    {
+    ////        _currBlendTreeAsset_Main = blendTreeAsset;
+    ////    }
+    ////    else
+    ////    {
+    ////        _currBlendTreeAsset_Sub = blendTreeAsset;
+    ////    }
+
+    ////    var playable_YUP = AnimationClipPlayable.Create(_playableGraph, blendTreeAsset._animation_YUP);
+    ////    var playable_XUP = AnimationClipPlayable.Create(_playableGraph, blendTreeAsset._animation_XUP);
+    ////    var playable_YDOWN = AnimationClipPlayable.Create(_playableGraph, blendTreeAsset._animation_YDOWN);
+    ////    var playable_XDOWN = AnimationClipPlayable.Create(_playableGraph, blendTreeAsset._animation_XDOWN);
+
+    ////    _playableGraph.Connect(playable_YUP, 0, currMixer.Value, 0);
+    ////    _playableGraph.Connect(playable_XUP, 0, currMixer.Value, 1);
+    ////    _playableGraph.Connect(playable_YDOWN, 0, currMixer.Value, 2);
+    ////    _playableGraph.Connect(playable_XDOWN, 0, currMixer.Value, 3);
+
+    ////    _playableGraph.Play();
+    ////}
+
+
+    ////public void ClearBlendTree()
+    ////{
+    ////    int currFullbodyTarget = CalculateBodyLayerInder(AnimatorLayerTypes.FullBody);
+    ////    AnimationMixerPlayable? currMixer = CalculateBodyLayerMixer(AnimatorLayerTypes.FullBody);
+
+    ////    if (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody]._isUsingFirstLayer == true)
+    ////    {
+    ////        _currBlendTreeAsset_Main = null;
+    ////    }
+    ////    else
+    ////    {
+    ////        _currBlendTreeAsset_Sub = null;
+    ////    }
+
+    ////    if (currMixer.Value.IsValid() == false)
+    ////    {
+    ////        return;
+    ////    }
+
+    ////    for (int i = 0; i < 4; i++)
+    ////    {
+    ////        var oldPlayable = (AnimationClipPlayable)currMixer.Value.GetInput(i);
+    ////        if (oldPlayable.IsValid() == false)
+    ////        {
+    ////            continue;
+    ////        }
+    ////        _playableGraph.Disconnect(currMixer.Value, i);
+    ////        oldPlayable.Destroy();
+    ////    }
+    ////}
+
+
+    //private void LateUpdate()
+    //{
+    //    //int currFullbodyTarget = CalculateBodyLayerInder(AnimatorLayerTypes.FullBody);
+    //    //AnimationMixerPlayable? currMixer = CalculateBodyLayerMixer(AnimatorLayerTypes.FullBody);
+    //    //SubBlendTreeAsset_2D currAsset = CalculateCurrBlendTree(AnimatorLayerTypes.FullBody);
+
+    //    //if (currAsset != null)
+    //    //{
+    //    //    float total = Mathf.Abs(_blendTreeWeight.x) + Mathf.Abs(_blendTreeWeight.y);
+    //    //    float xRatio = Mathf.Abs(_blendTreeWeight.x) / total;
+    //    //    float yRatio = Mathf.Abs(_blendTreeWeight.y) / total;
+
+    //    //    if (_blendTreeWeight.y >= 0.0f)
+    //    //    {
+    //    //        currMixer.Value.SetInputWeight(0, yRatio); // Idle
+    //    //        currMixer.Value.SetInputWeight(2, 0.0f);  // Run
+    //    //    }
+    //    //    else
+    //    //    {
+    //    //        currMixer.Value.SetInputWeight(0, 0.0f); // Idle
+    //    //        currMixer.Value.SetInputWeight(2, yRatio);  // Run
+    //    //    }
+
+    //    //    if (_blendTreeWeight.x >= 0.0f)
+    //    //    {
+    //    //        currMixer.Value.SetInputWeight(1, xRatio); // Walk
+    //    //        currMixer.Value.SetInputWeight(3, 0.0f);  // Run
+    //    //    }
+    //    //    else
+    //    //    {
+    //    //        currMixer.Value.SetInputWeight(1, 0.0f); // Walk
+    //    //        currMixer.Value.SetInputWeight(3, xRatio);  // Run
+    //    //    }
+
+
+    //    //    float currWeight = CalculateBodyLayerWeight(AnimatorLayerTypes.FullBody);
+    //    //    _layerMixer.SetInputWeight(currFullbodyTarget + 1, currWeight);
+    //    //}
+    //}
+
+
+    ////public void SetBlendTreeWeight(Vector2 weight)
+    ////{
+    ////    _blendTreeWeight = weight;
+    ////}
+    #endregion BlendTree...언젠간 해볼것
 }

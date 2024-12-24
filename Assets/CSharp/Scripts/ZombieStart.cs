@@ -55,7 +55,6 @@ public class ZombieStart : MonoBehaviour, IHitable
     private List<GameObject> _enemies = new List<GameObject>();
     [SerializeField] private GameObject _battleTarget = null;
 
-
     int _hp = 10;
 
 

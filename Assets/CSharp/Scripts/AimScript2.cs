@@ -1,71 +1,121 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.UIElements;
+
+
+public enum AimState
+{
+    eTPSAim,
+    eSightAim,
+    eLockOnAim,
+    ENEND,
+};
 
 public class AimScript2 : MonoBehaviour
 {
-    private InputController _inputController = null;
-    private GameObject _aimOribit = null; //x축 회전 조종 오브젝트임
-    public GameObject GetAimOrbit() { return _aimOribit; }
-    private GameObject _aimSatellite = null; //x축 회전 조종 오브젝트에 의해 상대회전하는 오브젝트. 카메라는 이것을 쳐다본다
-    public GameObject GetAimSatellite() { return _aimSatellite; }
+    /*-----------------------------------------------
+    |락온(다크소울식)|--|TPS 조준|--|정조준| 
+    과 관련된 기능을 담당하는 컴포넌트
+    -----------------------------------------------*/
 
-    private float _aimSatelliteZOffset = 1000.0f;
+
+    /*-----------------------------------------------
+    고정 변수들
+    -----------------------------------------------*/
+    private const float _aimSatelliteZOffset = 5.0f;
+    private const float _lockOnRadius = 10.0f;
+    private const float _lockOnMaxDegreeX = 45.0f;
+    private const float _lockOnMaxDegreeY = 45.0f;
+
+    [SerializeField] private float _lockOnDeadZoneDegree = 5.0f; //+- 10도까지는 아무 업데이트를 안한다
+    [SerializeField] private float _lockOnHardLimitZoneDegree = 25.0f; //+= 30도까지는 벗어나면 안된다.
+    [SerializeField] private float _lockOnHardLimitZoneDegree2 = 150.0f; //+= 30도까지는 벗어나면 안된다.
+
+
+
+
+    /*-----------------------------------------------
+    컴포넌트들
+    -----------------------------------------------*/
+    private CharacterScript _owner = null;
+    private GameObject _ownerCharacterHeart = null;
+    private GameObject _ownerGameObject = null;
+    private InputController _ownerInputController = null;
+    private RigBuilder _ownerRigBuilder = null;
+    private Rig _ownerRig = null;
+    private bool _isRiggingOn = false;
+
+
+
+
+    /*-----------------------------------------------
+    실시간으로 쳐다볼 객체들
+    -----------------------------------------------*/
+    private GameObject _aimOribit = null; //x축 회전 조종 오브젝트임
+    private GameObject _aimSatellite = null; //x축 회전 조종 오브젝트에 의해 상대회전하는 오브젝트. 카메라는 이것을 쳐다본다
+    public GameObject GetAimOrbit() { return _aimOribit; }
+    public GameObject GetAimSatellite() { return _aimSatellite; }
+    private GameObject _lockedOnObject = null;
+    public GameObject GetLockOnObject() { return _lockedOnObject; }
+
     
 
-    public CinemachineVirtualCameraBase _freeRunCamera = null;
+
+    /*-----------------------------------------------
+    카메라 변수들
+    -----------------------------------------------*/
+    public CinemachineFreeLook _freeRunCamera = null;
     public CinemachineVirtualCameraBase _sightCamera = null;
     public CinemachineVirtualCameraBase _tpsCamera = null;
+    public CinemachineFreeLook _lockOnCamera = null;
 
-    private AimState _aimState = AimState.eTPSAim;
 
+
+
+    /*-----------------------------------------------
+    런타임 상태 변수들
+    -----------------------------------------------*/
+    private AimState _aimState = AimState.ENEND;
+    public bool GetIsAim() 
+    {
+        if (_aimState == AimState.ENEND)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+
+
+
+    /*-----------------------------------------------
+    런타임 상태 변수들_수치제어
+    -----------------------------------------------*/
+    [SerializeField] private Vector2 _aimSpeed = new Vector2(3.0f, 1.0f);
+    [SerializeField] private Vector2 smoothTime = new Vector2(0.05f, 0.05f); // 부드럽게 회전할 시간
     private Vector2 currentAimRotation = Vector2.zero;
     private Vector2 _calaculatedVal = Vector2.zero;
     private Vector2 currentVelocity; // SmoothDamp의 속도 추적용 변수
 
-    private bool _isAim = false;
-
-    [SerializeField] private Vector2 _aimSpeed = new Vector2(1.0f, 1.0f);
-    [SerializeField] private string _aimKey = "Fire2";
-    [SerializeField] private Vector2 smoothTime = new Vector2(0.05f, 0.05f); // 부드럽게 회전할 시간
-    //[SerializeField] private GameObject _aimSatelliteDebuggingPrefab = null;
-
-
-    private void OnDisable()
-    {
-        RigBuilder rigBuilderComponent = GetComponentInChildren<RigBuilder>();
-        Rig riggingComponent = GetComponentInChildren<Rig>();
-
-        //Awake에서 만들어졌다고 가정합니다.
-
-        riggingComponent.enabled = false;
-        rigBuilderComponent.enabled = false;
-    }
-
-
-    private void OnEnable()
-    {
-        RigBuilder rigBuilderComponent = GetComponentInChildren<RigBuilder>();
-        Rig riggingComponent = GetComponentInChildren<Rig>();
-
-        //Awake에서 만들어졌다고 가정합니다.
-
-        riggingComponent.enabled = true;
-        rigBuilderComponent.enabled = true;
-
-        rigBuilderComponent.Build();
-    }
-
 
     private void Awake()
     {
+        //owner 세팅
+        {
+            _owner = GetComponentInParent<CharacterScript>();
+            Debug.Assert(_owner != null, "owner가 없다");
+        }
+
         //조종자의 인풋 컨트롤러 세팅
         {
-            _inputController = GetComponentInParent<InputController>();
-            Debug.Assert(_inputController != null, "인풋컨트롤러가 없다");
+            _ownerInputController = GetComponentInParent<InputController>();
+            Debug.Assert(_ownerInputController != null, "인풋컨트롤러가 없다");
         }
 
         //쳐다볼 게임 오브젝트 만들기
@@ -89,13 +139,13 @@ public class AimScript2 : MonoBehaviour
             aimSatellitePosition += _aimOribit.transform.forward * _aimSatelliteZOffset;
             _aimSatellite.transform.position = aimSatellitePosition;
 
-            //디버깅 메쉬 만들기
-            {
-                GameObject prefab = Resources.Load<GameObject>("RuntimePrefab/ForDebug/mesh_0.1");
-                GameObject newObject = Instantiate(prefab);
-                newObject.transform.position = _aimSatellite.transform.position;
-                newObject.transform.SetParent(_aimSatellite.transform);
-            }
+            ////디버깅 메쉬 만들기
+            //{
+            //    GameObject prefab = Resources.Load<GameObject>("RuntimePrefab/ForDebug/mesh_0.1");
+            //    GameObject newObject = Instantiate(prefab);
+            //    newObject.transform.position = _aimSatellite.transform.position;
+            //    newObject.transform.SetParent(_aimSatellite.transform);
+            //}
         }
 
         //카메라 세팅
@@ -104,21 +154,25 @@ public class AimScript2 : MonoBehaviour
             Debug.Assert(_tpsCamera != null, "AimSystem을 사용하려면 tpsCamera가 있어야합니다.");
             _tpsCamera.LookAt = _aimSatellite.transform;
 
-            _freeRunCamera = transform.Find("FreeRunCamera").GetComponent<CinemachineVirtualCameraBase>();
-            Debug.Assert(_freeRunCamera != null, "AimSystem을 사용하려면 tpsCamera가 있어야합니다.");
+            _freeRunCamera = transform.Find("FreeRunCamera").GetComponent<CinemachineFreeLook>();
+            Debug.Assert(_freeRunCamera != null, "AimSystem을 사용하려면 _freeRunCamera 있어야합니다.");
+            _ownerGameObject = _freeRunCamera.LookAt.gameObject;
+
+            _lockOnCamera = transform.Find("LockOnCamera").GetComponent<CinemachineFreeLook>();
+            Debug.Assert(_lockOnCamera != null, "AimSystem을 사용하려면 LockOnCamera 있어야합니다.");
         }
 
         //런타임 리깅세팅
         {
-            RigBuilder rigBuilderComponent = GetComponentInChildren<RigBuilder>();
-            Rig riggingComponent = GetComponentInChildren<Rig>();
+            _ownerRigBuilder = GetComponentInChildren<RigBuilder>();
+            _ownerRig = GetComponentInChildren<Rig>();
 
-            if (riggingComponent == null || rigBuilderComponent == null)
+            if (_ownerRig == null || _ownerRigBuilder == null)
             {
                 Debug.Assert(false, "아직 리깅이 없을때에 대해 처리하지 않았습니다");
             }
 
-            MultiAimConstraint[] constrainComponents = riggingComponent.gameObject.GetComponentsInChildren<MultiAimConstraint>();
+            MultiAimConstraint[] constrainComponents = _ownerRig.gameObject.GetComponentsInChildren<MultiAimConstraint>();
 
             foreach (var component in constrainComponents)
             {
@@ -136,104 +190,380 @@ public class AimScript2 : MonoBehaviour
                 component.data.sourceObjects = sources;
             }
 
-            rigBuilderComponent.Build();
+            _ownerRigBuilder.Build();
+            _isRiggingOn = false;
+            _ownerRig.enabled = false;
+            _ownerRigBuilder.enabled = false;
         }
+
+        OffAimState();
     }
 
 
     void Update()
     {
-        bool isAimed = Input.GetButton(_aimKey);
-
-        if (isAimed != _isAim)
+        if (_isRiggingOn == true)
         {
-            if (isAimed == true)
+            if (_aimState == AimState.eLockOnAim)
             {
-                OnAimState();
+                _aimOribit.transform.LookAt(_lockedOnObject.transform.position);
             }
             else
             {
-                OffAimState();
+                Vector2 mouseMove = _ownerInputController._pr_mouseMove;
+                Vector2 desiredAimRotation = new Vector2(mouseMove.x * _aimSpeed.x, mouseMove.y * _aimSpeed.y);
+                AimRotation(desiredAimRotation);
             }
         }
 
-        _isAim = isAimed;
-
-        if (_isAim == true)
+        if (_aimState == AimState.eLockOnAim)
         {
-            Vector2 mouseMove = _inputController._pr_mouseMove;
-            Vector2 desiredAimRotation = new Vector2(mouseMove.x * _aimSpeed.x, mouseMove.y * _aimSpeed.y);
-
-            AimRotation(desiredAimRotation);
+            LockOnUpdate();
         }
     }
 
 
-    public void OffAimState()
+    private void LockOnUpdate()
     {
-        //_sightCamera.enabled = false;
-        _freeRunCamera.enabled = false;
-        _tpsCamera.enabled = false;
-       
-        _freeRunCamera.enabled = true;
+        Vector3 targetPosition = _lockedOnObject.transform.position;
+        Vector3 cameraPosition = Camera.main.transform.position;
+        Vector3 ownerPosition = _ownerGameObject.transform.position;
+
+        Vector3 ownerToTarget = (targetPosition - ownerPosition);
+        Vector3 ownerToCamera = (cameraPosition - ownerPosition);
+
+        Vector3 ownerToTargetDir = ownerToTarget.normalized;
+        Vector3 ownerToCameraDir = ownerToCamera.normalized;
+
+        Vector3 ownerToTargetPlaneDir = ownerToTargetDir;
+        ownerToTargetPlaneDir.y = 0.0f;
+        ownerToTargetPlaneDir = ownerToTargetPlaneDir.normalized;
+
+        Vector3 ownerToCameraPlaneDir = ownerToCameraDir;
+        ownerToCameraPlaneDir.y = 0.0f;
+        ownerToCameraPlaneDir = ownerToCameraPlaneDir.normalized;
 
 
-        /*---------------------------------------------------------------------
-         |TODO| 카메라 돌아오는 타이밍이랑 맞춰서 리셋하세요
-        ---------------------------------------------------------------------*/
+        float angle = Mathf.Abs(Vector3.Angle(ownerToCameraPlaneDir, ownerToTargetPlaneDir));
+
+        if (angle > _lockOnHardLimitZoneDegree2)
         {
-            _aimOribit.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0f);
-            currentAimRotation = Vector2.zero;
-            _calaculatedVal = Vector2.zero;
+            return;
         }
 
+        float deltaAngle = _lockOnHardLimitZoneDegree2 - angle;
+
+        bool isLeft = (Vector3.Cross(ownerToTargetPlaneDir, ownerToCameraPlaneDir).y < 0.0f);
+        if (isLeft == true) 
+        {
+            deltaAngle *= -1.0f;
+        }
+
+        _lockOnCamera.m_XAxis.Value += deltaAngle;
     }
 
 
-    public void OnAimState()
+    public void OnAimState(AimState targetAimState)
     {
-        //_sightCamera.enabled = false;
-        _freeRunCamera.enabled = false;
-        _tpsCamera.enabled = false;
+        if (_ownerCharacterHeart == null)
+        {
+            _ownerCharacterHeart =_owner.gameObject.transform.Find("CharacterHeart").gameObject;
+            if (_ownerCharacterHeart == null)
+            {
+                Debug.Assert(false, "CharacterHeart가 없습니다");
+                Debug.Break();
+                return;
+            }
+        }
 
-        switch (_aimState)
+        bool isSuccrss = false;
+
+        switch (targetAimState)
         {
             case AimState.eSightAim:
-                _sightCamera.enabled = true;
+                isSuccrss = Check_TurnOnAim_SightAim();
                 break;
+
             case AimState.eTPSAim:
-                _tpsCamera.enabled = true;
+                isSuccrss = Check_TurnOnAim_TPSAim();
                 break;
+
+            case AimState.eLockOnAim:
+                isSuccrss = Check_TurnOnAim_LockOnAim();
+                break;
+
             default:
                 Debug.Assert(false, "데이터가 추가됐습니까?");
                 break;
         }
 
-        //Animator -> 다리 움직임이 바뀌어야한다.
+        if (isSuccrss == false) 
         {
-
+            return;
         }
+
+        _aimState = targetAimState;
+
+        TurnOffAllCamera();
+
+        switch (targetAimState)
+        {
+            case AimState.eSightAim:
+                TurnOnAim_SightAim();
+                break;
+
+            case AimState.eTPSAim:
+                TurnOnAim_TPSAim();
+                break;
+
+            case AimState.eLockOnAim:
+                TurnOnAim_LockOnAim();
+                break;
+
+            default:
+                Debug.Assert(false, "데이터가 추가됐습니까?");
+                break;
+        }
+    }
+
+    public AimState GetAimState()
+    {
+        return _aimState;
+    }
+
+    private bool Check_TurnOnAim_TPSAim()
+    {
+        return true;
+    }
+
+    private bool Check_TurnOnAim_SightAim()
+    {
+        return true;
+    }
+
+    private bool Check_TurnOnAim_LockOnAim()
+    {
+        _lockedOnObject = null;
+
+        Vector3 cameraPosition = Camera.main.transform.position;
+        
+
+        //플레이어가 때릴 수 있는 충돌레이어를 가질 수 있는 얘들(gameObject)를 전부 가져와본다
+        HashSet<GameObject> result = new HashSet<GameObject>();
+        {
+            int monsterLayerMask = LayerMask.GetMask("CharacterHeart");
+
+            Collider[] colliders = Physics.OverlapSphere(cameraPosition, _lockOnRadius, monsterLayerMask); // 구 형태의 충돌 영역 생성
+
+            foreach (Collider collider in colliders)
+            {
+                GameObject obj = collider.gameObject;
+
+                if (obj == _ownerCharacterHeart)
+                {
+                    continue;
+                }
+
+                if (result.Contains(obj) == true)
+                {
+                    continue;
+                }
+
+                result.Add(obj);
+            }
+
+            if (result.Count <= 0)
+            {
+                return false;
+            }
+        }
+
+        //이 프로젝트에서 정의한 락온 가능 도형 내에 존재하는지 검사하며 거리를 동시에 체크
+        {
+            float minDistance = -1.0f;
+            foreach (GameObject target in result)
+            {
+                Vector3 enemyPosition = target.transform.position;
+
+                Vector3 cameraUpVector = new Vector3(0.0f, 1.0f, 0.0f);
+
+                Vector3 cameraLookDir = Camera.main.transform.forward.normalized;
+
+                Vector3 cameraToEnemyDir = (enemyPosition - cameraPosition).normalized;
+
+                Vector3 cameraLookPlaneDir = cameraLookDir;
+                cameraLookPlaneDir.y = 0.0f;
+                cameraLookPlaneDir = cameraLookPlaneDir.normalized;
+
+                Vector3 cameraToEnemyPlaneDir = cameraToEnemyDir;
+                cameraToEnemyPlaneDir.y = 0.0f;
+                cameraToEnemyPlaneDir = cameraToEnemyPlaneDir.normalized;
+
+                float xDegree = Vector3.Angle(cameraLookPlaneDir, cameraToEnemyPlaneDir);
+
+                if (Mathf.Abs(xDegree) > _lockOnMaxDegreeX)
+                {
+                    continue;
+                }
+
+                //카메라의 Look, Right로 구성된 평면의 법선벡터
+                Vector3 cameraLookVerticalPlaneVector = Vector3.Cross(cameraUpVector, cameraLookDir).normalized;
+                float similarities = Vector3.Dot(cameraLookVerticalPlaneVector, cameraToEnemyDir);
+                Vector3 toVerticalPlaneVector = cameraLookVerticalPlaneVector * similarities;
+                Vector3 projectedVector = cameraToEnemyDir + toVerticalPlaneVector;
+
+                float yDegree = Vector3.Angle(cameraLookDir, projectedVector);
+
+                if (Mathf.Abs(yDegree) > _lockOnMaxDegreeY)
+                {
+                    continue;
+                }
+
+                float distance = (enemyPosition - cameraPosition).magnitude;
+                if (distance < minDistance || minDistance <= 0.0f)
+                {
+                    minDistance = distance;
+                    _lockedOnObject = target;
+                }
+            }
+        }
+
+        return (_lockedOnObject != null);
+    }
+
+    private void TurnOnAim_TPSAim()
+    {
+        _tpsCamera.enabled = true;
+        //TurnOnRigging(true);
+    }
+
+    private void TurnOnAim_SightAim()
+    {
+        _sightCamera.enabled = true;
+        //TurnOnRigging(true);
+    }
+
+    private void TurnOnAim_LockOnAim()
+    {
+        _lockOnCamera.enabled = true;
+        _lockOnCamera.LookAt = _lockedOnObject.transform;
+
+        _lockOnCamera.m_XAxis.Value = _freeRunCamera.m_XAxis.Value;
+        _lockOnCamera.m_YAxis.Value = 1.0f;
+    }
+
+
+
+
+
+    public void TurnOnRigging(bool isOn)
+    {
+        if (_isRiggingOn == isOn)
+        {
+            return;
+        }
+
+        _isRiggingOn = isOn;
+
+        if (isOn == true)
+        {
+            float weight = (isOn == true)
+                ? 1.0f
+                : 0.0f;
+
+            _ownerRig.weight = weight;
+
+            _ownerRigBuilder.Build();
+        }
+
+        _ownerRig.enabled = isOn;
+        _ownerRigBuilder.enabled = isOn;
+
+    }
+
+    private void TurnOffAllCamera()
+    {
+        //_sightCamera.enabled = false;
+        _freeRunCamera.enabled = false;
+        _tpsCamera.enabled = false;
+        _lockOnCamera.enabled = false;
+    }
+
+
+
+
+    public void OffAimState()
+    {
+        TurnOffAllCamera();
+
+        switch (_aimState)
+        {
+            case AimState.eTPSAim:
+                {
+                    _freeRunCamera.m_XAxis.Value = _lockOnCamera.m_XAxis.Value;
+                    _freeRunCamera.m_YAxis.Value = _lockOnCamera.m_YAxis.Value;
+                }
+                break;
+
+            case AimState.eSightAim:
+                {
+
+                }
+                break;
+
+            case AimState.eLockOnAim:
+                {
+                    _freeRunCamera.m_XAxis.Value = _lockOnCamera.m_XAxis.Value;
+                    _freeRunCamera.m_YAxis.Value = _lockOnCamera.m_YAxis.Value;
+                }
+                break;
+
+            case AimState.ENEND:
+                break;
+
+            default:
+                {
+                    Debug.Assert(false, "직전 카메라 -> FreeRunCamera 로직을 작성하세요");
+                    Debug.Break();
+                }
+                break;
+        }
+
+        _aimState = AimState.ENEND;
+
+        _freeRunCamera.enabled = true;
+        _freeRunCamera.LookAt = _ownerGameObject.transform;
+        _lockedOnObject = null;
+    }
+
+
+    public void ResetAimRotation()
+    {
+        _calaculatedVal.x = 0.0f;
+        currentAimRotation.x = 0.0f;
     }
 
     public void AimRotation(Vector2 rotatedValue) //인자값 = 마우스가 움직였으니 움직여야 할 값
     {
+        if (_aimState == AimState.eLockOnAim)
+        {
+            return;
+        }
+
         //캐릭터 y축 회전 (수평회전)
         {
-            //타겟값이 갱신됐다.
             _calaculatedVal.y += rotatedValue.x;
-            //따라서 적용할 값을 댐핑한다
+            //타겟값이 갱신됐다. 따라서 적용할 값을 댐핑한다
             currentAimRotation.y = Mathf.SmoothDamp(currentAimRotation.y, _calaculatedVal.y, ref currentVelocity.y, smoothTime.x);
             transform.rotation = Quaternion.Euler(transform.rotation.x, currentAimRotation.y, 0f);
         }
 
         //캐릭터 x축 회전 (수평회전)
         {
-            //타겟값이 갱신됐다.
             _calaculatedVal.x += rotatedValue.y;
-            //따라서 적용할 값을 댐핑한다
+            //타겟값이 갱신됐다. 따라서 적용할 값을 댐핑한다
             currentAimRotation.x = Mathf.SmoothDamp(currentAimRotation.x, _calaculatedVal.x, ref currentVelocity.x, smoothTime.y);
             _aimOribit.transform.localRotation = Quaternion.Euler(-currentAimRotation.x, _aimOribit.transform.rotation.y, 0f);
         }
-
     }
 }

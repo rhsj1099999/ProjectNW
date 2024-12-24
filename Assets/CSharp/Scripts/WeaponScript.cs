@@ -197,8 +197,8 @@ public class WeaponScript : MonoBehaviour
     ------------------------------------------*/
     protected Animator _ownerAnimator = null;
     protected IKScript _ownerIKSkript = null;
-    protected Dictionary<string, IKTargetDesc> _createdIKTargets = new Dictionary<string, IKTargetDesc>();
-
+    protected Dictionary<AvatarIKGoal, IKTargetDesc> _createdIKTargets = new Dictionary<AvatarIKGoal, IKTargetDesc>();
+    
 
 
     /*------------------------------------------
@@ -213,7 +213,7 @@ public class WeaponScript : MonoBehaviour
     런타임중 정보저장용 변수들
     ------------------------------------------*/
     public Transform _socketTranform = null;
-    private bool _isRightHandWeapon = false;
+    protected bool _isRightHandWeapon = false;
     public CharacterScript _owner = null;
 
 
@@ -247,14 +247,43 @@ public class WeaponScript : MonoBehaviour
 
         foreach (IKTargetScript ikTarget in ikTargets)
         {
-            ikTarget.RegistIK(_ownerIKSkript, true);
-            _createdIKTargets.Add(ikTarget.gameObject.name, ikTarget.GetDesc());
-        }
+            IKTargetDesc desc = ikTarget.GetDesc();
 
-        /*------------------------------------------------------
-        |TODO| Desc 받아와서 MainHandler에 해당하는 Desc를 꺼야한다
-        ------------------------------------------------------*/
-        //_ownerIKSkript.OffIK(_createdIKTargets["RightHandIK"]);
+            if (desc._isRightSide != _isRightHandWeapon)
+            {
+                continue;
+            }
+
+            ikTarget.RegistIK(_ownerIKSkript, _isRightHandWeapon);
+
+            AvatarIKGoal goal = AvatarIKGoal.LeftHand;
+            
+            if (_isRightHandWeapon == true)
+            {
+                if (ikTarget._isMainHandle == true)
+                {
+                    goal = AvatarIKGoal.RightHand;
+                }
+                else
+                {
+                    goal = AvatarIKGoal.LeftHand;
+                }
+            }
+            else 
+            {
+                if (ikTarget._isMainHandle == true)
+                {
+                    goal = AvatarIKGoal.LeftHand;
+                }
+                else
+                {
+                    goal = AvatarIKGoal.RightHand;
+                }
+            }
+
+            _createdIKTargets.Add(goal, ikTarget.GetDesc());
+            _ownerIKSkript.OffIK(ikTarget.GetDesc());
+        }
     }
 
     protected virtual void LateUpdate()

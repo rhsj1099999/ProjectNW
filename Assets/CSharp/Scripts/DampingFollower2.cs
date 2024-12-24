@@ -38,33 +38,6 @@ public class DampingFollower2 : MonoBehaviour
 
     }
 
-    private void FixedUpdate()
-    {
-        //_hardLimitUpdated = false;
-
-        //Vector3 dirToTarget = (_targetTransform.position - transform.position);
-
-        //float targetRadius = dirToTarget.magnitude;
-
-        //if (targetRadius > _hardLimitRadius2)
-        //{
-        //    ////너무 크게 움직였다면 하드존까지 끌어온다
-        //    ///
-
-        //    //float dampedPosX = Mathf.SmoothDamp(transform.position.x, _targetTransform.position.x, ref _dampingRefX, _dampingTime.x / (targetRadius / _hardLimitRadius));
-        //    //float dampedPosY = Mathf.SmoothDamp(transform.position.y, _targetTransform.position.y, ref _dampingRefY, _dampingTime.y / (targetRadius / _hardLimitRadius));
-        //    //transform.position = new Vector3(dampedPosX, dampedPosY, transform.position.z);
-        //    transform.position = _targetTransform.position + (dirToTarget * _hardLimitRadius2 * -1.0f);
-        //    _hardLimitUpdated = true;
-        //    Debug.Log("하드리밋");
-
-
-        //    //float additionalSpeed = targetRadius / _hardLimitRadius;
-
-        //    //transform.position = Vector3.SmoothDamp(transform.position, _targetTransform.position, ref _dampingRef, _dampingTime / additionalSpeed);
-
-        //}
-    }
 
     public void HardLimitDrag(Vector3 deltaPosition)
     {

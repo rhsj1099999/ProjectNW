@@ -11,12 +11,7 @@ using Unity.VisualScripting;
 
 
 
-public enum AimState
-{
-    eTPSAim,
-    eSightAim,
-    ENEND,
-};
+
 
 
 public class CharacterMoveScript : MonoBehaviour
@@ -145,11 +140,6 @@ public class CharacterMoveScript : MonoBehaviour
         }
 
         CharacterMove(_animDir, speedRatio); //누르면 이동하기
-
-    }
-
-    void FixedUpdate()
-    {
 
     }
 

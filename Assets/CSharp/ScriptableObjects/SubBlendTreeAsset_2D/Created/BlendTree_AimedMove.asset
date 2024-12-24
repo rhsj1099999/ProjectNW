@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dffc18f84cbce884080232af28f19e7c, type: 3}
+  m_Name: BlendTree_AimedMove
+  m_EditorClassIdentifier: 
+  _calculateLogic: 0
+  _animation_YUP: {fileID: 7400000, guid: b96195d1b68be7243a818b0f33f3e8c0, type: 2}
+  _animation_XUP: {fileID: 7400000, guid: 62364a205beaba447bacab018aceb2f4, type: 2}
+  _animation_YDOWN: {fileID: 7400000, guid: 8e463b9dd2031184484331e2c64338fd, type: 2}
+  _animation_XDOWN: {fileID: 7400000, guid: 0e0eadd2cb8bfea47b7aeffaba17c699, type: 2}

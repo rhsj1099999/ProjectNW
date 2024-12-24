@@ -26,6 +26,14 @@ MonoBehaviour:
       - _conditionAsset: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298,
           type: 2}
         _goal: 1
+    - _linkedState: {fileID: 11400000, guid: ad899afa8d8021b4598fdf3426f789d0, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b07316e567acba2499d98c71f9c1a585,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298,
+          type: 2}
+        _goal: 1
     - _linkedState: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
       _conditionAsset:
       - _conditionAsset: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298,
@@ -53,6 +61,54 @@ MonoBehaviour:
     - _linkedState: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
       _conditionAsset:
       - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: ad899afa8d8021b4598fdf3426f789d0, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b07316e567acba2499d98c71f9c1a585,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: bbe06f87d4b556f4083ec1977ee3eb23, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: c9e2d07883b3a2c4795c086b39a1195d,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 2d4223264dd6f374fa05bc7da6665b3f, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 15d0f73e69e152c4da8c2fd350ea9771,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 1ebece2f354f25e43add2f6b95824516, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 76c2607a8bd408b41bbd5f5aaac1e501,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298,
+          type: 2}
+        _goal: 0
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: ad899afa8d8021b4598fdf3426f789d0, type: 2}
+    _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b07316e567acba2499d98c71f9c1a585,
+          type: 2}
+        _goal: 0
+      - _conditionAsset: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298,
           type: 2}
         _goal: 1
     - _linkedState: {fileID: 11400000, guid: bbe06f87d4b556f4083ec1977ee3eb23, type: 2}
@@ -87,6 +143,17 @@ MonoBehaviour:
       - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
           type: 2}
         _goal: 1
+    - _linkedState: {fileID: 11400000, guid: ad899afa8d8021b4598fdf3426f789d0, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b07316e567acba2499d98c71f9c1a585,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 6391663561eb3e04c99c77a9c27ad298,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: c9e2d07883b3a2c4795c086b39a1195d,
+          type: 2}
+        _goal: 0
     - _linkedState: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
       _conditionAsset:
       - _conditionAsset: {fileID: 11400000, guid: c9e2d07883b3a2c4795c086b39a1195d,
@@ -162,6 +229,8 @@ MonoBehaviour:
       _conditionAsset: []
     - _linkedState: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
       _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: ad899afa8d8021b4598fdf3426f789d0, type: 2}
+      _conditionAsset: []
   - _anotherType: 1
     _interactionStates:
     - _linkedState: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
@@ -175,4 +244,6 @@ MonoBehaviour:
     - _linkedState: {fileID: 11400000, guid: 7ddab38867ec2924b84719ede2b8afb0, type: 2}
       _conditionAsset: []
     - _linkedState: {fileID: 11400000, guid: 785227572302e444ba0a4188febd3940, type: 2}
+      _conditionAsset: []
+    - _linkedState: {fileID: 11400000, guid: ad899afa8d8021b4598fdf3426f789d0, type: 2}
       _conditionAsset: []

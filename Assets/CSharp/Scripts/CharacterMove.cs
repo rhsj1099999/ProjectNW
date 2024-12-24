@@ -38,6 +38,11 @@ public class CharacterMoveScript2 : MonoBehaviour
         Debug.Assert(_characterController != null, "_characterController ¾ø´Ù");
     }
 
+    private void FixedUpdate()
+    {
+        
+    }
+
     public void ClearLatestVelocity()
     {
         if (_moveTriggerd == false)
@@ -93,10 +98,20 @@ public class CharacterMoveScript2 : MonoBehaviour
         _isInAir = true;
     }
 
+    public void CharacterMove_NoSimilarity(Vector3 inputDirection, float ratio = 1.0f)
+    {
+        float similarities = Mathf.Clamp(Vector3.Dot(transform.forward, inputDirection), 0.0f, 1.0f);
+
+        Vector3 desiredMove = inputDirection * _speed * Time.deltaTime * ratio;
+
+        _characterController.Move(desiredMove);
+        _moveTriggerd = true;
+
+        _latestPlaneVelocityDontUseY = _characterController.velocity;
+    }
+
     public void CharacterMove(Vector3 inputDirection, float ratio = 1.0f)
     {
-        inputDirection = GetDirectionConvertedByCamera(inputDirection);
-
         float similarities = Mathf.Clamp(Vector3.Dot(transform.forward, inputDirection), 0.0f, 1.0f);
 
         Vector3 desiredMove = inputDirection * _speed * Time.deltaTime * similarities * ratio;
@@ -124,14 +139,6 @@ public class CharacterMoveScript2 : MonoBehaviour
 
     public void CharacterRotate(Vector3 inputDirection, float ratio = 1.0f)
     {
-        if (Camera.main != null)
-        {
-            Vector3 cameraLook = Camera.main.transform.forward;
-            cameraLook.y = 0.0f;
-            cameraLook = cameraLook.normalized;
-            inputDirection = (Quaternion.LookRotation(cameraLook) * inputDirection);
-        }
-
         float deltaDEG = Vector3.Angle(transform.forward.normalized, inputDirection);
 
         if (deltaDEG > 180.0f)

@@ -10,18 +10,94 @@ public class StateAsset : ScriptableObject
 
     private void OnValidate()
     {
-        if (_myState._isLoopState == true)
+        //루프 상태입니까?
         {
-            if (_myState._breakLoopStateCondition == null)
+            if (_myState._isLoopState == true)
             {
-                _myState._breakLoopStateCondition = new List<ConditionDesc>();
+                if (_myState._breakLoopStateCondition == null)
+                {
+                    _myState._breakLoopStateCondition = new List<ConditionDesc>();
+                }
+            }
+            else
+            {
+                if (_myState._breakLoopStateCondition != null)
+                {
+                    _myState._breakLoopStateCondition = null;
+                }
             }
         }
-        else
+
+        //AI공격 상태입니까?
         {
-            if (_myState._breakLoopStateCondition != null)
+            if (_myState._isAIAttackState == true)
             {
-                _myState._breakLoopStateCondition = null;
+                if (_myState._aiAttackStateDesc == null)
+                {
+                    _myState._aiAttackStateDesc = new AIAttackStateDesc();
+                }
+            }
+            else
+            {
+                if (_myState._aiAttackStateDesc != null)
+                {
+                    _myState._aiAttackStateDesc = null;
+                }
+            }
+        }
+
+
+        //AI공격 상태입니까?
+        {
+            if (_myState._isAIState == true)
+            {
+                if (_myState._aiStateDesc == null)
+                {
+                    _myState._aiStateDesc = new AIStateDesc();
+                }
+            }
+            else
+            {
+                if (_myState._aiStateDesc != null)
+                {
+                    _myState._aiStateDesc = null;
+                }
+            }
+        }
+
+        //블렌드 트리가 있습니까
+        {
+            if (_myState._isSubBlendTreeExist == false)
+            {
+                if (_myState._subBlendTree != null)
+                {
+                    _myState._subBlendTree = null;
+                }
+            }
+            else
+            {
+                if (_myState._subBlendTree == null)
+                {
+                    _myState._subBlendTree = new SubBlendTreeAsset_2D();
+                }
+            }
+        }
+
+        //애니메이션 서브스테이트 머신이 있습니까?
+        {
+            if (_myState._isSubAnimationStateMachineExist == false)
+            {
+                if (_myState._subAnimationStateMachine != null)
+                {
+                    _myState._subAnimationStateMachine = null;
+                }
+            }
+            else
+            {
+                if (_myState._subAnimationStateMachine == null)
+                {
+                    _myState._subAnimationStateMachine = new SubAnimationStateMachine();
+                }
             }
         }
     }

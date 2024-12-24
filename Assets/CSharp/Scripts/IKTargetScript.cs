@@ -7,6 +7,8 @@ using UnityEngine;
 [Serializable]
 public class IKTargetDesc
 {
+    //public AvatarIKGoal _ikType = AvatarIKGoal.RightHand;
+    public bool _isRightSide = true;
     public bool _isRotationIK = true;
     public bool _isPositionIK = true;
     public float _positionIKWeight = 1.0f;
@@ -34,7 +36,6 @@ public class IKTargetScript : MonoBehaviour
             //오른손에 장착한 무기이다
             if (_isMainHandle == true)
             {
-                //return;//소켓에 직접적인 영향을 주는 뼈에 IK를 적용하면 오류가 발생한다.
                 ikGoal = AvatarIKGoal.RightHand;
 
             }
@@ -48,7 +49,6 @@ public class IKTargetScript : MonoBehaviour
             //왼손에 장착한 무기이다
             if (_isMainHandle == true)
             {
-                //return; //소켓에 직접적인 영향을 주는 뼈에 IK를 적용하면 오류가 발생한다.
                 ikGoal = AvatarIKGoal.LeftHand;
             }
             else

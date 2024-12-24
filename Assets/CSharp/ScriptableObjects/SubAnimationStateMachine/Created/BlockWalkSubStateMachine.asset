@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6093c9ec13a0b014b93d5c1aefb6ffd7, type: 3}
+  m_Name: BlockWalkSubStateMachine
+  m_EditorClassIdentifier: 
+  _calculateLogic: 0
+  _animations:
+  - {fileID: 7400000, guid: 77582b03e5626ec4788c7a3f2f0211a4, type: 2}
+  - {fileID: 7400000, guid: ea61f099c256b844d9cd6f1831b8dac5, type: 2}
+  - {fileID: 7400000, guid: 6f23b2ff66d3b484ca590cd3a2ef9d71, type: 2}
+  - {fileID: 7400000, guid: 17ca196baa501bb44b53b60048b7d797, type: 2}
+  - {fileID: 7400000, guid: 33f691b1c900ab14fb9b24676e494055, type: 2}
+  - {fileID: 7400000, guid: 4c802da7ccfe3f747bd0a5f52ddb3b85, type: 2}
+  - {fileID: 7400000, guid: 879faeb9eaae35244bb9ba9982539726, type: 2}
+  - {fileID: 7400000, guid: d6328cf1511e28e4b8098b12751a698f, type: 2}
