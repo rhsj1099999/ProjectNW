@@ -13,7 +13,7 @@ public class OnGUIManager : SubManager
     private int _currentFrame = 0;
     private float _currentTimeAcc = 0;
     private Dictionary<string, string> _debugStrings = new Dictionary<string, string>();
-    private float _fontSize = 10.0f;
+    [SerializeField] private float _fontSize = 10.0f;
     private float _lineSize = 5.0f;
 
     public static OnGUIManager Instance
@@ -46,14 +46,14 @@ public class OnGUIManager : SubManager
         DontDestroyOnLoad(this.gameObject);
 
         _style = new GUIStyle();
-        _style.fontSize = 10;
+        _style.fontSize = (int)_fontSize;
         _style.normal.textColor = Color.red;
     }
 
     override public void SubManagerUpdate()
     {
         _currentTimeAcc += Time.deltaTime;
-
+        _style.fontSize = (int)_fontSize;
 
         if (_currentTimeAcc > 0.2f)
         {

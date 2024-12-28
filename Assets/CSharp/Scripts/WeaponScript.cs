@@ -52,9 +52,6 @@ public class WeaponComboEntry
 
 public class WeaponScript : MonoBehaviour
 {
-
-
-
     /*------------------------------------------
     Pivot Section.
     ------------------------------------------*/
@@ -195,7 +192,6 @@ public class WeaponScript : MonoBehaviour
     /*------------------------------------------
     IK Section.
     ------------------------------------------*/
-    protected Animator _ownerAnimator = null;
     protected IKScript _ownerIKSkript = null;
     protected Dictionary<AvatarIKGoal, IKTargetDesc> _createdIKTargets = new Dictionary<AvatarIKGoal, IKTargetDesc>();
     
@@ -240,7 +236,7 @@ public class WeaponScript : MonoBehaviour
 
     public virtual void InitIK()
     {
-        _ownerIKSkript = _ownerAnimator.gameObject.GetComponent<IKScript>();
+        _ownerIKSkript = _owner.GetComponentInChildren<CharacterAnimatorScript>().gameObject.GetComponentInChildren<IKScript>();
 
         //IK 세팅 단계
         IKTargetScript[] ikTargets = gameObject.GetComponentsInChildren<IKTargetScript>();
@@ -312,8 +308,6 @@ public class WeaponScript : MonoBehaviour
     virtual public void Equip(CharacterScript itemOwner, Transform followTransform)
     {
         _owner = itemOwner;
-        _ownerAnimator = itemOwner.gameObject.GetComponentInChildren<Animator>();
-
         Equip_OnSocket(followTransform);
     }
 

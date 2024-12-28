@@ -44,11 +44,15 @@ public class AimScript2 : MonoBehaviour
     컴포넌트들
     -----------------------------------------------*/
     private CharacterScript _owner = null;
+    private InputController _ownerInputController = null;
+    private CharacterAnimatorScript _ownerCharacterAnimatorScript = null;
+
     private GameObject _ownerCharacterHeart = null;
     private GameObject _ownerGameObject = null;
-    private InputController _ownerInputController = null;
-    private RigBuilder _ownerRigBuilder = null;
-    private Rig _ownerRig = null;
+
+    //private RigBuilder _ownerRigBuilder = null;
+    //private Rig _ownerRig = null;
+
     private bool _isRiggingOn = false;
 
 
@@ -104,12 +108,14 @@ public class AimScript2 : MonoBehaviour
     private Vector2 currentVelocity; // SmoothDamp의 속도 추적용 변수
 
 
+
     private void Awake()
     {
         //owner 세팅
         {
             _owner = GetComponentInParent<CharacterScript>();
             Debug.Assert(_owner != null, "owner가 없다");
+            _ownerCharacterAnimatorScript = _owner.GetComponentInChildren<CharacterAnimatorScript>();  
         }
 
         //조종자의 인풋 컨트롤러 세팅
@@ -164,39 +170,44 @@ public class AimScript2 : MonoBehaviour
 
         //런타임 리깅세팅
         {
-            _ownerRigBuilder = GetComponentInChildren<RigBuilder>();
-            _ownerRig = GetComponentInChildren<Rig>();
-
-            if (_ownerRig == null || _ownerRigBuilder == null)
-            {
-                Debug.Assert(false, "아직 리깅이 없을때에 대해 처리하지 않았습니다");
-            }
-
-            MultiAimConstraint[] constrainComponents = _ownerRig.gameObject.GetComponentsInChildren<MultiAimConstraint>();
-
-            foreach (var component in constrainComponents)
-            {
-                var sources = component.data.sourceObjects;
-
-                WeightedTransform newSource = new WeightedTransform
-                {
-                    transform = _aimSatellite.transform,
-                    weight = 1.0f
-                };
-
-                sources.Clear();
-                sources.Add(newSource);
-
-                component.data.sourceObjects = sources;
-            }
-
-            _ownerRigBuilder.Build();
-            _isRiggingOn = false;
-            _ownerRig.enabled = false;
-            _ownerRigBuilder.enabled = false;
+            RigBuilder characterRigBuilder = _ownerCharacterAnimatorScript.GetCharacterRigBuilder();
+            Rig characterRig = _ownerCharacterAnimatorScript.GetCharacterRig();
+            SetRigging(characterRigBuilder, characterRig);
         }
 
         OffAimState();
+    }
+
+
+    public void SetRigging(RigBuilder characterRigBuilder, Rig characterRig)
+    {
+        if (characterRig == null || characterRigBuilder == null)
+        {
+            Debug.Assert(false, "아직 리깅이 없을때에 대해 처리하지 않았습니다");
+        }
+
+        MultiAimConstraint[] constrainComponents = characterRig.gameObject.GetComponentsInChildren<MultiAimConstraint>();
+
+        foreach (var component in constrainComponents)
+        {
+            var sources = component.data.sourceObjects;
+
+            WeightedTransform newSource = new WeightedTransform
+            {
+                transform = _aimSatellite.transform,
+                weight = 1.0f
+            };
+
+            sources.Clear();
+            sources.Add(newSource);
+
+            component.data.sourceObjects = sources;
+        }
+
+        characterRigBuilder.Build();
+        _isRiggingOn = false;
+        characterRig.enabled = false;
+        characterRigBuilder.enabled = false;
     }
 
 
@@ -458,6 +469,9 @@ public class AimScript2 : MonoBehaviour
 
     public void TurnOnRigging(bool isOn)
     {
+        RigBuilder characterRigBuilder = _ownerCharacterAnimatorScript.GetCharacterRigBuilder();
+        Rig characterRig = _ownerCharacterAnimatorScript.GetCharacterRig();
+
         if (_isRiggingOn == isOn)
         {
             return;
@@ -471,13 +485,13 @@ public class AimScript2 : MonoBehaviour
                 ? 1.0f
                 : 0.0f;
 
-            _ownerRig.weight = weight;
+            characterRig.weight = weight;
 
-            _ownerRigBuilder.Build();
+            characterRigBuilder.Build();
         }
 
-        _ownerRig.enabled = isOn;
-        _ownerRigBuilder.enabled = isOn;
+        characterRig.enabled = isOn;
+        characterRigBuilder.enabled = isOn;
 
     }
 

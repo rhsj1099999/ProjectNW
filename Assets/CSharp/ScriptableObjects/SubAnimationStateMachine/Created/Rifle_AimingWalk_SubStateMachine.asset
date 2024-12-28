@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6093c9ec13a0b014b93d5c1aefb6ffd7, type: 3}
+  m_Name: Rifle_AimingWalk_SubStateMachine
+  m_EditorClassIdentifier: 
+  _calculateLogic: 0
+  _animations:
+  - {fileID: 7400000, guid: f6dd415075aacd34ea9ef7f6c81edbd5, type: 2}
+  - {fileID: 7400000, guid: f89f2aabe470cf34685b712cc0f6f1fb, type: 2}
+  - {fileID: 7400000, guid: 45d7527a7609e274f8f322a7a1992771, type: 2}
+  - {fileID: 7400000, guid: 306770020e1a45d40bf1f5fa53c69693, type: 2}
+  - {fileID: 7400000, guid: ce873a474010d7a49a190dc353ae579f, type: 2}
+  - {fileID: 7400000, guid: 979f070c8387f63469c52ae2b5e3274a, type: 2}
+  - {fileID: 7400000, guid: 1514933108ad31f46829daf3748bfba6, type: 2}
+  - {fileID: 7400000, guid: 3bcb47ac929c6cd46bcfa8587869ab43, type: 2}

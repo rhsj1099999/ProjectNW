@@ -99,9 +99,9 @@ public class CharacterScript : MonoBehaviour, IHitable
     [SerializeField] protected CharacterController _charactercontroller = null;
     [SerializeField] protected GameObject _characterHeart = null;
     [SerializeField] protected CharacterColliderScript _characterColliderScript = null;
+    [SerializeField] protected GameObject _inventoryUIPrefab = null;
 
-    protected GameObject _characterModelObject = null; //애니메이터는 얘가 갖고있다
-    public GameObject GetCharacterModleObject() { return _characterModelObject; }
+
     public StateContoller GetStateContoller() { return _stateContoller; }
     protected StatScript _myStat = new StatScript();
     protected AimScript2 _aimScript = null;
@@ -114,6 +114,7 @@ public class CharacterScript : MonoBehaviour, IHitable
         }
         _aimScript.enabled = true;
     }
+
 
 
     /*---------------------------------------------------
@@ -257,9 +258,9 @@ public class CharacterScript : MonoBehaviour, IHitable
         //소켓 찾기
         Transform correctSocket = null;
         {
-            Debug.Assert(_characterModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+            Debug.Assert(_characterAnimatorScript.GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
 
-            WeaponSocketScript[] weaponSockets = _characterModelObject.GetComponentsInChildren<WeaponSocketScript>();
+            WeaponSocketScript[] weaponSockets = _characterAnimatorScript.GetCurrActivatedModelObject().GetComponentsInChildren<WeaponSocketScript>();
 
             Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
 
@@ -476,10 +477,61 @@ public class CharacterScript : MonoBehaviour, IHitable
 
         _charactercontroller = GetComponent<CharacterController>();
         Debug.Assert(_charactercontroller != null, "CharacterController 컴포넌트가 없습니다");
-
-        Animator animator = GetComponentInChildren<Animator>();
-        _characterModelObject = animator.gameObject;
+        _charactercontroller.detectCollisions = false;
     }
+
+
+
+    public void MoveWeapons(GameObject newModelObject)
+    {
+        Transform correctSocket_Left = null;
+        Transform correctSocket_Right = null;
+
+        //소켓 찾기
+        {
+            Debug.Assert(_characterAnimatorScript.GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+
+            WeaponSocketScript[] weaponSockets = _characterAnimatorScript.GetCurrActivatedModelObject().GetComponentsInChildren<WeaponSocketScript>();
+
+            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+            foreach (var socketComponent in weaponSockets)
+            {
+                if (socketComponent._sideType == WeaponSocketScript.SideType.Left)
+                {
+                    //왼손 소켓입니다
+                    correctSocket_Left = socketComponent.transform;
+                }
+                else
+                {
+                    correctSocket_Right = socketComponent.transform;
+                }
+            }
+
+            if (correctSocket_Left == null || correctSocket_Right == null)
+            {
+                Debug.Assert(false, "못찾았따");
+                Debug.Break();
+            }
+        }
+
+
+
+
+        if (_tempCurrRightWeapon != null)
+        {
+            WeaponScript rightWeaponScript = _tempCurrRightWeapon.GetComponent<WeaponScript>();
+            rightWeaponScript.Equip(this, correctSocket_Right);
+        }
+
+        if (_tempCurrLeftWeapon != null)
+        {
+            WeaponScript leftWeaponScript = _tempCurrLeftWeapon.GetComponent<WeaponScript>();
+            leftWeaponScript.Equip(this, correctSocket_Left);
+        }
+    }
+
+
 
     private void TriggerEnterWithWeapon(Collider other)
     {
@@ -523,30 +575,37 @@ public class CharacterScript : MonoBehaviour, IHitable
         DealMe(tempDamageDesc, other.gameObject);
     }
 
-    private void OnTriggerEnter(Collider other)
+
+    private void OnTriggerStay(Collider other)
     {
-        bool isPlayer = false;
-        if (gameObject.name == "PlayerCharacter3")
+    }
+
+    protected virtual void OnTriggerEnter(Collider other)
+    {
+        //무기와 충돌계산
         {
-            isPlayer = true;
-        }
+            string tag = other.tag;
 
-        string tag = other.tag;
-
-        if (tag == "WeaponAttachedCollider") 
-        {
-            //나를 적대시하는 캐릭터가 들고있는 무기와 부딪혔습니다.
-
-            if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == true)
+            if (tag == "WeaponAttachedCollider")
             {
-                Debug.Log("무기와 부딪혔다");
-                TriggerEnterWithWeapon(other);
-            }
-            else
-            {
-                Debug.Log("하지만 씹혔다");
+                //나를 적대시하는 캐릭터가 들고있는 무기와 부딪혔습니다.
+
+                if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == true)
+                {
+                    Debug.Log("무기와 부딪혔다");
+                    TriggerEnterWithWeapon(other);
+                }
+                else
+                {
+                    Debug.Log("하지만 씹혔다");
+                }
             }
         }
+    }
+
+
+    protected virtual void OnTriggerExit(Collider other)
+    {
     }
 
     protected virtual void Start()

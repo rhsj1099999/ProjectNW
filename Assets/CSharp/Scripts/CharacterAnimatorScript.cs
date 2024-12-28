@@ -1,10 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.Playables;
-using static AnimatorBlendingDesc;
+using UnityEngine.Animations.Rigging;
 using static BodyPartBlendingWork;
 using static CharacterScript;
 
@@ -78,47 +77,68 @@ public class AnimatorBlendingDesc
 
 public class CharacterAnimatorScript : MonoBehaviour
 {
-    [SerializeField] protected AnimationClip _tempWeaponHandling_NoPlay = null;
-    //무기 들고있는 애니메이션 없는걸 대비해서 썼는데 그냥 다 채워줘서 필요없는 변수입니다.
+    [SerializeField] private Avatar _gameBasicAvatar = null;
+    private GameObject _gameBasicCharacter = null;
 
+    private Action _lateUpdateActions;
 
-
-    [SerializeField] CharacterScript _owner = null;
+    CharacterScript _owner = null;
 
     protected Animator _animator = null;
+    protected GameObject _characterModelObject = null;
+
+
     protected AnimatorOverrideController _overrideController = null;
     protected AnimationClip _currAnimClip = null;
-    public AnimationClip GetCurrAnimationClip()
-    {
-        return _currAnimClip;
-    }
+
     protected StateContoller _stateContoller = null;
     private StateAsset _currStateAsset = null;
     private int _currAnimIndex = -1;
 
-    
-
-    [SerializeField] protected int _currentBusyAnimatorLayer_BitShift = 0;
-    public int GetBusyLayer() { return _currentBusyAnimatorLayer_BitShift; }
-
-    protected List<bool> _currentBusyAnimatorLayer = new List<bool>();
-
 
     protected List<bool> _bodyCoroutineStarted = new List<bool>();
+    protected List<bool> _currentBusyAnimatorLayer = new List<bool>();
     protected List<Coroutine> _currentBodyCoroutine = new List<Coroutine>();
     protected List<Action_LayerType> _bodyPartDelegates = new List<Action_LayerType>();
 
-
+    
+    [SerializeField] protected int _currentBusyAnimatorLayer_BitShift = 0;
     [SerializeField] protected List<AnimatorLayerTypes> _usingBodyPart = new List<AnimatorLayerTypes>();
     protected List<AnimatorBlendingDesc> _partBlendingDesc = new List<AnimatorBlendingDesc>();
     protected List<LinkedList<BodyPartBlendingWork>> _bodyPartWorks = new List<LinkedList<BodyPartBlendingWork>>();
+
+    [SerializeField] protected AnimationClip _ifWeaponIsLight = null;
+
+    public int GetBusyLayer() { return _currentBusyAnimatorLayer_BitShift; }
+    public Animator GetCurrActivatedAnimator() { return _animator; }
+    public GameObject GetCurrActivatedModelObject() { return _characterModelObject; }
+    public AnimationClip GetCurrAnimationClip() { return _currAnimClip; }
+    public Rig GetCharacterRig() { return _characterRig; }
+    public RigBuilder GetCharacterRigBuilder() { return _characterRigBuilder; }
+
+    protected RigBuilder _characterRigBuilder = null;
+    protected Rig _characterRig = null;
+
+
+    [SerializeField] private GameObject tempDebuggingModel = null;
 
 
 
     private void Awake()
     {
+        _owner = GetComponentInParent<CharacterScript>();
         _animator = GetComponentInChildren<Animator>();
+        _gameBasicAvatar = _animator.avatar;
+
         Debug.Assert(_animator != null, "Animator가 없다");
+        _characterModelObject = _animator.gameObject;
+        _gameBasicCharacter = Instantiate(_characterModelObject);
+        _gameBasicCharacter.SetActive(false);
+
+        _characterRig = GetComponentInChildren<Rig>();
+        _characterRigBuilder = GetComponentInChildren<RigBuilder>();
+
+
         _overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
         _animator.runtimeAnimatorController = _overrideController;
 
@@ -148,8 +168,19 @@ public class CharacterAnimatorScript : MonoBehaviour
             Debug.Break();
             _partBlendingDesc[(int)AnimatorLayerTypes.FullBody] = new AnimatorBlendingDesc(AnimatorLayerTypes.FullBody, _animator);
         }
+
+        if (_gameBasicAvatar == null)
+        {
+            Debug.Assert(false, "캐릭터 초기값 아바타입니다. 반드시 설정돼있어야합니다");
+            Debug.Break();
+        }
     }
 
+
+    public void ResetCharacterModel()
+    {
+        ModelChange(_gameBasicCharacter);
+    }
 
     private void LateUpdate()
     {
@@ -163,6 +194,130 @@ public class CharacterAnimatorScript : MonoBehaviour
                 AnimationClip nextAnimation = _currStateAsset._myState._subAnimationStateMachine._animations[animationIndex];
                 FullBodyAnimationChange(nextAnimation);
                 _currAnimIndex = animationIndex;
+            }
+        }
+    }
+
+
+    public bool IsSameSkeleton(Avatar newModelAvatar)
+    {
+        return (newModelAvatar == _gameBasicAvatar);
+    }
+
+    public GameObject ModelChange(GameObject modelObject)
+    {
+        GameObject newModel = Instantiate(modelObject);
+        newModel.SetActive(true);
+        SkinnedMeshRenderer[] meshRenderers = newModel.GetComponents<SkinnedMeshRenderer>();
+        foreach (var meshRenderer in meshRenderers)
+        {
+            meshRenderer.enabled = false;
+        }
+
+        newModel.transform.SetParent(transform);
+        newModel.transform.localPosition = Vector3.zero;
+        newModel.transform.rotation = _characterModelObject.transform.rotation;
+
+        Animator newAnimator = newModel.GetComponentInChildren<Animator>();
+        AnimatorOverrideController newOverrideController = new AnimatorOverrideController(newAnimator.runtimeAnimatorController);
+        newAnimator.runtimeAnimatorController = newOverrideController;
+
+        SyncAnimatorState(_animator, newAnimator, newOverrideController);
+
+        StartCoroutine(WaitNextFrameCoroutine(newModel, newOverrideController, meshRenderers));
+
+        return newModel;
+    }
+
+    private IEnumerator WaitNextFrameCoroutine(GameObject newModel, AnimatorOverrideController overrideController, SkinnedMeshRenderer[] meshRenderers)
+    {
+        yield return new WaitForEndOfFrame();
+
+        GameObject destroyThis = _characterModelObject;
+
+        foreach (var meshRenderer in meshRenderers)
+        {
+            meshRenderer.enabled = true;
+        }
+
+        _characterModelObject = newModel;
+        _characterRig = _characterModelObject.GetComponentInChildren<Rig>();
+        _characterRigBuilder = _characterModelObject.GetComponentInChildren<RigBuilder>();
+
+        _animator = newModel.GetComponentInChildren<Animator>();
+        _overrideController = overrideController;
+
+        _owner.GetComponentInChildren<AimScript2>().SetRigging(_characterRigBuilder, _characterRig);
+        _owner.MoveWeapons(newModel);
+
+        Destroy(destroyThis);
+    }
+
+
+    void SyncAnimatorState(Animator sourceAnimator, Animator targetAnimator, AnimatorOverrideController targetOverrideController)
+    {
+        //2. 변수 동기화
+        {
+            foreach (AnimatorControllerParameter parameter in sourceAnimator.parameters)
+            {
+                switch (parameter.type)
+                {
+                    case AnimatorControllerParameterType.Bool:
+                        bool boolValue = sourceAnimator.GetBool(parameter.name);
+                        targetAnimator.SetBool(parameter.name, boolValue);
+                        break;
+
+                    case AnimatorControllerParameterType.Float:
+                        float floatValue = sourceAnimator.GetFloat(parameter.name);
+                        targetAnimator.SetFloat(parameter.name, floatValue);
+                        break;
+
+                    case AnimatorControllerParameterType.Int:
+                        int intValue = sourceAnimator.GetInteger(parameter.name);
+                        targetAnimator.SetInteger(parameter.name, intValue);
+                        break;
+
+                    case AnimatorControllerParameterType.Trigger:
+                        if (sourceAnimator.GetBool(parameter.name))
+                        {
+                            targetAnimator.SetTrigger(parameter.name);
+                        }
+                        break;
+                }
+            }
+        }
+
+
+        //1. 런타임 클립 동기화
+        {
+            AnimatorOverrideController sourceOverrideController = sourceAnimator.runtimeAnimatorController as AnimatorOverrideController;
+            List<KeyValuePair<AnimationClip, AnimationClip>> paris = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+            sourceOverrideController.GetOverrides(paris);
+
+            foreach (var clipPair in paris)
+            {
+                targetOverrideController[clipPair.Key] = clipPair.Value;
+            }
+        }
+
+
+
+        //3. Weight 동기화
+        {
+            int index = 0;
+
+            foreach (AnimatorBlendingDesc desc in _partBlendingDesc)
+            {
+                desc._ownerAnimator = targetAnimator;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    AnimatorStateInfo stateInfo = sourceAnimator.GetCurrentAnimatorStateInfo(index);
+                    targetAnimator.Play(stateInfo.shortNameHash, index, stateInfo.normalizedTime);
+                    targetAnimator.SetLayerWeight(index, _animator.GetLayerWeight(index));
+
+                    index++;
+                }
             }
         }
     }
@@ -276,7 +431,7 @@ public class CharacterAnimatorScript : MonoBehaviour
                         {
                             if (oppositeWeaponScript._handlingIdleAnimation_OneHand == null)
                             {
-                                _overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
+                                //_overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
                             }
                             _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
                         }
@@ -302,7 +457,7 @@ public class CharacterAnimatorScript : MonoBehaviour
                             : 1.0f;
                         _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
 
-                        //_animator.SetBool("IsMirroring", false);
+                        _animator.SetBool("IsMirroring", false);
                     }
                 }
                 break;
@@ -325,7 +480,7 @@ public class CharacterAnimatorScript : MonoBehaviour
                     }
                     else
                     {
-                        //_animator.SetBool("IsMirroring", false);
+                        _animator.SetBool("IsMirroring", false);
                     }
                 }
                 break;
@@ -381,7 +536,7 @@ public class CharacterAnimatorScript : MonoBehaviour
                         {
                             if (oppositeWeaponScript.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null)
                             {
-                                _overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
+                                //_overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
                             }
                             _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
                         }
@@ -406,7 +561,7 @@ public class CharacterAnimatorScript : MonoBehaviour
                             : 1.0f;
                         _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
 
-                        //_animator.SetBool("IsMirroring", false);
+                        _animator.SetBool("IsMirroring", false);
                     }
                 }
                 break;
@@ -427,7 +582,7 @@ public class CharacterAnimatorScript : MonoBehaviour
                     }
                     else
                     {
-                        //_animator.SetBool("IsMirroring", false);
+                        _animator.SetBool("IsMirroring", false);
                     }
                 }
                 break;
@@ -439,7 +594,6 @@ public class CharacterAnimatorScript : MonoBehaviour
                 break;
         }
     }
-
 
     public void CalculateBodyWorkType_ChangeWeapon(WeaponGrabFocus ownerWeaponGrabFocusType, bool isRightWeaponTrigger, int layerLockResult)
     {
@@ -808,7 +962,7 @@ public class CharacterAnimatorScript : MonoBehaviour
                 //원래 쥐고있는 트랜스폼 캐싱
                 rightHandWeaponOriginalTransform = weaponScript._socketTranform;
 
-                GameObject ownerModelObject = _owner.GetCharacterModleObject();
+                GameObject ownerModelObject = _characterModelObject;
 
                 //반대손 소켓 찾기
                 {

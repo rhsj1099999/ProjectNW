@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static AnimationAttackFrameAsset;
@@ -28,9 +29,7 @@ public class CharacterColliderScript : MonoBehaviour
     }
 
     [SerializeField] private CharacterScript _owner = null;
-    [SerializeField] private GameObject _ownerModelObject = null;
     [SerializeField] private List<BasicColliderDesc> _basicColliders = null;
-    [SerializeField] private Animator _animator = null;
 
     private Dictionary<ColliderAttachType, GameObject> _colliders = new Dictionary<ColliderAttachType, GameObject>();
     private List<LinkedList<ColliderWorkDesc>> _colliderWorks = new List<LinkedList<ColliderWorkDesc>>();
@@ -122,7 +121,7 @@ public class CharacterColliderScript : MonoBehaviour
         {
             ColliderAttachType type = desc._attachType;
 
-            if (_animator.GetBool("IsMirroring") == true)
+            if (_owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBool("IsMirroring") == true)
             {
                 switch (type)
                 {

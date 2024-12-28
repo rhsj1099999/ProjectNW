@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myState:
     _stateType: 0
-    _stateAnimationClip: {fileID: 7400000, guid: 014737103e5afa94fa021c35829978ad,
+    _stateAnimationClip: {fileID: 7400000, guid: 4c266e62b3bf91e4eb97d68c50382565,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
@@ -38,3 +38,7 @@ MonoBehaviour:
     _ExitStateActionTypes: 
     _checkingBehaves: 
     _breakLoopStateCondition: []
+    _isSubBlendTreeExist: 0
+    _subBlendTree: {fileID: 0}
+    _isSubAnimationStateMachineExist: 0
+    _subAnimationStateMachine: {fileID: 0}

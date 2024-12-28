@@ -13,30 +13,32 @@ MonoBehaviour:
   m_Name: State_InAir
   m_EditorClassIdentifier: 
   _myState:
-    _stataName: InAir
-    _stateAnimationClip: {fileID: 7400000, guid: 30fcfb7896ce60146bf2385737da6dcd,
+    _stateType: 0
+    _stateAnimationClip: {fileID: 7400000, guid: 7f6a744e3f448d74394cabb78ded32d1,
       type: 2}
     _rightWeaponOverride: 1
     _leftWeaponOverride: 1
     _isAttackState: 0
     _isLocoMotionToAttackAction: 1
-    _stateLocked: 0
+    _isLoopState: 0
     _canUseItem: 0
-    _stateType: 
+    _stateLocked: 0
+    _isBlockState: 0
+    _isAIAttackState: 0
+    _isAIState: 0
+    _aiStateDesc:
+      _coolTime: -1
+      _randomChancePercentage: -1
+      _stateTimeThreshould: -1
+    _aiAttackStateDesc:
+      _coolTime: -1
+      _range: -1
     _EnterStateActionTypes: 02000000
     _inStateActionTypes: 040000000c000000
     _ExitStateActionTypes: 
     _checkingBehaves: 0000000001000000
-    _linkedStates:
-    - _multiConditionAsset:
-      - _singleConditionType: 2
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget: []
-        _commandInputConditionTarget: []
-        _animationFrameDataType: 2
-        _comboStrainedTime: -1
-        _mustNotBusyLayers: 
-        _mustNotBusyLayers_BitShift: 1
-      _stateAsset: {fileID: 11400000, guid: 1813233ffeb89ca41a0b7e6444469f7f, type: 2}
-    _endStateIdleException: {fileID: 0}
+    _breakLoopStateCondition: []
+    _isSubBlendTreeExist: 0
+    _subBlendTree: {fileID: 0}
+    _isSubAnimationStateMachineExist: 0
+    _subAnimationStateMachine: {fileID: 0}

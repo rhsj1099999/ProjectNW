@@ -13,34 +13,32 @@ MonoBehaviour:
   m_Name: State_GreatSwordWheelAttack_FromNoel
   m_EditorClassIdentifier: 
   _myState:
-    _stataName: GreatSwordWheelAttack_FromNoel
-    _stateAnimationClip: {fileID: 7400000, guid: a3295f88922b4b8469d9add00c5e415a,
+    _stateType: 0
+    _stateAnimationClip: {fileID: 7400000, guid: 3a4a74e729564834cb1f5db0173ff4e5,
       type: 2}
     _rightWeaponOverride: 1
     _leftWeaponOverride: 1
     _isAttackState: 1
     _isLocoMotionToAttackAction: 0
-    _stateLocked: 0
+    _isLoopState: 0
     _canUseItem: 0
-    _stateType: 
+    _stateLocked: 0
+    _isBlockState: 0
+    _isAIAttackState: 0
+    _isAIState: 0
+    _aiStateDesc:
+      _coolTime: -1
+      _randomChancePercentage: -1
+      _stateTimeThreshould: -1
+    _aiAttackStateDesc:
+      _coolTime: -1
+      _range: -1
     _EnterStateActionTypes: 0d000000
     _inStateActionTypes: 00000000
     _ExitStateActionTypes: 0e000000
     _checkingBehaves: 
-    _linkedStates:
-    - _multiConditionAsset:
-      - _singleConditionType: 3
-        _componentConditionGoal: 0
-        _weaponTypeGoal: 0
-        _keyInputConditionTarget:
-        - _targetKeyCode: 113
-          _targetState: 1
-          _keyInpuyGoal: 0
-          _keyHoldGoal: 0
-        _commandInputConditionTarget: []
-        _animationFrameDataType: 2
-        _comboStrainedTime: -1
-        _mustNotBusyLayers: 
-        _mustNotBusyLayers_BitShift: 1
-      _stateAsset: {fileID: 11400000, guid: 770b22d7cb891404d822504a890d0f86, type: 2}
-    _endStateIdleException: {fileID: 0}
+    _breakLoopStateCondition: []
+    _isSubBlendTreeExist: 0
+    _subBlendTree: {fileID: 0}
+    _isSubAnimationStateMachineExist: 0
+    _subAnimationStateMachine: {fileID: 0}

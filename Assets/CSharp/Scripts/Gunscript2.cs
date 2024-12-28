@@ -155,6 +155,15 @@ public class Gunscript2 : WeaponScript
         }
     }
 
+    private void OnDestroy()
+    {
+        foreach (KeyValuePair<AvatarIKGoal, IKTargetDesc> iks in _createdIKTargets)
+        {
+            _ownerIKSkript.DestroyIK(iks.Value);
+        }
+        
+    }
+
 
     override public void Equip(CharacterScript itemOwner, Transform followTransform) 
     {
@@ -165,15 +174,15 @@ public class Gunscript2 : WeaponScript
             //_shoulderStock_Unity = _ownerAnimator.GetBoneTransform(HumanBodyBones.RightShoulder);
 
             _shoulderStock_Unity = (_isRightHandWeapon == true)
-              ? _ownerAnimator.GetBoneTransform(HumanBodyBones.RightUpperArm)
-              : _ownerAnimator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+              ? _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightUpperArm)
+              : _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.LeftUpperArm);
             Debug.Assert(_stockPosition != null, "자세제어를 위해 견착위치가 필요합니다(권총도 마찬가지)");
 
 
 
             _elbowPosition_Unity = (_isRightHandWeapon == true)
-              ? _ownerAnimator.GetBoneTransform(HumanBodyBones.RightLowerArm)
-              : _ownerAnimator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+              ? _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightLowerArm)
+              : _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.LeftLowerArm);
         }
 
         //조준 스크립트, 리깅관련
@@ -185,7 +194,7 @@ public class Gunscript2 : WeaponScript
 
         //IK 세팅
         {
-            GameObject ownerModelObject = _owner.GetCharacterModleObject();
+            GameObject ownerModelObject = _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedModelObject();
             _ownerIKSkript = ownerModelObject.gameObject.GetComponent<IKScript>();
             Debug.Assert(_ownerIKSkript != null, "Gun은 IK를 이용해야만 합니다");
             base.InitIK();
@@ -229,6 +238,8 @@ public class Gunscript2 : WeaponScript
             _whenShootEvent.Invoke();
         }
     }
+
+
 
     private void RayCheck()
     {

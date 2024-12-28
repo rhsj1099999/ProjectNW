@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myState:
     _stateType: 12
-    _stataName: HitH_FromBoy
-    _stateAnimationClip: {fileID: 7400000, guid: 3aedee2794554654195e99a1556b6a4d,
+    _stateAnimationClip: {fileID: 7400000, guid: 2c732391745d33448bf5112f6561e231,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
@@ -25,8 +24,21 @@ MonoBehaviour:
     _canUseItem: 0
     _stateLocked: 0
     _isBlockState: 0
+    _isAIAttackState: 0
+    _isAIState: 0
+    _aiStateDesc:
+      _coolTime: -1
+      _randomChancePercentage: -1
+      _stateTimeThreshould: -1
+    _aiAttackStateDesc:
+      _coolTime: -1
+      _range: -1
     _EnterStateActionTypes: 
     _inStateActionTypes: 06000000
     _ExitStateActionTypes: 
     _checkingBehaves: 
     _breakLoopStateCondition: []
+    _isSubBlendTreeExist: 0
+    _subBlendTree: {fileID: 0}
+    _isSubAnimationStateMachineExist: 0
+    _subAnimationStateMachine: {fileID: 0}

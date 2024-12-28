@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myState:
     _stateType: 0
-    _stataName: Zombie_Threat
-    _stateAnimationClip: {fileID: 7400000, guid: b94fefad945daf246b77859f28dc4df0,
+    _stateAnimationClip: {fileID: 7400000, guid: 2fcca39f906dad6418d6fafb24532e21,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
@@ -26,11 +25,20 @@ MonoBehaviour:
     _stateLocked: 0
     _isBlockState: 0
     _isAIAttackState: 0
+    _isAIState: 0
+    _aiStateDesc:
+      _coolTime: -1
+      _randomChancePercentage: -1
+      _stateTimeThreshould: -1
     _aiAttackStateDesc:
-      _coolTime: 1
-      _needRange: 1
+      _coolTime: -1
+      _range: -1
     _EnterStateActionTypes: 
     _inStateActionTypes: 13000000
     _ExitStateActionTypes: 
     _checkingBehaves: 
     _breakLoopStateCondition: []
+    _isSubBlendTreeExist: 0
+    _subBlendTree: {fileID: 0}
+    _isSubAnimationStateMachineExist: 0
+    _subAnimationStateMachine: {fileID: 0}

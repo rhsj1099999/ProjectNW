@@ -6,6 +6,10 @@ public class GameManager : MonoBehaviour
 {
     static private GameManager _instance = null;
 
+    [SerializeField] private List<GameObject> _FIRSTINTANTIATE = new List<GameObject>();
+
+
+
     public GameManager Instance 
     {
         get 
@@ -37,6 +41,12 @@ public class GameManager : MonoBehaviour
         foreach (var subManager in _subManagers)
         {
             subManager.SubManagerAwake();
+        }
+
+        foreach(var FRAMEDROPOBJECT in _FIRSTINTANTIATE)
+        {
+            GameObject newGameObject = Instantiate( FRAMEDROPOBJECT);
+            Destroy(newGameObject);
         }
     }
     private void FixedUpdate()

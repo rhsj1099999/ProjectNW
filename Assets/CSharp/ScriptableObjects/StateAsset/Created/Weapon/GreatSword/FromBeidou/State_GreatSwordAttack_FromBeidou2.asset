@@ -13,15 +13,32 @@ MonoBehaviour:
   m_Name: State_GreatSwordAttack_FromBeidou2
   m_EditorClassIdentifier: 
   _myState:
-    _stataName: MediumSwordAttack_FromPlayerBoy_2
-    _stateAnimationClip: {fileID: 7400000, guid: 0d4a586e2eabaa24b965a643b3a80e4d,
+    _stateType: 0
+    _stateAnimationClip: {fileID: 7400000, guid: ef59f084511d09746aeb109663d40075,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
     _isAttackState: 1
     _isLocoMotionToAttackAction: 0
-    _stateType: 
+    _isLoopState: 0
+    _canUseItem: 0
+    _stateLocked: 0
+    _isBlockState: 0
+    _isAIAttackState: 0
+    _isAIState: 0
+    _aiStateDesc:
+      _coolTime: -1
+      _randomChancePercentage: -1
+      _stateTimeThreshould: -1
+    _aiAttackStateDesc:
+      _coolTime: -1
+      _range: -1
     _EnterStateActionTypes: 
     _inStateActionTypes: 06000000
     _ExitStateActionTypes: 
-    _linkedStates: []
+    _checkingBehaves: 
+    _breakLoopStateCondition: []
+    _isSubBlendTreeExist: 0
+    _subBlendTree: {fileID: 0}
+    _isSubAnimationStateMachineExist: 0
+    _subAnimationStateMachine: {fileID: 0}

@@ -33,10 +33,10 @@ public class EquipmentCell : MonoBehaviour
         Debug.Assert(_ownerEquipmentBoard != null, "Equipcell Owner가 제대로 설정되지 않았습니다");
 
 
+        //착용 부위가 다른템이다
+        //이정도는 board 말고 cell 선에서 컷
         if ((storedDesc._info._equipType & _equipType) == (int)EquipType.None)
         {
-            //착용 부위가 다른템이다
-            //이정도는 board 말고 cell 선에서 컷
             return;
         }
 

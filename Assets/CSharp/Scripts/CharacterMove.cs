@@ -62,6 +62,7 @@ public class CharacterMoveScript2 : MonoBehaviour
 
         _characterController.Move(gravityMove);
 
+        
         if (_characterController.isGrounded == true)
         {
             _characterController.stepOffset = _inGroundStepOffset;

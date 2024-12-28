@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6093c9ec13a0b014b93d5c1aefb6ffd7, type: 3}
+  m_Name: Rifle_AimingWalk_ZombieAvatar_SubStateMachine
+  m_EditorClassIdentifier: 
+  _calculateLogic: 0
+  _animations:
+  - {fileID: 7400000, guid: 53315259836fe2148afa31c27bd9495c, type: 2}
+  - {fileID: 7400000, guid: 2c516111e5c53f747bed09d8b4dc63e3, type: 2}
+  - {fileID: 7400000, guid: 6f26db8e7f0133141bba622f5a7702f0, type: 2}
+  - {fileID: 7400000, guid: e8ef581de8a4ab749a63f92427628a64, type: 2}
+  - {fileID: 7400000, guid: a9fb4db76ca25b740b79ff9bc05754ad, type: 2}
+  - {fileID: 7400000, guid: 5a9d759b827a60a4784f8e07d5a829aa, type: 2}
+  - {fileID: 7400000, guid: 0f83091ea0886264b8c0e1f17eaf737d, type: 2}
+  - {fileID: 7400000, guid: aa82fd987fc16d94aa815f7f07e8eed9, type: 2}

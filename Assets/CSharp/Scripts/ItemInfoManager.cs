@@ -1,6 +1,8 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 
 
 [Serializable]
@@ -14,6 +16,9 @@ public class ItemInfo
         HumanLeg = 1 << 2,
         HumanBody = 1 << 3,
         HumanBackpack = 1 << 4,
+        Weapon = 1 << 5,
+        UseAndComsumeableByCharacter = 1 << 6,
+
         All = int.MaxValue
     }
 
@@ -187,8 +192,6 @@ public class ItemInfoManager : SubManager
     {
         //asset 폴더 내에 기존 메쉬들을 등록하는 함수 
 
-        //Dictionary<string, List<GameObject>> _equipmentObject
-
         GameObject[] loadedPrefabs = Resources.LoadAll<GameObject>("EquipmentModels");
 
         foreach (GameObject prefab in loadedPrefabs)
@@ -217,10 +220,9 @@ public class ItemInfoManager : SubManager
 
     private void InitItem_TestCode_MustDel()
     {
-        //임시로 아이템 데이터 만드는 함수
-        /*---------------------------------
-        |TODO| 외부에서 파싱하는걸 생각해볼것 
-        ---------------------------------*/
+        /*-----------------------------------------------------------------
+        |TODO| 외부에서 파싱하는걸 생각해볼것 //임시로 아이템 데이터 만드는 함수
+        -----------------------------------------------------------------*/
 
         ItemInfo testItemInfo = new ItemInfo();
         testItemInfo._itemName = "군모1";
@@ -230,7 +232,7 @@ public class ItemInfoManager : SubManager
         testItemInfo._sizeX = 1;
         testItemInfo._sizeY = 1;
         testItemInfo._equipType = ItemInfo.EquipType.HumanHead;
-        testItemInfo._meshObjectName = "EquipTest";
+        testItemInfo._meshObjectName = "BasicCharacter";
         testItemInfo._equipMeshIndicies = new List<int>();
         testItemInfo._equipMeshIndicies.Add(3);
         _items.Add(testItemInfo._itemKey, testItemInfo);
@@ -244,7 +246,7 @@ public class ItemInfoManager : SubManager
         testItemInfo._sizeX = 1;
         testItemInfo._sizeY = 2;
         testItemInfo._equipType = ItemInfo.EquipType.HumanArm;
-        testItemInfo._meshObjectName = "EquipTest";
+        testItemInfo._meshObjectName = "BasicCharacter";
         testItemInfo._equipMeshIndicies = new List<int>();
         testItemInfo._equipMeshIndicies.Add(6);
         _items.Add(testItemInfo._itemKey, testItemInfo);
@@ -258,7 +260,7 @@ public class ItemInfoManager : SubManager
         testItemInfo._sizeX = 3;
         testItemInfo._sizeY = 3;
         testItemInfo._equipType = ItemInfo.EquipType.HumanBody;
-        testItemInfo._meshObjectName = "EquipTest";
+        testItemInfo._meshObjectName = "BasicCharacter";
         testItemInfo._equipMeshIndicies = new List<int>();
         testItemInfo._equipMeshIndicies.Add(9);
         _items.Add(testItemInfo._itemKey, testItemInfo);
@@ -272,9 +274,25 @@ public class ItemInfoManager : SubManager
         testItemInfo._isStackAble = true;
         testItemInfo._itemKey = 33;
         testItemInfo._sizeX = 5;
-        testItemInfo._sizeY = 7;
+        testItemInfo._sizeY = 5;
         testItemInfo._equipType = ItemInfo.EquipType.All;
-        testItemInfo._meshObjectName = "VanguardTest";
+        testItemInfo._meshObjectName = "Vanguard";
+        testItemInfo._equipMeshIndicies = new List<int>();
+        testItemInfo._equipMeshIndicies.Add(0);
+        testItemInfo._equipMeshIndicies.Add(1);
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "전신갑옷2";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 34;
+        testItemInfo._sizeX = 4;
+        testItemInfo._sizeY = 4;
+        testItemInfo._equipType = ItemInfo.EquipType.All;
+        testItemInfo._meshObjectName = "Paladin";
         testItemInfo._equipMeshIndicies = new List<int>();
         testItemInfo._equipMeshIndicies.Add(0);
         testItemInfo._equipMeshIndicies.Add(1);

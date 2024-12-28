@@ -6,7 +6,9 @@ using static StateGraphAsset;
 
 public class PlayerScript : CharacterScript
 {
+    [SerializeField] protected GameObject _interactionUIPrefab = null;
     [SerializeField] protected InputController _inputController = null;
+
 
     protected override void Awake()
     {
@@ -105,6 +107,14 @@ public class PlayerScript : CharacterScript
             //WeaponChangeCheck2();
         }
 
+        //인벤토리 오픈코드
+        {
+            if (_inputController.GetInventoryOpen() == true)
+            {
+                UIManager.Instance.TurnOnUI(_inventoryUIPrefab);
+            }
+        }
+
         //TryLockOn
         if (_aimScript != null && Input.GetKeyDown(KeyCode.Mouse2) == true)
         {
@@ -141,5 +151,39 @@ public class PlayerScript : CharacterScript
     public override void DealMe(DamageDesc damage, GameObject caller)
     {
         base.DealMe(damage, caller);
+    }
+
+    protected override void OnTriggerEnter(Collider other)
+    {
+        base.OnTriggerEnter(other);
+
+        if (_interactionUIPrefab != null &&
+            other.gameObject.layer == LayerMask.NameToLayer("InteractionableCollider"))
+        {
+            Debug.Log("상호작용 추가!");
+
+            UIInteractionableScript component = other.gameObject.GetComponent<UIInteractionableScript>();
+
+            InteractionUIDesc interactionDesc = component.GetInteractionUIDesc();
+
+            _interactionUIPrefab.GetComponentInChildren<InteractionUIListScript>().AddList(other, interactionDesc, component);
+        }
+    }
+
+    protected override void OnTriggerExit(Collider other)
+    {
+        base.OnTriggerExit(other);
+
+        if (_interactionUIPrefab != null &&
+            other.gameObject.layer == LayerMask.NameToLayer("InteractionableCollider"))
+        {
+            Debug.Log("상호작용 제거!");
+
+            UIInteractionableScript component = other.gameObject.GetComponent<UIInteractionableScript>();
+
+            InteractionUIDesc interactionDesc = component.GetInteractionUIDesc();
+
+            _interactionUIPrefab.GetComponentInChildren<InteractionUIListScript>().RemoveList(other, interactionDesc, component);
+        }
     }
 }

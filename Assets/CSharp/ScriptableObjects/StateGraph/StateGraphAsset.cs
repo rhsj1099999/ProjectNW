@@ -4,7 +4,6 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
-using SerializableDictionary.Scripts;
 using static StateContoller;
 
 [CreateAssetMenu(fileName = "StateGraphAsset", menuName = "Scriptable Object/CreateStateGraphAsset", order = int.MinValue)]
@@ -348,17 +347,12 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.RootMove:
                     {
-                        if (_ownerActionComponent._ownerAnimator == null)
+                        if (_ownerActionComponent._ownerCharacterAnimatorScript == null)
                         {
-                            _ownerActionComponent._ownerAnimator = owner.GetComponentInChildren<Animator>();
-                            Debug.Assert(_ownerActionComponent._ownerAnimator != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterAnimatorScript = owner.GetComponentInChildren<CharacterAnimatorScript>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterAnimatorScript != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
-                        if (_ownerActionComponent._ownerModelObjectOrigin == null)
-                        {
-                            _ownerActionComponent._ownerModelObjectOrigin = _ownerActionComponent._ownerAnimator.gameObject;
-                            Debug.Assert(_ownerActionComponent._ownerModelObjectOrigin != null, "RootMove행동이 있는데 모델이 없습니다");
-                        }
 
                         if (_ownerActionComponent._ownerCharacterComponent == null)
                         {
@@ -564,16 +558,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.RootMove_WithOutRotate:
                     {
-                        if (_ownerActionComponent._ownerAnimator == null)
+                        if (_ownerActionComponent._ownerCharacterAnimatorScript == null)
                         {
-                            _ownerActionComponent._ownerAnimator = owner.GetComponentInChildren<Animator>();
-                            Debug.Assert(_ownerActionComponent._ownerAnimator != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
-                        }
-
-                        if (_ownerActionComponent._ownerModelObjectOrigin == null)
-                        {
-                            _ownerActionComponent._ownerModelObjectOrigin = _ownerActionComponent._ownerAnimator.gameObject;
-                            Debug.Assert(_ownerActionComponent._ownerModelObjectOrigin != null, "RootMove행동이 있는데 모델이 없습니다");
+                            _ownerActionComponent._ownerCharacterAnimatorScript = owner.GetComponentInChildren<CharacterAnimatorScript>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterAnimatorScript != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerCharacterComponent == null)
@@ -586,16 +574,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.CharacterRotateToCameraLook:
                     {
-                        if (_ownerActionComponent._ownerAnimator == null)
+                        if (_ownerActionComponent._ownerCharacterAnimatorScript == null)
                         {
-                            _ownerActionComponent._ownerAnimator = owner.GetComponentInChildren<Animator>();
-                            Debug.Assert(_ownerActionComponent._ownerAnimator != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
-                        }
-
-                        if (_ownerActionComponent._ownerModelObjectOrigin == null)
-                        {
-                            _ownerActionComponent._ownerModelObjectOrigin = _ownerActionComponent._ownerAnimator.gameObject;
-                            Debug.Assert(_ownerActionComponent._ownerModelObjectOrigin != null, "RootMove행동이 있는데 모델이 없습니다");
+                            _ownerActionComponent._ownerCharacterAnimatorScript = owner.GetComponentInChildren<CharacterAnimatorScript>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterAnimatorScript != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerCharacterComponent == null)

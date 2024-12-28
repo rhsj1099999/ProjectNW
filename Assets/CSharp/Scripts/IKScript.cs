@@ -65,6 +65,20 @@ public class IKScript : MonoBehaviour
     public void RegistIK(AvatarIKGoal goal, Transform targetTransform, IKTargetDesc desc)
     {
         _ikDic.Add(desc, new IKDesc(desc, targetTransform, goal));
+
+        Debug.Log("IKDic Count = " + _ikDic.Count);
+    }
+
+    public void DestroyIK(IKTargetDesc desc)
+    {
+        if (_ikDic.ContainsKey(desc) == false)
+        {
+            Debug.Assert(false, "없는데 지우려고 했습니다");
+            Debug.Break();
+            return;
+        }
+
+        _ikDic.Remove(desc);
     }
 
 

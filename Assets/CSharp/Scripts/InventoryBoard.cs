@@ -24,25 +24,25 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     private Dictionary<int/*저장된 칸*/, GameObject>                                _itemUIs = new Dictionary<int, GameObject>();                   //실제로 들어있는 아이템 렌더링 담당
 
 
-    //public void OnValidate()
-    //{
-    //    //EditorApplication.delayCall += () =>
-    //    //{
-    //    //    if (this == null) // 오브젝트가 유효한지 확인
-    //    //    {
-    //    //        return;
-    //    //    }
+    public void OnValidate()
+    {
+        EditorApplication.delayCall += () =>
+        {
+            if (this == null) // 오브젝트가 유효한지 확인
+            {
+                return;
+            }
 
-    //    //    RectTransform rectTransform = GetComponent<RectTransform>();
+            RectTransform rectTransform = GetComponent<RectTransform>();
 
-    //    //    if (rectTransform == null)
-    //    //    {
-    //    //        return;
-    //    //    }
+            if (rectTransform == null)
+            {
+                return;
+            }
 
-    //    //    rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
-    //    //};
-    //}
+            rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
+        };
+    }
 
     private void Awake()
     {
@@ -390,6 +390,95 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     }
 
 
+
+
+    //public bool AddItemAutomatic_ForCheck(List<ItemInfo> itemInfoList, int itemCount = 1)
+    //{
+    //    for (int i = 0; i < itemInfoList.Count; i++)
+    //    {
+    //        ItemInfo info = itemInfoList[i];
+
+    //        //애초에 들어갈 공간이 없다
+    //        if ((info._sizeX * info._sizeY) > _blank) 
+    //        {
+    //            return false;
+    //        }
+
+    //        //기존에 스택가능한 아이템이 있는경우
+    //        if (_items.ContainsKey(info._itemKey) == true &&
+    //            _items[info._itemKey].Count > 0 &&
+    //            info._isStackAble == true)
+    //        {
+    //            continue;
+    //        }
+
+
+    //        int targetX = -1;
+    //        int targetY = -1;
+    //        bool isRotated = false;
+
+    //        bool isPushAble = CheckInventorySpace_MustOpt(ref info, ref targetX, ref targetY, ref isRotated);
+
+    //        if (isPushAble == false) 
+    //        {
+    //            return false;
+    //        }
+
+    //        //여분이 있다.
+
+    //        //오브젝트 준비
+    //        GameObject itemUI = CreateInventoryItem(info, targetX, targetY, isRotated);
+
+    //        //다음 검사 시 빨리 찾기위한 공간갱신
+    //        _blank -= info._sizeX * info._sizeY;
+
+    //        //격자갱신
+    //        int rows = (isRotated == true) ? info._sizeX : info._sizeY;
+    //        int cols = (isRotated == true) ? info._sizeY : info._sizeX;
+    //        for (int y = 0; y < rows; y++)
+    //        {
+    //            for (int x = 0; x < cols; x++)
+    //            {
+    //                _blankDispaly[targetY + y, targetX + x] = true;
+    //            }
+    //        }
+
+    //        //탐색용 구조체 갱신
+    //        int inventoryIndex = _cols * targetY + targetX;
+
+    //        if (_items.ContainsKey(info._itemKey) == false) //추가된적이 없다.
+    //        {
+    //            _items.Add(info._itemKey, new Dictionary<int, ItemStoreDesc>());
+    //        }
+
+    //        Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[info._itemKey];
+
+    //        //둘중 하나의 경우다
+    //            //1. 스택카운트가 넘어서 새롭게 넣어주던가
+    //            //2. 동일종류 템이 하나도 없고 최초였던가
+
+    //        ItemStoreDesc storeDesc = new ItemStoreDesc();
+    //        storeDesc._count = itemCount;
+    //        storeDesc._storedIndex = inventoryIndex;
+    //        storeDesc._isRotated = isRotated;
+    //        storeDesc._owner = this;
+    //        storeDesc._info = info;
+    //        itemKeyCategory.Add(inventoryIndex, storeDesc);
+
+    //        ItemBase itemBaseComponent = itemUI.GetComponent<ItemBase>();
+    //        if (itemBaseComponent != null)
+    //        {
+    //            itemBaseComponent.Initialize(this, storeDesc);
+    //        }
+
+    //        _itemUIs.Add(inventoryIndex, itemUI);
+    //    }
+        
+    //}
+
+
+
+
     public void DeleteOnMe(ItemStoreDesc storedDesc) // : IMoveItemStore
     {
         //아이템을 드래그 드롭 했을때 한꺼번에 옮기는 함수 = 전부다 없앨것이다.
@@ -540,90 +629,29 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
     private void TestCode()
     {
-        if (Input.GetKeyDown(KeyCode.U) == true)
+        if (Input.GetKeyDown(KeyCode.Alpha7) == true)
         {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 995;
-            testItemInfo._sizeX = 1;
-            testItemInfo._sizeY = 1;
-
-            AddItemAutomatic(testItemInfo);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30));
         }
 
-        if (Input.GetKeyDown(KeyCode.G) == true)
-        {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 996;
-            testItemInfo._sizeX = 1;
-            testItemInfo._sizeY = 3;
-
-            AddItemAutomatic(testItemInfo);
-        }
-
-        if (Input.GetKeyDown(KeyCode.P) == true)
-        {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 997;
-            testItemInfo._sizeX = 2;
-            testItemInfo._sizeY = 3;
-
-            AddItemAutomatic(testItemInfo);
-        }
-
-        if (Input.GetKeyDown(KeyCode.N) == true)
-        {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 998;
-            testItemInfo._sizeX = 2;
-            testItemInfo._sizeY = 2;
-
-            AddItemAutomatic(testItemInfo);
-        }
-
-        if (Input.GetKeyDown(KeyCode.M) == true)
-        {
-            ItemInfo testItemInfo = new ItemInfo();
-
-            testItemInfo._sprite = null;
-            testItemInfo._isStackAble = true;
-            testItemInfo._itemKey = 999;
-            testItemInfo._sizeX = 1;
-            testItemInfo._sizeY = 2;
-
-            AddItemAutomatic(testItemInfo);
-        }
-
-
-        if (Input.GetKeyDown(KeyCode.V) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32));
-        }
-
-        if (Input.GetKeyDown(KeyCode.C) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33));
-        }
-
-        if (Input.GetKeyDown(KeyCode.X) == true)
+        if (Input.GetKeyDown(KeyCode.Alpha8) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31));
         }
 
-        if (Input.GetKeyDown(KeyCode.Z) == true)
+        if (Input.GetKeyDown(KeyCode.Alpha9) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30));
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha0) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha6) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34));
         }
     }
     private void DebugCells()

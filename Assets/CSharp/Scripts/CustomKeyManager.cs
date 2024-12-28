@@ -131,9 +131,6 @@ public class CustomKeyManager : SubManager
         ComboKeyCommandUpdate2();
     }
 
-    public override void SubManagerFixedUpdate()
-    {
-    }
 
     private void NormalKeyUpdate()
     {
@@ -192,6 +189,10 @@ public class CustomKeyManager : SubManager
 
         int keyDebugCount = 0;
 
+        if (UIManager.Instance.IsConsumeInput() == true)
+        {
+            return;
+        }
 
         if (Input.GetKeyDown(KeyCode.Mouse0) == true)
         {

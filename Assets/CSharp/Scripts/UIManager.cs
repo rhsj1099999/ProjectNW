@@ -9,8 +9,12 @@ using UnityEngine.UI;
 
 public class UIManager : SubManager
 {
-    private static UIManager _instance = null;
+    [SerializeField] private GameObject _mainCanvas = null;
+    [SerializeField] private EventSystem _eventSystem = null;
+    [SerializeField] private int _consumeInputUICount = 0;
 
+    private static UIManager _instance = null;
+    
     public static UIManager Instance
     {
         get
@@ -25,9 +29,6 @@ public class UIManager : SubManager
             return _instance;
         }
     }
-
-    [SerializeField] private GameObject _mainCanvas = null;
-    [SerializeField] private EventSystem _eventSystem = null;
 
     public override void SubManagerAwake()
     {
@@ -46,11 +47,54 @@ public class UIManager : SubManager
         }
     }
 
-    public void TurnOnUI(GameObject uiInstance, GameObject caller)
+    public bool IsConsumeInput()
     {
-        //uiInstance.SetActive(true);
-        uiInstance.GetComponent<UIComponent>().ShowUI();
+        return (_consumeInputUICount > 0);
+    }
+
+    public void TurnOnUI(GameObject uiInstance)
+    {
+        UIComponent uiComponent = uiInstance.GetComponent<UIComponent>();
+
+        if (uiComponent == null)
+        {
+            Debug.Assert(false, "UIComponent가 없는데 켜고/끄기를 제어하려합니다");
+            Debug.Break();
+        }
+
+        uiComponent.ShowUI();
+
         uiInstance.transform.SetParent(_mainCanvas.transform);
+        uiInstance.transform.SetAsLastSibling();
+
+        if (uiInstance.name == "InteractionListUI")
+        {
+            uiInstance.transform.rotation = Quaternion.identity;
+            uiInstance.transform.position = Vector3.zero;
+            ((RectTransform)uiInstance.transform).anchoredPosition = Vector2.zero;
+            ((RectTransform)uiInstance.transform).anchoredPosition += new Vector2(50.0f, 0.0f);
+        }
+
+        if (uiComponent.GetIsConsumeInput() == true)
+        {
+            ++_consumeInputUICount;
+        }
+    }
+
+    public void TurnOffUI(GameObject uiInstance)
+    {
+        UIComponent uiComponent = uiInstance.GetComponent<UIComponent>();
+        if (uiComponent == null)
+        {
+            Debug.Assert(false, "UIComponent가 없는데 켜고/끄기를 제어하려합니다");
+            Debug.Break();
+        }
+        uiComponent.HideUI();
+
+        if (uiComponent.GetIsConsumeInput() == true)
+        {
+            --_consumeInputUICount;
+        }
     }
 
     public void RayCastAll(ref List<RaycastResult> results, bool isReverse = false)

@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myState:
     _stateType: 13
-    _stataName: HitFallStart_FromBoy
-    _stateAnimationClip: {fileID: 7400000, guid: 5fc89b8e0a3e6054e95d2c9e12f0c210,
+    _stateAnimationClip: {fileID: 7400000, guid: 93e3a8b32fbdf264c976728492062562,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
@@ -25,8 +24,21 @@ MonoBehaviour:
     _canUseItem: 0
     _stateLocked: 0
     _isBlockState: 0
+    _isAIAttackState: 0
+    _isAIState: 0
+    _aiStateDesc:
+      _coolTime: -1
+      _randomChancePercentage: -1
+      _stateTimeThreshould: -1
+    _aiAttackStateDesc:
+      _coolTime: -1
+      _range: -1
     _EnterStateActionTypes: 03000000
     _inStateActionTypes: 
     _ExitStateActionTypes: 
     _checkingBehaves: 
     _breakLoopStateCondition: []
+    _isSubBlendTreeExist: 0
+    _subBlendTree: {fileID: 0}
+    _isSubAnimationStateMachineExist: 0
+    _subAnimationStateMachine: {fileID: 0}

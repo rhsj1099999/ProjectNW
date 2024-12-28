@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class IKTargetDesc
     public bool _isPositionIK = true;
     public float _positionIKWeight = 1.0f;
     public float _rotationIKWeight = 1.0f;
+    public Transform _targetTransform = null;
 }
 
 public class IKTargetScript : MonoBehaviour
@@ -56,7 +58,7 @@ public class IKTargetScript : MonoBehaviour
                 ikGoal = AvatarIKGoal.RightHand;
             }
         }
-
+        _desc._targetTransform = transform;
         ikRunner.RegistIK(ikGoal, transform, _desc);
     }
 }

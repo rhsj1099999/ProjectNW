@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myState:
     _stateType: 14
-    _stataName: Shield_Block_Loop_FromAsset_1
-    _stateAnimationClip: {fileID: 7400000, guid: 9187846b185114d4eba29b1f5f712b8a,
+    _stateAnimationClip: {fileID: 7400000, guid: cbb15f261c11b174ea40d0a45260b00e,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
@@ -25,8 +24,21 @@ MonoBehaviour:
     _canUseItem: 1
     _stateLocked: 0
     _isBlockState: 1
+    _isAIAttackState: 0
+    _isAIState: 0
+    _aiStateDesc:
+      _coolTime: -1
+      _randomChancePercentage: -1
+      _stateTimeThreshould: -1
+    _aiAttackStateDesc:
+      _coolTime: -1
+      _range: -1
     _EnterStateActionTypes: 0d000000
     _inStateActionTypes: 06000000
     _ExitStateActionTypes: 0e000000
     _checkingBehaves: 
     _breakLoopStateCondition: []
+    _isSubBlendTreeExist: 0
+    _subBlendTree: {fileID: 0}
+    _isSubAnimationStateMachineExist: 0
+    _subAnimationStateMachine: {fileID: 0}

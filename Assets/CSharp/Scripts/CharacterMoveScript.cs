@@ -104,7 +104,7 @@ public class CharacterMoveScript : MonoBehaviour
         {
             if (_inputController.GetInventoryOpen() == true)
             {
-                UIManager.Instance.TurnOnUI(_inventoryUIPrefab, this.gameObject);
+                UIManager.Instance.TurnOnUI(_inventoryUIPrefab);
             }
         }
 

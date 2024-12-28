@@ -252,8 +252,6 @@ public class StateContoller : MonoBehaviour
     public class StateContollerComponentDesc
     {
         public CharacterScript _owner = null;
-        public Animator _ownerAnimator = null;
-        public GameObject _ownerModelObjectOrigin = null;
         public InputController _ownerInputController = null;
         public CharacterMoveScript2 _ownerMoveScript = null;
         public CharacterController _ownerCharacterComponent = null;
@@ -394,8 +392,6 @@ public class StateContoller : MonoBehaviour
         {
             _stateActionCoroutines.Add(null);
         }
-
-        _ownerStateControllingComponent._ownerCharacterAnimatorScript = _ownerStateControllingComponent._owner.gameObject.GetComponent<CharacterAnimatorScript>();
     }
 
     protected virtual void Start()
@@ -437,6 +433,10 @@ public class StateContoller : MonoBehaviour
         ChangeState(graphType, targetAsset);
     }
 
+    private void Update()
+    {
+        int a = 10;   
+    }
 
     private void StatedWillBeChanged()
     {
@@ -522,7 +522,7 @@ public class StateContoller : MonoBehaviour
                         ret = 8 - ret;
                     }
 
-                    if (_ownerStateControllingComponent._ownerAnimator.GetBool("IsMirroring") == true)
+                    if (_ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedAnimator().GetBool("IsMirroring") == true)
                     {
                         ret = 8 - ret;
                     }
@@ -822,9 +822,9 @@ public class StateContoller : MonoBehaviour
 
                         //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
                         {
-                            Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition;
+                            Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition;
                             modelLocalPosition.y = worldDelta.y;
-                            _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition = modelLocalPosition;
+                            _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
                         }
 
                         worldDelta.y = 0.0f;
@@ -1037,9 +1037,9 @@ public class StateContoller : MonoBehaviour
 
                         //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
                         {
-                            Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition;
+                            Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition;
                             modelLocalPosition.y = worldDelta.y;
-                            _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition = modelLocalPosition;
+                            _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
                         }
 
                         worldDelta.y = 0.0f;
@@ -1128,9 +1128,9 @@ public class StateContoller : MonoBehaviour
 
                             //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
                             {
-                                Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition;
+                                Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition;
                                 modelLocalPosition.y = worldDelta.y;
-                                _ownerStateControllingComponent._ownerModelObjectOrigin.transform.localPosition = modelLocalPosition;
+                                _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
                             }
 
                             worldDelta.y = 0.0f;
@@ -1842,6 +1842,12 @@ public class StateContoller : MonoBehaviour
             case ConditionType.IsHoldingWeaponKey:
                 {
                     StateGraphType nextStateGraphType = StateGraphType.End;
+
+                    if (UIManager.Instance.IsConsumeInput() == true)
+                    {
+                        ret = false;
+                        break;
+                    }
 
                     if ((nextStateAsset._fromType == StateGraphType.WeaponState_RightGraph || nextStateAsset._fromType == StateGraphType.WeaponState_LeftGraph) &&
                         (nextStateAsset._goalType == StateGraphType.WeaponState_RightGraph || nextStateAsset._goalType == StateGraphType.WeaponState_LeftGraph))

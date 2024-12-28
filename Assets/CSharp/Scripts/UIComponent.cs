@@ -6,19 +6,49 @@ public class UIComponent : MonoBehaviour
 {
     private void Awake()
     {
+        if (_parentGameObjectToReturn == null)
+        {
+            Debug.Assert(false, "UI가 꺼졌을때 돌아갈 오브젝트를 설정하세여");
+            Debug.Break();
+            return;
+        }
+
         _canvas = GetComponent<Canvas>();
-        Debug.Assert( _canvas != null, "Canvas는 널일 수 없다" );
+        //Debug.Assert( _canvas != null, "Canvas는 널일 수 없다" );
+        
+        if( _canvas != null )
+        {
+            _canvas.enabled = false;
+        }
     }
 
     public void HideUI()
     {
-        _canvas.enabled = false;
+        if (_canvas != null)
+        {
+            _canvas.enabled = false;
+        }
+
+        transform.SetParent(_parentGameObjectToReturn.transform);
     }
 
     public void ShowUI()
     {
-        _canvas.enabled = true;
+        if (_canvas != null)
+        {
+            _canvas.enabled = true;
+        }
+    }
+
+    public bool GetIsConsumeInput()
+    {
+        return _isConsumeInputUI;
     }
 
     private Canvas _canvas = null;
+
+    [SerializeField] private GameObject _parentGameObjectToReturn = null;
+    [SerializeField] private bool _isConsumeInputUI = false;
+
+    public GameObject GetReturnObject() { return _parentGameObjectToReturn; }
 }
