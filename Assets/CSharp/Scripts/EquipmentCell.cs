@@ -28,19 +28,18 @@ public class EquipmentCell : MonoBehaviour
     }
 
 
-    public void TryEquipItem(ItemStoreDesc storedDesc)
+    public bool TryEquipItem(ItemStoreDesc storedDesc)
     {
         Debug.Assert(_ownerEquipmentBoard != null, "Equipcell Owner가 제대로 설정되지 않았습니다");
-
 
         //착용 부위가 다른템이다
         //이정도는 board 말고 cell 선에서 컷
         if ((storedDesc._info._equipType & _equipType) == (int)EquipType.None)
         {
-            return;
+            return false;
         }
 
-        _ownerEquipmentBoard.EquipItem(storedDesc, this.gameObject);
+        return _ownerEquipmentBoard.EquipItem(storedDesc, this.gameObject);
     }
 
     public EquipType GetCellType()

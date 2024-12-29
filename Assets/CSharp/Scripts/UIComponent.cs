@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class UIComponent : MonoBehaviour
 {
+    [SerializeField] private GameObject _parentGameObjectToReturn = null;
+    [SerializeField] private bool _isConsumeInputUI = false;
+    private bool _hided = false;
+
+    private Canvas _canvas = null;
+
+
+    public GameObject GetReturnObject() { return _parentGameObjectToReturn; }
+    
+
     private void Awake()
     {
         if (_parentGameObjectToReturn == null)
@@ -45,10 +55,5 @@ public class UIComponent : MonoBehaviour
         return _isConsumeInputUI;
     }
 
-    private Canvas _canvas = null;
 
-    [SerializeField] private GameObject _parentGameObjectToReturn = null;
-    [SerializeField] private bool _isConsumeInputUI = false;
-
-    public GameObject GetReturnObject() { return _parentGameObjectToReturn; }
 }

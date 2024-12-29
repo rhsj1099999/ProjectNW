@@ -131,6 +131,8 @@ public class CharacterScript : MonoBehaviour, IHitable
     protected KeyCode _useItemKeyCode2 = KeyCode.M;
     protected KeyCode _useItemKeyCode3 = KeyCode.Comma;
     protected KeyCode _useItemKeyCode4 = KeyCode.Period;
+    protected KeyCode _changeRightWeaponKey = KeyCode.T;
+    protected KeyCode _changeLeftWeaponKey = KeyCode.R;
     protected int _currLeftWeaponIndex = 0;
     protected int _currRightWeaponIndex = 0;
     protected int _tempMaxWeaponSlot = 5;
@@ -662,11 +664,16 @@ public class CharacterScript : MonoBehaviour, IHitable
         {
             case AdditionalBehaveType.ChangeWeapon:
                 {
+                    if (UIManager.Instance.IsConsumeInput() == true)
+                    {
+                        return;
+                    }
+
                     bool weaponChangeTry = false;
                     bool tempIsRightHandWeapon = false;
                     int nextWeaponIndex = 0;
 
-                    if (Input.GetKeyDown(KeyCode.R))
+                    if (Input.GetKeyDown(_changeLeftWeaponKey))
                     {
                         //왼손 무기 다음으로 전환
                         weaponChangeTry = true;
@@ -677,7 +684,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                             nextWeaponIndex = nextWeaponIndex % _tempMaxWeaponSlot;
                         }
                     }
-                    else if (Input.GetKeyDown(KeyCode.T))
+                    else if (Input.GetKeyDown(_changeRightWeaponKey))
                     {
                         //오른손 무기 다음으로 전환
                         weaponChangeTry = true;

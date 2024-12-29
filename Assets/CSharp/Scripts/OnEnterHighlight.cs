@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class OnEnterHighlight : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class OnEnterHighlight : MonoBehaviour
 {
     void Awake()
     {
@@ -24,14 +24,14 @@ public class OnEnterHighlight : MonoBehaviour, IPointerEnterHandler, IPointerExi
         
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        _imageComponent.color = Color.green;
-    }
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        _imageComponent.color = _originalColor;
-    }
+    //public void OnPointerEnter(PointerEventData eventData)
+    //{
+    //    _imageComponent.color = Color.green;
+    //}
+    //public void OnPointerExit(PointerEventData eventData)
+    //{
+    //    _imageComponent.color = _originalColor;
+    //}
 
 
     // Update is called once per frame

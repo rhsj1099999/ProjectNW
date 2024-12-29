@@ -97,15 +97,6 @@ public class PlayerScript : CharacterScript
             }
         }
 
-        //임시 양손잡기 코드
-        {
-            //ChangeWeaponHandling();
-        }
-
-        //임시 무기변경 코드 -> State가 BeHave를 체크해야한다.
-        {
-            //WeaponChangeCheck2();
-        }
 
         //인벤토리 오픈코드
         {

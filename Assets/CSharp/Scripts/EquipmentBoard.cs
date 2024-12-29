@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static ItemInfo;
 
@@ -55,12 +56,26 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
     }
 
 
-
-    public void EquipItem(ItemStoreDesc storeDesc, GameObject callerEquipCell)
+    public void EquipItem_Weapon(ItemStoreDesc storeDesc, GameObject callerEquipCell)
     {
-        if (_currEquippedItemUIs.ContainsKey(storeDesc._info._equipType) == true)
+
+    }
+
+
+    public void UnEquipItem_Weapon(ItemStoreDesc storeDesc, GameObject callerEquipCell)
+    {
+
+    }
+
+
+
+
+
+    public bool EquipItem(ItemStoreDesc storeDesc, GameObject callerEquipCell)
+    {
+        if (storeDesc._info._equipType == EquipType.Weapon)
         {
-            return;
+            return true;
         }
 
         List<GameObject> cells = GetCells(storeDesc);
@@ -73,11 +88,10 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
             _currEquippedItemUIs.TryGetValue(needType, out currEquippedObject);
             if (currEquippedObject != null)
             {
-                return;
+                return false;
             }
         }
 
-        storeDesc._owner.DeleteOnMe(storeDesc);
 
 
         foreach (var cell in cells)
@@ -103,6 +117,8 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
         {
             EquipItemMesh(storeDesc);
         }
+
+        return true;
     }
 
     private void UnEquipUI(ItemStoreDesc storeDesc)

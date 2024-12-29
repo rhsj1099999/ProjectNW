@@ -78,7 +78,7 @@ public class OnGUIManager : SubManager
         }
     }
 
-    public List<RaycastResult> GetUIElementsUnderMouse()
+    private List<RaycastResult> GetUIElementsUnderMouse()
     {
         List<RaycastResult> raycastResults = new List<RaycastResult>();
 
@@ -86,10 +86,10 @@ public class OnGUIManager : SubManager
         {
             UIManager.Instance.RayCastAll(ref raycastResults);
         }
-        
 
         return raycastResults;
     }
+
 
     private void OnGUI()
     {
@@ -97,16 +97,17 @@ public class OnGUIManager : SubManager
         {
             Rect messageStartRect = new Rect(10, 10, 200, -99999); //Height 무관하다
             float totalHeight = _fontSize + _lineSize;
-            /*---------------------
-             기본 메세지들
-            ---------------------*/
-            ShowString("디버깅용", ref messageStartRect, totalHeight);
 
-            ShowString("겹친UI 개수 : " + GetUIElementsUnderMouse().Count, ref messageStartRect, totalHeight);
-            Vector2 mousePosition = Input.mousePosition;
-            ShowString("마우스InputPosition : X|" + mousePosition.x + " Y|" + mousePosition.y, ref messageStartRect, totalHeight);
-            ShowString("현재프레임 : " + _currentFrame + "FPS", ref messageStartRect, totalHeight);
+            //기본 메세지들
+            {
+                ShowString("디버깅용", ref messageStartRect, totalHeight);
+                //ShowString("겹친UI 개수 : " + GetUIElementsUnderMouse().Count, ref messageStartRect, totalHeight);
+                Vector2 mousePosition = Input.mousePosition;
+                ShowString("마우스InputPosition : X|" + mousePosition.x + " Y|" + mousePosition.y, ref messageStartRect, totalHeight);
+                ShowString("현재프레임 : " + _currentFrame + "FPS", ref messageStartRect, totalHeight);
+            }
 
+            //추가한 메세지들
             foreach (KeyValuePair<string, string> pair in _debugStrings)
             {
                 ShowString(pair.Key + pair.Value, ref messageStartRect, totalHeight);

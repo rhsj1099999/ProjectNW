@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public struct InventoryCellDesc
+public class InventoryCellDesc
 {
     public InventoryBoard _owner;
 }
@@ -27,23 +27,23 @@ public class InventoryCell : MonoBehaviour
         _owner = desc._owner;
     }
 
-    public void TryMoveItemDropOnBoard(ItemStoreDesc storedDesc, ItemBase caller)
+    public bool TryMoveItemDropOnBoard(ItemStoreDesc storedDesc, ItemBase caller)
     {
         Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
 
         int startX = -1;
         int startY = -1;
+
+        //해당 마우스 포지션으로는 아이템을 넣을 수 없다.
         if (_owner.CheckItemDragDrop(storedDesc, ref startX, ref startY, caller) == false)
         {
-            return; //해당 마우스 포지션으로는 아이템을 넣을 수 없다.
+            return false; 
         }
 
+        //넣는다
+        _owner.AddItemUsingForcedIndex(storedDesc, startX, startY, caller.GetRotated());
 
-        if (storedDesc._owner != null)
-        {
-            storedDesc._owner.DeleteOnMe(storedDesc);         //삭제하고
-        }
-        _owner.AddItemUsingForcedIndex(storedDesc, startX, startY, caller.GetRotated());     //넣는다
+        return true;
     }
 
 
@@ -65,12 +65,12 @@ public class InventoryCell : MonoBehaviour
             return;
         }
 
+        //동일종류가 아님.
         if (itemBaseComponent.getStoredDesc()._info._itemKey != storedDesc._info._itemKey)
         {
             /*---------------------------------------------------------------------------
             |TODO|  나중에 아이템 스왑하거나 룬 끼우기 할거라면 여기를 수정해야한다.
             ---------------------------------------------------------------------------*/
-            //동일종류가 아님.
             return;
         }
 

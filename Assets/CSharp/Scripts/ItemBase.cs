@@ -4,13 +4,11 @@ using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
-
+using Unity.VisualScripting;
 
 public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler
 {
     private RectTransform _myRectTransform = null;
-    private Canvas _myCanvas = null;
-    private GraphicRaycaster _myGraphicRaycaster = null;
 
     /*-----------------
     기능 실행마다 바뀔 변수들
@@ -21,8 +19,7 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     private IMoveItemStore _itemStoreAbleInstance = null;
     private bool _isDragging = false;
     private bool _isRotated = false;
-
-
+    private GameObject _returnParent = null;
 
     public void Initialize(IMoveItemStore inventoryBoard, ItemStoreDesc storeDesc)
     {
@@ -37,17 +34,6 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     void Awake()
     {
         _myRectTransform = GetComponent<RectTransform>();
-        _myCanvas = GetComponent<Canvas>();
-        _myGraphicRaycaster = GetComponent<GraphicRaycaster>();
-
-        Debug.Assert(_myRectTransform != null, "Rect Transform 은 없을 수 없다");
-        Debug.Assert(_myCanvas != null, "canvas 없을 수 없다");
-        Debug.Assert(_myGraphicRaycaster != null, "graphicRaycaster 은 없을 수 없다");
-    }
-
-    void Start()
-    {
-        
     }
 
     void Update()
@@ -58,68 +44,98 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         }
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public IEnumerator DestroyCoroutine()
     {
+        _itemStoreDesc._owner.DeleteOnMe(_itemStoreDesc);
+        gameObject.SetActive(false);
 
+        yield return new WaitForNextFrameUnit();
+        yield return new WaitForNextFrameUnit();
+
+        if (EventSystem.current.currentSelectedGameObject == gameObject)
+        {
+            Debug.Log("이러면 안된다");
+            Debug.Break();
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+        gameObject.SetActive(true);
+        Destroy(gameObject);
     }
 
+
+    public void OnPointerDown(PointerEventData eventData) 
+    {
+        UIManager.Instance.IncreaseConsumeInput();
+    }
     public void OnPointerUp(PointerEventData eventData)
     {
+        UIManager.Instance.DecreaseConsumeInput();
+
         _isDragging = false;
-        _myCanvas.overrideSorting = false;
+
+        transform.SetParent(_returnParent.transform);
+
         _myRectTransform.anchoredPosition = _myPosition;
 
-        //다른 인벤토리에 전이가 가능한가?
+        List<RaycastResult> uiRayCastResult = new List<RaycastResult>();
+
+        UIManager.Instance.RayCastAll(ref uiRayCastResult);
+
+        if (uiRayCastResult.Count <= 0)
         {
-            List<RaycastResult> uiRayCastResult = new List<RaycastResult>();
-
-            UIManager.Instance.RayCastAll(ref uiRayCastResult, false);
-
-            if (uiRayCastResult.Count <= 1) //마우스를 땠을때 아무것도 없다. = 바닥에 뿌리기
-            {//1 = 아이템 유아이는 제외함... |TODO| 1이란 숫자를 제외할 수 있는 방법
-                _myRectTransform.anchoredPosition = _myPosition;
-                _myCanvas.overrideSorting = false;
-                return; //일단은 원위치로
-            }
-
-            GameObject topObject = GetTopOfRaycastExceptMe(ref uiRayCastResult);
-
-            if (topObject == null)
-            {
-                return;
-            }
-            /*---------------------------------------------------------------------------
-             |TODO|  자신 위에 포개어 놨다는 인터페이스로 하나로 묶는 구조를 생각해볼것.
-            ---------------------------------------------------------------------------*/
-            //1. Top Object가 아이템이거나. ItemBase로 확인
-
-            //2. Top Object가 인벤토리이다. cellComponent로 확인
-
-            InventoryCell cellComponent = topObject.GetComponent<InventoryCell>();
-            if (cellComponent != null) //최상단이 CellComponent이다
-            {
-                cellComponent.TryMoveItemDropOnBoard(_itemStoreDesc, this);
-                return;
-            }
-
-            EquipmentCell equipmentCellComponent = topObject.GetComponent<EquipmentCell>();
-            if (equipmentCellComponent != null) //최상단이 EquipmentCell이다.
-            {
-                equipmentCellComponent.TryEquipItem(_itemStoreDesc);
-                return;
-            }
-
-            ItemBase itemBaseComponent = topObject.GetComponent<ItemBase>();
-            if (itemBaseComponent != null) //최상단이 ItemBase이다.
-            {
-                _myRectTransform.anchoredPosition = _myPosition;
-                return;
-            }
-
-
             return;
         }
+
+        GameObject topObject = uiRayCastResult.First().gameObject;
+
+        if (topObject == gameObject) 
+        {
+            if (uiRayCastResult.Count <= 1)
+            {
+                return;
+            }
+
+            topObject = uiRayCastResult[1].gameObject;
+        }
+
+        if (topObject == null)
+        {
+            _myRectTransform.anchoredPosition = _myPosition;
+            return;
+        }
+
+        //최상단이 CellComponent이다
+        InventoryCell cellComponent = topObject.GetComponent<InventoryCell>();
+        if (cellComponent != null) 
+        {
+            if (cellComponent.TryMoveItemDropOnBoard(_itemStoreDesc, this) == true)
+            {
+                StartCoroutine(DestroyCoroutine());
+            }
+            return;
+        }
+
+        //최상단이 EquipmentCell이다.
+        EquipmentCell equipmentCellComponent = topObject.GetComponent<EquipmentCell>();
+        if (equipmentCellComponent != null) 
+        {
+            if (equipmentCellComponent.TryEquipItem(_itemStoreDesc) == true)
+            {
+                StartCoroutine(DestroyCoroutine());
+            }
+            return;
+        }
+
+        //최상단이 ItemBase이다.
+        ItemBase itemBaseComponent = topObject.GetComponent<ItemBase>();
+        if (itemBaseComponent != null) 
+        {
+            return;
+        }
+
+        return;
     }
+
     public void OnDrag(PointerEventData eventData)
     {
         _myRectTransform.anchoredPosition += eventData.delta;
@@ -130,21 +146,13 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     {
         _isDragging = true;
 
-        /*---------------------------------------------------------------------------
-         |TODO|  _myCanvas.overrideSorting = true; 호출이후 체계적인 렌더순서 관리 필요
-        ---------------------------------------------------------------------------*/
         _myPosition = _myRectTransform.anchoredPosition;
-        _myCanvas.overrideSorting = true;
 
-        {
-            //인벤토리에 회전된 상태로 저장돼 있었다면?
-            _isRotated = _itemStoreDesc._isRotated;
-        }
+        _returnParent = transform.parent.gameObject;
 
-        /*---------------------------------------------------------------------------
-         |Noti| 조작상 오해의 소지가 있어서, 그냥 아이템의 특정 포지션을 마우스에 붙이는 방식으로
-        //_myRectTransform.anchoredPosition += eventData.delta; 원래는 실시간으로 순수 이동만 더했다
-        ---------------------------------------------------------------------------*/
+        UIManager.Instance.SetMeFinalZOrder(gameObject);
+
+        _isRotated = _itemStoreDesc._isRotated;
 
         _myRectTransform.position = Input.mousePosition;
 
@@ -155,45 +163,25 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         _myRectTransform.position += new Vector3(sizeX / 2, -sizeY / 2, 0);
         _myRectTransform.position += new Vector3(-10, 10, 0); //오프셋임
 
-
         _mouseCatchingPosition = _myRectTransform.position;
-    }
-
-    private GameObject GetTopOfRaycastExceptMe(ref List<RaycastResult> result)
-    {
-        GameObject target = null;
-
-        foreach (RaycastResult raycastResult in result.AsEnumerable().Reverse())
-        {
-            if (raycastResult.gameObject != this.gameObject)
-            {
-                return raycastResult.gameObject;
-            }
-        }
-
-        return target;
     }
 
     private void RotateInGrab()
     {
         _isRotated = !_isRotated;
 
+        //mouse catching position 갱신
+        _myRectTransform.position = Input.mousePosition;
 
-        {
-            //mouse catching position 갱신
-            _myRectTransform.position = Input.mousePosition;
+        int sizeX = (_isRotated == false) ? _itemStoreDesc._info._sizeX * 20 : _itemStoreDesc._info._sizeY * 20;
+        int sizeY = (_isRotated == false) ? _itemStoreDesc._info._sizeY * 20 : _itemStoreDesc._info._sizeX * 20;
 
-            int sizeX = (_isRotated == false) ? _itemStoreDesc._info._sizeX * 20 : _itemStoreDesc._info._sizeY * 20;
-            int sizeY = (_isRotated == false) ? _itemStoreDesc._info._sizeY * 20 : _itemStoreDesc._info._sizeX * 20;
-
-            _myRectTransform.position = Input.mousePosition;
-            _myRectTransform.position += new Vector3(sizeX / 2, -sizeY / 2, 0);
-            _myRectTransform.position += new Vector3(-10, 10, 0); //오프셋임
+        _myRectTransform.position = Input.mousePosition;
+        _myRectTransform.position += new Vector3(sizeX / 2, -sizeY / 2, 0);
+        _myRectTransform.position += new Vector3(-10, 10, 0); //오프셋임
 
 
-            _mouseCatchingPosition = _myRectTransform.position;
-        }
-
+        _mouseCatchingPosition = _myRectTransform.position;
 
         Vector3 axis = new Vector3(0.0f, 0.0f, 1.0f);
         float angle = (_isRotated == true) ? 90.0f : -90.0f;

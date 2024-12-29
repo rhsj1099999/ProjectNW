@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -52,6 +53,16 @@ public class UIManager : SubManager
         return (_consumeInputUICount > 0);
     }
 
+    public void IncreaseConsumeInput()
+    {
+        ++_consumeInputUICount;
+    }
+
+    public void DecreaseConsumeInput()
+    {
+        --_consumeInputUICount;
+    }
+
     public void TurnOnUI(GameObject uiInstance)
     {
         UIComponent uiComponent = uiInstance.GetComponent<UIComponent>();
@@ -62,40 +73,61 @@ public class UIManager : SubManager
             Debug.Break();
         }
 
+        if (uiComponent.GetIsConsumeInput() == true)
+        {
+            Transform parent = uiComponent.transform.parent;
+
+            if (parent != _mainCanvas.transform) 
+            {
+                IncreaseConsumeInput();
+            }
+        }
+
         uiComponent.ShowUI();
 
         uiInstance.transform.SetParent(_mainCanvas.transform);
         uiInstance.transform.SetAsLastSibling();
 
-        if (uiInstance.name == "InteractionListUI")
-        {
-            uiInstance.transform.rotation = Quaternion.identity;
-            uiInstance.transform.position = Vector3.zero;
-            ((RectTransform)uiInstance.transform).anchoredPosition = Vector2.zero;
-            ((RectTransform)uiInstance.transform).anchoredPosition += new Vector2(50.0f, 0.0f);
-        }
+        uiInstance.transform.rotation = Quaternion.identity;
+        uiInstance.transform.position = Vector3.zero;
+        uiInstance.transform.localScale = Vector3.one;
 
-        if (uiComponent.GetIsConsumeInput() == true)
-        {
-            ++_consumeInputUICount;
-        }
+        ((RectTransform)uiInstance.transform).anchoredPosition = Vector2.zero;
+        ((RectTransform)uiInstance.transform).anchoredPosition += new Vector2(50.0f, 0.0f);
+
+
     }
 
     public void TurnOffUI(GameObject uiInstance)
     {
         UIComponent uiComponent = uiInstance.GetComponent<UIComponent>();
+
         if (uiComponent == null)
         {
             Debug.Assert(false, "UIComponent가 없는데 켜고/끄기를 제어하려합니다");
             Debug.Break();
         }
-        uiComponent.HideUI();
 
         if (uiComponent.GetIsConsumeInput() == true)
         {
-            --_consumeInputUICount;
+            Transform parent = uiComponent.transform.parent;
+
+            if (parent == _mainCanvas.transform)
+            {
+                DecreaseConsumeInput();
+            }
         }
+
+        uiComponent.HideUI();
     }
+
+
+    public void SetMeFinalZOrder(GameObject caller)
+    {
+        caller.gameObject.transform.SetParent(_mainCanvas.transform);
+        caller.gameObject.transform.SetAsLastSibling();
+    }
+
 
     public void RayCastAll(ref List<RaycastResult> results, bool isReverse = false)
     {
@@ -106,41 +138,14 @@ public class UIManager : SubManager
 
         GameObject rootObject = _mainCanvas;
 
-        GraphicRaycaster[] raycasters = rootObject.GetComponentsInChildren<GraphicRaycaster>();
-
-        Vector2 mousePosition = Input.mousePosition;
         PointerEventData pointerEventData = new PointerEventData(_eventSystem);
-        pointerEventData.position = mousePosition;
+        pointerEventData.position = Input.mousePosition;
 
-        List<RaycastResult> eachResult = new List<RaycastResult>();
+        rootObject.GetComponent<GraphicRaycaster>().Raycast(pointerEventData, results);
 
         if (isReverse == true)
         {
-            foreach (var raycaster in raycasters.AsEnumerable().Reverse())
-            {
-                eachResult.Clear();
-                raycaster.Raycast(pointerEventData, eachResult);
-                eachResult.Reverse();
-
-                foreach (var result in eachResult)
-                {
-                    results.Add(result);
-                }
-            }
-        }
-        else
-        {
-            foreach (var raycaster in raycasters)
-            {
-                eachResult.Clear();
-                raycaster.Raycast(pointerEventData, eachResult);
-                eachResult.Reverse();
-
-                foreach (var result in eachResult)
-                {
-                    results.Add(result);
-                }
-            }
+            results.Reverse();
         }
     }
 }

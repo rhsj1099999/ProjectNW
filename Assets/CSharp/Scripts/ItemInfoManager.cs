@@ -66,8 +66,13 @@ public class ItemInfo
 
 
 
-public struct ItemStoreDesc
+public class ItemStoreDesc
 {
+    public ItemStoreDesc()
+    {
+    }
+
+
     public ItemStoreDesc(ItemInfo info, int count, Vector2 position)
     {
         _info = info;
@@ -296,6 +301,32 @@ public class ItemInfoManager : SubManager
         testItemInfo._equipMeshIndicies = new List<int>();
         testItemInfo._equipMeshIndicies.Add(0);
         testItemInfo._equipMeshIndicies.Add(1);
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "대검1";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 35;
+        testItemInfo._sizeX = 1;
+        testItemInfo._sizeY = 3;
+        testItemInfo._equipType = ItemInfo.EquipType.Weapon;
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "한손검1";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 36;
+        testItemInfo._sizeX = 1;
+        testItemInfo._sizeY = 2;
+        testItemInfo._equipType = ItemInfo.EquipType.Weapon;
         _items.Add(testItemInfo._itemKey, testItemInfo);
     }
 }
