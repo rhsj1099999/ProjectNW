@@ -56,4 +56,9 @@ public class UIComponent : MonoBehaviour
     }
 
 
+    public GameObject GetParentObjectToReturn()
+    {
+        return _parentGameObjectToReturn;
+    }
+
 }

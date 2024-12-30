@@ -116,6 +116,9 @@ public enum RepresentStateType
     Blocked_Sliding, //미끄러짐
     Blocked_Crash, //자세가 무너짐
 
+    DieNormal,
+    DieThrow,
+
     End,
 }
 
@@ -178,7 +181,6 @@ public class AIAttackStateDesc
 {
     public float _coolTime = -1.0f;
     public float _range = -1.0f;
-    public DamageDesc _baseDamageDesc = new DamageDesc();
 }
 
 
@@ -193,7 +195,10 @@ public class StateDesc
     public AnimationClip _stateAnimationClip = null;
     public bool _rightWeaponOverride = true;
     public bool _leftWeaponOverride = true;
+
     public bool _isAttackState = false;
+    public DamageDesc _attackDamageMultiply = null;
+
     public bool _isLocoMotionToAttackAction = false;
     public bool _isLoopState = false;
     public bool _canUseItem = false;
@@ -207,10 +212,9 @@ public class StateDesc
     public bool _isAIAttackState = false;
     public bool _isAIState = false;
 
-
     public AIStateDesc _aiStateDesc = null;
     public AIAttackStateDesc _aiAttackStateDesc = null;
-
+    
 
     public List<StateActionType> _EnterStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _inStateActionTypes = new List<StateActionType>();
@@ -433,11 +437,6 @@ public class StateContoller : MonoBehaviour
         ChangeState(graphType, targetAsset);
     }
 
-    private void Update()
-    {
-        int a = 10;   
-    }
-
     private void StatedWillBeChanged()
     {
         _currStateTime = 0.0f;
@@ -452,7 +451,7 @@ public class StateContoller : MonoBehaviour
 
         if (gameObject.name == "PlayerCharacter3")
         {
-            Debug.Log("State Changed : " + nextState.name);
+            //Debug.Log("State Changed : " + nextState.name);
         }
 
         if (_currState != null)
@@ -1170,21 +1169,16 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.AnimationAttack:
                     {
-                        if (gameObject.name == "Zombie")
-                        {
-                            int a = 10;
-
-                        }
                         List<AnimationAttackFrameAsset.AttackFrameDesc> frameDesc = 
                         AnimationAttackManager.Instance.GetAttackFrameDesc(_currState._myState._stateAnimationClip);
 
                         if (frameDesc == null)
                         {
-                            Debug.Log("frameData 가 없다!"); //좆된거임
-                        }
+                            Debug.Assert(false, "FrameData가 없습니다.");
+                            Debug.Break();
+                        }   
                         else
                         {
-                            Debug.Log("frameData 가 있다!");
                             _ownerStateControllingComponent._ownerCharacterColliderScript.ColliderWork(frameDesc, _currState);
                         }
                     }
@@ -1588,7 +1582,7 @@ public class StateContoller : MonoBehaviour
 
                     float planeDistance = planeDistanceVector.magnitude;
 
-                    float attackRange = _ownerStateControllingComponent._ownerEnemyAIScript.GetBaseMeleeAttackRange();
+                    float attackRange = _ownerStateControllingComponent._ownerEnemyAIScript.GetChsingDistance();
 
                     if (planeDistance >= attackRange)
                     {

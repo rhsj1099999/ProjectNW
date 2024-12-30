@@ -261,21 +261,8 @@ public class ZombieStart : MonoBehaviour, IHitable
 
 
 
-    public void DealMe(DamageDesc damage, GameObject caller)
+    public void DealMe_Final(DamageDesc damage, GameObject caller)
     {
-        //if (_hp <= 0)
-        //{
-        //    return; //ÀÌ¹Ì Á×¾ú´Ù.
-        //}
-
-        ////_hp -= damage;
-
-        //if (_hp <= 0)
-        //{
-        //    _hp = 0; //Á×¾ú´Ù
-
-        //    Dead();
-        //}
     }
 
 

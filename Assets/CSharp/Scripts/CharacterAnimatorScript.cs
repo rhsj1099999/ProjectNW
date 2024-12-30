@@ -595,7 +595,7 @@ public class CharacterAnimatorScript : MonoBehaviour
         }
     }
 
-    public void CalculateBodyWorkType_ChangeWeapon(WeaponGrabFocus ownerWeaponGrabFocusType, bool isRightWeaponTrigger, int layerLockResult)
+    public void CalculateBodyWorkType_ChangeWeapon(WeaponGrabFocus ownerWeaponGrabFocusType, bool isRightWeaponTrigger, int layerLockResult, bool forcedGo = false)
     {
         HashSet<int> lockCompares = new HashSet<int>();
 
@@ -707,7 +707,8 @@ public class CharacterAnimatorScript : MonoBehaviour
             usingLockResult = usingLockResult | (1 << index);
         }
 
-        if (usingLockResult != layerLockResult)
+        if (forcedGo == false && 
+            (usingLockResult != layerLockResult))
         {
             Debug.Assert(false, "사용하려는 부위가 Lock과 일치하지 않습니다. 애니메이션 로직을 점검하세요");
             Debug.Break();

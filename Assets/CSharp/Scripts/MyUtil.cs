@@ -59,23 +59,6 @@ public static class MyUtil
 
 
 
-
-    public static void GuardAndDamageTypeConverter(DamageDesc.DamageType damageType, RepresentStateType curGuardType, RepresentStateType guardStateLvl)
-    {
-        guardStateLvl = 0;
-
-        //가드 자세의 레벨이 더 크다.
-            //무조건 막는자세로 간다.
-
-        //가드 자세의 레벨과 데미지 타입이 같다.
-            //막는다 혹은 밀려난다.
-
-        //데미지 타입이 더 크다.
-            //밀려난다. 혹은 가드가 부서진다.
-    }
-
-
-
     public static int CalculateConditionWeight(List<ConditionAssetWrapper> conditions)
     {
         int retWeight = 0;

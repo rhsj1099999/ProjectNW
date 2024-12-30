@@ -30,6 +30,24 @@ public class StateAsset : ScriptableObject
 
         //AI공격 상태입니까?
         {
+            if (_myState._isAttackState == true)
+            {
+                if (_myState._attackDamageMultiply == null)
+                {
+                    _myState._attackDamageMultiply = new DamageDesc();
+                }
+            }
+            else
+            {
+                if (_myState._attackDamageMultiply != null)
+                {
+                    _myState._attackDamageMultiply = null;
+                }
+            }
+        }
+
+        //AI공격 상태입니까?
+        {
             if (_myState._isAIAttackState == true)
             {
                 if (_myState._aiAttackStateDesc == null)

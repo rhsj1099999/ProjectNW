@@ -54,8 +54,7 @@ public class PlayerScript : CharacterScript
                 DamageDesc tempTestDamage = new DamageDesc();
                 tempTestDamage._damage = 0;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl0;
-                tempTestDamage._damageType = DamageDesc.DamageType.Damage_Lvl_0;
-                DealMe(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.J) == true)
@@ -63,8 +62,7 @@ public class PlayerScript : CharacterScript
                 DamageDesc tempTestDamage = new DamageDesc();
                 tempTestDamage._damage = 0;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1;
-                tempTestDamage._damageType = DamageDesc.DamageType.Damage_Lvl_1;
-                DealMe(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.K) == true)
@@ -72,28 +70,25 @@ public class PlayerScript : CharacterScript
                 DamageDesc tempTestDamage = new DamageDesc();
                 tempTestDamage._damage = 0;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl2;
-                tempTestDamage._damageType = DamageDesc.DamageType.Damage_Lvl_2;
-                DealMe(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.M) == true)
             {
                 DamageDesc tempTestDamage = new DamageDesc();
                 tempTestDamage._damage = 0;
-                tempTestDamage._dagingStamina = 200;
+                tempTestDamage._damagingStamina = 200;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl0;
-                tempTestDamage._damageType = DamageDesc.DamageType.Damage_Lvl_0;
-                DealMe(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.Period) == true)
             {
                 DamageDesc tempTestDamage = new DamageDesc();
                 tempTestDamage._damage = 100;
-                tempTestDamage._dagingStamina = 0;
+                tempTestDamage._damagingStamina = 0;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl3;
-                tempTestDamage._damageType = DamageDesc.DamageType.Damage_Lvl_3;
-                DealMe(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, this.gameObject);
             }
         }
 
@@ -136,13 +131,6 @@ public class PlayerScript : CharacterScript
     }
 
 
-    /*----------------------------------
-    HitAble Section
-    ----------------------------------*/
-    public override void DealMe(DamageDesc damage, GameObject caller)
-    {
-        base.DealMe(damage, caller);
-    }
 
     protected override void OnTriggerEnter(Collider other)
     {

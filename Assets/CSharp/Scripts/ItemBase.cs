@@ -31,6 +31,12 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         _itemStoreDesc = storeDesc;
     }
 
+
+    public GameObject GetReturnParent()
+    {
+        return _returnParent;
+    }
+
     void Awake()
     {
         _myRectTransform = GetComponent<RectTransform>();
@@ -46,8 +52,7 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public IEnumerator DestroyCoroutine()
     {
-        _itemStoreDesc._owner.DeleteOnMe(_itemStoreDesc);
-        gameObject.SetActive(false);
+        transform.localScale = Vector3.zero;
 
         yield return new WaitForNextFrameUnit();
         yield return new WaitForNextFrameUnit();
@@ -58,7 +63,7 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             Debug.Break();
             EventSystem.current.SetSelectedGameObject(null);
         }
-        gameObject.SetActive(true);
+
         Destroy(gameObject);
     }
 
@@ -73,7 +78,12 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
         _isDragging = false;
 
-        transform.SetParent(_returnParent.transform);
+        if (_returnParent != null)
+        {
+            transform.SetParent(_returnParent.transform);
+        }
+
+        _returnParent = null;
 
         _myRectTransform.anchoredPosition = _myPosition;
 
@@ -110,6 +120,18 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         {
             if (cellComponent.TryMoveItemDropOnBoard(_itemStoreDesc, this) == true)
             {
+                EquipmentBoard equipmentBoard = _itemStoreDesc._owner as EquipmentBoard;
+                if (equipmentBoard != null &&
+                    _itemStoreDesc._info._equipType == ItemInfo.EquipType.All)
+                {
+                    List<GameObject> restItemUIs = equipmentBoard.GetRestEquipmetItems(this.gameObject);
+
+                    foreach (var item in restItemUIs)
+                    {
+                        Destroy(item.gameObject);
+                    }
+                }
+
                 StartCoroutine(DestroyCoroutine());
             }
             return;

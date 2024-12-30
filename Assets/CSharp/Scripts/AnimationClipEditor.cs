@@ -469,7 +469,7 @@ public class AnimationClipEditor : MonoBehaviour
 
                 if (properties.ContainsKey(binding.propertyName) == true)
                 {
-                    Debug.Log("커브가 이미 있다");
+                    //Debug.Log("커브가 이미 있다");
                 }
 
                 AnimationCurve curve = AnimationUtility.GetEditorCurve(sourceClip, binding);
@@ -498,7 +498,7 @@ public class AnimationClipEditor : MonoBehaviour
 
                 if (properties.ContainsKey(binding.propertyName) == true)
                 {
-                    Debug.Log("커브가 이미 있다");
+                    //Debug.Log("커브가 이미 있다");
                 }
 
                 AnimationCurve curve = AnimationUtility.GetEditorCurve(sourceClip, binding);

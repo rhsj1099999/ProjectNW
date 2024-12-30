@@ -24,6 +24,7 @@ public class StateGraphAsset : ScriptableObject
         AI_SharpnessGraph,
         AI_WeaknessGraph,
         AI_GuardGraph,
+        DieGraph,
         End,
     };
 
@@ -126,7 +127,7 @@ public class StateGraphAsset : ScriptableObject
                 RepresentStateType stateType = stateAsset._myState._stateType;
                 if (_usingRepresentStateTypes.ContainsKey(stateType) == true)
                 {
-                    Debug.Log("상태가 중복됩니다.");
+                    //Debug.Log("상태가 중복됩니다.");
                     //Debug.Assert(false, "상태가 중복됩니다.");
                     //Debug.Break();
                     //return;

@@ -45,17 +45,12 @@ public class ItemInfo
 
     public Sprite _sprite;
 
+    public string _itemPrefabName = "None";
+
     public WeaponType _weaponType;
     public EquipType _equipType;
     public string _meshObjectName;
     public List<int> _equipMeshIndicies;
-
-    
-    
-
-
-
-
 
 
     public List<AnimatorLayerTypes> _usingItemMustNotBusyLayers;
@@ -68,11 +63,7 @@ public class ItemInfo
 
 public class ItemStoreDesc
 {
-    public ItemStoreDesc()
-    {
-    }
-
-
+    public ItemStoreDesc() {}
     public ItemStoreDesc(ItemInfo info, int count, Vector2 position)
     {
         _info = info;
@@ -100,6 +91,7 @@ public class ItemStoreDesc
 public class ItemInfoManager : SubManager
 {
     Dictionary<string, GameObject>       _equipmentPrefabs = new Dictionary<string, GameObject>();
+    Dictionary<string, GameObject>       _weaponPrefabs = new Dictionary<string, GameObject>();
     Dictionary<string, List<GameObject>> _equipmentObject = new Dictionary<string, List<GameObject>>();
     Dictionary<int, ItemInfo> _items = new Dictionary<int, ItemInfo>();
 
@@ -137,6 +129,8 @@ public class ItemInfoManager : SubManager
         InitItem_TestCode_MustDel();
 
         InitItem();
+
+        InitWeapons();
     }
 
     private void InitItem()
@@ -219,6 +213,29 @@ public class ItemInfoManager : SubManager
         }
     }
 
+
+
+    private void InitWeapons()
+    {
+        //asset 폴더 내에 기존 메쉬들을 등록하는 함수 
+
+        GameObject[] loadedPrefabs = Resources.LoadAll<GameObject>("WeaponItems");
+
+        foreach (GameObject prefab in loadedPrefabs)
+        {
+            Debug.Assert(_weaponPrefabs.ContainsKey(prefab.name) == false, "프리팹 원본이 중복됩니다");
+
+            _weaponPrefabs.Add(prefab.name, prefab);
+        }
+    }
+
+
+
+
+    public GameObject GetWeaponPrefab(string name)
+    {
+        return _weaponPrefabs[name];
+    }
 
 
 
@@ -307,11 +324,11 @@ public class ItemInfoManager : SubManager
 
 
         testItemInfo = new ItemInfo();
-        testItemInfo._itemName = "대검1";
+        testItemInfo._itemName = "양손해머1";
         testItemInfo._sprite = null;
         testItemInfo._isStackAble = true;
         testItemInfo._itemKey = 35;
-        testItemInfo._sizeX = 1;
+        testItemInfo._sizeX = 2;
         testItemInfo._sizeY = 3;
         testItemInfo._equipType = ItemInfo.EquipType.Weapon;
         _items.Add(testItemInfo._itemKey, testItemInfo);
@@ -325,8 +342,47 @@ public class ItemInfoManager : SubManager
         testItemInfo._isStackAble = true;
         testItemInfo._itemKey = 36;
         testItemInfo._sizeX = 1;
+        testItemInfo._sizeY = 3;
+        testItemInfo._equipType = ItemInfo.EquipType.Weapon;
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "권총1";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 37;
+        testItemInfo._sizeX = 1;
+        testItemInfo._sizeY = 1;
+        testItemInfo._equipType = ItemInfo.EquipType.Weapon;
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "라이플1";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 38;
+        testItemInfo._sizeX = 4;
         testItemInfo._sizeY = 2;
         testItemInfo._equipType = ItemInfo.EquipType.Weapon;
         _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "방패1";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 39;
+        testItemInfo._sizeX = 2;
+        testItemInfo._sizeY = 2;
+        testItemInfo._equipType = ItemInfo.EquipType.Weapon;
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+
     }
 }

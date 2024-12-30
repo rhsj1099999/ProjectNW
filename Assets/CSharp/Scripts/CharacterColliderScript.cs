@@ -72,8 +72,6 @@ public class CharacterColliderScript : MonoBehaviour
                 _colliders[type].SetActive(false);
             }
 
-            
-
             colliderWorkList.Clear();
         }
     }

@@ -148,7 +148,7 @@ public class ResourceDataManager : SubManager
     {
         if (_animationHipData.ContainsKey(clip) == true)
         {
-            Debug.Log("Curve가 이미 있다");
+            //Debug.Log("Curve가 이미 있다");
             return;
         }
 

@@ -81,7 +81,10 @@ public class EnemyAIScript : MonoBehaviour
 
     //---Chase
     private float _chasingDistance = 1.5f;
-
+    public float GetChsingDistance()
+    {
+        return _chasingDistance;
+    }
 
 
     virtual public bool IsInAttackRange(CharacterController characterController)

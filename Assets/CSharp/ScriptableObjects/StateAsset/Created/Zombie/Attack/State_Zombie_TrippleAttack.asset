@@ -18,7 +18,11 @@ MonoBehaviour:
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
-    _isAttackState: 0
+    _isAttackState: 1
+    _attackDamageMultiply:
+      _damage: 1.5
+      _damagePower: 1
+      _damagingStamina: 1
     _isLocoMotionToAttackAction: 0
     _isLoopState: 0
     _canUseItem: 0
@@ -31,10 +35,10 @@ MonoBehaviour:
       _randomChancePercentage: -1
       _stateTimeThreshould: -1
     _aiAttackStateDesc:
-      _coolTime: 12
-      _range: 1
+      _coolTime: 5
+      _range: 2
     _EnterStateActionTypes: 21000000
-    _inStateActionTypes: 
+    _inStateActionTypes: 06000000
     _ExitStateActionTypes: 
     _checkingBehaves: 
     _breakLoopStateCondition: []

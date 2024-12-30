@@ -7,6 +7,8 @@ public class UICall_OpenChest : UICallScript
     [SerializeField] private bool _isChestOpened = false;
     [SerializeField] private bool _isChestRotating = false;
     [SerializeField] private GameObject _chestInventory = null;
+    [SerializeField] private List<int> _fixedCreateTryItemList = new List<int>();
+
 
     [SerializeField] private float _maxOpenDegree = 100.0f;
     [SerializeField] private float _openTime = 1.0f;
@@ -16,6 +18,21 @@ public class UICall_OpenChest : UICallScript
     private Quaternion _openedRotation = Quaternion.identity;
     private float _currRotatingTime = 0.0f;
     private float _rotationSpeed = 0.0f;
+
+
+    private void Awake()
+    {
+        _originalRotation = _chestLid.transform.rotation;
+
+        InventoryBoard boardComponent = GetComponentInChildren<InventoryBoard>();
+
+        foreach (int itemKey in _fixedCreateTryItemList)
+        {
+            boardComponent.AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(itemKey));
+        }
+    }
+
+
 
     public override void UICall_Off()
     {
@@ -37,6 +54,13 @@ public class UICall_OpenChest : UICallScript
         Quaternion goalRotation = _openedRotation;
         Quaternion startQauternion = _originalRotation;
         _rotationSpeed = Quaternion.Angle(startQauternion, goalRotation) / _openTime;
+
+        _currRotatingTime = 0.0f;
+
+        if (_isChestRotating == false)
+        {
+            StartCoroutine(OpenChestCoroutine());
+        }
     }
 
     public void CloseChest()
@@ -54,11 +78,17 @@ public class UICall_OpenChest : UICallScript
         Quaternion goalRotation = _originalRotation;
         Quaternion startQauternion = _openedRotation;
         _rotationSpeed = Quaternion.Angle(startQauternion, goalRotation) / _openTime;
+
+        _currRotatingTime = 0.0f;
+
+        if (_isChestRotating == false)
+        {
+            StartCoroutine(OpenChestCoroutine());
+        }
     }
 
     public override void UICall()
     {
-
         if (_isChestOpened == false)
         {
             OpenChest();
@@ -68,20 +98,11 @@ public class UICall_OpenChest : UICallScript
             CloseChest();
         }
 
-        _currRotatingTime = 0.0f;
 
-        if (_isChestRotating == false)
-        {
-            StartCoroutine(OpenChestCoroutine());
-        }
 
         return;
     }
 
-    private void Awake()
-    {
-        _originalRotation = _chestLid.transform.rotation;
-    }
 
 
     private IEnumerator OpenChestCoroutine()

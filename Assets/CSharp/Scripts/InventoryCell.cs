@@ -40,6 +40,9 @@ public class InventoryCell : MonoBehaviour
             return false; 
         }
 
+        //삭제하고
+        storedDesc._owner.DeleteOnMe(storedDesc);
+
         //넣는다
         _owner.AddItemUsingForcedIndex(storedDesc, startX, startY, caller.GetRotated());
 
