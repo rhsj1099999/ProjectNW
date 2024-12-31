@@ -416,7 +416,7 @@ public class ItemInfoManager : SubManager
 
 
         testItemInfo = new ItemInfo();
-        testItemInfo._itemName = "너클용 한손검";
+        testItemInfo._itemName = "너클";
         testItemInfo._sprite = null;
         testItemInfo._isStackAble = true;
         testItemInfo._itemKey = 41;
@@ -424,6 +424,11 @@ public class ItemInfoManager : SubManager
         testItemInfo._sizeY = 2;
         testItemInfo._equipType = ItemInfo.EquipType.Weapon;
         _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+
+
 
 
         testItemInfo = new ItemInfo();
@@ -438,6 +443,19 @@ public class ItemInfoManager : SubManager
         testItemInfo._equipMeshIndicies = new List<int>();
         testItemInfo._equipMeshIndicies.Add(0);
         _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "헤이조너클";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 43;
+        testItemInfo._sizeX = 2;
+        testItemInfo._sizeY = 2;
+        testItemInfo._equipType = ItemInfo.EquipType.Weapon;
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
 
 
     }

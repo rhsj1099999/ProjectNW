@@ -110,6 +110,43 @@ public class CharacterScript : MonoBehaviour, IHitable
     protected StatScript _myStat = new StatScript();
     protected AimScript2 _aimScript = null;
 
+
+
+    protected virtual void Start()
+    {
+        _characterHeart = new GameObject("CharacterHeart");
+        Vector3 myPosition = transform.position;
+        myPosition.y += _charactercontroller.height / 1.75f;
+        _characterHeart.transform.position = myPosition;
+        _characterHeart.transform.SetParent(transform);
+        _characterHeart.layer = LayerMask.NameToLayer("CharacterHeart");
+        SphereCollider heartCollider = _characterHeart.AddComponent<SphereCollider>();
+        heartCollider.radius = 0.1f;
+        heartCollider.includeLayers = 0;
+        heartCollider.excludeLayers = ~0;
+        heartCollider.isTrigger = true;
+    }
+
+
+    protected virtual void Awake()
+    {
+        _characterMoveScript2 = GetComponent<CharacterMoveScript2>();
+        Debug.Assert(_characterMoveScript2 != null, "CharacterMove 컴포넌트 없다");
+
+        _stateContoller = GetComponent<StateContoller>();
+        Debug.Assert(_stateContoller != null, "StateController가 없다");
+
+        _characterMoveScript2 = GetComponent<CharacterMoveScript2>();
+        Debug.Assert(_characterMoveScript2 != null, "CharacterMove 컴포넌트 없다");
+
+        _charactercontroller = GetComponent<CharacterController>();
+        Debug.Assert(_charactercontroller != null, "CharacterController 컴포넌트가 없습니다");
+        _charactercontroller.detectCollisions = false;
+    }
+
+
+
+
     //HP가 0이되어 죽는 연출을 시작합니다
     protected virtual void ZeroHPCall()
     {
@@ -140,96 +177,6 @@ public class CharacterScript : MonoBehaviour, IHitable
         }
         _aimScript.enabled = true;
     }
-
-
-
-
-    public virtual void CalculateMyCurrentWeaponDamage(ref DamageDesc damageDesc, Collider other)
-    {
-        if (damageDesc == null)
-        {
-            Debug.Assert(false, "damageDesc가 null이여선 안된다");
-            Debug.Break();
-            return;
-        }
-
-
-        /*-------------------------------------------------------
-        기본->StatComponent(무조건 여기서 출발한다)
-        기본 스텟에 의한 데미지, 스테미나 계산
-        -------------------------------------------------------*/
-        {
-            damageDesc._damage = _myStat.CalculateStatDamage();
-            damageDesc._damagingStamina = _myStat.CalculateStatDamagingStamina();
-            damageDesc._damagePower = _myStat.CalculatePower();
-        }
-
-
-
-
-
-
-        /*-------------------------------------------------------
-        무기 배수(좋은 무기면 더 아플것이다)
-        -------------------------------------------------------*/
-        WeaponScript otherWeaponScript = other.GetComponentInParent<WeaponScript>();
-        if (otherWeaponScript != null)
-        {
-            DamageDesc weaponDamageDest = otherWeaponScript._weaponDamageDesc;
-            damageDesc._damage += weaponDamageDest._damage;
-            damageDesc._damagingStamina += weaponDamageDest._damagingStamina;
-            damageDesc._damagePower += weaponDamageDest._damagePower;
-        }
-
-
-        /*-------------------------------------------------------
-        애니메이션 배수(동작이 크면 아플것이다)
-        -------------------------------------------------------*/
-        StateContoller myStateController = _stateContoller;
-        if (myStateController != null &&
-            myStateController.GetCurrState()._myState._isAttackState == true)
-        {
-            DamageDesc attackMultiplyDesc = myStateController.GetCurrState()._myState._attackDamageMultiply;
-            if (attackMultiplyDesc == null)
-            {
-                Debug.Log("공격상태지만 값이 설정돼지 않았다");
-                attackMultiplyDesc = new DamageDesc();
-            }
-
-            damageDesc._damage *= attackMultiplyDesc._damage;
-            damageDesc._damagingStamina *= attackMultiplyDesc._damagingStamina;
-            damageDesc._damagePower *= attackMultiplyDesc._damagePower;
-        }
-
-
-
-
-
-
-        /*-------------------------------------------------------
-        파지법 배수(양손으로 잡아서 휘두르면 더 아플것이다)
-        -------------------------------------------------------*/
-        if (_tempGrabFocusType != WeaponGrabFocus.Normal)
-        {
-            damageDesc._damage *= 1.2f;
-            damageDesc._damagingStamina *= 1.2f;
-            damageDesc._damagePower *= 1.2f;
-        }
-
-
-
-
-
-
-
-        /*-------------------------------------------------------
-        버프 배수(미구현)
-        -------------------------------------------------------*/
-        {
-
-        }
-    }
-
 
 
 
@@ -331,30 +278,29 @@ public class CharacterScript : MonoBehaviour, IHitable
 
     public void DestroyWeapon(AnimatorLayerTypes layerType)
     {
+        StateGraphType targetType = StateGraphType.End;
+
         if (layerType == AnimatorLayerTypes.RightHand && _tempCurrRightWeapon != null)
         {
             Destroy(_tempCurrRightWeapon);
             _tempCurrRightWeapon = null;
+            targetType = StateGraphType.WeaponState_RightGraph;
         }
         else if (layerType == AnimatorLayerTypes.LeftHand && _tempCurrLeftWeapon != null)
         {
             Destroy(_tempCurrLeftWeapon);
             _tempCurrLeftWeapon = null;
+            targetType = StateGraphType.WeaponState_LeftGraph;
         }
-    }
 
-    public void WeaponSwitchHand(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
-    {
-        WeaponScript targetWeaponScript = (layerType == AnimatorLayerTypes.RightHand)
-            ? _tempCurrRightWeapon.GetComponent<WeaponScript>()
-            : _tempCurrLeftWeapon.GetComponent<WeaponScript>();
 
-        targetWeaponScript.Equip_OnSocket(work._weaponEquipTransform);
-    }
+        StateGraphAsset basicAsset = _stateContoller.GetBasicStateGraphes(targetType);
+        if (basicAsset == null)
+        {
+            return;
+        }
 
-    public void ChangeGrabFocusType(WeaponGrabFocus targetType)
-    {
-        _tempGrabFocusType = targetType;
+        _stateContoller.EquipStateGraph(basicAsset, targetType);
     }
 
     public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, GameObject nextWeaponPrefab)
@@ -407,7 +353,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                 Debug.Break();
                 return;
             }
-            
+
         }
 
         //아이템 프리팹 생성, 장착
@@ -439,13 +385,27 @@ public class CharacterScript : MonoBehaviour, IHitable
 
             //장착한 후, 콜라이더를 업데이트 한다.
             Transform colliderTransform = nextWeaponScript.transform.Find("Collider");
-            if (colliderTransform != null) 
+            if (colliderTransform != null)
             {
                 ColliderAttachType colliderType = CalculateAttachType(layerType);
-                _characterColliderScript.ChangeCollider(colliderType, colliderTransform.gameObject);
+                //_characterColliderScript.ChangeCollider(colliderType, colliderTransform.gameObject);
                 colliderTransform.gameObject.SetActive(false);
             }
         }
+    }
+
+    public void WeaponSwitchHand(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    {
+        WeaponScript targetWeaponScript = (layerType == AnimatorLayerTypes.RightHand)
+            ? _tempCurrRightWeapon.GetComponent<WeaponScript>()
+            : _tempCurrLeftWeapon.GetComponent<WeaponScript>();
+
+        targetWeaponScript.Equip_OnSocket(work._weaponEquipTransform);
+    }
+
+    public void ChangeGrabFocusType(WeaponGrabFocus targetType)
+    {
+        _tempGrabFocusType = targetType;
     }
 
     public virtual ColliderAttachType CalculateAttachType(AnimatorLayerTypes layerType)
@@ -582,22 +542,6 @@ public class CharacterScript : MonoBehaviour, IHitable
         return 0;
     }
 
-    protected virtual void Awake()
-    {
-        _characterMoveScript2 = GetComponent<CharacterMoveScript2>();
-        Debug.Assert(_characterMoveScript2 != null, "CharacterMove 컴포넌트 없다");
-
-        _stateContoller = GetComponent<StateContoller>();
-        Debug.Assert(_stateContoller != null, "StateController가 없다");
-
-        _characterMoveScript2 = GetComponent<CharacterMoveScript2>();
-        Debug.Assert(_characterMoveScript2 != null, "CharacterMove 컴포넌트 없다");
-
-        _charactercontroller = GetComponent<CharacterController>();
-        Debug.Assert(_charactercontroller != null, "CharacterController 컴포넌트가 없습니다");
-        _charactercontroller.detectCollisions = false;
-    }
-
     public void MoveWeapons(GameObject newModelObject)
     {
         Transform correctSocket_Left = null;
@@ -667,152 +611,6 @@ public class CharacterScript : MonoBehaviour, IHitable
         DealMe_Final(currentDamage, otherCharacterScript.gameObject);
     }
 
-    public virtual void DealMe_Final(DamageDesc damage, GameObject caller)
-    {
-        /*------------------------------------------------
-        |NOTO| 이곳에서는 데미지 피격 감쇄, 상태변경만 계산합니다.
-        ------------------------------------------------*/
-
-        Debug.Log("들어온 데미지" + damage._damage);
-        Debug.Log("들어온 스테미나데미지" + damage._damagingStamina);
-        Debug.Log("들어온 파워" + damage._damagePower);
-
-        StateGraphType nextGraphType = StateGraphType.HitStateGraph;
-        RepresentStateType representType = RepresentStateType.Hit_Lvl_0;
-
-        StateAsset currState = _stateContoller.GetCurrState();
-        StateDesc currStateDesc = _stateContoller.GetCurrState()._myState;
-
-
-
-        //가드중이였을때의 상태 계산 로직
-        {
-            if (currStateDesc._isBlockState == true)
-            {
-                //스테미나도 충분하고 강인도도 충분합니다
-                if (_myStat._runtimeDesc._stamina >= damage._damagingStamina &&
-                    _myStat._runtimeDesc._roughness >= damage._damagePower)
-                {
-                    nextGraphType = _stateContoller.GetCurrStateGraphType();
-                    representType = RepresentStateType.Blocked_Reaction;
-                }
-
-                //스테미나는 충분한데 강인도가 부족합니다.
-                else if (_myStat._runtimeDesc._stamina >= damage._damagingStamina &&
-                    _myStat._runtimeDesc._roughness < damage._damagePower)
-                {
-                    nextGraphType = _stateContoller.GetCurrStateGraphType();
-                    representType = RepresentStateType.Blocked_Sliding;
-                }
-
-                //강인도는 충분한데 스테미나가 부족합니다.
-                else if (_myStat._runtimeDesc._stamina < damage._damagingStamina &&
-                    _myStat._runtimeDesc._roughness >= damage._damagePower)
-                {
-                    nextGraphType = _stateContoller.GetCurrStateGraphType();
-                    representType = RepresentStateType.Blocked_Crash;
-                }
-
-                //연결된 상태들을 가져와봄
-                StateAsset nextStateAsseet = null;
-                List<LinkedStateAsset> linkedStates = _stateContoller.GetCurrStateGraph().GetGraphStates()[currState];
-                foreach (LinkedStateAsset linkedState in linkedStates)
-                {
-                    if (linkedState._linkedState._myState._stateType == representType)
-                    {
-                        nextStateAsseet = linkedState._linkedState;
-                        break;
-                    }
-                }
-
-                //스테미나가 부족하고 강인도도 부족합니다. 혹은 연결상태가 존재하지 않습니다
-                if ((_myStat._runtimeDesc._stamina < damage._damagingStamina && _myStat._runtimeDesc._roughness < damage._damagePower) ||
-                    nextStateAsseet == null)
-                {
-                    //맞는 상태로 가긴 할건데
-                    nextGraphType = StateGraphType.HitStateGraph;
-
-                    float deltaRoughness = damage._damagePower - _myStat._runtimeDesc._roughness;
-
-                    if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
-                    {
-                        representType = RepresentStateType.Hit_Lvl_0;
-                    }
-                    else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
-                    {
-                        representType = RepresentStateType.Hit_Lvl_1;
-                    }
-                    else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
-                    {
-                        representType = RepresentStateType.Hit_Lvl_2;
-                    }
-                }
-            }
-            else
-            {
-                //맞는 상태로 가긴 할건데
-                nextGraphType = StateGraphType.HitStateGraph;
-
-                float deltaRoughness = damage._damagePower - _myStat._runtimeDesc._roughness;
-
-                if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
-                {
-                    representType = RepresentStateType.Hit_Lvl_0;
-                }
-                else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
-                {
-                    representType = RepresentStateType.Hit_Lvl_1;
-                }
-                else
-                {
-                    representType = RepresentStateType.Hit_Lvl_2;
-                }
-            }
-        }
-
-
-
-
-
-
-        /*--------------------------------------------------------------------------------------------------------------
-        --------------------------------------모든 데미지는 계산돼있어야 한다-------------------------------------------------------
-        --------------------------------------------------------------------------------------------------------------*/
-
-
-        int finalDamage = (int)damage._damage;
-
-        StatScriptDesc runtimeStatDesc = _myStat.GetRuntimeStatDesc();
-        runtimeStatDesc._hp -= finalDamage;
-        if (runtimeStatDesc._hp <= 0)
-        {
-            Debug.Log("죽었다");
-
-            ZeroHPCall();
-
-
-            //날라갈만큼의 데미지를 받고 죽는다
-            if (representType == RepresentStateType.Hit_Lvl_2) 
-            {
-                representType = RepresentStateType.DieThrow;
-            }
-            else
-            {
-                representType = RepresentStateType.DieNormal;
-            }
-            nextGraphType = StateGraphType.DieGraph;
-
-            _stateContoller.TryChangeState(nextGraphType, representType);
-
-            return;
-        }
-
-
-
-        gameObject.transform.LookAt(caller.transform.position);
-
-        _stateContoller.TryChangeState(nextGraphType, representType);
-    }
 
 
     private void OnTriggerStay(Collider other)
@@ -840,26 +638,15 @@ public class CharacterScript : MonoBehaviour, IHitable
     {
     }
 
-    protected virtual void Start()
-    {
-        _characterHeart = new GameObject("CharacterHeart");
-        Vector3 myPosition = transform.position;
-        myPosition.y += _charactercontroller.height / 1.75f;
-        _characterHeart.transform.position = myPosition;
-        _characterHeart.transform.SetParent(transform);
-        _characterHeart.layer = LayerMask.NameToLayer("CharacterHeart");
-        SphereCollider heartCollider = _characterHeart.AddComponent<SphereCollider>();
-        heartCollider.radius = 0.1f;
-        heartCollider.includeLayers = 0;
-        heartCollider.excludeLayers = ~0;
-        heartCollider.isTrigger = true;
-    }
+
 
 
     public float GetStateChangingPercentage()
     {
         return _characterAnimatorScript.GetStateChangingPercentage();
     }
+
+
 
     protected virtual void Update()
     {
@@ -1155,4 +942,233 @@ public class CharacterScript : MonoBehaviour, IHitable
                 break;
         }
     }
+
+    public virtual void CalculateMyCurrentWeaponDamage(ref DamageDesc damageDesc, Collider other)
+    {
+        if (damageDesc == null)
+        {
+            Debug.Assert(false, "damageDesc가 null이여선 안된다");
+            Debug.Break();
+            return;
+        }
+
+        /*-------------------------------------------------------
+        기본->StatComponent(무조건 여기서 출발한다)
+        기본 스텟에 의한 데미지, 스테미나 계산
+        -------------------------------------------------------*/
+        {
+            damageDesc._damage = _myStat.CalculateStatDamage();
+            damageDesc._damagingStamina = _myStat.CalculateStatDamagingStamina();
+            damageDesc._damagePower = _myStat.CalculatePower();
+        }
+
+
+        /*-------------------------------------------------------
+        무기 배수(좋은 무기면 더 아플것이다)
+        -------------------------------------------------------*/
+        WeaponScript otherWeaponScript = other.GetComponentInParent<WeaponScript>();
+        if (otherWeaponScript != null)
+        {
+            DamageDesc weaponDamageDest = otherWeaponScript._weaponDamageDesc;
+            damageDesc._damage += weaponDamageDest._damage;
+            damageDesc._damagingStamina += weaponDamageDest._damagingStamina;
+            damageDesc._damagePower += weaponDamageDest._damagePower;
+        }
+
+
+        /*-------------------------------------------------------
+        애니메이션 배수(동작이 크면 아플것이다)
+        -------------------------------------------------------*/
+        StateContoller myStateController = _stateContoller;
+        if (myStateController != null &&
+            myStateController.GetCurrState()._myState._isAttackState == true)
+        {
+            DamageDesc attackMultiplyDesc = myStateController.GetCurrState()._myState._attackDamageMultiply;
+            if (attackMultiplyDesc == null)
+            {
+                Debug.Log("공격상태지만 값이 설정돼지 않았다");
+                attackMultiplyDesc = new DamageDesc();
+            }
+
+            damageDesc._damage *= attackMultiplyDesc._damage;
+            damageDesc._damagingStamina *= attackMultiplyDesc._damagingStamina;
+            damageDesc._damagePower *= attackMultiplyDesc._damagePower;
+        }
+
+
+
+
+
+
+        /*-------------------------------------------------------
+        파지법 배수(양손으로 잡아서 휘두르면 더 아플것이다)
+        -------------------------------------------------------*/
+        if (_tempGrabFocusType != WeaponGrabFocus.Normal)
+        {
+            damageDesc._damage *= 1.2f;
+            damageDesc._damagingStamina *= 1.2f;
+            damageDesc._damagePower *= 1.2f;
+        }
+
+
+
+
+
+
+
+        /*-------------------------------------------------------
+        버프 배수(미구현)
+        -------------------------------------------------------*/
+        {
+
+        }
+    }
+
+    public virtual void DealMe_Final(DamageDesc damage, GameObject caller)
+    {
+        /*------------------------------------------------
+        |NOTO| 이곳에서는 데미지 피격 감쇄, 상태변경만 계산합니다.
+        ------------------------------------------------*/
+
+        Debug.Log("들어온 데미지" + damage._damage);
+        Debug.Log("들어온 스테미나데미지" + damage._damagingStamina);
+        Debug.Log("들어온 파워" + damage._damagePower);
+
+        StateGraphType nextGraphType = StateGraphType.HitStateGraph;
+        RepresentStateType representType = RepresentStateType.Hit_Lvl_0;
+
+        StateAsset currState = _stateContoller.GetCurrState();
+        StateDesc currStateDesc = _stateContoller.GetCurrState()._myState;
+
+
+
+        //가드중이였을때의 상태 계산 로직
+        {
+            if (currStateDesc._isBlockState == true)
+            {
+                //스테미나도 충분하고 강인도도 충분합니다
+                if (_myStat._runtimeDesc._stamina >= damage._damagingStamina &&
+                    _myStat._runtimeDesc._roughness >= damage._damagePower)
+                {
+                    nextGraphType = _stateContoller.GetCurrStateGraphType();
+                    representType = RepresentStateType.Blocked_Reaction;
+                }
+
+                //스테미나는 충분한데 강인도가 부족합니다.
+                else if (_myStat._runtimeDesc._stamina >= damage._damagingStamina &&
+                    _myStat._runtimeDesc._roughness < damage._damagePower)
+                {
+                    nextGraphType = _stateContoller.GetCurrStateGraphType();
+                    representType = RepresentStateType.Blocked_Sliding;
+                }
+
+                //강인도는 충분한데 스테미나가 부족합니다.
+                else if (_myStat._runtimeDesc._stamina < damage._damagingStamina &&
+                    _myStat._runtimeDesc._roughness >= damage._damagePower)
+                {
+                    nextGraphType = _stateContoller.GetCurrStateGraphType();
+                    representType = RepresentStateType.Blocked_Crash;
+                }
+
+                //연결된 상태들을 가져와봄
+                StateAsset nextStateAsseet = null;
+                List<LinkedStateAsset> linkedStates = _stateContoller.GetCurrStateGraph().GetGraphStates()[currState];
+                foreach (LinkedStateAsset linkedState in linkedStates)
+                {
+                    if (linkedState._linkedState._myState._stateType == representType)
+                    {
+                        nextStateAsseet = linkedState._linkedState;
+                        break;
+                    }
+                }
+
+                //스테미나가 부족하고 강인도도 부족합니다. 혹은 연결상태가 존재하지 않습니다
+                if ((_myStat._runtimeDesc._stamina < damage._damagingStamina && _myStat._runtimeDesc._roughness < damage._damagePower) ||
+                    nextStateAsseet == null)
+                {
+                    //맞는 상태로 가긴 할건데
+                    nextGraphType = StateGraphType.HitStateGraph;
+
+                    float deltaRoughness = damage._damagePower - _myStat._runtimeDesc._roughness;
+
+                    if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
+                    {
+                        representType = RepresentStateType.Hit_Lvl_0;
+                    }
+                    else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
+                    {
+                        representType = RepresentStateType.Hit_Lvl_1;
+                    }
+                    else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
+                    {
+                        representType = RepresentStateType.Hit_Lvl_2;
+                    }
+                }
+            }
+            else
+            {
+                //맞는 상태로 가긴 할건데
+                nextGraphType = StateGraphType.HitStateGraph;
+
+                float deltaRoughness = damage._damagePower - _myStat._runtimeDesc._roughness;
+
+                if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
+                {
+                    representType = RepresentStateType.Hit_Lvl_0;
+                }
+                else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
+                {
+                    representType = RepresentStateType.Hit_Lvl_1;
+                }
+                else
+                {
+                    representType = RepresentStateType.Hit_Lvl_2;
+                }
+            }
+        }
+
+
+
+
+
+
+        /*--------------------------------------------------------------------------------------------------------------
+        --------------------------------------모든 데미지는 계산돼있어야 한다-------------------------------------------------------
+        --------------------------------------------------------------------------------------------------------------*/
+
+
+        int finalDamage = (int)damage._damage;
+
+        StatScriptDesc runtimeStatDesc = _myStat.GetRuntimeStatDesc();
+        runtimeStatDesc._hp -= finalDamage;
+        if (runtimeStatDesc._hp <= 0)
+        {
+            Debug.Log("죽었다");
+
+            ZeroHPCall();
+
+
+            //날라갈만큼의 데미지를 받고 죽는다
+            if (representType == RepresentStateType.Hit_Lvl_2)
+            {
+                representType = RepresentStateType.DieThrow;
+            }
+            else
+            {
+                representType = RepresentStateType.DieNormal;
+            }
+            nextGraphType = StateGraphType.DieGraph;
+
+            _stateContoller.TryChangeState(nextGraphType, representType);
+
+            return;
+        }
+
+
+
+        gameObject.transform.LookAt(caller.transform.position);
+
+        _stateContoller.TryChangeState(nextGraphType, representType);
+    }
+
 }

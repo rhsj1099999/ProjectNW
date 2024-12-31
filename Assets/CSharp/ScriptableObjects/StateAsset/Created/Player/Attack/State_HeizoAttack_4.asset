@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
-  m_Name: State_WrioAttack_2
+  m_Name: State_HeizoAttack_4
   m_EditorClassIdentifier: 
   _myState:
     _stateType: 0
-    _stateAnimationClip: {fileID: 7400000, guid: ebfc381d6c7578b4490f81c745f40d63,
+    _stateAnimationClip: {fileID: 7400000, guid: 0a6d4f8a370e4ed44a904b67e3fc7021,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
     _isAttackState: 1
     _attackDamageMultiply:
       _damage: 1
-      _damagePower: 2
+      _damagePower: 10
       _damagingStamina: 1
     _isLocoMotionToAttackAction: 0
     _isLoopState: 0

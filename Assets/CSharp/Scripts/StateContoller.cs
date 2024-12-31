@@ -299,6 +299,15 @@ public class StateContoller : MonoBehaviour
         public int _hardness = -1;
     }
 
+
+    [Serializable]
+    public class StateGraphInitialWrapper
+    {
+        public StateGraphType _type = StateGraphType.End;
+        public StateGraphAsset _asset = null;
+    }
+
+
     private StateAsset _currState = null;
     private StateAsset _prevState = null;
     public StateAsset GetCurrState() { return _currState; }
@@ -306,13 +315,16 @@ public class StateContoller : MonoBehaviour
     [SerializeField] private float _stateChangeTime = 0.085f;
     private bool _stateChangeCoroutineStarted = false;
 
-    [SerializeField] private List<StateGraphAsset> _initialStateGraphes = new List<StateGraphAsset>();
+    [SerializeField] private List<StateGraphInitialWrapper> _initialStateGraphes = new List<StateGraphInitialWrapper>();
+    private Dictionary<StateGraphType, StateGraphAsset> _initialStateGraphesDict = new Dictionary<StateGraphType, StateGraphAsset>();
+
     private List<StateGraphAsset> _stateGraphes = new List<StateGraphAsset>();
     private StateGraphType _currentGraphType = StateGraphType.LocoStateGraph;
     private StateGraphType _previousGraphType = StateGraphType.LocoStateGraph;
     public StateGraphType GetCurrStateGraphType() { return _currentGraphType; }
     public StateGraphAsset GetCurrStateGraph() { return _stateGraphes[(int)_currentGraphType]; }
     public List<StateGraphAsset> GetStateGraphes() { return _stateGraphes; }
+    public StateGraphAsset GetBasicStateGraphes(StateGraphType type) {return _initialStateGraphesDict[type];}
 
     private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
 
@@ -375,9 +387,9 @@ public class StateContoller : MonoBehaviour
             Debug.Break();
         }
 
-        foreach (StateGraphAsset stateGraphAsset in _initialStateGraphes)
+        foreach (StateGraphInitialWrapper stateGraphAssetWrapper in _initialStateGraphes)
         {
-            StateGraphType type = stateGraphAsset._graphType;
+            StateGraphType type = stateGraphAssetWrapper._type;
 
             if (type == StateGraphType.End)
             {
@@ -390,8 +402,9 @@ public class StateContoller : MonoBehaviour
                 Debug.Assert(false, "해당 상태가 이미 있습니다");
                 Debug.Break();
             }
-
-            _stateGraphes[(int)type] = stateGraphAsset;
+            _initialStateGraphes = null; //더이상 쓰지않는다!
+            _initialStateGraphesDict.Add(type, stateGraphAssetWrapper._asset);
+            _stateGraphes[(int)type] = stateGraphAssetWrapper._asset;
             _stateGraphes[(int)type].SettingOwnerComponent(_ownerStateControllingComponent, _ownerStateControllingComponent._owner);
         }
 
@@ -1939,17 +1952,30 @@ public class StateContoller : MonoBehaviour
 
     private bool PartailFunc_ComboCommandCheck(ConditionDesc conditionDesc, bool isRightSided)
     {
-        if (false/*뭔가의 현재 공격을 시도하지 않았습니다 로직...구현하자*/)
-        {
-            return false;
-        }
+        /*-----------------------------------------------------------
+        |TODO| 뭔가의 현재 공격을 시도하지 않았습니다 로직...구현하자
+        -----------------------------------------------------------*/
+        /*-----------------------------------------------------------
+        if (false) return false;
+        -----------------------------------------------------------*/
 
         bool ret = false;
 
-        if (_ownerStateControllingComponent._owner.GetCurrentWeaponScript(isRightSided) == null)
+        int stateGraphType = (isRightSided == true)
+            ? (int)StateGraphType.WeaponState_RightGraph
+            : (int)StateGraphType.WeaponState_LeftGraph;
+
+
+        if (_stateGraphes[stateGraphType] == null)
         {
             return false;
         }
+
+
+        //if (_ownerStateControllingComponent._owner.GetCurrentWeaponScript(isRightSided) == null)
+        //{
+        //    return false;
+        //}
 
         ret = CommandCheck(conditionDesc, isRightSided);
 

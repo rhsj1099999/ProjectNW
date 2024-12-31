@@ -29,7 +29,7 @@ public class CharacterColliderScript : MonoBehaviour
     }
 
     [SerializeField] private CharacterScript _owner = null;
-    [SerializeField] private List<BasicColliderDesc> _basicColliders = null;
+    //[SerializeField] private List<BasicColliderDesc> _basicColliders = null;
 
     private Dictionary<ColliderAttachType, GameObject> _colliders = new Dictionary<ColliderAttachType, GameObject>();
     private List<LinkedList<ColliderWorkDesc>> _colliderWorks = new List<LinkedList<ColliderWorkDesc>>();
@@ -41,10 +41,10 @@ public class CharacterColliderScript : MonoBehaviour
             _colliderWorks.Add(new LinkedList<ColliderWorkDesc>());
         }
 
-        foreach (var basicColliderDesc in _basicColliders)
-        {
-            ChangeCollider(basicColliderDesc._type, basicColliderDesc._basicTarget);
-        }
+        //foreach (var basicColliderDesc in _basicColliders)
+        //{
+        //    ChangeCollider(basicColliderDesc._type, basicColliderDesc._basicTarget);
+        //}
     }
 
     public void StateChanged()
@@ -75,6 +75,7 @@ public class CharacterColliderScript : MonoBehaviour
             colliderWorkList.Clear();
         }
     }
+
 
     public void ChangeCollider(ColliderAttachType type, GameObject targetObject)
     {
@@ -150,6 +151,7 @@ public class CharacterColliderScript : MonoBehaviour
 
             if (_colliders.ContainsKey(type) == false)
             {
+                Debug.Log("콜라이더가 없다!");
                 continue;
             }
 
@@ -205,6 +207,10 @@ public class CharacterColliderScript : MonoBehaviour
                 if (targetObject != null) 
                 {
                     targetObject.SetActive(true);
+                }
+                else
+                {
+                    Debug.Log("콜라이더가 없다!");
                 }
                 break;
             }

@@ -597,6 +597,11 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(41));
         }
+        if (Input.GetKeyDown(KeyCode.Alpha5) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(43));
+        }
+
     }
     private void DebugCells()
     {

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9967d1ee22a1d6946bac0890bae4d073, type: 3}
+  m_Name: PlayerBasicAttackGraph
+  m_EditorClassIdentifier: 
+  _graphType: 1
+  _usingStates:
+  - _isEntryState: 1
+    _stateAsset: {fileID: 11400000, guid: e6e0772850d97024b93542bad3dc6062, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+        type: 2}
+      _goal: 1
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: bbfc080f72ad090449174cd80f098bca, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: bbfc080f72ad090449174cd80f098bca, type: 2}
+    _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 8d29f1f2dfeb3e94f922d0fb7c47ee1f, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 8d29f1f2dfeb3e94f922d0fb7c47ee1f, type: 2}
+    _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: e6e0772850d97024b93542bad3dc6062, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+          type: 2}
+        _goal: 1
+  _interactionPointsInitial: []
