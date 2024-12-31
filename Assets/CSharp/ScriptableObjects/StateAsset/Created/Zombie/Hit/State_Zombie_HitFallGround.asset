@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: State_Zombie_HitFallGround
   m_EditorClassIdentifier: 
   _myState:
-    _stateType: 17
+    _stateType: 0
     _stateAnimationClip: {fileID: 7400000, guid: 9e6fb065ad155d8469148a28e50456c5,
       type: 2}
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
     _isAttackState: 0
+    _attackDamageMultiply:
+      _damage: 1
+      _damagePower: 1
+      _damagingStamina: 1
     _isLocoMotionToAttackAction: 0
     _isLoopState: 0
     _canUseItem: 0

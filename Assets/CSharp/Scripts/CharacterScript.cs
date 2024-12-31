@@ -110,24 +110,24 @@ public class CharacterScript : MonoBehaviour, IHitable
     protected StatScript _myStat = new StatScript();
     protected AimScript2 _aimScript = null;
 
-
+    //HP가 0이되어 죽는 연출을 시작합니다
     protected virtual void ZeroHPCall()
     {
-        
         _dead = true;
 
-
-
+        //락온을 해제시킨다
     }
 
-    protected virtual void DeadCall()
+    //진짜 죽었습니다. -> 전리품, 기타등등을 이용할 수 있는 타이밍
+    //진짜 죽음은 언제될지 모른다 (애니메이션이 결정한다)
+    public virtual void DeadCall()
     {
-        //진짜 죽었습니다. -> 전리품, 기타등등을 이용할 수 있는 타이밍
 
-        //1. 모든 충돌처리를 비활성화한다 (지면 빼고)
+        // State Controller를 비활성화 한다.
+        _stateContoller.enabled = false;
 
-        //2. State Controller를 비활성화 한다.
-
+        // 모든 충돌처리를 비활성화한다 (지면 빼고)
+        _charactercontroller.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
     }
 
 
@@ -763,7 +763,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                 {
                     representType = RepresentStateType.Hit_Lvl_1;
                 }
-                else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
+                else
                 {
                     representType = RepresentStateType.Hit_Lvl_2;
                 }
@@ -864,6 +864,7 @@ public class CharacterScript : MonoBehaviour, IHitable
     protected virtual void Update()
     {
         //현재 상태 업데이트
+        if (_stateContoller.enabled == true)
         {
             _stateContoller.DoWork();
         }

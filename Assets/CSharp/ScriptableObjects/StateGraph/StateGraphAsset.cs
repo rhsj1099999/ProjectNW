@@ -653,6 +653,9 @@ public class StateGraphAsset : ScriptableObject
                     }
                     break;
 
+                case StateActionType.AddCoroutine_DeadCall:
+                    break;
+
                 default:
                     Debug.Assert(false, "데이터가 추가됐습니까?");
                     break;

@@ -260,6 +260,8 @@ public class ItemInfoManager : SubManager
         _items.Add(testItemInfo._itemKey, testItemInfo);
 
 
+
+
         testItemInfo = new ItemInfo();
         testItemInfo._itemName = "장갑1";
         testItemInfo._sprite = null;
@@ -272,6 +274,9 @@ public class ItemInfoManager : SubManager
         testItemInfo._equipMeshIndicies = new List<int>();
         testItemInfo._equipMeshIndicies.Add(6);
         _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
 
 
         testItemInfo = new ItemInfo();
@@ -382,6 +387,57 @@ public class ItemInfoManager : SubManager
         _items.Add(testItemInfo._itemKey, testItemInfo);
 
 
+
+
+
+
+
+
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "Noel_Skin";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 40;
+        testItemInfo._sizeX = 2;
+        testItemInfo._sizeY = 4;
+        testItemInfo._equipType = ItemInfo.EquipType.All;
+        testItemInfo._meshObjectName = "Noel";
+        testItemInfo._equipMeshIndicies = new List<int>();
+        testItemInfo._equipMeshIndicies.Add(0);
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+
+
+
+
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "너클용 한손검";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 41;
+        testItemInfo._sizeX = 2;
+        testItemInfo._sizeY = 2;
+        testItemInfo._equipType = ItemInfo.EquipType.Weapon;
+        _items.Add(testItemInfo._itemKey, testItemInfo);
+
+
+        testItemInfo = new ItemInfo();
+        testItemInfo._itemName = "Noel_Skin2";
+        testItemInfo._sprite = null;
+        testItemInfo._isStackAble = true;
+        testItemInfo._itemKey = 42;
+        testItemInfo._sizeX = 2;
+        testItemInfo._sizeY = 4;
+        testItemInfo._equipType = ItemInfo.EquipType.All;
+        testItemInfo._meshObjectName = "Noel2";
+        testItemInfo._equipMeshIndicies = new List<int>();
+        testItemInfo._equipMeshIndicies.Add(0);
+        _items.Add(testItemInfo._itemKey, testItemInfo);
 
 
     }

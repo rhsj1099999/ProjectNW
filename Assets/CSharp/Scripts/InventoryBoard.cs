@@ -567,6 +567,12 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34));
         }
 
+
+
+
+
+
+
         if (Input.GetKeyDown(KeyCode.Alpha1) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(35));
@@ -575,6 +581,21 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         if (Input.GetKeyDown(KeyCode.Alpha2) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(36));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(39));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha4) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(40));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha5) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(41));
         }
     }
     private void DebugCells()

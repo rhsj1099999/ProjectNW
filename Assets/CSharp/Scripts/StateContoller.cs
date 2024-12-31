@@ -51,6 +51,8 @@ public enum StateActionType
 
     AnimationAttack,
     AttackLookAtLockOnTarget,
+
+    AddCoroutine_DeadCall,
 }
 
 public enum ConditionType
@@ -126,6 +128,7 @@ public enum StateActionCoroutineType
 {
     ChangeToIdle,
     StateChangeReady,
+    DeadCall,
     End,
 }
 
@@ -449,9 +452,9 @@ public class StateContoller : MonoBehaviour
     {
         StatedWillBeChanged();
 
-        if (gameObject.name == "PlayerCharacter3")
+        if (gameObject.name != "Zombie")
         {
-            //Debug.Log("State Changed : " + nextState.name);
+            Debug.Log("State Changed : " + nextState.name);
         }
 
         if (_currState != null)
@@ -606,6 +609,7 @@ public class StateContoller : MonoBehaviour
 
     public StateAsset CheckChangeState_Recursion2(out StateGraphType nextGraphType) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
     {
+        //List<StateAsset> record = new List<StateAsset>();
         StateAsset targetState = _currState;
         nextGraphType = _currentGraphType;
 
@@ -681,6 +685,7 @@ public class StateContoller : MonoBehaviour
 
             if (isSuccess == true)
             {
+                //record.Add(targetState);
                 successCount++;
                 continue;
             }
@@ -768,6 +773,11 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.Jump:
                     {
+                        if (gameObject.name == "Zombie")
+                        {
+                            int a = 10;
+
+                        }
                         _ownerStateControllingComponent._ownerMoveScript.DoJump();
                     }
                     break;
@@ -1206,6 +1216,12 @@ public class StateContoller : MonoBehaviour
                     }
                     break;
 
+                case StateActionType.AddCoroutine_DeadCall:
+                    {
+                        AddStateActionCoroutine(StateActionCoroutineType.DeadCall);
+                    }
+                    break;
+
                 default:
                     Debug.Assert(false, "데이터가 추가됐습니까?");
                     break;
@@ -1262,6 +1278,13 @@ public class StateContoller : MonoBehaviour
                 }
                 break;
 
+            case StateActionCoroutineType.DeadCall:
+                {
+                    newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
+                    newCoroutineWrapper._runningCoroutine = StartCoroutine(DeadCallCoroutine(newCoroutineWrapper));
+                }
+                break;
+
             default:
                 {
                     Debug.Assert(false, "type이 제대로 지정되지 않았습니다");
@@ -1286,6 +1309,23 @@ public class StateContoller : MonoBehaviour
             if (target._timeACC >= target._timeTarget)
             {
                 ReadyLinkedStates(StateGraphType.LocoStateGraph, GetMyIdleStateAsset(), false);
+                break;
+            }
+            yield return null;
+        }
+    }
+
+
+
+    private IEnumerator DeadCallCoroutine(StateActionCoroutineWrapper target)
+    {
+        while (true) 
+        {
+            target._timeACC += Time.deltaTime;
+
+            if (target._timeACC >= target._timeTarget)
+            {
+                _ownerStateControllingComponent._owner.DeadCall();
                 break;
             }
             yield return null;

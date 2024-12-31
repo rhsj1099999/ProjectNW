@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CharacterMoveScript2 : MonoBehaviour
 {
+    [SerializeField] private bool _logMe = false;
+
     private CharacterController _characterController = null;
     //private UIComponent _inventory = null;
 
@@ -79,6 +81,18 @@ public class CharacterMoveScript2 : MonoBehaviour
             _characterController.slopeLimit = _inAirSlopeLimit;
 
             _isInAir = true;
+        }
+
+        if (_logMe == true)
+        {
+            if (_isInAir == true)
+            {
+                Debug.Log("InAir");
+            }
+            else
+            {
+                Debug.Log("InGround");
+            }
         }
     }
 

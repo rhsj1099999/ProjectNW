@@ -132,7 +132,7 @@ public class CharacterAnimatorScript : MonoBehaviour
 
         Debug.Assert(_animator != null, "Animator°¡ ¾ø´Ù");
         _characterModelObject = _animator.gameObject;
-        _gameBasicCharacter = Instantiate(_characterModelObject);
+        _gameBasicCharacter = Instantiate(_characterModelObject, transform);
         _gameBasicCharacter.SetActive(false);
 
         _characterRig = GetComponentInChildren<Rig>();
