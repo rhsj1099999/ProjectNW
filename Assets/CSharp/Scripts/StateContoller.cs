@@ -254,21 +254,8 @@ public class StateInitialPair
     public StateAsset _stateAsset = null;
 }
 
-public class StateContoller : MonoBehaviour
+public class StateContoller : GameCharacterSubScript
 {
-    public class StateContollerComponentDesc
-    {
-        public CharacterScript _owner = null;
-        public InputController _ownerInputController = null;
-        public CharacterMoveScript2 _ownerMoveScript = null;
-        public CharacterController _ownerCharacterComponent = null;
-        public CharacterAnimatorScript _ownerCharacterAnimatorScript = null;
-        public AINavigationScript _ownerNavigationScript = null;
-        public EnemyAIScript _ownerEnemyAIScript = null;
-        public AimScript2 _ownerAimScript = null;
-        public CharacterColliderScript _ownerCharacterColliderScript = null;
-    }
-
     public class StateActionCoroutineWrapper
     {
         public Coroutine _runningCoroutine = null;
@@ -308,73 +295,10 @@ public class StateContoller : MonoBehaviour
     }
 
 
-    private StateAsset _currState = null;
-    private StateAsset _prevState = null;
-    public StateAsset GetCurrState() { return _currState; }
-
-    [SerializeField] private float _stateChangeTime = 0.085f;
-    private bool _stateChangeCoroutineStarted = false;
-
-    [SerializeField] private List<StateGraphInitialWrapper> _initialStateGraphes = new List<StateGraphInitialWrapper>();
-    private Dictionary<StateGraphType, StateGraphAsset> _initialStateGraphesDict = new Dictionary<StateGraphType, StateGraphAsset>();
-
-    private List<StateGraphAsset> _stateGraphes = new List<StateGraphAsset>();
-    private StateGraphType _currentGraphType = StateGraphType.LocoStateGraph;
-    private StateGraphType _previousGraphType = StateGraphType.LocoStateGraph;
-    public StateGraphType GetCurrStateGraphType() { return _currentGraphType; }
-    public StateGraphAsset GetCurrStateGraph() { return _stateGraphes[(int)_currentGraphType]; }
-    public List<StateGraphAsset> GetStateGraphes() { return _stateGraphes; }
-    public StateGraphAsset GetBasicStateGraphes(StateGraphType type) {return _initialStateGraphesDict[type];}
-
-    private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
-
-    private float _currStateTime = 0.0f;
-    private float _prevStateTime = 0.0f;
-    private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
-    List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
-
-
-    private int _randomStateInstructIndex = -1;
-    private int _randomStateTryCount = 0;
-    private HashSet<StateAsset> _failedRandomChanceState = new HashSet<StateAsset>();
-    public void AddFailedRandomChanceState(StateAsset stateAsset)
+    public override void Init(CharacterScript owner)
     {
-        _failedRandomChanceState.Add(stateAsset);
-    }
-    public bool FindFailedRandomChanceState(StateAsset stateAsset)
-    {
-        return _failedRandomChanceState.Contains(stateAsset);
-    }
-    public void ClearFailedRandomChanceState()
-    {
-        _failedRandomChanceState.Clear();
-    }
-
-
-    //---CoroutineTimer ...
-    /*---------------------------------------
-    |TODO| 없애는 구조를 한번 생각해볼것
-    ---------------------------------------*/
-
-
-
-    public StateAsset GetMyIdleStateAsset()
-    {
-        return _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState;
-    }
-
-
-    private void Awake()
-    {
-        CharacterScript characterScript = GetComponent<CharacterScript>();
-
-        _ownerStateControllingComponent._owner = characterScript;
-
-        if (_ownerStateControllingComponent._owner == null)
-        {
-            Debug.Assert(false, "이 컴포넌트는 CharacterScript를 반드시 필요로 합니다");
-            Debug.Break();
-        }
+        _owner = owner;
+        _myType = typeof(StateContoller);
 
         for (int i = 0; i < (int)StateGraphType.End; i++)
         {
@@ -403,15 +327,75 @@ public class StateContoller : MonoBehaviour
                 Debug.Break();
             }
             _initialStateGraphes = null; //더이상 쓰지않는다!
+
             _initialStateGraphesDict.Add(type, stateGraphAssetWrapper._asset);
             _stateGraphes[(int)type] = stateGraphAssetWrapper._asset;
-            _stateGraphes[(int)type].SettingOwnerComponent(_ownerStateControllingComponent, _ownerStateControllingComponent._owner);
+            //_stateGraphes[(int)type].SettingOwnerComponent(_ownerStateControllingComponent, _owner);
         }
 
         for (int i = 0; i < (int)StateActionCoroutineType.End; i++)
         {
             _stateActionCoroutines.Add(null);
         }
+    }
+
+    public override void SubScriptStart()
+    {
+        
+    }
+
+
+    private StateAsset _currState = null;
+    private StateAsset _prevState = null;
+    public StateAsset GetCurrState() { return _currState; }
+
+    [SerializeField] private float _stateChangeTime = 0.085f;
+    private bool _stateChangeCoroutineStarted = false;
+
+    [SerializeField] private List<StateGraphInitialWrapper> _initialStateGraphes = new List<StateGraphInitialWrapper>();
+    private Dictionary<StateGraphType, StateGraphAsset> _initialStateGraphesDict = new Dictionary<StateGraphType, StateGraphAsset>();
+
+    private List<StateGraphAsset> _stateGraphes = new List<StateGraphAsset>();
+    private StateGraphType _currentGraphType = StateGraphType.LocoStateGraph;
+    private StateGraphType _previousGraphType = StateGraphType.LocoStateGraph;
+    public StateGraphType GetCurrStateGraphType() { return _currentGraphType; }
+    public StateGraphAsset GetCurrStateGraph() { return _stateGraphes[(int)_currentGraphType]; }
+    public List<StateGraphAsset> GetStateGraphes() { return _stateGraphes; }
+    public StateGraphAsset GetBasicStateGraphes(StateGraphType type) {return _initialStateGraphesDict[type];}
+
+    private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
+
+    private float _currStateTime = 0.0f;
+    private float _prevStateTime = 0.0f;
+    //private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
+    List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
+
+
+    private int _randomStateInstructIndex = -1;
+    private int _randomStateTryCount = 0;
+    private HashSet<StateAsset> _failedRandomChanceState = new HashSet<StateAsset>();
+    public void AddFailedRandomChanceState(StateAsset stateAsset)
+    {
+        _failedRandomChanceState.Add(stateAsset);
+    }
+    public bool FindFailedRandomChanceState(StateAsset stateAsset)
+    {
+        return _failedRandomChanceState.Contains(stateAsset);
+    }
+    public void ClearFailedRandomChanceState()
+    {
+        _failedRandomChanceState.Clear();
+    }
+
+
+    //---CoroutineTimer ...
+    /*---------------------------------------
+    |TODO| 없애는 구조를 한번 생각해볼것
+    ---------------------------------------*/
+
+    public StateAsset GetMyIdleStateAsset()
+    {
+        return _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState;
     }
 
     protected virtual void Start()
@@ -479,28 +463,23 @@ public class StateContoller : MonoBehaviour
         _previousGraphType = _currentGraphType;
 
         _currentGraphType = nextGraphType;
-
-
-
-
         _currState = nextState;
 
         _randomStateInstructIndex = -1;
         _randomStateTryCount = 0;
         _failedRandomChanceState.Clear();
-        
 
-        _ownerStateControllingComponent._owner.StateChanged(_currState);
+        _owner.StateChanged(_currState);
 
         AllStopCoroutine();
 
         if (_currentGraphType == StateGraphType.WeaponState_RightGraph)
         {
-            _ownerStateControllingComponent._owner.SetLatestWeaponUse(true);
+            _owner.SetLatestWeaponUse(true);
         }
         else if (_currentGraphType == StateGraphType.WeaponState_LeftGraph)
         {
-            _ownerStateControllingComponent._owner.SetLatestWeaponUse(false);
+            _owner.SetLatestWeaponUse(false);
         }
 
         DoActions(_currState._myState._EnterStateActionTypes);
@@ -518,7 +497,7 @@ public class StateContoller : MonoBehaviour
         {
             case SubAnimationStateMachine.CalculateLogic.MoveDesiredDirection:
                 {
-                    Vector3 moveDesiredDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
+                    Vector3 moveDesiredDir = _owner.GCST<InputController>()._pr_directionByInput;
                     float angle = Vector3.Angle(Vector3.forward, moveDesiredDir);
 
                     if (angle <= 0.0f)
@@ -537,7 +516,7 @@ public class StateContoller : MonoBehaviour
                         ret = 8 - ret;
                     }
 
-                    if (_ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedAnimator().GetBool("IsMirroring") == true)
+                    if (_owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBool("IsMirroring") == true)
                     {
                         ret = 8 - ret;
                     }
@@ -738,7 +717,7 @@ public class StateContoller : MonoBehaviour
         if (aiAttackStateDesc != null &&
             aiAttackStateDesc._coolTime >= 0.0f)
         {
-            _ownerStateControllingComponent._ownerEnemyAIScript.AddCoolTimeCoroutine(_currState);
+            _owner.GCST<EnemyAIScript>().AddCoolTimeCoroutine(_currState);
         }
 
         _prevStateTime = _currStateTime;
@@ -752,10 +731,10 @@ public class StateContoller : MonoBehaviour
     {
         _stateGraphes[(int)graphType] = graphAsset;
 
-        if (graphAsset != null)
-        {
-            graphAsset.SettingOwnerComponent(_ownerStateControllingComponent, _ownerStateControllingComponent._owner);
-        }
+        //if (graphAsset != null)
+        //{
+        //    graphAsset.SettingOwnerComponent(_ownerStateControllingComponent, _owner);
+        //}
 
         ReadyLinkedStates(_currentGraphType, _currState, true);
     }
@@ -771,10 +750,10 @@ public class StateContoller : MonoBehaviour
             {
                 case StateActionType.Move:
                     {
-                        Vector3 characterInputDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
-                        characterInputDir = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(characterInputDir);
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(characterInputDir, 1.0f);
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterMove(characterInputDir, 1.0f);
+                        Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
+                        characterInputDir = _owner.GCST<CharacterMoveScript2>().GetDirectionConvertedByCamera(characterInputDir);
+                        _owner.GCST<CharacterMoveScript2>().CharacterRotate(characterInputDir, 1.0f);
+                        _owner.GCST<CharacterMoveScript2>().CharacterMove(characterInputDir, 1.0f);
                     }
                     break;
 
@@ -786,20 +765,15 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.Jump:
                     {
-                        if (gameObject.name == "Zombie")
-                        {
-                            int a = 10;
-
-                        }
-                        _ownerStateControllingComponent._ownerMoveScript.DoJump();
+                        _owner.GCST<CharacterMoveScript2>().DoJump();
                     }
                     break;
 
                 case StateActionType.ForcedMove:
                     {
-                        Vector3 planeVelocity = _ownerStateControllingComponent._ownerMoveScript.GetLatestVelocity();
+                        Vector3 planeVelocity = _owner.GCST<CharacterMoveScript2>().GetLatestVelocity();
                         planeVelocity.y = 0.0f;
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterForcedMove(planeVelocity, 1.0f);
+                        _owner.GCST<CharacterMoveScript2>().CharacterForcedMove(planeVelocity, 1.0f);
                     }
                     break;
 
@@ -813,7 +787,7 @@ public class StateContoller : MonoBehaviour
 
 
                         AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true) 
-                            ?_ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrAnimationClip()
+                            ?_owner.GCST<CharacterAnimatorScript>().GetCurrAnimationClip()
                             :_currState._myState._stateAnimationClip;
 
 
@@ -840,23 +814,23 @@ public class StateContoller : MonoBehaviour
 
                         Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
 
-                        Vector3 worldDelta = _ownerStateControllingComponent._ownerCharacterComponent.transform.localToWorldMatrix * deltaLocalHip;
+                        Vector3 worldDelta = _owner.GCST<CharacterController>().transform.localToWorldMatrix * deltaLocalHip;
 
                         //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
                         {
-                            Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition;
+                            Vector3 modelLocalPosition = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition;
                             modelLocalPosition.y = worldDelta.y;
-                            _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
+                            _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
                         }
 
                         worldDelta.y = 0.0f;
-                        _ownerStateControllingComponent._ownerCharacterComponent.Move(worldDelta);
+                        _owner.GCST<CharacterController>().Move(worldDelta);
                     }
                     break;
 
                 case StateActionType.RotateWithoutInterpolate:
                     {
-                        Vector3 convertedDirection = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(_ownerStateControllingComponent._ownerInputController._pr_directionByInput);
+                        Vector3 convertedDirection = _owner.GCST<CharacterMoveScript2>().GetDirectionConvertedByCamera(_owner.GCST<InputController>()._pr_directionByInput);
                         gameObject.transform.LookAt(gameObject.transform.position + convertedDirection);
                     }
                     break;
@@ -877,29 +851,29 @@ public class StateContoller : MonoBehaviour
                     {
                         foreach (var type in _currState._myState._checkingBehaves)
                         {
-                            _ownerStateControllingComponent._owner.CheckBehave(type);
+                            _owner.CheckBehave(type);
                         }
                     }
                     break;
 
                 case StateActionType.CalculateWeaponLayer_EnterAttack:
                     {
-                        _ownerStateControllingComponent._ownerCharacterAnimatorScript.WeaponLayerChange_EnterAttack
+                        _owner.GCST<CharacterAnimatorScript>().WeaponLayerChange_EnterAttack
                             (
-                            _ownerStateControllingComponent._owner.GetGrabFocusType(),
+                            _owner.GetGrabFocusType(),
                             _currState,
-                            _ownerStateControllingComponent._owner.GetLatestWeaponUse()
+                            _owner.GetLatestWeaponUse()
                             );
                     }
                     break;
 
                 case StateActionType.CalculateWeaponLayer_ExitAttack:
                     {
-                        _ownerStateControllingComponent._ownerCharacterAnimatorScript.WeaponLayerChange_ExitAttack
+                        _owner.GCST<CharacterAnimatorScript>().WeaponLayerChange_ExitAttack
                             (
-                            _ownerStateControllingComponent._owner.GetGrabFocusType(),
+                            _owner.GetGrabFocusType(),
                             _currState,
-                            _ownerStateControllingComponent._owner.GetLatestWeaponUse()
+                            _owner.GetLatestWeaponUse()
                             );
                     }
                     break;
@@ -924,52 +898,52 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.CharacterRotate:
                     {
-                        Vector3 characterInputDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
-                        characterInputDir = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(characterInputDir);
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(characterInputDir, 1.0f);
+                        Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
+                        characterInputDir = _owner.GCST<CharacterMoveScript2>().GetDirectionConvertedByCamera(characterInputDir);
+                        _owner.GCST<CharacterMoveScript2>().CharacterRotate(characterInputDir, 1.0f);
                     }
                     break;
 
                 case StateActionType.AI_CharacterRotateToEnemy:
                     {
-                        Vector3 enemyPosition = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy().gameObject.transform.position;
+                        Vector3 enemyPosition = _owner.GCST<EnemyAIScript>().GetCurrentEnemy().gameObject.transform.position;
                         Vector3 myPosition = transform.position;
                         Vector3 toEnemyDir = (enemyPosition - myPosition).normalized;
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(toEnemyDir, 1.0f);
+                        _owner.GCST<CharacterMoveScript2>().CharacterRotate(toEnemyDir, 1.0f);
                     }
                     break;
 
                 case StateActionType.AI_ChaseToEnemy:
                     {
-                        Vector3 myPosition = _ownerStateControllingComponent._owner.gameObject.transform.position;
-                        Vector3 enemyPosition = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy().gameObject.transform.position;
+                        Vector3 myPosition = _owner.gameObject.transform.position;
+                        Vector3 enemyPosition = _owner.GCST<EnemyAIScript>().GetCurrentEnemy().gameObject.transform.position;
                         Vector3 toEnemyPosition = (enemyPosition - myPosition).normalized;
 
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(toEnemyPosition, 1.0f);
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterMove(toEnemyPosition, 1.0f);
+                        _owner.GCST<CharacterMoveScript2>().CharacterRotate(toEnemyPosition, 1.0f);
+                        _owner.GCST<CharacterMoveScript2>().CharacterMove(toEnemyPosition, 1.0f);
                     }
                     break;
 
                 case StateActionType.AI_ForcedLookAtEnemy:
                     {
-                        Vector3 myPosition = _ownerStateControllingComponent._owner.gameObject.transform.position;
-                        Vector3 enemyPosition = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy().gameObject.transform.position;
+                        Vector3 myPosition = _owner.gameObject.transform.position;
+                        Vector3 enemyPosition = _owner.GCST<EnemyAIScript>().GetCurrentEnemy().gameObject.transform.position;
                         Vector3 dirToEnemy = (enemyPosition - myPosition).normalized;
 
-                        _ownerStateControllingComponent._owner.gameObject.transform.LookAt(dirToEnemy + myPosition);
+                        _owner.gameObject.transform.LookAt(dirToEnemy + myPosition);
                     }
                     break;
 
                 case StateActionType.AI_ReArrangeStateGraph:
                     {
-                        EnemyAIScript aiScript = _ownerStateControllingComponent._ownerEnemyAIScript;
+                        EnemyAIScript aiScript = _owner.GCST<EnemyAIScript>();
                         aiScript.ReArrangeStateGraph(_currLinkedStates, this, _currState);
                     }
                     break;
 
                 case StateActionType.AI_UpdateAttackRange:
                     {
-                        EnemyAIScript ownerEnemyAIScript = _ownerStateControllingComponent._ownerEnemyAIScript;
+                        EnemyAIScript ownerEnemyAIScript = _owner.GCST<EnemyAIScript>();
                         StateGraphAsset aggressiveStateAsset = _stateGraphes[(int)StateGraphType.AI_AggresiveGraph];
                         if (aggressiveStateAsset == null)
                         {
@@ -983,16 +957,16 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.Move_WithOutRotate:
                     {
-                        Vector3 characterInputDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
-                        characterInputDir = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(characterInputDir);
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterMove_NoSimilarity(characterInputDir, 1.0f);
+                        Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
+                        characterInputDir = _owner.GCST<CharacterMoveScript2>().GetDirectionConvertedByCamera(characterInputDir);
+                        _owner.GCST<CharacterMoveScript2>().CharacterMove_NoSimilarity(characterInputDir, 1.0f);
                     }
                     break;
 
 
                 case StateActionType.LookAtLockOnTarget:
                     {
-                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                        AimScript2 ownerAimScript = _owner.GCST<AimScript2>();
 
                         if (ownerAimScript.GetLockOnObject() == null)
                         {
@@ -1010,14 +984,14 @@ public class StateContoller : MonoBehaviour
 
                 case StateActionType.RotateToLockOnTarget:
                     {
-                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                        AimScript2 ownerAimScript = _owner.GCST<AimScript2>();
                         Vector3 targetPosition = ownerAimScript.GetLockOnObject().transform.position;
                         Vector3 ownerPosition = gameObject.transform.position;
                         Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
                         ownerToTargetPlaneVector.y = 0.0f;
                         ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
 
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(ownerToTargetPlaneVector);
+                        _owner.GCST<CharacterMoveScript2>().CharacterRotate(ownerToTargetPlaneVector);
                     }
                     break;
 
@@ -1028,7 +1002,7 @@ public class StateContoller : MonoBehaviour
 
 
                         AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true)
-                            ? _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrAnimationClip()
+                            ? _owner.GCST<CharacterAnimatorScript>().GetCurrAnimationClip()
                             : _currState._myState._stateAnimationClip;
 
 
@@ -1055,17 +1029,17 @@ public class StateContoller : MonoBehaviour
 
                         Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
 
-                        Vector3 worldDelta = _ownerStateControllingComponent._ownerCharacterComponent.transform.localToWorldMatrix * deltaLocalHip;
+                        Vector3 worldDelta = _owner.GCST<CharacterController>().transform.localToWorldMatrix * deltaLocalHip;
 
                         //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
                         {
-                            Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition;
+                            Vector3 modelLocalPosition = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition;
                             modelLocalPosition.y = worldDelta.y;
-                            _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
+                            _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
                         }
 
                         worldDelta.y = 0.0f;
-                        _ownerStateControllingComponent._ownerCharacterComponent.Move(worldDelta);
+                        _owner.GCST<CharacterController>().Move(worldDelta);
                     }
                     break;
 
@@ -1073,21 +1047,21 @@ public class StateContoller : MonoBehaviour
                     {
                         Vector3 cameraLook = Camera.main.transform.forward;
                         cameraLook.y = 0.0f;
-                        _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(cameraLook.normalized, 1.0f);
+                        _owner.GCST<CharacterMoveScript2>().CharacterRotate(cameraLook.normalized, 1.0f);
                     }
                     break;
 
                 case StateActionType.EnterGunAiming:
                     {
-                        bool isRightWeapon = _ownerStateControllingComponent._owner.GetLatestWeaponUse();
+                        bool isRightWeapon = _owner.GetLatestWeaponUse();
 
                         if (isRightWeapon == true)
                         {
-                            _ownerStateControllingComponent._owner._isRightWeaponAimed = true;
+                            _owner._isRightWeaponAimed = true;
                         }
                         else
                         {
-                            _ownerStateControllingComponent._owner._isLeftWeaponAimed = true;
+                            _owner._isLeftWeaponAimed = true;
                         }
                     }
                     break;
@@ -1098,18 +1072,18 @@ public class StateContoller : MonoBehaviour
 
                         if (isRightWeapon == true)
                         {
-                            _ownerStateControllingComponent._owner._isRightWeaponAimed = false;
+                            _owner._isRightWeaponAimed = false;
                         }
                         else
                         {
-                            _ownerStateControllingComponent._owner._isLeftWeaponAimed = false;
+                            _owner._isLeftWeaponAimed = false;
                         }
                     }
                     break;
 
                 case StateActionType.Move_WithOutRotate_Gun:
                     {
-                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                        AimScript2 ownerAimScript = _owner.GCST<AimScript2>();
                         GameObject lockOnTarget = ownerAimScript.GetLockOnObject();
 
                         if (lockOnTarget == null)
@@ -1119,7 +1093,7 @@ public class StateContoller : MonoBehaviour
 
 
                             AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true)
-                                ? _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrAnimationClip()
+                                ? _owner.GCST<CharacterAnimatorScript>().GetCurrAnimationClip()
                                 : _currState._myState._stateAnimationClip;
 
 
@@ -1146,37 +1120,37 @@ public class StateContoller : MonoBehaviour
 
                             Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
 
-                            Vector3 worldDelta = _ownerStateControllingComponent._ownerCharacterComponent.transform.localToWorldMatrix * deltaLocalHip;
+                            Vector3 worldDelta = _owner.GCST<CharacterController>().transform.localToWorldMatrix * deltaLocalHip;
 
                             //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
                             {
-                                Vector3 modelLocalPosition = _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition;
+                                Vector3 modelLocalPosition = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition;
                                 modelLocalPosition.y = worldDelta.y;
-                                _ownerStateControllingComponent._ownerCharacterAnimatorScript.GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
+                                _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
                             }
 
                             worldDelta.y = 0.0f;
-                            _ownerStateControllingComponent._ownerCharacterComponent.Move(worldDelta);
+                            _owner.GCST<CharacterController>().Move(worldDelta);
                         }
                         else 
                         {
-                            Vector3 characterInputDir = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
-                            characterInputDir = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(characterInputDir);
-                            _ownerStateControllingComponent._ownerMoveScript.CharacterMove_NoSimilarity(characterInputDir, 1.0f);
+                            Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
+                            characterInputDir = _owner.GCST<CharacterMoveScript2>().GetDirectionConvertedByCamera(characterInputDir);
+                            _owner.GCST<CharacterMoveScript2>().CharacterMove_NoSimilarity(characterInputDir, 1.0f);
                         }
                     }
                     break;
 
                 case StateActionType.LookAtLockOnTarget_Gun:
                     {
-                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                        AimScript2 ownerAimScript = _owner.GCST<AimScript2>();
                         GameObject lockOnTarget = ownerAimScript.GetLockOnObject();
 
                         if (lockOnTarget == null)
                         {
                             Vector3 cameraLook = Camera.main.transform.forward;
                             cameraLook.y = 0.0f;
-                            _ownerStateControllingComponent._ownerMoveScript.CharacterRotate(cameraLook.normalized, 1.0f);
+                            _owner.GCST<CharacterMoveScript2>().CharacterRotate(cameraLook.normalized, 1.0f);
                         }
                         else
                         {
@@ -1202,19 +1176,19 @@ public class StateContoller : MonoBehaviour
                         }   
                         else
                         {
-                            _ownerStateControllingComponent._ownerCharacterColliderScript.ColliderWork(frameDesc, _currState);
+                            _owner.GCST<CharacterColliderScript>().ColliderWork(frameDesc, _currState);
                         }
                     }
                     break;
 
                 case StateActionType.AttackLookAtLockOnTarget:
                     {
-                        AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                        AimScript2 ownerAimScript = _owner.GCST<AimScript2>();
                         GameObject lockOnTarget = ownerAimScript.GetLockOnObject();
 
                         if (lockOnTarget == null)
                         {
-                            Vector3 convertedDirection = _ownerStateControllingComponent._ownerMoveScript.GetDirectionConvertedByCamera(_ownerStateControllingComponent._ownerInputController._pr_directionByInput);
+                            Vector3 convertedDirection = _owner.GCST<CharacterMoveScript2>().GetDirectionConvertedByCamera(_owner.GCST<InputController>()._pr_directionByInput);
                             gameObject.transform.LookAt(gameObject.transform.position + convertedDirection);
                         }
                         else
@@ -1338,7 +1312,7 @@ public class StateContoller : MonoBehaviour
 
             if (target._timeACC >= target._timeTarget)
             {
-                _ownerStateControllingComponent._owner.DeadCall();
+                _owner.DeadCall();
                 break;
             }
             yield return null;
@@ -1380,12 +1354,7 @@ public class StateContoller : MonoBehaviour
         {
             case ConditionType.MoveDesired:
                 {
-                    if (_ownerStateControllingComponent._ownerInputController == null)
-                    {
-                        _ownerStateControllingComponent._ownerInputController = _ownerStateControllingComponent._owner.GetComponent<InputController>();
-                    }
-
-                    Vector3 desiredMoved = _ownerStateControllingComponent._ownerInputController._pr_directionByInput;
+                    Vector3 desiredMoved = _owner.GCST<InputController>()._pr_directionByInput;
                     if (desiredMoved != Vector3.zero)
                     {
                         ret = true;
@@ -1405,12 +1374,7 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.InAir:
                 {
-                    if (_ownerStateControllingComponent._ownerMoveScript == null)
-                    {
-                        _ownerStateControllingComponent._ownerMoveScript = _ownerStateControllingComponent._owner.GetComponent<CharacterMoveScript2>();
-                    }
-
-                    if (_ownerStateControllingComponent._ownerMoveScript.GetIsInAir() == true)
+                    if (_owner.GCST<CharacterMoveScript2>().GetIsInAir() == true)
                     {
                         ret = true;
                     }
@@ -1441,7 +1405,7 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.EquipWeaponByType:
                 {
-                    //ItemInfo ownerCurrWeapon = _ownerStateControllingComponent._owner.GetWeaponItem();
+                    //ItemInfo ownerCurrWeapon = _owner.GetWeaponItem();
 
                     //if (ownerCurrWeapon == null)
                     //{ return false; } //무기를 끼고있지 않습니다.
@@ -1507,7 +1471,7 @@ public class StateContoller : MonoBehaviour
                     //    }
                     //}
 
-                    //int ownerBusyLayer_Bitshift = _ownerStateControllingComponent._owner.GetCurrentBusyAnimatorLayer_BitShift();
+                    //int ownerBusyLayer_Bitshift = _owner.GetCurrentBusyAnimatorLayer_BitShift();
 
                     //if ((ownerBusyLayer_Bitshift & conditionDesc._mustNotBusyLayers_BitShift) == 0)
                     //{
@@ -1531,40 +1495,17 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AI_CheckEnemyInMySight:
                 {
-                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                    {
-                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.GetComponent<EnemyAIScript>();
-                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                        {
-                            Debug.Assert(false, "AICheckEnemyInMySight 조건에 필요한 컴포넌트가 없습니다");
-                            Debug.Break();
-                            ret = false;
-                        }
-                    }
-
                     forcedValue = true;
 
-                    ret = _ownerStateControllingComponent._ownerEnemyAIScript.InBattleCheck();
+                    ret = _owner.GCST<EnemyAIScript>().InBattleCheck();
                 }
                 break;
 
             case ConditionType.AI_Check_I_CAN_ATTACK_MY_ENEMY:
                 {
-                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                    {
-                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.GetComponent<EnemyAIScript>();
-                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                        {
-                            Debug.Assert(false, "AICheckEnemyInMySight 조건에 필요한 컴포넌트가 없습니다");
-                            Debug.Break();
-                            ret = false;
-                        }
-                    }
-
                     forcedValue = true;
 
-                    //ret = _ownerStateControllingComponent._ownerEnemyAIScript.InAttackRangeCheck(_currLinkedStates);
-                    ret = _ownerStateControllingComponent._ownerEnemyAIScript.InAttackRangeCheck(nextStateAsset._linkedState._linkedState);
+                    ret = _owner.GCST<EnemyAIScript>().InAttackRangeCheck(nextStateAsset._linkedState._linkedState);
                 }
                 break;
 
@@ -1597,7 +1538,7 @@ public class StateContoller : MonoBehaviour
             case ConditionType.AI_InAttackRange:
                 {
                     forcedValue = true;
-                    CharacterScript enemyScript = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy();
+                    CharacterScript enemyScript = _owner.GCST<EnemyAIScript>().GetCurrentEnemy();
 
                     if (enemyScript == null) 
                     {
@@ -1609,21 +1550,7 @@ public class StateContoller : MonoBehaviour
                     Vector3 myPosition = gameObject.transform.position;
                     Vector3 distanceVector = enemyPosition - myPosition;
 
-                    if (_ownerStateControllingComponent._ownerCharacterComponent == null)
-                    {
-                        //한번은 찾아본다.
-                        _ownerStateControllingComponent._ownerCharacterComponent = gameObject.GetComponentInChildren<CharacterController>();
-
-                        if (_ownerStateControllingComponent._ownerCharacterComponent == null)
-                        {
-                            Debug.Assert(false, "해당 조건에는 CharacterController가 있어야합니다");
-                            Debug.Break();
-                            ret = false;
-                            break;
-                        }
-                    }
-
-                    float characterHeight = _ownerStateControllingComponent._ownerCharacterComponent.height;
+                    float characterHeight = _owner.GCST<CharacterController>().height;
 
                     if (Mathf.Abs(distanceVector.y) >= characterHeight / 2.0f)
                     {
@@ -1635,7 +1562,7 @@ public class StateContoller : MonoBehaviour
 
                     float planeDistance = planeDistanceVector.magnitude;
 
-                    float attackRange = _ownerStateControllingComponent._ownerEnemyAIScript.GetChsingDistance();
+                    float attackRange = _owner.GCST<EnemyAIScript>().GetChsingDistance();
 
                     if (planeDistance >= attackRange)
                     {
@@ -1649,7 +1576,7 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AI_StateCoolTimeCheck:
                 {
-                    EnemyAIScript ownerEnemyAIScript = _ownerStateControllingComponent._ownerEnemyAIScript;
+                    EnemyAIScript ownerEnemyAIScript = _owner.GCST<EnemyAIScript>();
                     ret = ownerEnemyAIScript.FindCoolTimeCoroutine(nextStateAsset._linkedState._linkedState);
                 }
                 break;
@@ -1657,7 +1584,7 @@ public class StateContoller : MonoBehaviour
             case ConditionType.AI_EnemyDegreeRange:
                 {
                     Vector3 myPosition = gameObject.transform.position;
-                    Vector3 enemyPosition = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy().transform.position;
+                    Vector3 enemyPosition = _owner.GCST<EnemyAIScript>().GetCurrentEnemy().transform.position;
                     Vector3 direction = enemyPosition - myPosition;
                     direction.y = 0.0f;
                     float betweenDeg = Vector3.Angle(direction.normalized, gameObject.transform.forward.normalized);
@@ -1674,36 +1601,12 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.AI_EnemyIsExitst:
                 {
-                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                    {
-                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.gameObject.GetComponentInChildren<EnemyAIScript>();
-
-                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                        {
-                            Debug.Assert(false, "EnemyAIScript가 없습니다");
-                            Debug.Break();
-                            ret = false;
-                        }
-                    }
-
-                    ret = (_ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy() != null);
+                    ret = (_owner.GCST<EnemyAIScript>().GetCurrentEnemy() != null);
                 }
                 break;
 
             case ConditionType.AI_ReadiedAttackExist:
                 {
-                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                    {
-                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.gameObject.GetComponentInChildren<EnemyAIScript>();
-
-                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                        {
-                            Debug.Assert(false, "EnemyAIScript가 없습니다");
-                            Debug.Break();
-                            ret = false;
-                        }
-                    }
-
                     StateGraphAsset aiAggressiveStateGraphAsset = _stateGraphes[(int)StateGraphType.AI_AggresiveGraph];
 
                     if (aiAggressiveStateGraphAsset == null)
@@ -1713,52 +1616,28 @@ public class StateContoller : MonoBehaviour
                         return false;
                     }
 
-                    ret = _ownerStateControllingComponent._ownerEnemyAIScript.IsAnyAttackReadied(ref aiAggressiveStateGraphAsset);
+                    ret = _owner.GCST<EnemyAIScript>().IsAnyAttackReadied(ref aiAggressiveStateGraphAsset);
                 }
                 break;
 
             case ConditionType.AI_ArriveInAttackRange:
                 {
                     forcedValue = true;
-
-                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                    {
-                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.gameObject.GetComponentInChildren<EnemyAIScript>();
-
-                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                        {
-                            Debug.Assert(false, "EnemyAIScript가 없습니다");
-                            Debug.Break();
-                            ret = false;
-                        }
-                    }
                     
-                    ret = _ownerStateControllingComponent._ownerEnemyAIScript.IsInAttackRange(_ownerStateControllingComponent._ownerCharacterComponent);
+                    ret = _owner.GCST<EnemyAIScript>().IsInAttackRange(_owner.GCST<CharacterController>());
                 }
                 break;
 
             case ConditionType.AI_EnemyIsAttackState:
                 {
-                    if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                    {
-                        _ownerStateControllingComponent._ownerEnemyAIScript = _ownerStateControllingComponent._owner.gameObject.GetComponentInChildren<EnemyAIScript>();
-
-                        if (_ownerStateControllingComponent._ownerEnemyAIScript == null)
-                        {
-                            Debug.Assert(false, "AI_EnemyIsAttackState 조건에 EnemyAIScript가 없습니다");
-                            Debug.Break();
-                            ret = false;
-                        }
-                    }
-
-                    CharacterScript enemyCharacterScript = _ownerStateControllingComponent._ownerEnemyAIScript.GetCurrentEnemy();
+                    CharacterScript enemyCharacterScript = _owner.GCST<EnemyAIScript>().GetCurrentEnemy();
                     if (enemyCharacterScript == null)
                     {
                         ret = false;
                         break;
                     }
 
-                    StateContoller enemyStateController = enemyCharacterScript.GetStateContoller();
+                    StateContoller enemyStateController = _owner.GCST<StateContoller>();
                     if (enemyStateController == null)
                     {
                         ret = false;
@@ -1867,18 +1746,7 @@ public class StateContoller : MonoBehaviour
 
             case ConditionType.IsLockOnTarget:
                 {
-                    if (_ownerStateControllingComponent._ownerAimScript == null)
-                    {
-                        _ownerStateControllingComponent._ownerAimScript = _ownerStateControllingComponent._owner.GetComponent<AimScript2>();
-                        if (_ownerStateControllingComponent._ownerAimScript == null)
-                        {
-                            Debug.Assert(false, "IsLockOnTarget 조건인데 AimScript가 없습니다");
-                            Debug.Break();
-                            return false;
-                        }
-                    }
-
-                    AimScript2 ownerAimScript = _ownerStateControllingComponent._ownerAimScript;
+                    AimScript2 ownerAimScript = _owner.GCST<AimScript2>();
 
                     GameObject lockOnObject = ownerAimScript.GetLockOnObject();
 
@@ -1922,7 +1790,7 @@ public class StateContoller : MonoBehaviour
 
                     bool isRightWeapon = (nextStateGraphType == StateGraphType.WeaponState_RightGraph);
 
-                    WeaponScript currWeapon = _ownerStateControllingComponent._owner.GetCurrentWeaponScript(isRightWeapon);
+                    WeaponScript currWeapon = _owner.GetCurrentWeaponScript(isRightWeapon);
 
                     if (currWeapon == null)
                     {
@@ -1972,7 +1840,7 @@ public class StateContoller : MonoBehaviour
         }
 
 
-        //if (_ownerStateControllingComponent._owner.GetCurrentWeaponScript(isRightSided) == null)
+        //if (_owner.GetCurrentWeaponScript(isRightSided) == null)
         //{
         //    return false;
         //}
@@ -1981,7 +1849,7 @@ public class StateContoller : MonoBehaviour
 
         //if (ret == true)
         //{
-        //    _ownerStateControllingComponent._owner.SetLatestWeaponUse(isRightSided);
+        //    _owner.SetLatestWeaponUse(isRightSided);
         //}
 
         return ret;
@@ -2008,7 +1876,7 @@ public class StateContoller : MonoBehaviour
 
         int index = 0;
 
-        WeaponGrabFocus ownerGrabType = _ownerStateControllingComponent._owner.GetGrabFocusType();
+        WeaponGrabFocus ownerGrabType = _owner.GetGrabFocusType();
         WeaponUseType weaponComboType = WeaponUseType.MainUse;
         ComboCommandKeyType recordedType = ComboCommandKeyType.TargetingBack;
 

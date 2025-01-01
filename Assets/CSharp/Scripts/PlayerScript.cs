@@ -7,20 +7,6 @@ using static StateGraphAsset;
 public class PlayerScript : CharacterScript
 {
     [SerializeField] protected GameObject _interactionUIPrefab = null;
-    [SerializeField] protected InputController _inputController = null;
-
-
-    protected override void Awake()
-    {
-        base.Awake();
-
-        /*-----------------------------------------------------------------
-        |NOTI| 총 무기 뿐만 아니라 그냥 무기투적을 생각해서라도 TPS 시스템을 준비한다
-        -----------------------------------------------------------------*/
-        _inputController = GetComponent<InputController>();
-        Debug.Assert(_inputController != null, "인풋 컨트롤러가 없다");
-        ReadyAimSystem();
-    }
 
 
     protected override void Update()
@@ -95,28 +81,28 @@ public class PlayerScript : CharacterScript
 
         //인벤토리 오픈코드
         {
-            if (_inputController.GetInventoryOpen() == true)
+            if (GCST<InputController>().GetInventoryOpen() == true)
             {
                 UIManager.Instance.TurnOnUI(_inventoryUIPrefab);
             }
         }
 
         //TryLockOn
-        if (_aimScript != null && Input.GetKeyDown(KeyCode.Mouse2) == true)
+        if (GCST<AimScript2>() != null && Input.GetKeyDown(KeyCode.Mouse2) == true)
         {
-            bool isAimed = _aimScript.GetIsAim();
+            bool isAimed = GCST<AimScript2>().GetIsAim();
 
             isAimed = !isAimed;
 
             if (isAimed == true)
             {
-                _aimScript.OnAimState(AimState.eLockOnAim);
+                GCST<AimScript2>().OnAimState(AimState.eLockOnAim);
             }
             else
             {
-                if (_aimScript.GetAimState() != AimState.eTPSAim)
+                if (GCST<AimScript2>().GetAimState() != AimState.eTPSAim)
                 {
-                    _aimScript.OffAimState();
+                    GCST<AimScript2>().OffAimState();
                 }
             }
         }

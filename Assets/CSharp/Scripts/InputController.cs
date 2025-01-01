@@ -2,10 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputController : MonoBehaviour
+public class InputController : GameCharacterSubScript
 {
-    void Start()
+    [SerializeField] private string _moveUpButton = "MoveUp";
+    [SerializeField] private string _moveDownButton = "MoveDown";
+    [SerializeField] private string _moveLeftButton = "MoveLeft";
+    [SerializeField] private string _moveRightButton = "MoveRight";
+
+    [SerializeField] private string _MouseMoveX = "Mouse X";
+    [SerializeField] private string _MouseMoveY = "Mouse Y";
+
+    public Vector3 _pr_directionByInput { get; private set; }
+    public Vector2 _pr_mouseMove { get; private set; }
+    public float _pr_aimDegree { get; set; }
+
+    private bool _inventoryOpen = false;
+    public bool GetInventoryOpen() { return _inventoryOpen; }
+
+
+    public override void Init(CharacterScript owner)
     {
+        _myType = typeof(InputController);
+        _owner = owner;
+    }
+
+
+    public override void SubScriptStart()
+    {
+
     }
 
     void Update()
@@ -50,22 +74,5 @@ public class InputController : MonoBehaviour
 
         _pr_directionByInput = new Vector3(horizontalValue, 0.0f, verticalValue).normalized;
         _pr_mouseMove = new Vector2(Input.GetAxis(_MouseMoveX), Input.GetAxis(_MouseMoveY));
-
     }
-
-    [SerializeField] private string _moveUpButton = "MoveUp";
-    [SerializeField] private string _moveDownButton = "MoveDown";
-    [SerializeField] private string _moveLeftButton = "MoveLeft";
-    [SerializeField] private string _moveRightButton = "MoveRight";
-
-    [SerializeField] private string _MouseMoveX = "Mouse X";
-    [SerializeField] private string _MouseMoveY = "Mouse Y";
-
-    public Vector3 _pr_directionByInput { get; private set; }
-    public Vector2 _pr_mouseMove { get; private set; }
-    public float _pr_aimDegree { get;  set; }
-
-    private bool _inventoryOpen = false;
-    public bool GetInventoryOpen() { return _inventoryOpen; }
-
 }

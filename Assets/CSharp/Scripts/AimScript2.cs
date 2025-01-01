@@ -17,7 +17,7 @@ public enum AimState
     ENEND,
 };
 
-public class AimScript2 : MonoBehaviour
+public class AimScript2 : GameCharacterSubScript
 {
     /*-----------------------------------------------
     고정 변수들
@@ -26,6 +26,8 @@ public class AimScript2 : MonoBehaviour
     private const float _lockOnRadius = 10.0f;
     private const float _lockOnMaxDegreeX = 45.0f;
     private const float _lockOnMaxDegreeY = 45.0f;
+
+
 
     [SerializeField] private float _lockOnDeadZoneDegree = 5.0f; //+- 10도까지는 아무 업데이트를 안한다
     [SerializeField] private float _lockOnHardLimitZoneDegree = 25.0f; //+= 30도까지는 벗어나면 안된다.
@@ -37,10 +39,6 @@ public class AimScript2 : MonoBehaviour
     /*-----------------------------------------------
     컴포넌트들
     -----------------------------------------------*/
-    private CharacterScript _owner = null;
-    private InputController _ownerInputController = null;
-    private CharacterAnimatorScript _ownerCharacterAnimatorScript = null;
-
     private GameObject _ownerCharacterHeart = null;
     private GameObject _ownerGameObject = null;
 
@@ -99,21 +97,10 @@ public class AimScript2 : MonoBehaviour
     private Vector2 currentVelocity; // SmoothDamp의 속도 추적용 변수
 
 
-
-    private void Awake()
+    public override void Init(CharacterScript owner)
     {
-        //owner 세팅
-        {
-            _owner = GetComponentInParent<CharacterScript>();
-            Debug.Assert(_owner != null, "owner가 없다");
-            _ownerCharacterAnimatorScript = _owner.GetComponentInChildren<CharacterAnimatorScript>();  
-        }
-
-        //조종자의 인풋 컨트롤러 세팅
-        {
-            _ownerInputController = GetComponentInParent<InputController>();
-            Debug.Assert(_ownerInputController != null, "인풋컨트롤러가 없다");
-        }
+        _myType = typeof(AimScript2);
+        _owner = owner;
 
         //쳐다볼 게임 오브젝트 만들기
         {
@@ -122,7 +109,7 @@ public class AimScript2 : MonoBehaviour
             _aimOribit.transform.rotation = transform.rotation;
             _aimOribit.transform.position = transform.position;
 
-            CharacterController ownerCharacterController = gameObject.GetComponent<CharacterController>();
+            CharacterController ownerCharacterController = _owner.GCST<CharacterController>();
             if (ownerCharacterController != null)
             {
                 Vector3 orbitPosition = _aimOribit.transform.position;
@@ -151,16 +138,21 @@ public class AimScript2 : MonoBehaviour
             _lockOnCamera = transform.Find("LockOnCamera").GetComponent<CinemachineFreeLook>();
             Debug.Assert(_lockOnCamera != null, "AimSystem을 사용하려면 LockOnCamera 있어야합니다.");
         }
+    }
 
+
+    public override void SubScriptStart()
+    {
         //런타임 리깅세팅
         {
-            RigBuilder characterRigBuilder = _ownerCharacterAnimatorScript.GetCharacterRigBuilder();
-            Rig characterRig = _ownerCharacterAnimatorScript.GetCharacterRig();
+            RigBuilder characterRigBuilder = _owner.GCST<CharacterAnimatorScript>().GetCharacterRigBuilder();
+            Rig characterRig = _owner.GCST<CharacterAnimatorScript>().GetCharacterRig();
             SetRigging(characterRigBuilder, characterRig);
         }
 
         OffAimState();
     }
+
 
 
     public void SetRigging(RigBuilder characterRigBuilder, Rig characterRig)
@@ -205,7 +197,7 @@ public class AimScript2 : MonoBehaviour
             }
             else
             {
-                Vector2 mouseMove = _ownerInputController._pr_mouseMove;
+                Vector2 mouseMove = _owner.GCST<InputController>()._pr_mouseMove;
                 Vector2 desiredAimRotation = new Vector2(mouseMove.x * _aimSpeed.x, mouseMove.y * _aimSpeed.y);
                 AimRotation(desiredAimRotation);
             }
@@ -458,8 +450,8 @@ public class AimScript2 : MonoBehaviour
 
     public void TurnOnRigging(bool isOn)
     {
-        RigBuilder characterRigBuilder = _ownerCharacterAnimatorScript.GetCharacterRigBuilder();
-        Rig characterRig = _ownerCharacterAnimatorScript.GetCharacterRig();
+        RigBuilder characterRigBuilder = _owner.GCST<CharacterAnimatorScript>().GetCharacterRigBuilder();
+        Rig characterRig = _owner.GCST<CharacterAnimatorScript>().GetCharacterRig();
 
         if (_isRiggingOn == isOn)
         {
@@ -509,9 +501,6 @@ public class AimScript2 : MonoBehaviour
                 break;
 
             case AimState.eSightAim:
-                {
-
-                }
                 break;
 
             case AimState.eLockOnAim:

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static AnimationAttackFrameAsset;
 
-public class CharacterColliderScript : MonoBehaviour
+public class CharacterColliderScript : GameCharacterSubScript
 {
     public class ColliderWorkDesc
     {
@@ -22,18 +22,28 @@ public class CharacterColliderScript : MonoBehaviour
     }
 
 
-    [SerializeField] private CharacterScript _owner = null;
-
     private Dictionary<ColliderAttachType, GameObject> _colliders = new Dictionary<ColliderAttachType, GameObject>();
     private List<LinkedList<ColliderWorkDesc>> _colliderWorks = new List<LinkedList<ColliderWorkDesc>>();
 
-    private void Awake()
+
+    public override void Init(CharacterScript owner)
     {
+        _owner = owner;
+        _myType = typeof(CharacterColliderScript);
+
         for (int i = 0; i < (int)ColliderAttachType.ENEND; i++)
         {
             _colliderWorks.Add(new LinkedList<ColliderWorkDesc>());
         }
     }
+
+
+    public override void SubScriptStart()
+    {
+        
+    }
+
+
 
 
     public void InitModelCollider(GameObject targetModel)

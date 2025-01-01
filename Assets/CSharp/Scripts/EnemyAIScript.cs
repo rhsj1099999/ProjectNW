@@ -7,7 +7,7 @@ using static StateContoller;
 using static StateGraphAsset;
 using static UnityEditor.Rendering.InspectorCurveEditor;
 
-public class EnemyAIScript : MonoBehaviour
+public class EnemyAIScript : GameCharacterSubScript
 {
     public class StateCoolTimeCoroutineDesc
     {
@@ -149,8 +149,11 @@ public class EnemyAIScript : MonoBehaviour
 
 
 
-    private void Awake()
+    public override void Init(CharacterScript owner)
     {
+        _myType = typeof(EnemyAIScript);
+        _owner = owner;
+
         if (_aggressiveMaxStep <= 0)
         {
             Debug.Assert(false, "AggressiveMaxStep에 유효한값을 넣어야합니다");
@@ -160,6 +163,10 @@ public class EnemyAIScript : MonoBehaviour
 
         _currAggressiveStep = _aggressiveMaxStep;
         _prevAggressiveStep = _aggressiveMaxStep;
+    }
+
+    public override void SubScriptStart()
+    {
     }
 
 

@@ -1,17 +1,14 @@
 using UnityEngine;
 
-public class CharacterMoveScript2 : MonoBehaviour
+public class CharacterMoveScript2 : GameCharacterSubScript
 {
     [SerializeField] private bool _logMe = false;
 
-    private CharacterController _characterController = null;
-    //private UIComponent _inventory = null;
-
     //[SerializeField] private float _mass = 30.0f;
+    //[SerializeField] private float _inAirThreshould = 0.05f;
     [SerializeField] private float _speed = 5.0f;
     [SerializeField] private float _rotatingSpeed_DEG = 90.0f;
     [SerializeField] private float _jumpForce = 3.0f;
-    //[SerializeField] private float _inAirThreshould = 0.05f;
     
 
     private Vector3 _latestPlaneVelocityDontUseY = Vector3.zero;
@@ -34,15 +31,15 @@ public class CharacterMoveScript2 : MonoBehaviour
     public Vector3 GetLatestVelocity() { return _latestPlaneVelocityDontUseY; }
     public void ResetLatestVelocity() { _latestPlaneVelocityDontUseY = Vector3.zero; }
 
-    private void Awake()
+    public override void Init(CharacterScript owner)
     {
-        _characterController = GetComponent<CharacterController>();
-        Debug.Assert(_characterController != null, "_characterController 없다");
+        _owner = owner;
+        _myType = typeof(CharacterMoveScript2);
     }
 
-    private void FixedUpdate()
+    public override void SubScriptStart()
     {
-        
+
     }
 
     public void ClearLatestVelocity()
@@ -62,13 +59,13 @@ public class CharacterMoveScript2 : MonoBehaviour
 
         Debug.Assert(Mathf.Abs(gravityMove.y) >= float.Epsilon, "부유하는 움직임입니다.");
 
-        _characterController.Move(gravityMove);
+        _owner.GCST<CharacterController>().Move(gravityMove);
 
         
-        if (_characterController.isGrounded == true)
+        if (_owner.GCST<CharacterController>().isGrounded == true)
         {
-            _characterController.stepOffset = _inGroundStepOffset;
-            _characterController.slopeLimit = _inGroundSlopeLimit;
+            _owner.GCST<CharacterController>().stepOffset = _inGroundStepOffset;
+            _owner.GCST<CharacterController>().slopeLimit = _inGroundSlopeLimit;
 
             _verticalSpeedAcc = 0.0f;
 
@@ -77,8 +74,8 @@ public class CharacterMoveScript2 : MonoBehaviour
         }
         else
         {
-            _characterController.stepOffset = _inAirStepOffset;
-            _characterController.slopeLimit = _inAirSlopeLimit;
+            _owner.GCST<CharacterController>().stepOffset = _inAirStepOffset;
+            _owner.GCST<CharacterController>().slopeLimit = _inAirSlopeLimit;
 
             _isInAir = true;
         }
@@ -98,13 +95,13 @@ public class CharacterMoveScript2 : MonoBehaviour
 
     public void DoJump()
     {
-        if (_characterController.isGrounded == false)
+        if (_owner.GCST<CharacterController>().isGrounded == false)
         {
             return; //더블 점프 컨텐츠, 스킬 생기면 어떻게할꺼야
         }
-        
-        _characterController.stepOffset = _inAirStepOffset;
-        _characterController.slopeLimit = _inAirSlopeLimit;
+
+        _owner.GCST<CharacterController>().stepOffset = _inAirStepOffset;
+        _owner.GCST<CharacterController>().slopeLimit = _inAirSlopeLimit;
 
         _verticalSpeedAcc = _jumpForce;
 
@@ -119,10 +116,10 @@ public class CharacterMoveScript2 : MonoBehaviour
 
         Vector3 desiredMove = inputDirection * _speed * Time.deltaTime * ratio;
 
-        _characterController.Move(desiredMove);
+        _owner.GCST<CharacterController>().Move(desiredMove);
         _moveTriggerd = true;
 
-        _latestPlaneVelocityDontUseY = _characterController.velocity;
+        _latestPlaneVelocityDontUseY = _owner.GCST<CharacterController>().velocity;
     }
 
     public void CharacterMove(Vector3 inputDirection, float ratio = 1.0f)
@@ -131,10 +128,10 @@ public class CharacterMoveScript2 : MonoBehaviour
 
         Vector3 desiredMove = inputDirection * _speed * Time.deltaTime * similarities * ratio;
 
-        _characterController.Move(desiredMove);
+        _owner.GCST<CharacterController>().Move(desiredMove);
         _moveTriggerd = true;
 
-        _latestPlaneVelocityDontUseY = _characterController.velocity;
+        _latestPlaneVelocityDontUseY = _owner.GCST<CharacterController>().velocity;
     }
 
     public Vector3 GetDirectionConvertedByCamera(Vector3 inputDirection)
@@ -147,7 +144,7 @@ public class CharacterMoveScript2 : MonoBehaviour
 
     public void CharacterForcedMove(Vector3 latestDelta, float ratio = 1.0f)
     {
-        _characterController.Move(latestDelta * ratio * Time.deltaTime);
+        _owner.GCST<CharacterController>().Move(latestDelta * ratio * Time.deltaTime);
         _moveTriggerd = true;
     }
 
@@ -179,4 +176,4 @@ public class CharacterMoveScript2 : MonoBehaviour
             return;
         }
     }
-};
+}

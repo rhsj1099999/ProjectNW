@@ -3,10 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static AnimationAttackFrameAsset;
-using static AnimatorBlendingDesc;
-using static BodyPartBlendingWork;
 using static StateGraphAsset;
 using static StatScript;
+
+
+
+public class StateContollerComponentDesc
+{
+    public CharacterScript _owner = null;
+    public InputController _ownerInputController = null;
+    public CharacterMoveScript2 _ownerMoveScript = null;
+    public CharacterController _ownerCharacterComponent = null;
+    public CharacterAnimatorScript _ownerCharacterAnimatorScript = null;
+    public AINavigationScript _ownerNavigationScript = null;
+    public EnemyAIScript _ownerEnemyAIScript = null;
+    public AimScript2 _ownerAimScript = null;
+    public CharacterColliderScript _ownerCharacterColliderScript = null;
+}
+
 
 public enum AnimatorLayerTypes
 {
@@ -38,6 +52,7 @@ public enum WeaponGrabFocus
     DualGrab,
 }
 
+
 public class CoroutineLock
 {
     public bool _isEnd = false;
@@ -66,21 +81,11 @@ public class DamageDesc
 
 
 
-
-
-
 public class CharacterScript : MonoBehaviour, IHitable
 {
-    //기본변수
-    /*-------------------------------------------------
-    |NOTI| 활성화 되는순간 더이상 참조하지말것. 사라져야합니다
-    -------------------------------------------------*/
     private bool _objectWillDestroy = false;
-
-
     private bool _fakeDead = false;
     private bool _dead = false;
-
     public bool GetDead() { return _dead; }
 
 
@@ -89,31 +94,78 @@ public class CharacterScript : MonoBehaviour, IHitable
     public delegate void Action_LayerType(AnimatorLayerTypes layerType);
 
 
-    //Buff 관련 컴포넌트들
-
-
 
     //대표 컴포넌트
-    [SerializeField] protected StateContoller _stateContoller = null;
-    [SerializeField] protected CharacterMoveScript2 _characterMoveScript2 = null;
-    [SerializeField] protected CharacterAnimatorScript _characterAnimatorScript = null;
-    [SerializeField] protected CharacterController _charactercontroller = null;
-    [SerializeField] protected GameObject _characterHeart = null;
-    [SerializeField] protected CharacterColliderScript _characterColliderScript = null;
+    public List<GameCharacterSubScript> _components = new List<GameCharacterSubScript>();
+    private Dictionary<Type, Component> _mySubScripts = new Dictionary<Type, Component>();
+
+
+    public T GetCharacterSubcomponent<T>() where T : Component
+    {
+        Component target = null;
+
+        _mySubScripts.TryGetValue(typeof(T), out target);
+
+        if (target == null)
+        {
+            Debug.Assert(false, "없는 컴포넌트를 찾으려 하고있다");
+            Debug.Break();
+        }
+
+        return (T)_mySubScripts[typeof(T)];
+    }
+
+    public T GCST<T>() where T : Component
+    {
+        return GetCharacterSubcomponent<T>();
+    }
+
+    public void AddCharacterSubComponent(GameCharacterSubScript subScript)
+    {
+        Type componentRealType = subScript.GetMyRealType();
+
+        if (_mySubScripts.ContainsKey(componentRealType) == true)
+        {
+            Debug.Assert(false, "해당 스크립트가 이미 있습니다");
+            Debug.Break();
+        }
+
+        _mySubScripts.Add(componentRealType, subScript);
+    }
+
+    public void AddCharacterSubComponent(Component subScript)
+    {
+        Type componentRealType = subScript.GetType();
+
+        if (_mySubScripts.ContainsKey(componentRealType) == true)
+        {
+            Debug.Assert(false, "해당 스크립트가 이미 있습니다");
+            Debug.Break();
+        }
+
+        _mySubScripts.Add(componentRealType, subScript);
+    }
+
+
     [SerializeField] protected GameObject _inventoryUIPrefab = null;
 
+    StatScript _myStat = new StatScript();
+    protected GameObject _characterHeart = null;
 
-    public StateContoller GetStateContoller() { return _stateContoller; }
-    protected StatScript _myStat = new StatScript();
-    protected AimScript2 _aimScript = null;
 
-    private Dictionary<Type, MonoBehaviour> _components = new Dictionary<Type, MonoBehaviour>();
 
-    protected virtual void Start()
+
+
+    protected virtual void Awake()
     {
+        CharacterController characterController = GetComponent<CharacterController>();
+        Debug.Assert(characterController != null, "CharacterController 컴포넌트가 없습니다");
+        characterController.detectCollisions = false;
+        AddCharacterSubComponent(characterController);
+
         _characterHeart = new GameObject("CharacterHeart");
         Vector3 myPosition = transform.position;
-        myPosition.y += _charactercontroller.height / 1.75f;
+        myPosition.y += characterController.height / 1.75f;
         _characterHeart.transform.position = myPosition;
         _characterHeart.transform.SetParent(transform);
         _characterHeart.layer = LayerMask.NameToLayer("CharacterHeart");
@@ -122,35 +174,25 @@ public class CharacterScript : MonoBehaviour, IHitable
         heartCollider.includeLayers = 0;
         heartCollider.excludeLayers = ~0;
         heartCollider.isTrigger = true;
-    }
 
-
-    protected virtual void Awake()
-    {
-        _characterMoveScript2 = GetComponent<CharacterMoveScript2>();
-        Debug.Assert(_characterMoveScript2 != null, "CharacterMove 컴포넌트 없다");
-
-        _stateContoller = GetComponent<StateContoller>();
-        Debug.Assert(_stateContoller != null, "StateController가 없다");
-
-        _characterMoveScript2 = GetComponent<CharacterMoveScript2>();
-        Debug.Assert(_characterMoveScript2 != null, "CharacterMove 컴포넌트 없다");
-
-        _charactercontroller = GetComponent<CharacterController>();
-        Debug.Assert(_charactercontroller != null, "CharacterController 컴포넌트가 없습니다");
-        _charactercontroller.detectCollisions = false;
-    }
-
-
-
-    protected void ReadyAimSystem()
-    {
-        if (_aimScript == null)
+        foreach (var component in _components)
         {
-            _aimScript = transform.gameObject.AddComponent<AimScript2>();
+            if (component == this)
+            {
+                continue;
+            }
+
+            component.Init(this);
+            AddCharacterSubComponent(component);
         }
-        _aimScript.enabled = true;
+
+        foreach (var component in _components)
+        {
+            component.SubScriptStart();
+        }
     }
+
+
 
 
     //HP가 0이되어 죽는 연출을 시작합니다
@@ -165,26 +207,27 @@ public class CharacterScript : MonoBehaviour, IHitable
     }
 
 
+
+
     public virtual void YouKillThisObject(GameObject killObject)
     {
-        if (_aimScript != null &&
-            _aimScript.GetLockOnObject().transform.parent.gameObject == killObject)
+        AimScript2 aimScript = GetCharacterSubcomponent<AimScript2>();
+        if (aimScript != null &&
+            aimScript.GetLockOnObject().transform.parent.gameObject == killObject)
         {
-            _aimScript.OffAimState();
+            aimScript.OffAimState();
         }
     }
 
 
+
+
     public virtual void DeadCall()
     {
-        //진짜 죽었습니다. -> 전리품, 기타등등을 이용할 수 있는 타이밍
-        //진짜 죽음은 언제될지 모른다 (애니메이션이 결정한다)
-        
         // State Controller를 비활성화 한다.
-        _stateContoller.enabled = false;
-
+        GetCharacterSubcomponent<StateContoller>().enabled = false;
         // 모든 충돌처리를 비활성화한다 (지면 빼고)
-        _charactercontroller.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
+        GetCharacterSubcomponent<CharacterController>().excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
     }
 
 
@@ -301,13 +344,13 @@ public class CharacterScript : MonoBehaviour, IHitable
         }
 
 
-        StateGraphAsset basicAsset = _stateContoller.GetBasicStateGraphes(targetType);
+        StateGraphAsset basicAsset = GetCharacterSubcomponent<StateContoller>().GetBasicStateGraphes(targetType);
         if (basicAsset == null)
         {
             return;
         }
 
-        _stateContoller.EquipStateGraph(basicAsset, targetType);
+        GetCharacterSubcomponent<StateContoller>().EquipStateGraph(basicAsset, targetType);
     }
 
     public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, GameObject nextWeaponPrefab)
@@ -329,9 +372,9 @@ public class CharacterScript : MonoBehaviour, IHitable
         //소켓 찾기
         Transform correctSocket = null;
         {
-            Debug.Assert(_characterAnimatorScript.GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+            Debug.Assert(GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
 
-            WeaponSocketScript[] weaponSockets = _characterAnimatorScript.GetCurrActivatedModelObject().GetComponentsInChildren<WeaponSocketScript>();
+            WeaponSocketScript[] weaponSockets = GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().GetComponentsInChildren<WeaponSocketScript>();
 
             Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
 
@@ -387,7 +430,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                 : StateGraphType.WeaponState_LeftGraph;
 
             //장착한 후, 상태그래프를 교체한다.
-            _stateContoller.EquipStateGraph(stateGraphAsset, stateGraphType);
+            GCST<StateContoller>().EquipStateGraph(stateGraphAsset, stateGraphType);
 
 
             //장착한 후, 콜라이더를 업데이트 한다.
@@ -399,7 +442,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                 ---------------------------------------------------------*/
 
                 ColliderAttachType colliderType = CalculateAttachType(weaponColliderScript.GetAttachType(), layerType);
-                _characterColliderScript.ChangeCollider(colliderType, weaponColliderScript.gameObject);
+                GCST<CharacterColliderScript>().ChangeCollider(colliderType, weaponColliderScript.gameObject);
                 weaponColliderScript.gameObject.SetActive(false);
             }
         }
@@ -568,9 +611,9 @@ public class CharacterScript : MonoBehaviour, IHitable
 
         //소켓 찾기
         {
-            Debug.Assert(_characterAnimatorScript.GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+            Debug.Assert(GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
 
-            WeaponSocketScript[] weaponSockets = _characterAnimatorScript.GetCurrActivatedModelObject().GetComponentsInChildren<WeaponSocketScript>();
+            WeaponSocketScript[] weaponSockets = GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().GetComponentsInChildren<WeaponSocketScript>();
 
             Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
 
@@ -662,7 +705,7 @@ public class CharacterScript : MonoBehaviour, IHitable
 
     public float GetStateChangingPercentage()
     {
-        return _characterAnimatorScript.GetStateChangingPercentage();
+        return GCST<CharacterAnimatorScript>().GetStateChangingPercentage();
     }
 
 
@@ -670,23 +713,23 @@ public class CharacterScript : MonoBehaviour, IHitable
     protected virtual void Update()
     {
         //현재 상태 업데이트
-        if (_stateContoller.enabled == true)
+        if (GCST<StateContoller>().enabled == true)
         {
-            _stateContoller.DoWork();
+            GCST<StateContoller>().DoWork();
         }
 
         //기본적으로 중력은 계속 업데이트 한다
         {
-            _characterMoveScript2.GravityUpdate();
-            _characterMoveScript2.ClearLatestVelocity();
+            GCST<CharacterMoveScript2>().GravityUpdate();
+            GCST<CharacterMoveScript2>().ClearLatestVelocity();
         }
     }
 
 
     public void StateChanged(StateAsset nextState)
     {
-        _characterAnimatorScript.StateChanged(nextState, _stateContoller);
-        _characterColliderScript.StateChanged();
+        GCST<CharacterAnimatorScript>().StateChanged(nextState);
+        GCST<CharacterColliderScript>().StateChanged();
     }
 
 
@@ -727,7 +770,7 @@ public class CharacterScript : MonoBehaviour, IHitable
             }
         }
         
-        _characterAnimatorScript.CalculateBodyWorkType_ChangeWeapon(_tempGrabFocusType, isRightWeapon, -1, true);
+        GCST<CharacterAnimatorScript>().CalculateBodyWorkType_ChangeWeapon(_tempGrabFocusType, isRightWeapon, -1, true);
     }
 
     public void CheckBehave(AdditionalBehaveType additionalBehaveType)
@@ -736,7 +779,7 @@ public class CharacterScript : MonoBehaviour, IHitable
         |NOTI| 이곳은 다음 행동들을 예상하고 LayerLock을 잡는함수다
         행동을 미리 실행하지 말것.
         --------------------------------------------------*/
-        int currentAnimatorBusyLayerBitShift = _characterAnimatorScript.GetBusyLayer();
+        int currentAnimatorBusyLayerBitShift = GCST<CharacterAnimatorScript>().GetBusyLayer();
 
         switch (additionalBehaveType)
         {
@@ -814,7 +857,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                     }
 
                     //Work를 담는다 이전에 Lock 계산을 끝낼것.
-                    _characterAnimatorScript.CalculateBodyWorkType_ChangeWeapon(_tempGrabFocusType, tempIsRightHandWeapon, willUsingAnimatorLayer);
+                    GCST<CharacterAnimatorScript>().CalculateBodyWorkType_ChangeWeapon(_tempGrabFocusType, tempIsRightHandWeapon, willUsingAnimatorLayer);
                 }
                 break;
 
@@ -880,11 +923,11 @@ public class CharacterScript : MonoBehaviour, IHitable
                     //Work를 담는다 이전에 Lock 계산을 끝낼것.
                     if (isRelease == true) //양손을 해제하려는 모드입니다
                     {
-                        _characterAnimatorScript.CalculateBodyWorkType_ChangeFocus_ReleaseMode(isRightHandWeapon, willUsingAnimatorLayer);
+                        GCST<CharacterAnimatorScript>().CalculateBodyWorkType_ChangeFocus_ReleaseMode(isRightHandWeapon, willUsingAnimatorLayer);
                     }
                     else
                     {
-                        _characterAnimatorScript.CalculateBodyWorkType_ChangeFocus(isRightHandWeapon, willUsingAnimatorLayer);
+                        GCST<CharacterAnimatorScript>().CalculateBodyWorkType_ChangeFocus(isRightHandWeapon, willUsingAnimatorLayer);
                     }
                 }
                 break;
@@ -903,7 +946,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                         return;
                     }
 
-                    if (_stateContoller.GetCurrState()._myState._canUseItem == false)
+                    if (GCST<StateContoller>().GetCurrState()._myState._canUseItem == false)
                     {
                         return;
                     }
@@ -944,7 +987,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                     }
 
                     //Work를 담는다 이전에 Lock 계산을 끝낼것.
-                    _characterAnimatorScript.CalculateBodyWorkType_UseItem_Drink(_tempGrabFocusType, newTestingItem, willBusyLayer);
+                    GCST<CharacterAnimatorScript>().CalculateBodyWorkType_UseItem_Drink(_tempGrabFocusType, newTestingItem, willBusyLayer);
                 }
                 break;
 
@@ -998,7 +1041,7 @@ public class CharacterScript : MonoBehaviour, IHitable
         /*-------------------------------------------------------
         애니메이션 배수(동작이 크면 아플것이다)
         -------------------------------------------------------*/
-        StateContoller myStateController = _stateContoller;
+        StateContoller myStateController = GCST<StateContoller>();
         if (myStateController != null &&
             myStateController.GetCurrState()._myState._isAttackState == true)
         {
@@ -1056,8 +1099,8 @@ public class CharacterScript : MonoBehaviour, IHitable
         StateGraphType nextGraphType = StateGraphType.HitStateGraph;
         RepresentStateType representType = RepresentStateType.Hit_Lvl_0;
 
-        StateAsset currState = _stateContoller.GetCurrState();
-        StateDesc currStateDesc = _stateContoller.GetCurrState()._myState;
+        StateAsset currState = GCST<StateContoller>().GetCurrState();
+        StateDesc currStateDesc = GCST<StateContoller>().GetCurrState()._myState;
 
 
 
@@ -1069,7 +1112,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                 if (_myStat._runtimeDesc._stamina >= damage._damagingStamina &&
                     _myStat._runtimeDesc._roughness >= damage._damagePower)
                 {
-                    nextGraphType = _stateContoller.GetCurrStateGraphType();
+                    nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
                     representType = RepresentStateType.Blocked_Reaction;
                 }
 
@@ -1077,7 +1120,7 @@ public class CharacterScript : MonoBehaviour, IHitable
                 else if (_myStat._runtimeDesc._stamina >= damage._damagingStamina &&
                     _myStat._runtimeDesc._roughness < damage._damagePower)
                 {
-                    nextGraphType = _stateContoller.GetCurrStateGraphType();
+                    nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
                     representType = RepresentStateType.Blocked_Sliding;
                 }
 
@@ -1085,13 +1128,13 @@ public class CharacterScript : MonoBehaviour, IHitable
                 else if (_myStat._runtimeDesc._stamina < damage._damagingStamina &&
                     _myStat._runtimeDesc._roughness >= damage._damagePower)
                 {
-                    nextGraphType = _stateContoller.GetCurrStateGraphType();
+                    nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
                     representType = RepresentStateType.Blocked_Crash;
                 }
 
                 //연결된 상태들을 가져와봄
                 StateAsset nextStateAsseet = null;
-                List<LinkedStateAsset> linkedStates = _stateContoller.GetCurrStateGraph().GetGraphStates()[currState];
+                List<LinkedStateAsset> linkedStates = GCST<StateContoller>().GetCurrStateGraph().GetGraphStates()[currState];
                 foreach (LinkedStateAsset linkedState in linkedStates)
                 {
                     if (linkedState._linkedState._myState._stateType == representType)
@@ -1174,7 +1217,7 @@ public class CharacterScript : MonoBehaviour, IHitable
             }
             nextGraphType = StateGraphType.DieGraph;
 
-            _stateContoller.TryChangeState(nextGraphType, representType);
+            GCST<StateContoller>().TryChangeState(nextGraphType, representType);
 
             return;
         }
@@ -1183,7 +1226,7 @@ public class CharacterScript : MonoBehaviour, IHitable
 
         gameObject.transform.LookAt(caller.transform.position);
 
-        _stateContoller.TryChangeState(nextGraphType, representType);
+        GCST<StateContoller>().TryChangeState(nextGraphType, representType);
     }
 
 }

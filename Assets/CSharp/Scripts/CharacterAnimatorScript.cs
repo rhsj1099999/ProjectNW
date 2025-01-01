@@ -75,23 +75,17 @@ public class AnimatorBlendingDesc
 
 
 
-public class CharacterAnimatorScript : MonoBehaviour
+public class CharacterAnimatorScript : GameCharacterSubScript
 {
-    [SerializeField] private Avatar _gameBasicAvatar = null;
+    private Avatar _gameBasicAvatar = null;
     private GameObject _gameBasicCharacter = null;
-
-    private Action _lateUpdateActions;
-
-    CharacterScript _owner = null;
 
     protected Animator _animator = null;
     protected GameObject _characterModelObject = null;
 
-
     protected AnimatorOverrideController _overrideController = null;
     protected AnimationClip _currAnimClip = null;
 
-    protected StateContoller _stateContoller = null;
     private StateAsset _currStateAsset = null;
     private int _currAnimIndex = -1;
 
@@ -120,13 +114,29 @@ public class CharacterAnimatorScript : MonoBehaviour
     protected Rig _characterRig = null;
 
 
-    [SerializeField] private GameObject tempDebuggingModel = null;
 
 
-
-    private void Awake()
+    private void LateUpdate()
     {
-        _owner = GetComponentInParent<CharacterScript>();
+        if (_currStateAsset._myState._isSubAnimationStateMachineExist == true)
+        {
+            int animationIndex = _owner.GCST<StateContoller>().SubAnimationStateIndex(_currStateAsset);
+
+            if (animationIndex != _currAnimIndex)
+            {
+                AnimationClip nextAnimation = _currStateAsset._myState._subAnimationStateMachine._animations[animationIndex];
+                FullBodyAnimationChange(nextAnimation);
+                _currAnimIndex = animationIndex;
+            }
+        }
+    }
+
+
+    public override void Init(CharacterScript owner)
+    {
+        _owner = owner;
+        _myType = typeof(CharacterAnimatorScript);
+
         _animator = GetComponentInChildren<Animator>();
         _gameBasicAvatar = _animator.avatar;
 
@@ -174,8 +184,11 @@ public class CharacterAnimatorScript : MonoBehaviour
             Debug.Assert(false, "캐릭터 초기값 아바타입니다. 반드시 설정돼있어야합니다");
             Debug.Break();
         }
+    }
 
-        GetComponentInParent<CharacterColliderScript>().InitModelCollider(_characterModelObject);
+    public override void SubScriptStart()
+    {
+        _owner.GCST<CharacterColliderScript>().InitModelCollider(_characterModelObject);
     }
 
 
@@ -184,21 +197,6 @@ public class CharacterAnimatorScript : MonoBehaviour
         ModelChange(_gameBasicCharacter);
     }
 
-    private void LateUpdate()
-    {
-        if (_currStateAsset._myState._isSubAnimationStateMachineExist == true)
-        {
-            int animationIndex = _stateContoller.SubAnimationStateIndex(_currStateAsset);
-
-
-            if (animationIndex != _currAnimIndex)
-            {
-                AnimationClip nextAnimation = _currStateAsset._myState._subAnimationStateMachine._animations[animationIndex];
-                FullBodyAnimationChange(nextAnimation);
-                _currAnimIndex = animationIndex;
-            }
-        }
-    }
 
 
     public bool IsSameSkeleton(Avatar newModelAvatar)
@@ -330,7 +328,7 @@ public class CharacterAnimatorScript : MonoBehaviour
     }
 
 
-    public void StateChanged(StateAsset nextState, StateContoller stateController)
+    public void StateChanged(StateAsset nextState)
     {
         _currStateAsset = nextState;
 
@@ -340,16 +338,11 @@ public class CharacterAnimatorScript : MonoBehaviour
         {
             //애니메이션을 다시 결정해야한다.
 
-            int animationIndex = stateController.SubAnimationStateIndex(nextState);
+            int animationIndex = _owner.GCST<StateContoller>().SubAnimationStateIndex(nextState);
 
             _currAnimIndex = animationIndex;
 
             nextAnimation = nextState._myState._subAnimationStateMachine._animations[animationIndex];
-
-            if (_stateContoller == null)
-            {
-                _stateContoller = stateController;
-            }
         }
 
         FullBodyAnimationChange(nextAnimation);
