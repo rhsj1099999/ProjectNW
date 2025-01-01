@@ -21,15 +21,8 @@ public class CharacterColliderScript : MonoBehaviour
         public Coroutine _runningCoroutine = null;
     }
 
-    [Serializable]
-    public class BasicColliderDesc
-    {
-        public ColliderAttachType _type = ColliderAttachType.ENEND;
-        public GameObject _basicTarget = null;
-    }
 
     [SerializeField] private CharacterScript _owner = null;
-    //[SerializeField] private List<BasicColliderDesc> _basicColliders = null;
 
     private Dictionary<ColliderAttachType, GameObject> _colliders = new Dictionary<ColliderAttachType, GameObject>();
     private List<LinkedList<ColliderWorkDesc>> _colliderWorks = new List<LinkedList<ColliderWorkDesc>>();
@@ -40,12 +33,33 @@ public class CharacterColliderScript : MonoBehaviour
         {
             _colliderWorks.Add(new LinkedList<ColliderWorkDesc>());
         }
-
-        //foreach (var basicColliderDesc in _basicColliders)
-        //{
-        //    ChangeCollider(basicColliderDesc._type, basicColliderDesc._basicTarget);
-        //}
     }
+
+
+    public void InitModelCollider(GameObject targetModel)
+    {
+        CharacterModelDataInitializer modelDataInitializer = targetModel.GetComponentInChildren<CharacterModelDataInitializer>();
+
+        if (modelDataInitializer == null)
+        {
+            Debug.Assert(false, "모델이 있다면 반드시 있어야하는 스크립트 입니다");
+            Debug.Break();
+        }
+
+        List<WeaponColliderScript> modelBasicColliders = modelDataInitializer.GetModelBasicColliders();
+
+        if (modelBasicColliders.Count <= 0)
+        {
+            Debug.Assert(false, "모델에 붙어있는 콜라이더가 진짜 하나도 없습니까?");
+            Debug.Break();
+        }
+
+        foreach (var basicColliderDesc in modelBasicColliders)
+        {
+            ChangeCollider(basicColliderDesc.GetAttachType(), basicColliderDesc.gameObject);
+        }
+    }
+
 
     public void StateChanged()
     {
@@ -80,7 +94,6 @@ public class CharacterColliderScript : MonoBehaviour
     public void ChangeCollider(ColliderAttachType type, GameObject targetObject)
     {
         //무기를 장착/해제 하거나 등등할때 콜라이더를 반드시 등록해야합니다..
-        _colliders[type] = targetObject;
 
         /*-------------------------------------------------------------
         |TODO| 단순히 이 작업만으로 끝나지는 않습니다.
@@ -88,12 +101,12 @@ public class CharacterColliderScript : MonoBehaviour
         설정이 추가되야합니다.
         -------------------------------------------------------------*/
 
-
         /*-------------------------------------------------------------
-        |TODO| 프레임 드랍에 의해 부정확학 충돌이 예상되는 경우.
+        |NOTI| 프레임 드랍에 의해 부정확학 충돌이 예상되는 경우.
         충돌 로직을 바꿔야합니다.
-        CastAttack
         -------------------------------------------------------------*/
+
+        _colliders[type] = targetObject;
 
         Collider collider = targetObject.GetComponent<Collider>();
 
@@ -102,6 +115,8 @@ public class CharacterColliderScript : MonoBehaviour
             int layerMask = _owner.CalculateWeaponColliderExcludeLayerMask(type, targetObject);
             collider.excludeLayers = ~layerMask;
         }
+
+        targetObject.SetActive(false);
     }
 
     public GameObject GetColliderObject(ColliderAttachType type)
@@ -131,10 +146,12 @@ public class CharacterColliderScript : MonoBehaviour
                         type = ColliderAttachType.HumanoidLeftHand;
                         break;
                     case ColliderAttachType.HumanoidLeftLeg:
+                        type = ColliderAttachType.HumanoidRightLeg;
                         break;
                     case ColliderAttachType.HumanoidRightLeg:
+                        type = ColliderAttachType.HumanoidLeftLeg;
                         break;
-                    case ColliderAttachType.HumanoidLeftHead:
+                    case ColliderAttachType.HumanoidHead:
                         break;
                     case ColliderAttachType.HumanoidRightHandWeapon:
                         type = ColliderAttachType.HumanoidLeftHandWeapon;

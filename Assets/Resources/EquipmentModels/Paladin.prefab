@@ -185,6 +185,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3353523253664904972}
   - component: {fileID: 3247784493295602437}
+  - component: {fileID: 7162546127579337817}
   m_Layer: 10
   m_Name: BasicCollider_RightHand
   m_TagString: WeaponAttachedCollider
@@ -230,6 +231,19 @@ CapsuleCollider:
   m_Height: 0.6
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7162546127579337817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 626460367880496723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf7cb701ae23a9a4c9cf66aa5fd27932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attachType: 1
 --- !u!1 &629151408443606967
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,6 +500,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4411488980991434235}
   - component: {fileID: 6605550929846106228}
+  - component: {fileID: 8540012459838412402}
   m_Layer: 10
   m_Name: BasicCollider_RightLeg
   m_TagString: WeaponAttachedCollider
@@ -531,6 +546,19 @@ CapsuleCollider:
   m_Height: 0.6
   m_Direction: 1
   m_Center: {x: 0, y: 0.3, z: 0}
+--- !u!114 &8540012459838412402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907388225945372596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf7cb701ae23a9a4c9cf66aa5fd27932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attachType: 3
 --- !u!1 &1045775034965860745
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,6 +920,7 @@ GameObject:
   - component: {fileID: 2733383448308509927}
   - component: {fileID: 7193844668497078282}
   - component: {fileID: 3824985834069129646}
+  - component: {fileID: 3914826992123187263}
   m_Layer: 0
   m_Name: Paladin
   m_TagString: Untagged
@@ -966,6 +995,23 @@ MonoBehaviour:
   - m_Rig: {fileID: 8188363561057062237}
     m_Active: 1
   m_Effectors: []
+--- !u!114 &3914826992123187263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2296666141149735760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfe18929cb4b4b446bc75cccfccb6e14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _basicModelColliders:
+  - {fileID: 2692508790437337569}
+  - {fileID: 8540012459838412402}
+  - {fileID: 2175947447278615514}
+  - {fileID: 7162546127579337817}
 --- !u!1 &2347942409945212271
 GameObject:
   m_ObjectHideFlags: 0
@@ -1609,6 +1655,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8240875754289921204}
   - component: {fileID: 9076598090307514976}
+  - component: {fileID: 2175947447278615514}
   m_Layer: 10
   m_Name: BasicCollider_LeftHand
   m_TagString: WeaponAttachedCollider
@@ -1654,6 +1701,19 @@ CapsuleCollider:
   m_Height: 0.6
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2175947447278615514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3318861245478697571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf7cb701ae23a9a4c9cf66aa5fd27932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attachType: 0
 --- !u!1 &3441900335786509954
 GameObject:
   m_ObjectHideFlags: 0
@@ -2328,6 +2388,7 @@ GameObject:
   m_Component:
   - component: {fileID: 816894919949105257}
   - component: {fileID: 8452187572825770419}
+  - component: {fileID: 2692508790437337569}
   m_Layer: 10
   m_Name: BasicCollider_LeftLeg
   m_TagString: WeaponAttachedCollider
@@ -2373,6 +2434,19 @@ CapsuleCollider:
   m_Height: 0.6
   m_Direction: 1
   m_Center: {x: 0, y: 0.3, z: 0}
+--- !u!114 &2692508790437337569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6648829991790575642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf7cb701ae23a9a4c9cf66aa5fd27932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attachType: 2
 --- !u!1 &6672284269335204176
 GameObject:
   m_ObjectHideFlags: 0

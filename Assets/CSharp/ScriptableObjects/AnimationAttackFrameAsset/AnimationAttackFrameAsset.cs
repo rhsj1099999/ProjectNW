@@ -17,7 +17,7 @@ public class AnimationAttackFrameAsset : ScriptableObject
         HumanoidLeftLeg,
         HumanoidRightLeg,
 
-        HumanoidLeftHead,
+        HumanoidHead,
 
         HumanoidRightHandWeapon,
         HumanoidLeftHandWeapon,

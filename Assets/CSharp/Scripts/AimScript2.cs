@@ -20,12 +20,6 @@ public enum AimState
 public class AimScript2 : MonoBehaviour
 {
     /*-----------------------------------------------
-    |락온(다크소울식)|--|TPS 조준|--|정조준| 
-    과 관련된 기능을 담당하는 컴포넌트
-    -----------------------------------------------*/
-
-
-    /*-----------------------------------------------
     고정 변수들
     -----------------------------------------------*/
     private const float _aimSatelliteZOffset = 5.0f;
@@ -49,9 +43,6 @@ public class AimScript2 : MonoBehaviour
 
     private GameObject _ownerCharacterHeart = null;
     private GameObject _ownerGameObject = null;
-
-    //private RigBuilder _ownerRigBuilder = null;
-    //private Rig _ownerRig = null;
 
     private bool _isRiggingOn = false;
 
@@ -145,13 +136,6 @@ public class AimScript2 : MonoBehaviour
             aimSatellitePosition += _aimOribit.transform.forward * _aimSatelliteZOffset;
             _aimSatellite.transform.position = aimSatellitePosition;
 
-            ////디버깅 메쉬 만들기
-            //{
-            //    GameObject prefab = Resources.Load<GameObject>("RuntimePrefab/ForDebug/mesh_0.1");
-            //    GameObject newObject = Instantiate(prefab);
-            //    newObject.transform.position = _aimSatellite.transform.position;
-            //    newObject.transform.SetParent(_aimSatellite.transform);
-            //}
         }
 
         //카메라 세팅
@@ -368,6 +352,11 @@ public class AimScript2 : MonoBehaviour
 
             foreach (Collider collider in colliders)
             {
+                if (collider.GetComponentInParent<CharacterScript>().GetDead() == true)
+                {
+                    continue;
+                }
+
                 GameObject obj = collider.gameObject;
 
                 if (obj == _ownerCharacterHeart)

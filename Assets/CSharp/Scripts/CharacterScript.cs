@@ -78,9 +78,6 @@ public class CharacterScript : MonoBehaviour, IHitable
     private bool _objectWillDestroy = false;
 
 
-
-
-
     private bool _fakeDead = false;
     private bool _dead = false;
 
@@ -146,29 +143,6 @@ public class CharacterScript : MonoBehaviour, IHitable
 
 
 
-
-    //HP가 0이되어 죽는 연출을 시작합니다
-    protected virtual void ZeroHPCall()
-    {
-        _dead = true;
-
-        //락온을 해제시킨다
-    }
-
-    //진짜 죽었습니다. -> 전리품, 기타등등을 이용할 수 있는 타이밍
-    //진짜 죽음은 언제될지 모른다 (애니메이션이 결정한다)
-    public virtual void DeadCall()
-    {
-
-        // State Controller를 비활성화 한다.
-        _stateContoller.enabled = false;
-
-        // 모든 충돌처리를 비활성화한다 (지면 빼고)
-        _charactercontroller.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
-    }
-
-
-
     protected void ReadyAimSystem()
     {
         if (_aimScript == null)
@@ -178,6 +152,40 @@ public class CharacterScript : MonoBehaviour, IHitable
         _aimScript.enabled = true;
     }
 
+
+    //HP가 0이되어 죽는 연출을 시작합니다
+    protected virtual void ZeroHPCall(CharacterScript killedBy)
+    {
+        _dead = true;
+
+        if (killedBy != null)
+        {
+            killedBy.YouKillThisObject(gameObject);
+        }
+    }
+
+
+    public virtual void YouKillThisObject(GameObject killObject)
+    {
+        if (_aimScript != null &&
+            _aimScript.GetLockOnObject().transform.parent.gameObject == killObject)
+        {
+            _aimScript.OffAimState();
+        }
+    }
+
+
+    public virtual void DeadCall()
+    {
+        //진짜 죽었습니다. -> 전리품, 기타등등을 이용할 수 있는 타이밍
+        //진짜 죽음은 언제될지 모른다 (애니메이션이 결정한다)
+        
+        // State Controller를 비활성화 한다.
+        _stateContoller.enabled = false;
+
+        // 모든 충돌처리를 비활성화한다 (지면 빼고)
+        _charactercontroller.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
+    }
 
 
     /*---------------------------------------------------
@@ -274,7 +282,6 @@ public class CharacterScript : MonoBehaviour, IHitable
     }
     public bool _isRightWeaponAimed = false;
     public bool _isLeftWeaponAimed = false;
-
 
     public void DestroyWeapon(AnimatorLayerTypes layerType)
     {
@@ -375,21 +382,25 @@ public class CharacterScript : MonoBehaviour, IHitable
 
             StateGraphAsset stateGraphAsset = nextWeaponScript._weaponStateGraph;
 
-            StateGraphAsset.StateGraphType stateGraphType = (layerType == AnimatorLayerTypes.RightHand == true)
-                ? StateGraphAsset.StateGraphType.WeaponState_RightGraph
-                : StateGraphAsset.StateGraphType.WeaponState_LeftGraph;
+            StateGraphType stateGraphType = (layerType == AnimatorLayerTypes.RightHand == true)
+                ? StateGraphType.WeaponState_RightGraph
+                : StateGraphType.WeaponState_LeftGraph;
 
             //장착한 후, 상태그래프를 교체한다.
             _stateContoller.EquipStateGraph(stateGraphAsset, stateGraphType);
 
 
             //장착한 후, 콜라이더를 업데이트 한다.
-            Transform colliderTransform = nextWeaponScript.transform.Find("Collider");
-            if (colliderTransform != null)
+            ColliderScript weaponColliderScript = nextWeaponScript.GetComponentInChildren<ColliderScript>();
+            if (weaponColliderScript != null)
             {
-                ColliderAttachType colliderType = CalculateAttachType(layerType);
-                //_characterColliderScript.ChangeCollider(colliderType, colliderTransform.gameObject);
-                colliderTransform.gameObject.SetActive(false);
+                /*---------------------------------------------------------
+                |NOTI| 아직 방패, 총은 충돌체 필요없음
+                ---------------------------------------------------------*/
+
+                ColliderAttachType colliderType = CalculateAttachType(weaponColliderScript.GetAttachType(), layerType);
+                _characterColliderScript.ChangeCollider(colliderType, weaponColliderScript.gameObject);
+                weaponColliderScript.gameObject.SetActive(false);
             }
         }
     }
@@ -408,26 +419,34 @@ public class CharacterScript : MonoBehaviour, IHitable
         _tempGrabFocusType = targetType;
     }
 
-    public virtual ColliderAttachType CalculateAttachType(AnimatorLayerTypes layerType)
+    public virtual ColliderAttachType CalculateAttachType(ColliderAttachType attachType, AnimatorLayerTypes layerType)
     {
         ColliderAttachType type = ColliderAttachType.ENEND;
 
-        switch (layerType) 
+        if (attachType == ColliderAttachType.HumanoidLeftHand ||
+            attachType == ColliderAttachType.HumanoidRightHand)
         {
-            case AnimatorLayerTypes.LeftHand:
-                type = ColliderAttachType.HumanoidLeftHandWeapon;
-                break;
+            if (layerType == AnimatorLayerTypes.RightHand)
+            {
+                type = ColliderAttachType.HumanoidRightHand;
+            }
+            else
+            {
+                type = ColliderAttachType.HumanoidLeftHand;
+            }
+        }
 
-            case AnimatorLayerTypes.RightHand:
+        else if (attachType == ColliderAttachType.HumanoidLeftHandWeapon ||
+            attachType == ColliderAttachType.HumanoidRightHandWeapon)
+        {
+            if (layerType == AnimatorLayerTypes.RightHand)
+            {
                 type = ColliderAttachType.HumanoidRightHandWeapon;
-                break;
-
-            default:
-                {
-                    Debug.Assert(false, "로직을 수정할때가 왔다");
-                    Debug.Break();
-                }
-                break;
+            }
+            else
+            {
+                type = ColliderAttachType.HumanoidLeftHandWeapon;
+            }
         }
 
         return type;
@@ -1128,14 +1147,9 @@ public class CharacterScript : MonoBehaviour, IHitable
         }
 
 
-
-
-
-
         /*--------------------------------------------------------------------------------------------------------------
         --------------------------------------모든 데미지는 계산돼있어야 한다-------------------------------------------------------
         --------------------------------------------------------------------------------------------------------------*/
-
 
         int finalDamage = (int)damage._damage;
 
@@ -1145,7 +1159,8 @@ public class CharacterScript : MonoBehaviour, IHitable
         {
             Debug.Log("죽었다");
 
-            ZeroHPCall();
+            //caller.
+            ZeroHPCall(caller.GetComponent<CharacterScript>());
 
 
             //날라갈만큼의 데미지를 받고 죽는다

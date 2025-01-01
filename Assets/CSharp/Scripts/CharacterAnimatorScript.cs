@@ -174,6 +174,8 @@ public class CharacterAnimatorScript : MonoBehaviour
             Debug.Assert(false, "캐릭터 초기값 아바타입니다. 반드시 설정돼있어야합니다");
             Debug.Break();
         }
+
+        GetComponentInParent<CharacterColliderScript>().InitModelCollider(_characterModelObject);
     }
 
 
@@ -226,6 +228,8 @@ public class CharacterAnimatorScript : MonoBehaviour
 
         StartCoroutine(WaitNextFrameCoroutine(newModel, newOverrideController, meshRenderers));
 
+
+
         return newModel;
     }
 
@@ -249,6 +253,9 @@ public class CharacterAnimatorScript : MonoBehaviour
 
         _owner.GetComponentInChildren<AimScript2>().SetRigging(_characterRigBuilder, _characterRig);
         _owner.MoveWeapons(newModel);
+
+        CharacterColliderScript ownerCharacterColliderScript = GetComponentInParent<CharacterColliderScript>();
+        ownerCharacterColliderScript.InitModelCollider(newModel);
 
         Destroy(destroyThis);
     }
