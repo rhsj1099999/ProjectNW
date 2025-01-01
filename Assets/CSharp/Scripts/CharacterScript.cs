@@ -107,7 +107,7 @@ public class CharacterScript : MonoBehaviour, IHitable
     protected StatScript _myStat = new StatScript();
     protected AimScript2 _aimScript = null;
 
-
+    private Dictionary<Type, MonoBehaviour> _components = new Dictionary<Type, MonoBehaviour>();
 
     protected virtual void Start()
     {
