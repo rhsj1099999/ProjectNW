@@ -1,0 +1,586 @@
+Using pre-set license
+Built from '2022.3/staging' branch; Version is '2022.3.4f1 (35713cd46cd7) revision 3502396'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 32469 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 1
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\2022.3.4f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker2
+-projectPath
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+-logFile
+Logs/AssetImportWorker2.log
+-srvPort
+57463
+Successfully changed project path to: C:/Users/rhsj/Desktop/Unity/ProjectNW
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [9996] Host "[IP] 192.168.200.183 [Port] 0 [Flags] 2 [Guid] 86784940 [EditorId] 86784940 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+
+Player connection [9996] Host "[IP] 192.168.200.183 [Port] 0 [Flags] 2 [Guid] 86784940 [EditorId] 86784940 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+
+Refreshing native plugins compatible for Editor in 19.06 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2022.3.4f1 (35713cd46cd7)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/rhsj/Desktop/Unity/ProjectNW/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   31.0.15.5244
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56236
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.4f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.007759 seconds.
+- Loaded All Assemblies, in  0.408 seconds
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.331 seconds
+Domain Reload Profiling: 738ms
+	BeginReloadAssembly (96ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (65ms)
+	RebuildNativeTypeToScriptingClass (13ms)
+	initialDomainReloadingComplete (77ms)
+	LoadAllAssembliesAndSetupDomain (156ms)
+		LoadAssemblies (94ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (150ms)
+			TypeCache.Refresh (149ms)
+				TypeCache.ScanAssembly (131ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (331ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (251ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (13ms)
+			SetLoadedEditorAssemblies (10ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (3ms)
+			ProcessInitializeOnLoadAttributes (175ms)
+			ProcessInitializeOnLoadMethodAttributes (50ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  1.033 seconds
+Refreshing native plugins compatible for Editor in 6.01 ms, found 4 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Package Manager log level set to [2]
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.476 seconds
+Domain Reload Profiling: 2506ms
+	BeginReloadAssembly (150ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (7ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (28ms)
+	RebuildCommonClasses (44ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (38ms)
+	LoadAllAssembliesAndSetupDomain (784ms)
+		LoadAssemblies (386ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (460ms)
+			TypeCache.Refresh (399ms)
+				TypeCache.ScanAssembly (388ms)
+			ScanForSourceGeneratedMonoScriptInfo (42ms)
+			ResolveRequiredComponents (19ms)
+	FinalizeReload (1476ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1241ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (6ms)
+			SetLoadedEditorAssemblies (8ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (228ms)
+			ProcessInitializeOnLoadAttributes (856ms)
+			ProcessInitializeOnLoadMethodAttributes (132ms)
+			AfterProcessingInitializeOnLoad (10ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (7ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.04 seconds
+Refreshing native plugins compatible for Editor in 6.57 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 6337 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 110 unused Assets / (427.3 KB). Loaded Objects now: 6837.
+Memory consumption went from 254.6 MB to 254.2 MB.
+Total: 3.892000 ms (FindLiveObjects: 0.421600 ms CreateObjectMapping: 0.228400 ms MarkObjects: 3.021400 ms  DeleteObjects: 0.219800 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: a3ef5dd2817f97addfee359851a9dba5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 1004906.144371 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_03_Vo/LoginScene_Bridge01_03_Vo_Voxel.fbx
+  artifactKey: Guid(5bdb05fe23c68c84c88fc8906d48d3d4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_03_Vo/LoginScene_Bridge01_03_Vo_Voxel.fbx using Guid(5bdb05fe23c68c84c88fc8906d48d3d4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ee27b0c1d6ab303f8fb624d985791736') in 0.019885 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 5.458482 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_05_Vo/LoginScene_Bridge01_05_Vo_Voxel.fbx
+  artifactKey: Guid(0474ab4462ee0294da37ad4abdd87cff) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_05_Vo/LoginScene_Bridge01_05_Vo_Voxel.fbx using Guid(0474ab4462ee0294da37ad4abdd87cff) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '65a967ac6a4d4c40ef859ee91433105f') in 0.003302 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 16
+========================================================================
+Received Import Request.
+  Time since last request: 0.000014 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_05_Vo/LoginScene_Bridge02_Normal.png
+  artifactKey: Guid(1f2319ec34dba214c80a1ec58bf7f8f0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_05_Vo/LoginScene_Bridge02_Normal.png using Guid(1f2319ec34dba214c80a1ec58bf7f8f0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '042b13be395cbb97e1cd8d04b4e109a7') in 0.002729 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.142604 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_06_Vo/LoginScene_Bridge01_06_Vo_Voxel.fbx
+  artifactKey: Guid(7d8a9f43032cf854cb03e3917823d9c0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_06_Vo/LoginScene_Bridge01_06_Vo_Voxel.fbx using Guid(7d8a9f43032cf854cb03e3917823d9c0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '13fd20970700c819aa5f3419e5e07716') in 0.001682 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 14
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_06_Vo/LoginScene_Edge01_SMBE.png
+  artifactKey: Guid(97c5086fbbc321d4eb8a95b8f0d4048c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_06_Vo/LoginScene_Edge01_SMBE.png using Guid(97c5086fbbc321d4eb8a95b8f0d4048c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1a55ae1a3df48a39d38cd0922101149d') in 0.001860 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.164070 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_07_Vo/LoginScene_Bridge01_07_Vo_Voxel.fbx
+  artifactKey: Guid(c3701a76b8b9dde469cf422496255e82) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_07_Vo/LoginScene_Bridge01_07_Vo_Voxel.fbx using Guid(c3701a76b8b9dde469cf422496255e82) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '82c17a9da735b794476295cd12f8a800') in 0.001831 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 0.000013 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_07_Vo/LoginScene_Edge01_Normal.png
+  artifactKey: Guid(198bd698e81ee6f4ab2f5150f99a654c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_07_Vo/LoginScene_Edge01_Normal.png using Guid(198bd698e81ee6f4ab2f5150f99a654c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8e7510aba922275f2bed9e8fc1ddca16') in 0.001594 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000012 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_07_Vo/LoginScene_Edge01_SMBE.png
+  artifactKey: Guid(c8f76c067836f2048a792ae92f52fb56) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_07_Vo/LoginScene_Edge01_SMBE.png using Guid(c8f76c067836f2048a792ae92f52fb56) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b90d55dd65ab28bd8f0897a740a9709f') in 0.001542 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.336316 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_08_Vo/LoginScene_Bridge01_08_Vo_Voxel.fbx
+  artifactKey: Guid(319a7c6e4be589647b417dcc736ece7f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_08_Vo/LoginScene_Bridge01_08_Vo_Voxel.fbx using Guid(319a7c6e4be589647b417dcc736ece7f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '665268686648a9a13f47f3a1a433d074') in 0.002793 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 16
+========================================================================
+Received Import Request.
+  Time since last request: 0.000013 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_08_Vo/LoginScene_Edge01_SMBE.png
+  artifactKey: Guid(4c73e3a5fceb51c42a9db4f3d62b78b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_08_Vo/LoginScene_Edge01_SMBE.png using Guid(4c73e3a5fceb51c42a9db4f3d62b78b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'cbe424c84c2711515d855b63c5e6d178') in 0.001525 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000015 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_08_Vo/LoginScene_Ground02_Diffuse.png
+  artifactKey: Guid(2dc049e2b278fcb4fb904e99e0739555) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_08_Vo/LoginScene_Ground02_Diffuse.png using Guid(2dc049e2b278fcb4fb904e99e0739555) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2f4cdf4745b0f63509d7a5ccab8b37cc') in 0.001263 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.222978 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_09_Vo/LoginScene_Bridge01_09_Vo_Voxel.fbx
+  artifactKey: Guid(46594639c35774245b1079d95ad2c31e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_09_Vo/LoginScene_Bridge01_09_Vo_Voxel.fbx using Guid(46594639c35774245b1079d95ad2c31e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f97cae447492c7f35284b8efd508454e') in 0.001674 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 14
+========================================================================
+Received Import Request.
+  Time since last request: 0.000012 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_09_Vo/LoginScene_Ground02_SMBE.png
+  artifactKey: Guid(ae967a51b942d0f43a4bf7296c333b80) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_09_Vo/LoginScene_Ground02_SMBE.png using Guid(ae967a51b942d0f43a4bf7296c333b80) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c03d96761b7eaca20d2a91a4c043f0ef') in 0.001384 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.173249 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_10_Vo/LoginScene_Bridge01_10_Vo_Voxel.fbx
+  artifactKey: Guid(e2d49c05e2e193a408e851eb89acdaaa) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_10_Vo/LoginScene_Bridge01_10_Vo_Voxel.fbx using Guid(e2d49c05e2e193a408e851eb89acdaaa) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c60cc2ca6980c62619a80b53b6288b5b') in 0.001808 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 14
+========================================================================
+Received Import Request.
+  Time since last request: 0.000014 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_10_Vo/LoginScene_Edge01_SMBE.png
+  artifactKey: Guid(106562a0653c08449b6e4aa49336cca2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_10_Vo/LoginScene_Edge01_SMBE.png using Guid(106562a0653c08449b6e4aa49336cca2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '72ddd7d6cc074291b095b9e6693e021b') in 0.001710 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.165915 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_11_Vo/LoginScene_Bridge01_11_Vo_Voxel.fbx
+  artifactKey: Guid(e6e95609c9219b2448885d7d4be66bb3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_11_Vo/LoginScene_Bridge01_11_Vo_Voxel.fbx using Guid(e6e95609c9219b2448885d7d4be66bb3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '784e4a4e9958d6ce10929fc82bbdd1eb') in 0.001801 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 16
+========================================================================
+Received Import Request.
+  Time since last request: 0.000012 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_11_Vo/LoginScene_Edge01_Diffuse.png
+  artifactKey: Guid(b273c984004e83c45abd237d9265d4be) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_11_Vo/LoginScene_Edge01_Diffuse.png using Guid(b273c984004e83c45abd237d9265d4be) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '691182aafa7afd39b2a99aac6aa3822f') in 0.001227 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000013 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_11_Vo/LoginScene_Bridge02_Diffuse.png
+  artifactKey: Guid(05cee461bf303864e95cf46834d37227) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_11_Vo/LoginScene_Bridge02_Diffuse.png using Guid(05cee461bf303864e95cf46834d37227) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fe672fae7fce542a1aec1d0bcb587c64') in 0.001471 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.246134 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_12_Vo/LoginScene_Bridge01_12_Vo_Voxel.fbx
+  artifactKey: Guid(2e0f668f3acbc2848a0c2b6f19224b72) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_12_Vo/LoginScene_Bridge01_12_Vo_Voxel.fbx using Guid(2e0f668f3acbc2848a0c2b6f19224b72) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd9ea3653d9e78a01e899bfa5490e8de6') in 0.002514 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 0.000015 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_12_Vo/LoginScene_Edge01_SMBE.png
+  artifactKey: Guid(ca8c8b2126bf5094ead653d1ef64b4f0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_12_Vo/LoginScene_Edge01_SMBE.png using Guid(ca8c8b2126bf5094ead653d1ef64b4f0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6045f71cac2013993a4a9673efc116ef') in 0.001525 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.237631 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_13_Vo/LoginScene_Bridge01_13_Vo_Voxel.fbx
+  artifactKey: Guid(56fd1677c46660745895139d4dba6077) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_13_Vo/LoginScene_Bridge01_13_Vo_Voxel.fbx using Guid(56fd1677c46660745895139d4dba6077) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aa9f7f8c5b688f04105fb822319f1387') in 0.002121 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_13_Vo/LoginScene_Edge01_Normal.png
+  artifactKey: Guid(8a7ce8f710442c74589c7d963e318097) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_13_Vo/LoginScene_Edge01_Normal.png using Guid(8a7ce8f710442c74589c7d963e318097) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1cda9c185f500a7b680ed1fb44e6b1e7') in 0.001417 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_13_Vo/LoginScene_Ground02_Diffuse.png
+  artifactKey: Guid(736859e73054da8459e759a89394c181) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_13_Vo/LoginScene_Ground02_Diffuse.png using Guid(736859e73054da8459e759a89394c181) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a4ce7ddae9f76ac8b49e09f7d002ed12') in 0.001577 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.257564 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_14_Vo/LoginScene_Bridge01_14_Vo_Voxel.fbx
+  artifactKey: Guid(2ab7ecb964f937449a023d06c411748a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_14_Vo/LoginScene_Bridge01_14_Vo_Voxel.fbx using Guid(2ab7ecb964f937449a023d06c411748a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'eceee1b4ef30d60b549535c26d3df05f') in 0.002034 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 14
+========================================================================
+Received Import Request.
+  Time since last request: 0.000012 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_14_Vo/LoginScene_Edge01_Diffuse.png
+  artifactKey: Guid(259689cb87be0754eb069466a9efa740) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_14_Vo/LoginScene_Edge01_Diffuse.png using Guid(259689cb87be0754eb069466a9efa740) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '65493353c08402be33380d601bcf4a6e') in 0.001244 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.266599 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_15_Vo/LoginScene_Bridge01_15_Vo_Voxel.fbx
+  artifactKey: Guid(82a4a9293b447ae41b2cf911799da75c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_15_Vo/LoginScene_Bridge01_15_Vo_Voxel.fbx using Guid(82a4a9293b447ae41b2cf911799da75c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '777d51a102a6aeaf1221b573fe152c41') in 0.002518 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 14
+========================================================================
+Received Import Request.
+  Time since last request: 0.000032 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_15_Vo/LoginScene_Edge01_Normal.png
+  artifactKey: Guid(86fbabf9b7ef1064c8d3d5962a69d503) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_15_Vo/LoginScene_Edge01_Normal.png using Guid(86fbabf9b7ef1064c8d3d5962a69d503) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '973e98bd7b361ef71a5d1ee1d3dbab4f') in 0.001705 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.296451 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_16_Vo/LoginScene_Bridge01_16_Vo_Voxel.fbx
+  artifactKey: Guid(2c95b10def5892c459cb0e243590f8cd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_16_Vo/LoginScene_Bridge01_16_Vo_Voxel.fbx using Guid(2c95b10def5892c459cb0e243590f8cd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0b198a63bf34067b6234d9a3c1ba118e') in 0.001792 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 0.000011 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_16_Vo/LoginScene_Edge01_Diffuse.png
+  artifactKey: Guid(485825bfcec60584cb7b5e4ecb7b0988) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_16_Vo/LoginScene_Edge01_Diffuse.png using Guid(485825bfcec60584cb7b5e4ecb7b0988) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '92416df377ab04dceb30f1c2e608f1f8') in 0.001254 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.280817 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_17_Vo/LoginScene_Bridge01_17_Vo_Voxel.fbx
+  artifactKey: Guid(5b91b6b600ffc054cb171df1b2b84e7f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_17_Vo/LoginScene_Bridge01_17_Vo_Voxel.fbx using Guid(5b91b6b600ffc054cb171df1b2b84e7f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c2084ac0f1770ca099a54223bf4c9168') in 0.001759 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 0.000015 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_17_Vo/LoginScene_Ground02_Diffuse.png
+  artifactKey: Guid(bf422dd567e2e0b46aaada8d7335eb98) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_17_Vo/LoginScene_Ground02_Diffuse.png using Guid(bf422dd567e2e0b46aaada8d7335eb98) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5292259565bc4734138b3d06c02be87d') in 0.001561 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.314739 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_18_Vo/LoginScene_Bridge01_18_Vo_Voxel.fbx
+  artifactKey: Guid(b672852a3a2eace4b805144fba357d19) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_18_Vo/LoginScene_Bridge01_18_Vo_Voxel.fbx using Guid(b672852a3a2eace4b805144fba357d19) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4a359ecbb033c29dc45a85ec8755d133') in 0.002316 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 0.000012 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_18_Vo/LoginScene_Edge01_SMBE.png
+  artifactKey: Guid(07800209c1a5a3642badeeafb083cbe3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_18_Vo/LoginScene_Edge01_SMBE.png using Guid(07800209c1a5a3642badeeafb083cbe3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'cf2423dca0058eefb391f60a5fbe03d3') in 0.001751 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_18_Vo/LoginScene_Ground02_Normal.png
+  artifactKey: Guid(6afcb1c3944d7924183bdf5bab16ab13) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_18_Vo/LoginScene_Ground02_Normal.png using Guid(6afcb1c3944d7924183bdf5bab16ab13) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aed0ca8c4413379b654adaf7de2dde14') in 0.001270 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.320594 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_19_Vo/LoginScene_Bridge01_19_Vo_Voxel.fbx
+  artifactKey: Guid(fb1f6efd587a30a44ba23535a49cd394) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_19_Vo/LoginScene_Bridge01_19_Vo_Voxel.fbx using Guid(fb1f6efd587a30a44ba23535a49cd394) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1fa0a67651021431de330a34f3801b52') in 0.001997 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 16
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_19_Vo/LoginScene_Edge01_SMBE.png
+  artifactKey: Guid(fd6b633a4d849174f8128a719ac9c221) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_19_Vo/LoginScene_Edge01_SMBE.png using Guid(fd6b633a4d849174f8128a719ac9c221) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fd3691ea0f3ef418fc88108136c36911') in 0.001880 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_19_Vo/LoginScene_Ground02_Diffuse.png
+  artifactKey: Guid(a3e34b3b28645a447b3a3a11e78fe3dd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_19_Vo/LoginScene_Ground02_Diffuse.png using Guid(a3e34b3b28645a447b3a3a11e78fe3dd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'de5100c34a6d8f172fd2cc6858386236') in 0.001442 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.276954 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_20_Vo/LoginScene_Bridge01_20_Vo_Voxel.fbx
+  artifactKey: Guid(f9b5379796ae8714883e8f686799db1b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_20_Vo/LoginScene_Bridge01_20_Vo_Voxel.fbx using Guid(f9b5379796ae8714883e8f686799db1b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '27137a1d8a1c8260b836566b8855bf4c') in 0.002531 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 16
+========================================================================
+Received Import Request.
+  Time since last request: 0.000013 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_20_Vo/LoginScene_Edge01_Diffuse.png
+  artifactKey: Guid(3122a5ecca3f2ee4782277f36738eb79) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_20_Vo/LoginScene_Edge01_Diffuse.png using Guid(3122a5ecca3f2ee4782277f36738eb79) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a94ae7d3d6a8ef62a547c7e323cf0abf') in 0.002197 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_20_Vo/LoginScene_Bridge02_SMBE.png
+  artifactKey: Guid(7e40dc53d1b171f499854f7f04880430) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_20_Vo/LoginScene_Bridge02_SMBE.png using Guid(7e40dc53d1b171f499854f7f04880430) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '03dbf96e32d2b0fe6a85afbabc17135c') in 0.001172 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.338643 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_21_Vo/LoginScene_Bridge01_21_Vo_Voxel.fbx
+  artifactKey: Guid(e9c96a32d47bed04cad69491cceadd3c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_21_Vo/LoginScene_Bridge01_21_Vo_Voxel.fbx using Guid(e9c96a32d47bed04cad69491cceadd3c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd4bd13be9f3a3ebe91dd91f9095dfccc') in 0.002025 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 16
+========================================================================
+Received Import Request.
+  Time since last request: 0.000013 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_21_Vo/LoginScene_Edge01_Normal.png
+  artifactKey: Guid(4d005a12f88a1c74392ad71aaa8a5594) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_21_Vo/LoginScene_Edge01_Normal.png using Guid(4d005a12f88a1c74392ad71aaa8a5594) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0257877cb90d942f4bea1a66a0cc14ef') in 0.001324 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_21_Vo/LoginScene_Bridge02_Normal.png
+  artifactKey: Guid(567b9464d62ed3e4abca717179160df7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_21_Vo/LoginScene_Bridge02_Normal.png using Guid(567b9464d62ed3e4abca717179160df7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '33ba208d7a0b6891f3f6ec948cd3ed49') in 0.001920 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.297015 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_22_Vo/LoginScene_Bridge01_22_Vo_Voxel.fbx
+  artifactKey: Guid(897b8f3c95ab5324a8547c52d2281f78) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_22_Vo/LoginScene_Bridge01_22_Vo_Voxel.fbx using Guid(897b8f3c95ab5324a8547c52d2281f78) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '25adbd3d607a0a179bb377aba6e4eb56') in 0.002617 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_22_Vo/LoginScene_Ground02_SMBE.png
+  artifactKey: Guid(e6711c2acec260f4b88da9e673f95b61) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_22_Vo/LoginScene_Ground02_SMBE.png using Guid(e6711c2acec260f4b88da9e673f95b61) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '37dde4d489046861ea4d2b5717e4e348') in 0.001390 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.338489 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_23_Vo/LoginScene_Bridge01_23_Vo_Voxel.fbx
+  artifactKey: Guid(3cae74b8f69afbe45bddaf7d13bf443d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_23_Vo/LoginScene_Bridge01_23_Vo_Voxel.fbx using Guid(3cae74b8f69afbe45bddaf7d13bf443d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e5e7f78d1ec2bd08bd6f951a74806e9f') in 0.002077 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_23_Vo/LoginScene_Edge01_SMBE.png
+  artifactKey: Guid(9ef1ed735953ea140b357b1cc983f0fc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_23_Vo/LoginScene_Edge01_SMBE.png using Guid(9ef1ed735953ea140b357b1cc983f0fc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fc1ec59bad3b535456790f426ba8e312') in 0.001400 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_23_Vo/LoginScene_Ground02_Normal.png
+  artifactKey: Guid(f8ffa0ba3b77d934b95d403cdb527923) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginScene_Bridge01_23_Vo/LoginScene_Ground02_Normal.png using Guid(f8ffa0ba3b77d934b95d403cdb527923) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4429b5628b8fb23589c4d09d921e1b89') in 0.001507 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 46.246203 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginSceneDoor
+  artifactKey: Guid(028fea4c7ea733a4a87723236ba0eb91) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginSceneDoor using Guid(028fea4c7ea733a4a87723236ba0eb91) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '939d2e83a654ae461977059adcd187bb') in 0.000607 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 0.187660 seconds.
+  path: Assets/Resources/ModelOriginal/LoginSceneBridge/LoginSceneDoor/Eff_Barbara_IdolHeal_01_01.png
+  artifactKey: Guid(8ddbfb5e9e1ccce4994262880da250b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/ModelOriginal/LoginSceneBridge/LoginSceneDoor/Eff_Barbara_IdolHeal_01_01.png using Guid(8ddbfb5e9e1ccce4994262880da250b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6096856c1a357919786f2ec7753be09a') in 0.001378 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+Editor requested this worker to shutdown with reason: Scaling down because of idle timeout
+TcpMessagingSession - receive error: operation aborted. errorcode: 995, details: 스레드 종료 또는 응용 프로그램 요청 때문에 I/O 작업이 취소되었습니다.
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0
