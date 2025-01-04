@@ -5,6 +5,9 @@ using UnityEngine;
 public class LoginSceneConstructMover : MonoBehaviour
 {
     [SerializeField] private Vector3 _speed = Vector3.zero;
+    [SerializeField] private float _deAccelTime = 2.0f;
+    private float _deAccel = 0.0f;
+
     [SerializeField] int _construtcPrefabCount = 5;
 
     [SerializeField] GameObject _construtcPrefab = null;
@@ -14,6 +17,29 @@ public class LoginSceneConstructMover : MonoBehaviour
 
     private List<GameObject> _prefabCreated = new List<GameObject>();
     private Vector3 _lastPosition = Vector3.zero;
+
+    private IEnumerator StopMovingCoroutine()
+    {
+        _deAccel = _speed.z / _deAccelTime;
+        
+        while (true) 
+        {
+            _speed.z -= _deAccel * Time.deltaTime;
+            if (_speed.z >= 0)
+            {
+                _speed.z = 0.0f;
+                _isMoving = false;
+                break;
+            }
+            yield return null;
+        }
+    }
+
+
+    public void StopMoving()
+    {
+        StartCoroutine(StopMovingCoroutine());
+    }
 
     private void Awake()
     {
