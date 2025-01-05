@@ -103,9 +103,12 @@ public class CustomKeyManager : SubManager
     {
         if (_instance != null && _instance != this)
         {
-            Destroy(_instance.gameObject);
+            Destroy(this.gameObject);
+            return;
         }
+
         _instance = this;
+
         DontDestroyOnLoad(gameObject);
     }
 

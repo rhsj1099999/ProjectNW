@@ -7,4 +7,5 @@ public class SubManager : MonoBehaviour
     public virtual void SubManagerUpdate() {}
     public virtual void SubManagerFixedUpdate() {}
     public virtual void SubManagerAwake() { }
+    public virtual void SubManagerStart() { }
 }

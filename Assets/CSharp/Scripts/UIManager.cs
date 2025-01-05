@@ -11,6 +11,7 @@ using UnityEngine.UI;
 public class UIManager : SubManager
 {
     [SerializeField] private GameObject _mainCanvas = null;
+    public GameObject GetMainCanvasObject(){return _mainCanvas;}
     [SerializeField] private EventSystem _eventSystem = null;
     [SerializeField] private int _consumeInputUICount = 0;
 
@@ -36,11 +37,10 @@ public class UIManager : SubManager
         if (_instance != null && _instance != this)
         {
             Destroy(this.gameObject);
+            return;
         }
-        else
-        {
-            _instance = this;
-        }
+
+        _instance = this;
 
         if (_mainCanvas == null)
         {

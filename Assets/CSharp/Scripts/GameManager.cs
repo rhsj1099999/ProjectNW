@@ -8,8 +8,6 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private List<GameObject> _FIRSTINTANTIATE = new List<GameObject>();
 
-
-
     public GameManager Instance 
     {
         get 
@@ -30,13 +28,13 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        _instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        if (_instance != this)
+        if (_instance != null && _instance != this)
         {
             Destroy(this.gameObject);
+            return;
         }
+
+        DontDestroyOnLoad(gameObject);
 
         foreach (var subManager in _subManagers)
         {
@@ -45,10 +43,19 @@ public class GameManager : MonoBehaviour
 
         foreach(var FRAMEDROPOBJECT in _FIRSTINTANTIATE)
         {
-            GameObject newGameObject = Instantiate( FRAMEDROPOBJECT);
+            GameObject newGameObject = Instantiate(FRAMEDROPOBJECT);
             Destroy(newGameObject);
         }
     }
+
+    private void Start()
+    {
+        foreach (var subManager in _subManagers)
+        {
+            subManager.SubManagerStart();
+        }
+    }
+
     private void FixedUpdate()
     {
         foreach (var subManager in _subManagers)
@@ -56,6 +63,7 @@ public class GameManager : MonoBehaviour
             subManager.SubManagerFixedUpdate();
         }
     }
+
     private void Update()
     {
         foreach (var subManager in _subManagers)

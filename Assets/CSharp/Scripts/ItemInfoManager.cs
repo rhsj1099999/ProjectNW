@@ -118,6 +118,7 @@ public class ItemInfoManager : SubManager
         if (_instance != null && _instance != this)
         {
             Destroy(this.gameObject);
+            return;
         }
 
         _instance = this;

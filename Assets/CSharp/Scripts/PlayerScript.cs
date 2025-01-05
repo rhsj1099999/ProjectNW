@@ -87,6 +87,16 @@ public class PlayerScript : CharacterScript
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.H) == true)
+        {
+            SceneManagerWrapper.Instance.ChangeSceneDirectly("StageScene_2");
+        }
+
+        if (Input.GetKeyDown(KeyCode.K) == true)
+        {
+            SceneManagerWrapper.Instance.ChangeSceneDirectly("StageScene_1");
+        }
+
         //TryLockOn
         if (GCST<AimScript2>() != null && Input.GetKeyDown(KeyCode.Mouse2) == true)
         {

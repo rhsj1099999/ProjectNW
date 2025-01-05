@@ -108,7 +108,7 @@ public class CharacterScript : MonoBehaviour, IHitable
 
         if (target == null)
         {
-            Debug.Assert(false, "없는 컴포넌트를 찾으려 하고있다");
+            Debug.Assert(false, "없는 컴포넌트를 찾으려 하고있다" + target.name);
             Debug.Break();
         }
 

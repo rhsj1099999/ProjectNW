@@ -29,14 +29,13 @@ public class RenderManager : SubManager
 
     public override void SubManagerAwake()
     {
-        if (_instance != null && _instance != this)
+        if (_instance != this && _instance != null)
         {
             Destroy(this.gameObject);
+            return;
         }
-        else
-        {
-            _instance = this;
-        }
+
+        _instance = this;
     }
 
 
