@@ -1,48 +1,127 @@
 using System.Collections;
-using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+
+public class CameraDraggingDesc
+{
+    public Vector3 _targetPosition = Vector3.zero;
+    public float _accel = 0.0f;
+    public float _currVelocity = 0.0f;
+    public float _targetTime = 0.0f;
+    public float _timeACC = 0.0f;
+    public float _maxVelocityPlus = -1.0f;
+    public float _maxVelocityMinus = 1.0f;
+}
 
 public class SceneOpenDoorScript : MonoBehaviour
 {
     [SerializeField] private GameObject _effectPrefabObject = null;
     [SerializeField] private GameObject _cameraAttachPosition_DoorDir = null;
     [SerializeField] private GameObject _cameraAttachPosition_OppositeDir = null;
-
     [SerializeField] private RenderTexture _openDoorRenderTexture = null;
+    [SerializeField] private string _targetStage = "None";
+
+    public void SetTargetState(string stageName) { _targetStage = stageName; }
+
+    private bool _objectActivated = false;
 
     private Animator _ownerAnimator = null;
 
+    private Coroutine _interactionCoroutine = null;
+
+    
+
     private void Awake()
     {
+        if (_targetStage == "None")
+        {
+            Debug.Assert(false, "타겟 스테이지가 설정돼있지 않습니다");
+            Debug.Break();
+        }
+
+        if (_openDoorRenderTexture == null)
+        {
+            Debug.Assert(false, "렌더텍스쳐가 없다");
+            Debug.Break();
+        }
+
         _ownerAnimator = GetComponent<Animator>();
+
+        AnimatorStateInfo stateInfo = _ownerAnimator.GetCurrentAnimatorStateInfo(0);
+
+        StartCoroutine(ActivateCoroutine(stateInfo.length));
+    }
+
+    private IEnumerator ActivateCoroutine(float targetTime)
+    {
+        float targetTimeAcc = 0.0f;
+        
+        while (true) 
+        {
+            targetTimeAcc += Time.deltaTime;
+
+            if (targetTimeAcc >= targetTime)
+            {
+                _objectActivated = true;
+                break;
+            }
+
+            yield return null;
+        }
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H) == true)
+        CheckOpenDoor();
+    }
+
+    private IEnumerator StartOpenDoorProcedural()
+    {
+        yield return StartCoroutine(OpenDoor());
+
+        CameraDragging();
+
+        CurtainCallControl_SimpleColor onDesc = new CurtainCallControl_SimpleColor();
+        onDesc._target = false;
+        onDesc._runningTime = 2.0f;
+        onDesc._color = new Vector3(1.0f, 1.0f, 1.0f);
+        CurtainCallControl_SimpleColor offDesc = new CurtainCallControl_SimpleColor();
+        offDesc._target = true;
+        offDesc._runningTime = 2.0f;
+        offDesc._color = new Vector3(1.0f, 1.0f, 1.0f);
+
+        SceneManagerWrapper.Instance.ChangeScene
+        (
+            _targetStage,
+            CurtainCallType.SimpleColorFadeInOut,
+            onDesc,
+            CurtainCallType.SimpleColorFadeInOut,
+            offDesc
+        );
+    }
+
+
+    private void CheckOpenDoor()
+    {
+        if (_objectActivated == false)
         {
-            OpenDoor();
-
-            //CameraDragging();
-
-            //CurtainCall();
-
-            SceneManagerWrapper.Instance.ChangeSceneDirectly("StageScene_1");
+            return;
         }
+
+        if (_interactionCoroutine != null)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.H) == false)
+        {
+            return;
+        }
+
+        _interactionCoroutine = StartCoroutine(StartOpenDoorProcedural());
     }
 
     //카메라를 끌어오는 함수
-    public class CameraDraggingDesc
-    {
-        public Vector3 _targetPosition = Vector3.zero;
-        public float _accel = 0.0f;
-        public float _currVelocity = 0.0f;
-        public float _targetTime = 0.0f;
-        public float _timeACC = 0.0f;
-        public float _maxVelocityPlus = -1.0f;
-        public float _maxVelocityMinus = 1.0f;
-    }
-
     public void CameraDragging()
     {
         CameraDraggingDesc newDesc = new CameraDraggingDesc();
@@ -108,30 +187,10 @@ public class SceneOpenDoorScript : MonoBehaviour
     }
 
 
-    //씬 전환을 위한 커튼콜 함수
-    //커튼콜을 직접 호출하면 안된다.
-    //로딩을 호출했어야 한다.
-    public void CurtainCall()
-    {
-        CurtainCallControl_SimpleColor desc = new CurtainCallControl_SimpleColor();
-
-        desc._target = false;
-        desc._runningTime = 2.0f;
-        desc._color = new Vector3(1.0f, 1.0f, 1.0f);
-
-        SceneManagerWrapper.Instance.CurtainCall(CurtainCallType.SimpleColorFadeInOut, desc);
-    }
-
-
 
     //문을 여는 함수
-    public void OpenDoor()
+    public IEnumerator OpenDoor()
     {
-        if (_openDoorRenderTexture == null)
-        {
-            return;
-        }
-
         Camera mainCamera = Camera.main;
         GameObject mainCameraObject = mainCamera.gameObject;
         GameObject subCameraObject = new GameObject("SubCamera_OpenDoorLayer");
@@ -144,9 +203,59 @@ public class SceneOpenDoorScript : MonoBehaviour
         subCamera.backgroundColor = Color.black;
         subCamera.targetTexture = _openDoorRenderTexture;
         subCamera.cullingMask = LayerMask.GetMask("OpenDoorLayer");
+        
+        Instantiate(_effectPrefabObject, transform);
 
-        GameObject effect = Instantiate(_effectPrefabObject, transform);
+        //애니메이션 반영까지 최소 한프레임을 기다린다
+        {
+            _ownerAnimator.SetTrigger("Triggered");
+            yield return new WaitForNextFrameUnit();
+        }
 
-        _ownerAnimator.SetTrigger("Triggered");
+        float maxWaitTime = 5.0f;
+        float maxWaitTimeAcc = 0.0f;
+        bool animationTransitionFailed = false;
+
+        while (true)
+        {
+            if (_ownerAnimator.IsInTransition(0) == false)
+            {
+                break;
+            }
+
+            maxWaitTimeAcc += Time.deltaTime;
+
+            if (maxWaitTimeAcc > maxWaitTime)
+            {
+                animationTransitionFailed = true;
+                Debug.Assert(false, "Transition Waiting이 실패했습니다");
+                Debug.Break();
+                break;
+            }
+
+            yield return null;
+        }
+
+
+        if (animationTransitionFailed == true) 
+        {
+            yield break;
+        }
+
+        AnimatorStateInfo stateInfo = _ownerAnimator.GetCurrentAnimatorStateInfo(0); //Open Node 반영이 됐을꺼다
+        float time = stateInfo.length;
+        float timeACC = 0.0f;
+
+        while (true)
+        {
+            timeACC += Time.deltaTime;
+
+            if (timeACC >= time)
+            {
+                break;
+            }
+
+            yield return null;
+        }
     }
 }

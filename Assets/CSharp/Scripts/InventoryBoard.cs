@@ -26,22 +26,22 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
     public void OnValidate()
     {
-        EditorApplication.delayCall += () =>
-        {
-            if (this == null) // 오브젝트가 유효한지 확인
-            {
-                return;
-            }
+        //EditorApplication.delayCall += () =>
+        //{
+        //    if (this == null) // 오브젝트가 유효한지 확인
+        //    {
+        //        return;
+        //    }
 
-            RectTransform rectTransform = GetComponent<RectTransform>();
+        //    RectTransform rectTransform = GetComponent<RectTransform>();
 
-            if (rectTransform == null)
-            {
-                return;
-            }
+        //    if (rectTransform == null)
+        //    {
+        //        return;
+        //    }
 
-            rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
-        };
+        //    rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
+        //};
     }
 
     private void Awake()

@@ -5,7 +5,10 @@ using UnityEngine;
 
 public abstract class GameCharacterSubScript : MonoBehaviour
 {
-    //Character Script가 필요로 하는 서브 컴포넌트들.
+    /*---------------------------------------------------
+    |NOTI| Character Script가 필요로 하는 서브 컴포넌트들.
+    ---------------------------------------------------*/
+
     protected Type _myType = null;
     protected CharacterScript _owner = null;
 

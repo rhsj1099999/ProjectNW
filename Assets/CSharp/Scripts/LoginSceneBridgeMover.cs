@@ -20,6 +20,7 @@ public class LoginSceneBridgeMover : MonoBehaviour
     private Vector3 _myAnchoredPosition = Vector3.zero;
     private float _myAnchoredHeightLimit = 0.0f;
     private float _deAccel = 0.0f;
+    private Coroutine _stopMovingCoroutine = null;
 
     [SerializeField] private GameObject _doorSpawnPosition = null;
     [SerializeField] private GameObject _doorPrefab = null;
@@ -67,6 +68,7 @@ public class LoginSceneBridgeMover : MonoBehaviour
                 _isMoving = false;
 
                 GameObject door = Instantiate(_doorPrefab, _doorSpawnPosition.transform);
+                door.GetComponent<SceneOpenDoorScript>().SetTargetState("StageScene_1");
                 _isMoving = false;
                 break;
             }
@@ -77,12 +79,13 @@ public class LoginSceneBridgeMover : MonoBehaviour
 
     public void StopMoving()
     {
-        StartCoroutine(StopMovingCoroutine());
+        _stopMovingCoroutine = StartCoroutine(StopMovingCoroutine());
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.J) == true)
+        if (Input.GetKeyDown(KeyCode.J) == true &&
+            _stopMovingCoroutine == null)
         {
             StopMoving();
             _construct.StopMoving();

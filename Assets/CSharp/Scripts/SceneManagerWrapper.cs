@@ -48,17 +48,22 @@ public class SceneManagerWrapper : SubManager
 
     public override void SubManagerUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1) == true)
+        if (Input.GetKeyDown(KeyCode.F1) == true)
         {
             SceneManagerWrapper.Instance.ChangeSceneDirectly("StageScene_1");
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2) == true)
+        if (Input.GetKeyDown(KeyCode.F2) == true)
         {
             SceneManagerWrapper.Instance.ChangeSceneDirectly("StageScene_2");
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha0) == true)
+        if (Input.GetKeyDown(KeyCode.F3) == true)
+        {
+            SceneManagerWrapper.Instance.ChangeSceneDirectly("StageScene_0_Debugging");
+        }
+
+        if (Input.GetKeyDown(KeyCode.F4) == true)
         {
             SceneManagerWrapper.Instance.ChangeSceneDirectly("StageScene_0");
         }
@@ -99,7 +104,7 @@ public class SceneManagerWrapper : SubManager
         }
     }
 
-    public void CurtainCall(CurtainCallType type, CurtainCallControlDesc desc)
+    public Coroutine CurtainCall(CurtainCallType type, CurtainCallControlDesc desc)
     {
         GameObject mainCanvasObject = UIManager.Instance.GetMainCanvasObject();
 
@@ -109,7 +114,7 @@ public class SceneManagerWrapper : SubManager
 
         CurtainCallBase component = newCurtainCall.GetComponent<CurtainCallBase>();
 
-        component.Active(desc);
+        return component.Active(desc);
     }
 
 
@@ -119,10 +124,32 @@ public class SceneManagerWrapper : SubManager
     }
 
 
-    public void ChangeScene(string sceneName, CurtainCallType type, CurtainCallControlDesc desc)
+    public Coroutine ChangeScene(string sceneName, CurtainCallType typeOn, CurtainCallControlDesc descOn, CurtainCallType typeOff, CurtainCallControlDesc descOff)
     {
-        SceneManager.LoadScene(sceneName);
+        return StartCoroutine(ChangeSceneCoroutine(sceneName, typeOn, descOn, typeOff, descOff));
     }
+
+    private IEnumerator ChangeSceneCoroutine(string sceneName, CurtainCallType typeOn, CurtainCallControlDesc descOn, CurtainCallType typeOff, CurtainCallControlDesc descOff)
+    {
+        if (descOn != null)
+        {
+            yield return CurtainCall(typeOn, descOn);
+        }
+
+        //---------------------------------
+        SceneManager.LoadScene(sceneName);
+        //---------------------------------
+
+        if (descOff != null)
+        {
+            yield return CurtainCall(typeOff, descOff);
+        }
+
+        yield return null;
+    }
+
+
+
 
 
     private void GameStartWhiteScene()
@@ -148,10 +175,5 @@ public class SceneManagerWrapper : SubManager
     public GameObject GetCurtainCallPrefab(CurtainCallType type)
     {
         return _curtainCallPrefabs[type];
-    }
-
-    public void CurtainCall(CurtainCallDesc desc)
-    {
-
     }
 }

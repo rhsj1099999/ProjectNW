@@ -26,10 +26,11 @@ public abstract class CurtainCallBase : MonoBehaviour
     protected Coroutine _runningCoroutine = null;
     protected float _runningTimeACC = 0.0f;
 
-    public void Active(CurtainCallControlDesc desc)
+    public Coroutine Active(CurtainCallControlDesc desc)
     {
         ActiveInitial(desc);
         _runningCoroutine = StartCoroutine(YourOverrideActive(desc));
+        return _runningCoroutine;
     }
 
     public CurtainCallType GetCurtainCallType()

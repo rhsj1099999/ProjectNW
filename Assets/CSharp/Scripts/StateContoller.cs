@@ -7,7 +7,7 @@ using static State;
 //using static StateNodeDesc;
 using static UnityEngine.Rendering.DebugUI;
 using static StateGraphAsset;
-using static AnimationClipEditor;
+//using static AnimationClipEditor;
 using System.Security.Policy;
 using Unity.Mathematics;
 using static MyUtil;
@@ -449,10 +449,10 @@ public class StateContoller : GameCharacterSubScript
     {
         StatedWillBeChanged();
 
-        if (gameObject.name != "Zombie")
-        {
-            Debug.Log("State Changed : " + nextState.name);
-        }
+        //if (gameObject.name != "Zombie")
+        //{
+        //    Debug.Log("State Changed : " + nextState.name);
+        //}
 
         if (_currState != null)
         {
@@ -752,8 +752,10 @@ public class StateContoller : GameCharacterSubScript
                     {
                         Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
                         characterInputDir = _owner.GCST<CharacterMoveScript2>().GetDirectionConvertedByCamera(characterInputDir);
+
                         _owner.GCST<CharacterMoveScript2>().CharacterRotate(characterInputDir, 1.0f);
                         _owner.GCST<CharacterMoveScript2>().CharacterMove(characterInputDir, 1.0f);
+
                     }
                     break;
 
@@ -791,7 +793,7 @@ public class StateContoller : GameCharacterSubScript
                             :_currState._myState._stateAnimationClip;
 
 
-                        AnimationHipCurve animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
+                        AnimationHipCurveAsset animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
 
                         Vector3 currentUnityLocalHip = new Vector3
                         (
@@ -1006,7 +1008,7 @@ public class StateContoller : GameCharacterSubScript
                             : _currState._myState._stateAnimationClip;
 
 
-                        AnimationHipCurve animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
+                        AnimationHipCurveAsset animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
 
                         Vector3 currentUnityLocalHip = new Vector3
                         (
@@ -1097,7 +1099,7 @@ public class StateContoller : GameCharacterSubScript
                                 : _currState._myState._stateAnimationClip;
 
 
-                            AnimationHipCurve animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
+                            AnimationHipCurveAsset animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
 
                             Vector3 currentUnityLocalHip = new Vector3
                             (
@@ -1378,6 +1380,11 @@ public class StateContoller : GameCharacterSubScript
                     {
                         ret = true;
                     }
+
+                    //if (_owner.GCST<InAirCheckColliderScript>().GetInAir() == true)
+                    //{
+                    //    ret = true;
+                    //}
                 }
                 break;
 

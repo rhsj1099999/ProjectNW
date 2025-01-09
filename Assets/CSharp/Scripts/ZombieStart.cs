@@ -3,14 +3,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.AI.Navigation;
-using TMPro;
-using UnityEngine.EventSystems;
-using static UnityEditor.Progress;
 using System.Collections;
-using Unity.VisualScripting;
-using UnityEngine.UIElements;
-using UnityEngine.XR;
-using System.Runtime.InteropServices;
 
 public class ZombieStart : MonoBehaviour, IHitable
 {

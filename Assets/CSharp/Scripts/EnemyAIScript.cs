@@ -1,11 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using static StateContoller;
 using static StateGraphAsset;
-using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class EnemyAIScript : GameCharacterSubScript
 {

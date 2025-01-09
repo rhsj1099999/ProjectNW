@@ -1,12 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using static State;
-using static StateGraphAsset;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public enum FrameCheckType
 {
@@ -64,44 +59,6 @@ public class FrameData
 }
 
 
-public class AnimationHipCurve
-{
-    public AnimationHipCurve(AnimationClip clip)
-    {
-        Debug.Assert(clip != null, "clip이 null입니다");
-
-        //const string _unityName_HipBone = "Hips";
-        const string _unityName_HipBoneLocalPositionX = "RootT.x";
-        const string _unityName_HipBoneLocalPositionY = "RootT.y";
-        const string _unityName_HipBoneLocalPositionZ = "RootT.z";
-
-        EditorCurveBinding[] bindings = AnimationUtility.GetCurveBindings(clip);
-
-        bool curveXFind = false, curveYFind = false, curveZFind = false;
-
-        foreach (var binding in bindings)
-        {
-            if (curveXFind == true && curveYFind == true && curveZFind == true)
-            { break; } //다 찾았습니다.
-
-            if (binding.propertyName == _unityName_HipBoneLocalPositionX)
-            { _animationHipCurveX = AnimationUtility.GetEditorCurve(clip, binding); curveXFind = true; }
-
-            if (binding.propertyName == _unityName_HipBoneLocalPositionY)
-            { _animationHipCurveY = AnimationUtility.GetEditorCurve(clip, binding); curveYFind = true; }
-
-            if (binding.propertyName == _unityName_HipBoneLocalPositionZ)
-            { _animationHipCurveZ = AnimationUtility.GetEditorCurve(clip, binding); curveZFind = true; }
-        }
-
-        Debug.Assert((curveXFind == true && curveYFind == true && curveZFind == true), "커브가 존재하지 않습니다");
-    }
-    public AnimationCurve _animationHipCurveX = null;
-    public AnimationCurve _animationHipCurveY = null;
-    public AnimationCurve _animationHipCurveZ = null;
-}
-
-
 public class ResourceDataManager : SubManager
 {
     static private ResourceDataManager _instance;
@@ -131,6 +88,7 @@ public class ResourceDataManager : SubManager
 
         _instance = this;
 
+        ReadyAnimationHipCurve();
         ReadyAnimationFrameData();
         ReadyStateData();
         ReadyZeroFrameAnimations();
@@ -140,23 +98,86 @@ public class ResourceDataManager : SubManager
     /*-----------------------------------
     Data Section _ Hip Curve
     -----------------------------------*/
-    private Dictionary<AnimationClip, AnimationHipCurve> _animationHipData = new Dictionary<AnimationClip, AnimationHipCurve>();
+
+    private Dictionary<AnimationClip, AnimationHipCurveAsset> _animationHipData = new Dictionary<AnimationClip, AnimationHipCurveAsset>();
+    public List<AnimationHipCurveAsset> _animationHipCurveList = new List<AnimationHipCurveAsset>();
+
+    private void ReadyAnimationHipCurve()
+    {
+        foreach (AnimationHipCurveAsset item in _animationHipCurveList)
+        {
+            if (_animationHipData.ContainsKey(item._clip) == true)
+            {
+                Debug.Log("해당 데이터가 이미 있다" + item._clip.name);
+            }
+            _animationHipData.Add(item._clip, item);
+        }
+    }
 
     public void AddHipCurve(AnimationClip clip)
     {
+        AnimationHipCurveAsset newAsset = ScriptableObject.CreateInstance<AnimationHipCurveAsset>();
+#if UNITY_EDITOR
+
         if (_animationHipData.ContainsKey(clip) == true)
         {
-            //Debug.Log("Curve가 이미 있다");
             return;
         }
 
-        _animationHipData.Add(clip, new AnimationHipCurve(clip));
+        AllocateAnimationHipCurve(clip, newAsset);
+        
+        string filename = clip.name;
+        string assetPath = "Assets/CSharp/ScriptableObjects/AnimationHipCurve/Created/" + filename + ".asset";
+
+        if (AssetDatabase.LoadAssetAtPath<AnimationHipCurveAsset>(assetPath) != null)
+        {
+            Debug.Log("이미있습니다. 건너뜁니다" + clip.name);
+            return;
+        }
+
+        AssetDatabase.CreateAsset(newAsset, assetPath);
+        AssetDatabase.SaveAssets();
+#endif
     }
 
-    public AnimationHipCurve GetHipCurve(AnimationClip clip)
+#if UNITY_EDITOR
+    public void AllocateAnimationHipCurve(AnimationClip clip, AnimationHipCurveAsset asset)
+    {
+        Debug.Assert(clip != null, "clip이 null입니다");
+        asset._clip = clip;
+        const string _unityName_HipBoneLocalPositionX = "RootT.x";
+        const string _unityName_HipBoneLocalPositionY = "RootT.y";
+        const string _unityName_HipBoneLocalPositionZ = "RootT.z";
+
+        EditorCurveBinding[] bindings = AnimationUtility.GetCurveBindings(clip);
+
+        bool curveXFind = false, curveYFind = false, curveZFind = false;
+
+        foreach (var binding in bindings)
+        {
+            if (curveXFind == true && curveYFind == true && curveZFind == true)
+            { break; } //다 찾았습니다.
+
+            if (binding.propertyName == _unityName_HipBoneLocalPositionX)
+            { asset._animationHipCurveX = AnimationUtility.GetEditorCurve(clip, binding); curveXFind = true; }
+
+            if (binding.propertyName == _unityName_HipBoneLocalPositionY)
+            { asset._animationHipCurveY = AnimationUtility.GetEditorCurve(clip, binding); curveYFind = true; }
+
+            if (binding.propertyName == _unityName_HipBoneLocalPositionZ)
+            { asset._animationHipCurveZ = AnimationUtility.GetEditorCurve(clip, binding); curveZFind = true; }
+        }
+
+        Debug.Assert((curveXFind == true && curveYFind == true && curveZFind == true), "커브가 존재하지 않습니다");
+    }
+#endif
+
+    public AnimationHipCurveAsset GetHipCurve(AnimationClip clip)
     {
         if (_animationHipData.ContainsKey(clip) == false)
         {
+            Debug.Assert(false, "찾으려는 애니메이션이 없습니다" + clip.name);
+            Debug.Break();
             return null;
         }
 

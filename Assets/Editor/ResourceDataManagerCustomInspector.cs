@@ -16,6 +16,11 @@ public class ResourceDataManagerCustomInspector : Editor
         {
             LoadAllScriptableObjects(manager);
         }
+
+        if (GUILayout.Button("Load AnimationHipCurveData"))
+        {
+            LoadAllAnimationHipCurveAsset(manager);
+        }
     }
 
     private void LoadAllScriptableObjects(ResourceDataManager manager)
@@ -34,10 +39,26 @@ public class ResourceDataManagerCustomInspector : Editor
             }
         }
 
-        // Manager의 리스트에 등록
         manager._stateGraphAssets = foundObjects;
+    }
 
-        //Debug.Log($"Found and loaded {foundObjects.Count} ScriptableObjects of type A.");
-        //EditorUtility.SetDirty(manager); // 변경 사항 저장
+
+
+    private void LoadAllAnimationHipCurveAsset(ResourceDataManager manager)
+    {
+        // 프로젝트에서 모든 A ScriptableObject 검색
+        string[] guids = AssetDatabase.FindAssets("t:AnimationHipCurveAsset");
+        List<AnimationHipCurveAsset> foundObjects = new List<AnimationHipCurveAsset>();
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            AnimationHipCurveAsset asset = AssetDatabase.LoadAssetAtPath<AnimationHipCurveAsset>(path);
+            if (asset != null)
+            {
+                manager._animationHipCurveList.Add(asset);
+            }
+        }
+
     }
 }

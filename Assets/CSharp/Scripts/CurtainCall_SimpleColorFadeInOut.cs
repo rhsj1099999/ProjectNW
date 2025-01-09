@@ -85,10 +85,17 @@ public class CurtainCall_SimpleColorFadeInOut : CurtainCallBase
             {
                 _runningTimeACC = 0.0f;
                 _isOn = desc._target;
+                StartCoroutine(DestroyCallCoroutine());
                 break;
             }
 
             yield return null;
         }
+    }
+
+    private IEnumerator DestroyCallCoroutine()
+    {
+        yield return new WaitForEndOfFrame();
+        Destroy(this.gameObject);
     }
 }

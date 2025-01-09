@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 using static AnimationAttackFrameAsset;
 using static StateGraphAsset;
 using static StatScript;
@@ -95,9 +96,21 @@ public class CharacterScript : MonoBehaviour, IHitable
 
 
 
-    //대표 컴포넌트
+    //대표 컴포넌트들
     public List<GameCharacterSubScript> _components = new List<GameCharacterSubScript>();
     private Dictionary<Type, Component> _mySubScripts = new Dictionary<Type, Component>();
+
+
+
+    //디버깅용
+    class DebuggingMeshWrapper
+    {
+        public GameObject _created = null;
+    }
+    [SerializeField] private GameObject _debuggingMesh = null;
+    private LinkedList<GameObject> _created = new LinkedList<GameObject>();
+
+
 
 
     public T GetCharacterSubcomponent<T>() where T : Component
@@ -158,22 +171,22 @@ public class CharacterScript : MonoBehaviour, IHitable
 
     protected virtual void Awake()
     {
-        CharacterController characterController = GetComponent<CharacterController>();
-        Debug.Assert(characterController != null, "CharacterController 컴포넌트가 없습니다");
-        characterController.detectCollisions = false;
-        AddCharacterSubComponent(characterController);
+        //CharacterController characterController = GetComponent<CharacterController>();
+        //Debug.Assert(characterController != null, "CharacterController 컴포넌트가 없습니다");
+        //characterController.detectCollisions = false;
+        //AddCharacterSubComponent(characterController);
 
-        _characterHeart = new GameObject("CharacterHeart");
-        Vector3 myPosition = transform.position;
-        myPosition.y += characterController.height / 1.75f;
-        _characterHeart.transform.position = myPosition;
-        _characterHeart.transform.SetParent(transform);
-        _characterHeart.layer = LayerMask.NameToLayer("CharacterHeart");
-        SphereCollider heartCollider = _characterHeart.AddComponent<SphereCollider>();
-        heartCollider.radius = 0.1f;
-        heartCollider.includeLayers = 0;
-        heartCollider.excludeLayers = ~0;
-        heartCollider.isTrigger = true;
+        //_characterHeart = new GameObject("CharacterHeart");
+        //Vector3 myPosition = transform.position;
+        //myPosition.y += characterController.height / 1.75f;
+        //_characterHeart.transform.position = myPosition;
+        //_characterHeart.transform.SetParent(transform);
+        //_characterHeart.layer = LayerMask.NameToLayer("CharacterHeart");
+        //SphereCollider heartCollider = _characterHeart.AddComponent<SphereCollider>();
+        //heartCollider.radius = 0.1f;
+        //heartCollider.includeLayers = 0;
+        //heartCollider.excludeLayers = ~0;
+        //heartCollider.isTrigger = true;
 
         foreach (var component in _components)
         {
@@ -712,18 +725,50 @@ public class CharacterScript : MonoBehaviour, IHitable
 
     protected virtual void Update()
     {
-        //현재 상태 업데이트
-        if (GCST<StateContoller>().enabled == true)
-        {
-            GCST<StateContoller>().DoWork();
-        }
+        ////현재 상태 업데이트
+        //if (GCST<StateContoller>().enabled == true)
+        //{
+        //    GCST<StateContoller>().DoWork();
+        //}
 
-        //기본적으로 중력은 계속 업데이트 한다
-        {
-            GCST<CharacterMoveScript2>().GravityUpdate();
-            GCST<CharacterMoveScript2>().ClearLatestVelocity();
-        }
+        ////기본적으로 중력은 계속 업데이트 한다
+        //{
+        //    GCST<CharacterMoveScript2>().GravityUpdate();
+        //    GCST<CharacterMoveScript2>().ClearLatestVelocity();
+        //}
+
+        //if (Input.GetKeyDown(KeyCode.B) == true)
+        //{
+        //    foreach (var item in _created)
+        //    {
+        //        Destroy(item);
+        //    }
+        //    _created.Clear();
+        //}
     }
+
+
+    //void OnControllerColliderHit(ControllerColliderHit hit)
+    //{
+    //    // 충돌한 지점의 월드 좌표
+    //    Vector3 collisionPoint = hit.point;
+
+    //    // 충돌한 물체의 표면 법선
+    //    Vector3 surfaceNormal = hit.normal;
+
+    //    //Debug.Log($"Collision Point: {collisionPoint}, Surface Normal: {surfaceNormal}");
+
+    //    GameObject normalHit = Instantiate(_debuggingMesh);
+    //    normalHit.transform.position = collisionPoint;
+    //    _created.AddLast(normalHit);
+
+    //    if (_created.Count > 10000)
+    //    {
+    //        Destroy(_created.First());
+    //        _created.RemoveFirst();
+    //    }
+    //}
+
 
 
     public void StateChanged(StateAsset nextState)
