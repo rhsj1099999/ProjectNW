@@ -109,20 +109,16 @@ public class AimScript2 : GameCharacterSubScript
             _aimOribit.transform.rotation = transform.rotation;
             _aimOribit.transform.position = transform.position;
 
-            CharacterController ownerCharacterController = _owner.GCST<CharacterController>();
-            if (ownerCharacterController != null)
-            {
-                Vector3 orbitPosition = _aimOribit.transform.position;
-                orbitPosition.y = ownerCharacterController.center.y;
-                _aimOribit.transform.position = orbitPosition;
-            }
+            Vector3 orbitPosition = _aimOribit.transform.position;
+            Animator ownerAnimator = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator();
+            orbitPosition.y = ownerAnimator.GetBoneTransform(HumanBodyBones.Chest).position.y;
+            _aimOribit.transform.position = orbitPosition;
 
             _aimSatellite = new GameObject("AimSatellite");
             _aimSatellite.transform.SetParent(_aimOribit.transform);
             Vector3 aimSatellitePosition = _aimOribit.transform.position;
             aimSatellitePosition += _aimOribit.transform.forward * _aimSatelliteZOffset;
             _aimSatellite.transform.position = aimSatellitePosition;
-
         }
 
         //카메라 세팅

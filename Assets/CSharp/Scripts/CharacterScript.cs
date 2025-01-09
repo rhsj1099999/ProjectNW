@@ -13,13 +13,15 @@ public class StateContollerComponentDesc
 {
     public CharacterScript _owner = null;
     public InputController _ownerInputController = null;
-    public CharacterMoveScript2 _ownerMoveScript = null;
-    public CharacterController _ownerCharacterComponent = null;
+    public CharacterContollerable _ownerCharacterControllable = null;
     public CharacterAnimatorScript _ownerCharacterAnimatorScript = null;
     public AINavigationScript _ownerNavigationScript = null;
     public EnemyAIScript _ownerEnemyAIScript = null;
     public AimScript2 _ownerAimScript = null;
     public CharacterColliderScript _ownerCharacterColliderScript = null;
+
+
+    //public CharacterController _ownerCharacterComponent = null;
 }
 
 
@@ -121,7 +123,7 @@ public class CharacterScript : MonoBehaviour, IHitable
 
         if (target == null)
         {
-            Debug.Assert(false, "없는 컴포넌트를 찾으려 하고있다" + target.name);
+            Debug.Assert(false, "없는 컴포넌트를 찾으려 하고있다" + typeof(T));
             Debug.Break();
         }
 
@@ -176,17 +178,17 @@ public class CharacterScript : MonoBehaviour, IHitable
         //characterController.detectCollisions = false;
         //AddCharacterSubComponent(characterController);
 
-        //_characterHeart = new GameObject("CharacterHeart");
-        //Vector3 myPosition = transform.position;
-        //myPosition.y += characterController.height / 1.75f;
-        //_characterHeart.transform.position = myPosition;
-        //_characterHeart.transform.SetParent(transform);
-        //_characterHeart.layer = LayerMask.NameToLayer("CharacterHeart");
-        //SphereCollider heartCollider = _characterHeart.AddComponent<SphereCollider>();
-        //heartCollider.radius = 0.1f;
-        //heartCollider.includeLayers = 0;
-        //heartCollider.excludeLayers = ~0;
-        //heartCollider.isTrigger = true;
+        _characterHeart = new GameObject("CharacterHeart");
+        Vector3 myPosition = transform.position;
+        myPosition.y += 0.5f;
+        _characterHeart.transform.position = myPosition;
+        _characterHeart.transform.SetParent(transform);
+        _characterHeart.layer = LayerMask.NameToLayer("CharacterHeart");
+        SphereCollider heartCollider = _characterHeart.AddComponent<SphereCollider>();
+        heartCollider.radius = 0.1f;
+        heartCollider.includeLayers = 0;
+        heartCollider.excludeLayers = ~0;
+        heartCollider.isTrigger = true;
 
         foreach (var component in _components)
         {
@@ -195,6 +197,11 @@ public class CharacterScript : MonoBehaviour, IHitable
                 continue;
             }
 
+            if (component == null)
+            {
+                Debug.Assert(false, "null Component 이다" + component.GetType());
+                Debug.Break();
+            }
             component.Init(this);
             AddCharacterSubComponent(component);
         }
@@ -725,26 +732,26 @@ public class CharacterScript : MonoBehaviour, IHitable
 
     protected virtual void Update()
     {
-        ////현재 상태 업데이트
-        //if (GCST<StateContoller>().enabled == true)
-        //{
-        //    GCST<StateContoller>().DoWork();
-        //}
+        //현재 상태 업데이트
+        if (GCST<StateContoller>().enabled == true)
+        {
+            GCST<StateContoller>().DoWork();
+        }
 
-        ////기본적으로 중력은 계속 업데이트 한다
-        //{
-        //    GCST<CharacterMoveScript2>().GravityUpdate();
-        //    GCST<CharacterMoveScript2>().ClearLatestVelocity();
-        //}
+        //기본적으로 중력은 계속 업데이트 한다
+        {
+            GCST<CharacterContollerable>().GravityUpdate();
+            GCST<CharacterContollerable>().ClearLatestVelocity();
+        }
 
-        //if (Input.GetKeyDown(KeyCode.B) == true)
-        //{
-        //    foreach (var item in _created)
-        //    {
-        //        Destroy(item);
-        //    }
-        //    _created.Clear();
-        //}
+        if (Input.GetKeyDown(KeyCode.B) == true)
+        {
+            foreach (var item in _created)
+            {
+                Destroy(item);
+            }
+            _created.Clear();
+        }
     }
 
 

@@ -280,10 +280,10 @@ public class StateGraphAsset : ScriptableObject
             {
                 case StateActionType.Move:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerInputController == null)
@@ -302,46 +302,46 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.SaveLatestVelocity:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "SaveLatestVelocity행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "SaveLatestVelocity행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
                     break;
 
                 case StateActionType.Jump:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Jump행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Jump행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
                     break;
 
                 case StateActionType.ForcedMove:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "ForcedMove행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "ForcedMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
-                        if (_ownerActionComponent._ownerCharacterComponent == null)
-                        {
-                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponent<CharacterController>();
-                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "ForcedMove행동이 있는데 이 컴포넌트가 없습니다");
-                        }
+                        //if (_ownerActionComponent._ownerCharacterComponent == null)
+                        //{
+                        //    _ownerActionComponent._ownerCharacterComponent = owner.GetComponent<CharacterController>();
+                        //    Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "ForcedMove행동이 있는데 이 컴포넌트가 없습니다");
+                        //}
                     }
                     break;
 
                 case StateActionType.ResetLatestVelocity:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "ResetLatestVelocity행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "ResetLatestVelocity행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
                     break;
@@ -355,21 +355,21 @@ public class StateGraphAsset : ScriptableObject
                         }
 
 
-                        if (_ownerActionComponent._ownerCharacterComponent == null)
-                        {
-                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
-                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
-                        }
+                        //if (_ownerActionComponent._ownerCharacterComponent == null)
+                        //{
+                        //    _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
+                        //    Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                        //}
                     }
                     break;
 
                 case StateActionType.RotateWithoutInterpolate:
                     {
-                        if (_ownerActionComponent._ownerCharacterComponent == null)
-                        {
-                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
-                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없습니다");
-                        }
+                        //if (_ownerActionComponent._ownerCharacterComponent == null)
+                        //{
+                        //    _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
+                        //    Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없습니다");
+                        //}
 
                         if (_ownerActionComponent._ownerInputController == null)
                         {
@@ -377,10 +377,10 @@ public class StateGraphAsset : ScriptableObject
                             Debug.Assert(_ownerActionComponent._ownerInputController != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없다");
                         }
 
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponentInChildren<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponentInChildren<CharacterMoveScript2>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "RotateWithoutInterpolate행동이 있는데 이 컴포넌트가 없다");
                         }
                     }
                     break;
@@ -429,10 +429,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.CharacterRotate:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerInputController == null)
@@ -445,10 +445,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.AI_CharacterRotateToEnemy:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerEnemyAIScript == null)
@@ -461,10 +461,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.AI_ChaseToEnemy:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerEnemyAIScript == null)
@@ -511,10 +511,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.Move_WithOutRotate:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerInputController == null)
@@ -527,10 +527,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.LookAtLockOnTarget:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerAimScript == null)
@@ -543,10 +543,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.RotateToLockOnTarget:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerAimScript == null)
@@ -565,11 +565,11 @@ public class StateGraphAsset : ScriptableObject
                             Debug.Assert(_ownerActionComponent._ownerCharacterAnimatorScript != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
-                        if (_ownerActionComponent._ownerCharacterComponent == null)
-                        {
-                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
-                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
-                        }
+                        //if (_ownerActionComponent._ownerCharacterComponent == null)
+                        //{
+                        //    _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
+                        //    Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                        //}
                     }
                     break;
 
@@ -581,11 +581,11 @@ public class StateGraphAsset : ScriptableObject
                             Debug.Assert(_ownerActionComponent._ownerCharacterAnimatorScript != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
-                        if (_ownerActionComponent._ownerCharacterComponent == null)
-                        {
-                            _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
-                            Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
-                        }
+                        //if (_ownerActionComponent._ownerCharacterComponent == null)
+                        //{
+                        //    _ownerActionComponent._ownerCharacterComponent = owner.GetComponentInChildren<CharacterController>();
+                        //    Debug.Assert(_ownerActionComponent._ownerCharacterComponent != null, "RootMove행동이 있는데 이 컴포넌트가 없습니다");
+                        //}
                     }
                     break;
 
@@ -597,10 +597,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.Move_WithOutRotate_Gun:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerInputController == null)
@@ -613,10 +613,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.LookAtLockOnTarget_Gun:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "LookAtLockOnTarget_Gun행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "LookAtLockOnTarget_Gun행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerAimScript == null)
@@ -639,10 +639,10 @@ public class StateGraphAsset : ScriptableObject
 
                 case StateActionType.AttackLookAtLockOnTarget:
                     {
-                        if (_ownerActionComponent._ownerMoveScript == null)
+                        if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerMoveScript = owner.GetComponent<CharacterMoveScript2>();
-                            Debug.Assert(_ownerActionComponent._ownerMoveScript != null, "LookAtLockOnTarget_Gun행동이 있는데 이 컴포넌트가 없습니다");
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "LookAtLockOnTarget_Gun행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
                         if (_ownerActionComponent._ownerAimScript == null)

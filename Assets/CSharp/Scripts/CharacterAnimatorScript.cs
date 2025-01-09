@@ -109,6 +109,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     public AnimationClip GetCurrAnimationClip() { return _currAnimClip; }
     public Rig GetCharacterRig() { return _characterRig; }
     public RigBuilder GetCharacterRigBuilder() { return _characterRigBuilder; }
+    public float GetCharacterHeight() { return 2.0f; }
+    
 
     protected RigBuilder _characterRigBuilder = null;
     protected Rig _characterRig = null;

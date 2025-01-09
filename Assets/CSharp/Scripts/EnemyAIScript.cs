@@ -84,7 +84,7 @@ public class EnemyAIScript : GameCharacterSubScript
     }
 
 
-    virtual public bool IsInAttackRange(CharacterController characterController)
+    virtual public bool IsInAttackRange(float characterHeight)
     {
         if (_targetEnemy == null)
         {
@@ -99,8 +99,6 @@ public class EnemyAIScript : GameCharacterSubScript
         Vector3 enemyPosition = _targetEnemy.gameObject.transform.position;
         Vector3 myPosition = gameObject.transform.position;
         Vector3 distanceVector = enemyPosition - myPosition;
-
-        float characterHeight = characterController.height;
 
         if (Mathf.Abs(distanceVector.y) >= characterHeight / 2.0f)
         {

@@ -4,78 +4,96 @@ using System.Collections.Generic;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-public class KinematicControllerWrapper : GameCharacterSubScript, ICharacterController
+[RequireComponent(typeof(KinematicCharacterMotor))]
+public class KinematicControllerWrapper : CharacterContollerable, ICharacterController
 {
     [SerializeField] private KinematicCharacterMotor _motor = null;
-    [SerializeField] private float _speed = 5.0f;
-    [SerializeField] private float _rotatingSpeed_DEG = 90.0f;
-    [SerializeField] private float _jumpForce = 3.0f;
-    [SerializeField] private float _mass = 2.0f;
 
-    private Vector3 _currentGravity = Vector3.zero;
+    private bool _jumpRequested = false;
+    private bool _inAir = false;
+
     private Vector3 _currentSpeed = Vector3.zero;
     private Quaternion _currentRotation = Quaternion.identity;
 
 
-
-    public override void Init(CharacterScript owner)
+    public override void LookAt(Vector3 dir)
     {
-        if (_motor == null)
-        {
-            Debug.Assert(false, "모터를 할당하세여");
-            Debug.Break();
-        }
+        _currentRotation = Quaternion.LookRotation(dir);
+    }
+
+    private void Awake()
+    {
+        _motor = GetComponent<KinematicCharacterMotor>();
         _motor.CharacterController = this;
-
-
-        _owner = owner;
-        _myType = typeof(KinematicControllerWrapper);
     }
 
+    public override void SubScriptStart() {}
 
-
-
-    public override void SubScriptStart(){}
-
-    private void Update()
+    public override bool GetIsInAir()
     {
-        Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
-        Vector3 cameraLook = Camera.main.transform.forward;
-        cameraLook.y = 0.0f;
-        cameraLook = cameraLook.normalized;
-        Vector3 converted = (Quaternion.LookRotation(cameraLook) * characterInputDir);
-
-        Rotate(converted);
-        Move(converted);
-        GravityUpdate();
+        return !_motor.GroundingStatus.IsStableOnGround;
     }
 
-
-    private void GravityUpdate()
+    public override void CharacterInertiaMove(float ratio)
     {
-        if (_motor.GroundingStatus.IsStableOnGround == true)
+        Vector3 planeVelocity = _latestPlaneVelocityDontUseY;
+        planeVelocity.y = 0.0f;
+        _currentSpeed = (planeVelocity) * ratio;
+        _moveTriggerd = true;
+    }
+
+    public override void ClearLatestVelocity()
+    {
+        if (_moveTriggerd == false)
         {
-            _currentGravity = Vector3.zero;
-            return;
+            //이동명령이 온적이 없다.
+            _currentSpeed = Vector3.zero;
         }
 
-        _currentGravity += (_mass * 9.81f * Vector3.down) * Time.deltaTime;
+        _moveTriggerd = false;
     }
 
-
-    private void Rotate(Vector3 inputDirection, float ratio = 1.0f)
+    public override void GravityUpdate()
     {
-        if (inputDirection.magnitude <= 0.0f)
+        _gravitySpeed += (_mass * 9.81f * Vector3.down) * Time.deltaTime;
+    }
+
+    public override void DoJump()
+    {
+        if (_motor.GroundingStatus.IsStableOnGround == false)
         {
-            return;
+            return; //더블 점프 컨텐츠, 스킬 생기면 어떻게할꺼야
         }
 
+        _gravitySpeed = new Vector3(0.0f, _jumpForce, 0.0f);
+        _motor.ForceUnground(0.1f);
+    }
+
+    public override void CharacterMove(Vector3 inputDirection, float similarities, float ratio)
+    {
+        _moveTriggerd = true;
+
+        _currentSpeed = inputDirection * _speed * similarities * ratio;
+    }
+
+    public override void CharacterRootMove(Vector3 delta, float similarities, float ratio)
+    {
+        _moveTriggerd = true;
+
+        //_currentSpeed = (delta / Time.deltaTime) * similarities * ratio;
+
+        //_motor.MoveCharacter();
+        _motor.SetPosition(transform.position + (delta * similarities * ratio));
+    }
+
+    public override void CharacterRotate(Vector3 inputDirection, float ratio)
+    {
         Vector3 crossRet = Vector3.Cross((_currentRotation * Vector3.forward), (Quaternion.LookRotation(inputDirection) * Vector3.forward));
 
         float isRightRotate = (crossRet.y > 0.0f)
-            ? 1.0f 
+            ? 1.0f
             : -1.0f;
-        
+
         float deltaDEG = Quaternion.Angle(_currentRotation, Quaternion.LookRotation(inputDirection));
 
         float nextDeltaDEG = _rotatingSpeed_DEG * Time.deltaTime * ratio * isRightRotate;
@@ -92,44 +110,45 @@ public class KinematicControllerWrapper : GameCharacterSubScript, ICharacterCont
     }
 
 
-    public void Move(Vector3 inputDirection, float ratio = 1.0f)
+
+
+    
+
+
+
+    public void AfterCharacterUpdate(float deltaTime) 
     {
-        if (inputDirection.magnitude <= 0.0f)
+        _latestPlaneVelocityDontUseY = _motor.Velocity;
+
+        if (_motor.GroundingStatus.IsStableOnGround == true)
         {
-            _currentSpeed = Vector3.zero;
+            _gravitySpeed = Vector3.zero;
             return;
         }
-
-        float similarities = Mathf.Clamp(Vector3.Dot(transform.forward, inputDirection), 0.0f, 1.0f);
-        Vector3 desiredSpeed = inputDirection * _speed * similarities * ratio;
-        _currentSpeed = desiredSpeed;
     }
 
+    public void BeforeCharacterUpdate(float deltaTime) { }
 
+    public bool IsColliderValidForCollisions(Collider coll) { return true; }
 
-    public void AfterCharacterUpdate(float deltaTime) {}
+    public void OnDiscreteCollisionDetected(Collider hitCollider) { }
 
-    public void BeforeCharacterUpdate(float deltaTime) {}
+    public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
 
-    public bool IsColliderValidForCollisions(Collider coll) {return true;}
+    public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
 
-    public void OnDiscreteCollisionDetected(Collider hitCollider) {}
+    public void PostGroundingUpdate(float deltaTime) { }
 
-    public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) {}
+    public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport) { }
 
-    public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) {}
-
-    public void PostGroundingUpdate(float deltaTime) {}
-
-    public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport) {}
-
-    public void UpdateRotation(ref Quaternion currentRotation, float deltaTime) 
+    public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
     {
         currentRotation = _currentRotation;
     }
 
-    public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime) 
+    public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
-        currentVelocity = _currentSpeed + _currentGravity;
+        currentVelocity = _currentSpeed + _gravitySpeed;
+        _jumpRequested = false;
     }
 }
