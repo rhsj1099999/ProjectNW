@@ -367,7 +367,6 @@ public class StateContoller : GameCharacterSubScript
 
     private float _currStateTime = 0.0f;
     private float _prevStateTime = 0.0f;
-    //private StateContollerComponentDesc _ownerStateControllingComponent = new StateContollerComponentDesc();
     List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
 
 
@@ -595,10 +594,6 @@ public class StateContoller : GameCharacterSubScript
         }
     }
 
-
-
-
-
     public StateAsset CheckChangeState_Recursion2(out StateGraphType nextGraphType) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
     {
         //List<StateAsset> record = new List<StateAsset>();
@@ -694,8 +689,6 @@ public class StateContoller : GameCharacterSubScript
         return targetState;
     }
 
-
-
     public void DoWork()
     {
         Debug.Assert(_currState != null, "스테이트 null입니다");
@@ -724,9 +717,6 @@ public class StateContoller : GameCharacterSubScript
         _currStateTime += Time.deltaTime;
     }
 
-
-
-
     public void EquipStateGraph(StateGraphAsset graphAsset, StateGraphType graphType)
     {
         _stateGraphes[(int)graphType] = graphAsset;
@@ -740,6 +730,70 @@ public class StateContoller : GameCharacterSubScript
     }
 
 
+    public Vector3 CalculateCurrHipCurve(float time)
+    {
+        AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true)
+            ? _owner.GCST<CharacterAnimatorScript>().GetCurrAnimationClip()
+            : _currState._myState._stateAnimationClip;
+
+
+        AnimationHipCurveAsset animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
+
+        Vector3 currentUnityLocalHip = new Vector3
+        (
+            animationHipCurve._animationHipCurveX.Evaluate(time),
+            animationHipCurve._animationHipCurveY.Evaluate(time),
+            animationHipCurve._animationHipCurveZ.Evaluate(time)
+        );
+
+        return currentUnityLocalHip;
+    }
+
+
+    public Vector3 CalculateCurrentRootDelta()
+    {
+        float currentSecond = FloatMod(_currStateTime, _currState._myState._stateAnimationClip.length);
+        float prevSecond = FloatMod(_prevStateTime, _currState._myState._stateAnimationClip.length);
+
+        Vector3 currentUnityLocalHip = CalculateCurrHipCurve(currentSecond);
+        //루프 애니메이션에서 넘어갔을때 처리임
+        if (prevSecond > currentSecond) {prevSecond = 0.0f;}
+        Vector3 prevUnityLocalHip = CalculateCurrHipCurve(prevSecond);
+
+        Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
+
+        return _owner.GCST<CharacterContollerable>().transform.localToWorldMatrix * deltaLocalHip;
+    }
+
+    private void SwitchFunc_RootMove()
+    {
+        Vector3 worldDelta = CalculateCurrentRootDelta();
+
+        {
+            Vector3 modelLocalPosition = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition;
+            modelLocalPosition.y = worldDelta.y;
+            _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
+        }
+
+        worldDelta.y = 0.0f;
+
+        _owner.GCST<CharacterContollerable>().CharacterRootMove(worldDelta, 1.0f, 1.0f);
+    }
+
+    private void SwitchFunc_SimpleMove()
+    {
+        Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
+        characterInputDir = _owner.GCST<CharacterContollerable>().GetDirectionConvertedByCamera(characterInputDir);
+        _owner.GCST<CharacterContollerable>().CharacterMove(characterInputDir, 1.0f, 1.0f);
+    }
+
+    private void SwitchFunc_SimpleRotate()
+    {
+        Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
+        CharacterContollerable ownerCharacterControllerable = _owner.GCST<CharacterContollerable>();
+        characterInputDir = ownerCharacterControllerable.GetDirectionConvertedByCamera(characterInputDir);
+        ownerCharacterControllerable.CharacterRotate(characterInputDir, 1.0f);
+    }
 
 
     public void DoActions(List<StateActionType> actions)
@@ -750,20 +804,9 @@ public class StateContoller : GameCharacterSubScript
             {
                 case StateActionType.Move:
                     {
-                        Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
-                        CharacterContollerable ownerCharacterControllerable = _owner.GCST<CharacterContollerable>();
-                        characterInputDir = ownerCharacterControllerable.GetDirectionConvertedByCamera(characterInputDir);
-
-                        ownerCharacterControllerable.CharacterRotate(characterInputDir, 1.0f);
-                        ownerCharacterControllerable.CharacterMove(characterInputDir, ownerCharacterControllerable.CalculateMoveDirSimilarities(characterInputDir), 1.0f);
-
+                        SwitchFunc_SimpleMove();
+                        SwitchFunc_SimpleRotate();
                     }
-                    break;
-
-                case StateActionType.Attack:
-                    break;
-
-                case StateActionType.SaveLatestVelocity:
                     break;
 
                 case StateActionType.Jump:
@@ -778,78 +821,17 @@ public class StateContoller : GameCharacterSubScript
                     }
                     break;
 
-                case StateActionType.ResetLatestVelocity:
-                    break;
-
                 case StateActionType.RootMove:
                     {
-                        float currentSecond = FloatMod(_currStateTime, _currState._myState._stateAnimationClip.length);
-                        float prevSecond = FloatMod(_prevStateTime, _currState._myState._stateAnimationClip.length);
-
-                        AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true) 
-                            ?_owner.GCST<CharacterAnimatorScript>().GetCurrAnimationClip()
-                            :_currState._myState._stateAnimationClip;
-
-
-                        AnimationHipCurveAsset animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
-
-                        Vector3 currentUnityLocalHip = new Vector3
-                        (
-                            animationHipCurve._animationHipCurveX.Evaluate(currentSecond),
-                            animationHipCurve._animationHipCurveY.Evaluate(currentSecond),
-                            animationHipCurve._animationHipCurveZ.Evaluate(currentSecond)
-                        );
-
-                        if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
-                        {
-                            prevSecond = 0.0f;
-                        }
-
-                        Vector3 prevUnityLocalHip = new Vector3
-                        (
-                            animationHipCurve._animationHipCurveX.Evaluate(prevSecond),
-                            animationHipCurve._animationHipCurveY.Evaluate(prevSecond),
-                            animationHipCurve._animationHipCurveZ.Evaluate(prevSecond)
-                        );
-
-                        Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
-
-                        Vector3 worldDelta = _owner.GCST<CharacterContollerable>().transform.localToWorldMatrix * deltaLocalHip;
-
-
-                        //Matrix4x4 rotationAndScaleMatrix = Matrix4x4.TRS(Vector3.zero, transform.localToWorldMatrix.rotation, transform.localToWorldMatrix.lossyScale);
-                        //Vector3 worldDelta = rotationAndScaleMatrix * deltaLocalHip;
-
-                        //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
-                        {
-                            Vector3 modelLocalPosition = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition;
-                            modelLocalPosition.y = worldDelta.y;
-                            _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
-                        }
-
-                        worldDelta.y = 0.0f;
-                        _owner.GCST<CharacterContollerable>().CharacterRootMove(worldDelta, 1.0f, 1.0f);
+                        SwitchFunc_RootMove();
                     }
                     break;
 
                 case StateActionType.RotateWithoutInterpolate:
                     {
                         Vector3 convertedDirection = _owner.GCST<CharacterContollerable>().GetDirectionConvertedByCamera(_owner.GCST<InputController>()._pr_directionByInput);
-                        //gameObject.transform.LookAt(gameObject.transform.position + convertedDirection);
-                        _owner.GCST<CharacterContollerable>().LookAt(convertedDirection);
+                        _owner.GCST<CharacterContollerable>().LookAt_Plane(convertedDirection);
                     }
-                    break;
-
-                case StateActionType.RightHandWeaponSignal:
-                    break;
-
-                case StateActionType.LeftHandWeaponSignal:
-                    break;
-
-                case StateActionType.AttackCommandCheck:
-                    break;
-
-                case StateActionType.StateEndDesierdCheck:
                     break;
 
                 case StateActionType.CheckBehaves:
@@ -863,23 +845,13 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.CalculateWeaponLayer_EnterAttack:
                     {
-                        _owner.GCST<CharacterAnimatorScript>().WeaponLayerChange_EnterAttack
-                            (
-                            _owner.GetGrabFocusType(),
-                            _currState,
-                            _owner.GetLatestWeaponUse()
-                            );
+                        _owner.GCST<CharacterAnimatorScript>().WeaponLayerChange(_owner.GetGrabFocusType(),_currState,_owner.GetLatestWeaponUse(),true);
                     }
                     break;
 
                 case StateActionType.CalculateWeaponLayer_ExitAttack:
                     {
-                        _owner.GCST<CharacterAnimatorScript>().WeaponLayerChange_ExitAttack
-                            (
-                            _owner.GetGrabFocusType(),
-                            _currState,
-                            _owner.GetLatestWeaponUse()
-                            );
+                        _owner.GCST<CharacterAnimatorScript>().WeaponLayerChange(_owner.GetGrabFocusType(),_currState,_owner.GetLatestWeaponUse(),false);
                     }
                     break;
 
@@ -903,9 +875,7 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.CharacterRotate:
                     {
-                        Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
-                        characterInputDir = _owner.GCST<CharacterContollerable>().GetDirectionConvertedByCamera(characterInputDir);
-                        _owner.GCST<CharacterContollerable>().CharacterRotate(characterInputDir, 1.0f);
+                        SwitchFunc_SimpleRotate();
                     }
                     break;
 
@@ -938,8 +908,7 @@ public class StateContoller : GameCharacterSubScript
                         Vector3 enemyPosition = _owner.GCST<EnemyAIScript>().GetCurrentEnemy().gameObject.transform.position;
                         Vector3 dirToEnemy = (enemyPosition - myPosition).normalized;
 
-                        //_owner.gameObject.transform.LookAt(dirToEnemy + myPosition);
-                        _owner.GCST<CharacterContollerable>().LookAt(dirToEnemy);
+                        _owner.GCST<CharacterContollerable>().LookAt_Plane(dirToEnemy);
                     }
                     break;
 
@@ -987,8 +956,8 @@ public class StateContoller : GameCharacterSubScript
                         Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
                         ownerToTargetPlaneVector.y = 0.0f;
                         ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
-                        //gameObject.transform.LookAt(ownerToTargetPlaneVector + ownerPosition);
-                        _owner.GCST<CharacterContollerable>().LookAt(ownerToTargetPlaneVector);
+
+                        _owner.GCST<CharacterContollerable>().LookAt_Plane(ownerToTargetPlaneVector);
                     }
                     break;
 
@@ -1007,49 +976,7 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.RootMove_WithOutRotate:
                     {
-                        float currentSecond = MyUtil.FloatMod(_currStateTime, _currState._myState._stateAnimationClip.length);
-                        float prevSecond = MyUtil.FloatMod(_prevStateTime, _currState._myState._stateAnimationClip.length);
-
-
-                        AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true)
-                            ? _owner.GCST<CharacterAnimatorScript>().GetCurrAnimationClip()
-                            : _currState._myState._stateAnimationClip;
-
-
-                        AnimationHipCurveAsset animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
-
-                        Vector3 currentUnityLocalHip = new Vector3
-                        (
-                            animationHipCurve._animationHipCurveX.Evaluate(currentSecond),
-                            animationHipCurve._animationHipCurveY.Evaluate(currentSecond),
-                            animationHipCurve._animationHipCurveZ.Evaluate(currentSecond)
-                        );
-
-                        if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
-                        {
-                            prevSecond = 0.0f;
-                        }
-
-                        Vector3 prevUnityLocalHip = new Vector3
-                        (
-                            animationHipCurve._animationHipCurveX.Evaluate(prevSecond),
-                            animationHipCurve._animationHipCurveY.Evaluate(prevSecond),
-                            animationHipCurve._animationHipCurveZ.Evaluate(prevSecond)
-                        );
-
-                        Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
-
-                        Vector3 worldDelta = _owner.GCST<CharacterContollerable>().transform.localToWorldMatrix * deltaLocalHip;
-
-                        //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
-                        {
-                            Vector3 modelLocalPosition = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition;
-                            modelLocalPosition.y = worldDelta.y;
-                            _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
-                        }
-
-                        worldDelta.y = 0.0f;
-                        _owner.GCST<CharacterContollerable>().CharacterRootMove(worldDelta, 1.0f ,1.0f);
+                        SwitchFunc_RootMove();
                     }
                     break;
 
@@ -1098,55 +1025,11 @@ public class StateContoller : GameCharacterSubScript
 
                         if (lockOnTarget == null)
                         {
-                            float currentSecond = MyUtil.FloatMod(_currStateTime, _currState._myState._stateAnimationClip.length);
-                            float prevSecond = MyUtil.FloatMod(_prevStateTime, _currState._myState._stateAnimationClip.length);
-
-
-                            AnimationClip currentAnimationClip = (_currState._myState._isSubAnimationStateMachineExist == true)
-                                ? _owner.GCST<CharacterAnimatorScript>().GetCurrAnimationClip()
-                                : _currState._myState._stateAnimationClip;
-
-
-                            AnimationHipCurveAsset animationHipCurve = ResourceDataManager.Instance.GetHipCurve(currentAnimationClip);
-
-                            Vector3 currentUnityLocalHip = new Vector3
-                            (
-                                animationHipCurve._animationHipCurveX.Evaluate(currentSecond),
-                                animationHipCurve._animationHipCurveY.Evaluate(currentSecond),
-                                animationHipCurve._animationHipCurveZ.Evaluate(currentSecond)
-                            );
-
-                            if (prevSecond > currentSecond)//애니메이션이 바뀌였나? 과거가 더 크다
-                            {
-                                prevSecond = 0.0f;
-                            }
-
-                            Vector3 prevUnityLocalHip = new Vector3
-                            (
-                                animationHipCurve._animationHipCurveX.Evaluate(prevSecond),
-                                animationHipCurve._animationHipCurveY.Evaluate(prevSecond),
-                                animationHipCurve._animationHipCurveZ.Evaluate(prevSecond)
-                            );
-
-                            Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
-
-                            Vector3 worldDelta = _owner.GCST<CharacterContollerable>().transform.localToWorldMatrix * deltaLocalHip;
-
-                            //Root 모션의 y값은 모델에 적용...AnimationClip의 BakeIntoPose가 있다
-                            {
-                                Vector3 modelLocalPosition = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition;
-                                modelLocalPosition.y = worldDelta.y;
-                                _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
-                            }
-
-                            worldDelta.y = 0.0f;
-                            _owner.GCST<CharacterContollerable>().CharacterRootMove(worldDelta, 1.0f, 1.0f);
+                            SwitchFunc_RootMove();
                         }
                         else 
                         {
-                            Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
-                            characterInputDir = _owner.GCST<CharacterContollerable>().GetDirectionConvertedByCamera(characterInputDir);
-                            _owner.GCST<CharacterContollerable>().CharacterMove(characterInputDir, 1.0f, 1.0f);
+                            SwitchFunc_SimpleMove();
                         }
                     }
                     break;
@@ -1169,8 +1052,7 @@ public class StateContoller : GameCharacterSubScript
                             Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
                             ownerToTargetPlaneVector.y = 0.0f;
                             ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
-                            //gameObject.transform.LookAt(ownerToTargetPlaneVector + ownerPosition);
-                            _owner.GCST<CharacterContollerable>().LookAt(ownerToTargetPlaneVector);
+                            _owner.GCST<CharacterContollerable>().LookAt_Plane(ownerToTargetPlaneVector);
                         }
                     }
                     break;
@@ -1200,12 +1082,11 @@ public class StateContoller : GameCharacterSubScript
                         if (lockOnTarget == null)
                         {
                             Vector3 convertedDirection = _owner.GCST<CharacterContollerable>().GetDirectionConvertedByCamera(_owner.GCST<InputController>()._pr_directionByInput);
-                            //gameObject.transform.LookAt(gameObject.transform.position + convertedDirection);
                             if (convertedDirection == Vector3.zero)
                             {
                                 convertedDirection = transform.forward;
                             }
-                            _owner.GCST<CharacterContollerable>().LookAt(convertedDirection);
+                            _owner.GCST<CharacterContollerable>().LookAt_Plane(convertedDirection);
                         }
                         else
                         {
@@ -1214,8 +1095,7 @@ public class StateContoller : GameCharacterSubScript
                             Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
                             ownerToTargetPlaneVector.y = 0.0f;
                             ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
-                            //gameObject.transform.LookAt(ownerToTargetPlaneVector + ownerPosition);
-                            _owner.GCST<CharacterContollerable>().LookAt(ownerToTargetPlaneVector);
+                            _owner.GCST<CharacterContollerable>().LookAt_Plane(ownerToTargetPlaneVector);
                         }
                     }
                     break;
@@ -1227,7 +1107,7 @@ public class StateContoller : GameCharacterSubScript
                     break;
 
                 default:
-                    Debug.Assert(false, "데이터가 추가됐습니까?");
+                    //Debug.Assert(false, "데이터가 추가됐습니까?" + action);
                     break;
             }
         }

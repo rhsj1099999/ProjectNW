@@ -13,6 +13,7 @@ namespace KinematicCharacterController
         /// </summary>
         [Tooltip("Determines if the system simulates automatically. If true, the simulation is done on FixedUpdate")]
         public bool AutoSimulation = true;
+        
         /// <summary>
         /// Should interpolation of characters and PhysicsMovers be handled
         /// </summary>

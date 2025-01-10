@@ -110,6 +110,24 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     public Rig GetCharacterRig() { return _characterRig; }
     public RigBuilder GetCharacterRigBuilder() { return _characterRigBuilder; }
     public float GetCharacterHeight() { return 2.0f; }
+
+    public AnimatorStateInfo? GetCurrentStateAnimationInfo()
+    {
+        int targetLayer = (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody]._isUsingFirstLayer == true)
+        ? (int)AnimatorLayerTypes.FullBody
+        : (int)AnimatorLayerTypes.FullBody + 1;
+
+        return _animator.GetCurrentAnimatorStateInfo(targetLayer);
+    }
+
+    public bool GetIsInTransition(AnimatorLayerTypes type)
+    {
+        int targetLayer = (_partBlendingDesc[(int)type]._isUsingFirstLayer == true)
+            ? (int)type
+            : (int)type + 1;
+
+        return _animator.IsInTransition(targetLayer);
+    }
     
 
     protected RigBuilder _characterRigBuilder = null;
@@ -390,9 +408,9 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
-    public void WeaponLayerChange_EnterAttack(WeaponGrabFocus grapFocusType, StateAsset currState, bool isUsingRightWeapon)
+    public void WeaponLayerChange(WeaponGrabFocus grapFocusType, StateAsset currState, bool isUsingRightWeapon, bool isEnter)
     {
-        bool isAttackState = true;
+        bool isAttackState = isEnter;
 
         AnimatorBlendingDesc leftHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.LeftHand];
         int leftHandMainLayer = (leftHandBlendingDesc._isUsingFirstLayer == true)
@@ -476,111 +494,17 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
                     _animator.SetBool("IsMirroring", isMirrored);
 
-
-                    if (currState._myState._isAttackState == true)
-                    {
-                    }
-                    else
-                    {
-                        _animator.SetBool("IsMirroring", false);
-                    }
-                }
-                break;
-
-            case WeaponGrabFocus.DualGrab:
-                {
-                    Debug.Assert(false, "쌍수 컨텐츠가 추가됐습니까?");
-                }
-                break;
-        }
-    }
-
-    public void WeaponLayerChange_ExitAttack(WeaponGrabFocus grapFocusType, StateAsset currState, bool isUsingRightWeapon)
-    {
-        bool isAttackState = false;
-
-        AnimatorBlendingDesc leftHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.LeftHand];
-        int leftHandMainLayer = (leftHandBlendingDesc._isUsingFirstLayer == true)
-            ? (int)AnimatorLayerTypes.LeftHand * 2
-            : (int)AnimatorLayerTypes.LeftHand * 2 + 1;
-        AnimatorBlendingDesc rightHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.RightHand];
-        int rightHandMainLayer = (rightHandBlendingDesc._isUsingFirstLayer == true)
-            ? (int)AnimatorLayerTypes.RightHand * 2
-            : (int)AnimatorLayerTypes.RightHand * 2 + 1;
-
-        bool isMirrored = (isUsingRightWeapon == false);
-
-        switch (grapFocusType)
-        {
-            case WeaponGrabFocus.Normal:
-                {
-                    //공격 애니메이션이다
                     if (isAttackState == true)
                     {
-                        int usingHandLayer = (isUsingRightWeapon == true)
-                            ? rightHandMainLayer
-                            : leftHandMainLayer;
-
-                        int oppositeHandLayer = (isUsingRightWeapon == true)
-                            ? leftHandMainLayer
-                            : rightHandMainLayer;
-
-
-                        _animator.SetLayerWeight(usingHandLayer, 0.0f); //왼손은 반드시 따라가야해서 0.0f
-
-                        WeaponScript oppositeWeaponScript = _owner.GetCurrentWeaponScript(!isUsingRightWeapon);
-
-                        if (oppositeWeaponScript == null) //왼손무기를 쥐고있지 않다면
-                        {
-                            _animator.SetLayerWeight(oppositeHandLayer, 0.0f); //왼손 무기를 쥐고있지 않다면 모션을 따라가야해서 레이어를 꺼버린다.
-                        }
-                        else
-                        {
-                            if (oppositeWeaponScript.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null)
-                            {
-                                //_overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
-                            }
-                            _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
-                        }
-
                         _animator.SetBool("IsMirroring", isMirrored);
                     }
-                    //공격 애니메이션이 아니다
-                    else
-                    {
-                        WeaponScript leftHandWeaponScript = _owner.GetCurrentWeaponScript(false);
-                        WeaponScript rightHandWeaponScript = _owner.GetCurrentWeaponScript(true);
-
-                        //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
-                        float leftHandLayerWeight = (leftHandWeaponScript == null || leftHandWeaponScript._handlingIdleAnimation_OneHand == null) //
-                            ? 0.0f
-                            : 1.0f;
-                        _animator.SetLayerWeight(leftHandMainLayer, leftHandLayerWeight);
-
-                        //오른손 무기를 쥐고있지 않거나 오른손 무기의 파지 애니메이션이 없다
-                        float rightHandLayerWeight = (rightHandWeaponScript == null || rightHandWeaponScript._handlingIdleAnimation_OneHand == null)
-                            ? 0.0f
-                            : 1.0f;
-                        _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
-
-                        _animator.SetBool("IsMirroring", false);
-                    }
-                }
-                break;
-
-            case WeaponGrabFocus.RightHandFocused:
-            case WeaponGrabFocus.LeftHandFocused:
-                {
-                    float layerWeight = (isAttackState == true)
-                        ? 0.0f
-                        : 1.0f;
-
-                    _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
-                    _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
 
                     if (currState._myState._isAttackState == true)
                     {
-                        _animator.SetBool("IsMirroring", isMirrored);
+                        if (isAttackState == false)
+                        {
+                            _animator.SetBool("IsMirroring", isMirrored);
+                        }
                     }
                     else
                     {
@@ -596,6 +520,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 break;
         }
     }
+
+
 
     public void CalculateBodyWorkType_ChangeWeapon(WeaponGrabFocus ownerWeaponGrabFocusType, bool isRightWeaponTrigger, int layerLockResult, bool forcedGo = false)
     {
@@ -1849,3 +1775,211 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     ////}
     #endregion BlendTree...언젠간 해볼것
 }
+
+
+//public void WeaponLayerChange_EnterAttack(WeaponGrabFocus grapFocusType, StateAsset currState, bool isUsingRightWeapon)
+//{
+//    bool isAttackState = true;
+
+//    AnimatorBlendingDesc leftHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.LeftHand];
+//    int leftHandMainLayer = (leftHandBlendingDesc._isUsingFirstLayer == true)
+//        ? (int)AnimatorLayerTypes.LeftHand * 2
+//        : (int)AnimatorLayerTypes.LeftHand * 2 + 1;
+//    AnimatorBlendingDesc rightHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.RightHand];
+//    int rightHandMainLayer = (rightHandBlendingDesc._isUsingFirstLayer == true)
+//        ? (int)AnimatorLayerTypes.RightHand * 2
+//        : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+
+//    bool isMirrored = (isUsingRightWeapon == false);
+
+//    switch (grapFocusType)
+//    {
+//        case WeaponGrabFocus.Normal:
+//            {
+//                //공격 애니메이션이다
+//                if (isAttackState == true)
+//                {
+//                    int usingHandLayer = (isUsingRightWeapon == true)
+//                        ? rightHandMainLayer
+//                        : leftHandMainLayer;
+
+//                    int oppositeHandLayer = (isUsingRightWeapon == true)
+//                        ? leftHandMainLayer
+//                        : rightHandMainLayer;
+
+
+//                    _animator.SetLayerWeight(usingHandLayer, 0.0f); //왼손은 반드시 따라가야해서 0.0f
+
+//                    WeaponScript oppositeWeaponScript = _owner.GetCurrentWeaponScript(!isUsingRightWeapon);
+
+//                    if (oppositeWeaponScript == null) //왼손무기를 쥐고있지 않다면
+//                    {
+//                        _animator.SetLayerWeight(oppositeHandLayer, 0.0f); //왼손 무기를 쥐고있지 않다면 모션을 따라가야해서 레이어를 꺼버린다.
+//                    }
+//                    else
+//                    {
+//                        if (oppositeWeaponScript._handlingIdleAnimation_OneHand == null)
+//                        {
+//                            //_overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
+//                        }
+//                        _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
+//                    }
+
+//                    _animator.SetBool("IsMirroring", isMirrored);
+//                }
+//                //공격 애니메이션이 아니다
+//                else
+//                {
+
+//                    WeaponScript leftHandWeaponScript = _owner.GetCurrentWeaponScript(false);
+//                    WeaponScript rightHandWeaponScript = _owner.GetCurrentWeaponScript(true);
+
+//                    //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
+//                    float leftHandLayerWeight = (leftHandWeaponScript == null || leftHandWeaponScript._handlingIdleAnimation_OneHand == null) //
+//                        ? 0.0f
+//                        : 1.0f;
+//                    _animator.SetLayerWeight(leftHandMainLayer, leftHandLayerWeight);
+
+//                    //오른손 무기를 쥐고있지 않거나 오른손 무기의 파지 애니메이션이 없다
+//                    float rightHandLayerWeight = (rightHandWeaponScript == null || rightHandWeaponScript._handlingIdleAnimation_OneHand == null)
+//                        ? 0.0f
+//                        : 1.0f;
+//                    _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
+
+//                    _animator.SetBool("IsMirroring", false);
+//                }
+//            }
+//            break;
+
+//        case WeaponGrabFocus.RightHandFocused:
+//        case WeaponGrabFocus.LeftHandFocused:
+//            {
+//                float layerWeight = (isAttackState == true)
+//                    ? 0.0f
+//                    : 1.0f;
+
+//                _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
+//                _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
+
+//                _animator.SetBool("IsMirroring", isMirrored);
+
+
+//                if (currState._myState._isAttackState == true)
+//                {
+//                }
+//                else
+//                {
+//                    _animator.SetBool("IsMirroring", false);
+//                }
+//            }
+//            break;
+
+//        case WeaponGrabFocus.DualGrab:
+//            {
+//                Debug.Assert(false, "쌍수 컨텐츠가 추가됐습니까?");
+//            }
+//            break;
+//    }
+//}
+
+//public void WeaponLayerChange_ExitAttack(WeaponGrabFocus grapFocusType, StateAsset currState, bool isUsingRightWeapon)
+//{
+//    bool isAttackState = false;
+
+//    AnimatorBlendingDesc leftHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.LeftHand];
+//    int leftHandMainLayer = (leftHandBlendingDesc._isUsingFirstLayer == true)
+//        ? (int)AnimatorLayerTypes.LeftHand * 2
+//        : (int)AnimatorLayerTypes.LeftHand * 2 + 1;
+//    AnimatorBlendingDesc rightHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.RightHand];
+//    int rightHandMainLayer = (rightHandBlendingDesc._isUsingFirstLayer == true)
+//        ? (int)AnimatorLayerTypes.RightHand * 2
+//        : (int)AnimatorLayerTypes.RightHand * 2 + 1;
+
+//    bool isMirrored = (isUsingRightWeapon == false);
+
+//    switch (grapFocusType)
+//    {
+//        case WeaponGrabFocus.Normal:
+//            {
+//                //공격 애니메이션이다
+//                if (isAttackState == true)
+//                {
+//                    int usingHandLayer = (isUsingRightWeapon == true)
+//                        ? rightHandMainLayer
+//                        : leftHandMainLayer;
+
+//                    int oppositeHandLayer = (isUsingRightWeapon == true)
+//                        ? leftHandMainLayer
+//                        : rightHandMainLayer;
+
+
+//                    _animator.SetLayerWeight(usingHandLayer, 0.0f); //왼손은 반드시 따라가야해서 0.0f
+
+//                    WeaponScript oppositeWeaponScript = _owner.GetCurrentWeaponScript(!isUsingRightWeapon);
+
+//                    if (oppositeWeaponScript == null) //왼손무기를 쥐고있지 않다면
+//                    {
+//                        _animator.SetLayerWeight(oppositeHandLayer, 0.0f); //왼손 무기를 쥐고있지 않다면 모션을 따라가야해서 레이어를 꺼버린다.
+//                    }
+//                    else
+//                    {
+//                        if (oppositeWeaponScript.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null)
+//                        {
+//                            //_overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
+//                        }
+//                        _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
+//                    }
+
+//                    _animator.SetBool("IsMirroring", isMirrored);
+//                }
+//                //공격 애니메이션이 아니다
+//                else
+//                {
+//                    WeaponScript leftHandWeaponScript = _owner.GetCurrentWeaponScript(false);
+//                    WeaponScript rightHandWeaponScript = _owner.GetCurrentWeaponScript(true);
+
+//                    //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
+//                    float leftHandLayerWeight = (leftHandWeaponScript == null || leftHandWeaponScript._handlingIdleAnimation_OneHand == null) //
+//                        ? 0.0f
+//                        : 1.0f;
+//                    _animator.SetLayerWeight(leftHandMainLayer, leftHandLayerWeight);
+
+//                    //오른손 무기를 쥐고있지 않거나 오른손 무기의 파지 애니메이션이 없다
+//                    float rightHandLayerWeight = (rightHandWeaponScript == null || rightHandWeaponScript._handlingIdleAnimation_OneHand == null)
+//                        ? 0.0f
+//                        : 1.0f;
+//                    _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
+
+//                    _animator.SetBool("IsMirroring", false);
+//                }
+//            }
+//            break;
+
+//        case WeaponGrabFocus.RightHandFocused:
+//        case WeaponGrabFocus.LeftHandFocused:
+//            {
+//                float layerWeight = (isAttackState == true)
+//                    ? 0.0f
+//                    : 1.0f;
+
+//                _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
+//                _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
+
+//                if (currState._myState._isAttackState == true)
+//                {
+//                    _animator.SetBool("IsMirroring", isMirrored);
+//                }
+//                else
+//                {
+//                    _animator.SetBool("IsMirroring", false);
+//                }
+//            }
+//            break;
+
+//        case WeaponGrabFocus.DualGrab:
+//            {
+//                Debug.Assert(false, "쌍수 컨텐츠가 추가됐습니까?");
+//            }
+//            break;
+//    }
+//}

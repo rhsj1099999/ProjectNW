@@ -120,7 +120,7 @@ namespace KinematicCharacterController
             _instance = this;
         }
 
-        private void FixedUpdate()
+        private void KCCCall()
         {
             if (Settings.AutoSimulation)
             {
@@ -138,6 +138,16 @@ namespace KinematicCharacterController
                     PostSimulationInterpolationUpdate(deltaTime);
                 }
             }
+        }
+
+        private void Update()
+        {
+            //KCCCall();
+        }
+
+        private void FixedUpdate()
+        {
+            KCCCall();
         }
 
         private void LateUpdate()

@@ -13,8 +13,10 @@ public class CharacterMoveScript2 : CharacterContollerable
         _characterController = GetComponent<CharacterController>();
     }
 
-    public override void LookAt(Vector3 dir)
+    public override void LookAt_Plane(Vector3 dir)
     {
+        dir.y = 0;
+        dir = dir.normalized;
         gameObject.transform.rotation = Quaternion.LookRotation(dir);
     }
 
@@ -56,6 +58,7 @@ public class CharacterMoveScript2 : CharacterContollerable
         //}
     }
 
+    public override void StateChanged() {}
 
     public override void CharacterRootMove(Vector3 delta, float similarities, float ratio)
     {

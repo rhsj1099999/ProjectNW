@@ -10,12 +10,21 @@ public abstract class CharacterContollerable : GameCharacterSubScript
     [SerializeField] protected float _rotatingSpeed_DEG = 720.0f;
     [SerializeField] protected float _jumpForce = 3.0f;
     protected Vector3 _latestPlaneVelocityDontUseY = Vector3.zero;
+    protected List<Vector3> _roots = new List<Vector3>();
 
     //protected bool _isInAir = false;
 
     protected bool _moveTriggerd = false;
 
     protected Vector3 _gravitySpeed = Vector3.zero;
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.P) == true)
+        {
+            _roots.Clear();
+        }
+    }
 
 
     public Vector3 GetLatestVelocity() { return _latestPlaneVelocityDontUseY; }
@@ -41,7 +50,8 @@ public abstract class CharacterContollerable : GameCharacterSubScript
         return (Quaternion.LookRotation(cameraLook) * inputDirection);
     }
 
-    public abstract void LookAt(Vector3 dir);
+    public abstract void StateChanged();
+    public abstract void LookAt_Plane(Vector3 dir);
     public abstract bool GetIsInAir();
     public abstract void CharacterInertiaMove(float ratio);
     public abstract void ClearLatestVelocity();

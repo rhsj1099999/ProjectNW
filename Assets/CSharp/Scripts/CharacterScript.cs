@@ -173,11 +173,6 @@ public class CharacterScript : MonoBehaviour, IHitable
 
     protected virtual void Awake()
     {
-        //CharacterController characterController = GetComponent<CharacterController>();
-        //Debug.Assert(characterController != null, "CharacterController 컴포넌트가 없습니다");
-        //characterController.detectCollisions = false;
-        //AddCharacterSubComponent(characterController);
-
         _characterHeart = new GameObject("CharacterHeart");
         Vector3 myPosition = transform.position;
         myPosition.y += 0.5f;
@@ -247,7 +242,7 @@ public class CharacterScript : MonoBehaviour, IHitable
         // State Controller를 비활성화 한다.
         GetCharacterSubcomponent<StateContoller>().enabled = false;
         // 모든 충돌처리를 비활성화한다 (지면 빼고)
-        GetCharacterSubcomponent<CharacterController>().excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
+        //GetCharacterSubcomponent<CharacterController>().excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
     }
 
 
@@ -782,6 +777,7 @@ public class CharacterScript : MonoBehaviour, IHitable
     {
         GCST<CharacterAnimatorScript>().StateChanged(nextState);
         GCST<CharacterColliderScript>().StateChanged();
+        GCST<CharacterContollerable>().StateChanged();
     }
 
 

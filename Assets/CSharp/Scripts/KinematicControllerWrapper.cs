@@ -1,23 +1,37 @@
 using KinematicCharacterController;
+using MagicaCloth2;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Xsl;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 [RequireComponent(typeof(KinematicCharacterMotor))]
 public class KinematicControllerWrapper : CharacterContollerable, ICharacterController
 {
     [SerializeField] private KinematicCharacterMotor _motor = null;
-
-    private bool _jumpRequested = false;
-    private bool _inAir = false;
+    private List<Vector3> _debuggingList = new List<Vector3>();
+    private Vector3 _rootStartPosition = Vector3.zero;
+    private bool _fiset = false;
 
     private Vector3 _currentSpeed = Vector3.zero;
     private Quaternion _currentRotation = Quaternion.identity;
+    private bool _rootMotionRequested = false;
 
+    private float _destTarget = 0.0f;
+    private Vector3 _anchoredPosition = Vector3.zero;
+    private Vector3 _destinyPosition = Vector3.zero;
+    private Vector3 _rootDelta = Vector3.zero;
+    private Vector3 _rootMovedACC = Vector3.zero;
+    private float _rootMoveMaxDistance = 0.0f;
 
-    public override void LookAt(Vector3 dir)
+    [SerializeField] private float _rootMoveScale = 1.0f;
+
+    public override void LookAt_Plane(Vector3 dir)
     {
+        dir.y = 0.0f;
+        dir = dir.normalized;
         _currentRotation = Quaternion.LookRotation(dir);
     }
 
@@ -27,11 +41,32 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         _motor.CharacterController = this;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P) == true) 
+        {
+            Vector3 totalRoot = Vector3.zero;
+            foreach (var item in _debuggingList)
+            {
+                totalRoot += item;
+            }
+
+            Vector3 delta = transform.position - _rootStartPosition;
+        }
+    }
+
     public override void SubScriptStart() {}
 
     public override bool GetIsInAir()
     {
         return !_motor.GroundingStatus.IsStableOnGround;
+    }
+
+    public override void StateChanged()
+    {
+        _rootMotionRequested = false;
+        _anchoredPosition = Vector3.zero;
+        _rootDelta = Vector3.zero;
     }
 
     public override void CharacterInertiaMove(float ratio)
@@ -69,22 +104,7 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         _motor.ForceUnground(0.1f);
     }
 
-    public override void CharacterMove(Vector3 inputDirection, float similarities, float ratio)
-    {
-        _moveTriggerd = true;
 
-        _currentSpeed = inputDirection * _speed * similarities * ratio;
-    }
-
-    public override void CharacterRootMove(Vector3 delta, float similarities, float ratio)
-    {
-        _moveTriggerd = true;
-
-        //_currentSpeed = (delta / Time.deltaTime) * similarities * ratio;
-
-        //_motor.MoveCharacter();
-        _motor.SetPosition(transform.position + (delta * similarities * ratio));
-    }
 
     public override void CharacterRotate(Vector3 inputDirection, float ratio)
     {
@@ -123,8 +143,28 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         if (_motor.GroundingStatus.IsStableOnGround == true)
         {
             _gravitySpeed = Vector3.zero;
-            return;
         }
+
+        _rootMotionRequested = false;
+        _anchoredPosition = Vector3.zero;
+        _rootDelta = Vector3.zero;
+
+        //if (_destTarget >= 0.0f)
+        //{
+        //    float moved = (_currentSpeed * deltaTime).magnitude;
+        //    _destTarget -= moved;
+        //    Debug.Log("Remain = " + _destTarget);
+
+        //    if (_destTarget <= 0.0f)
+        //    {
+        //        Debug.Log("End!");
+        //        _destTarget = -1.0f;
+        //        _currentSpeed = Vector3.zero;
+        //    }
+        //}
+
+        //_destinyPosition = Vector3.zero;
+        //_rootDelta = Vector3.zero;
     }
 
     public void BeforeCharacterUpdate(float deltaTime) { }
@@ -146,9 +186,91 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         currentRotation = _currentRotation;
     }
 
+
+
+    public override void CharacterMove(Vector3 inputDirection, float similarities, float ratio)
+    {
+        _moveTriggerd = true;
+
+        _currentSpeed = inputDirection * _speed * similarities * ratio;
+    }
+
+    public override void CharacterRootMove(Vector3 delta, float similarities, float ratio)
+    {
+        _moveTriggerd = true;
+
+        _anchoredPosition = transform.position;
+        _rootDelta = delta;
+        _rootMotionRequested = true;
+
+        if (_fiset == false)
+        {
+            _fiset = true;
+            _rootStartPosition = transform.position;
+        }
+
+        _debuggingList.Add(delta);
+
+        //_currentSpeed = (delta / Time.fixedDeltaTime) / _motor.MaxMovementIterations;
+
+
+
+        //밑에 FixedUpdate를 통해서 이동하지만 이거 이상 이동할수는 없다-------------------
+        //_rootMoveMaxDistance = delta.magnitude;
+        //----------------------------------------------------------------------------
+
+
+        //_destTarget = (delta.magnitude);
+
+        //Debug.Log("RootMoveCall" + _destTarget);
+
+
+
+        //_rootMovedACC = Vector3.zero;
+
+        //_rootDelta = delta;
+
+
+        //if (_rootMotionRequested == false)
+        //{
+
+        //}
+
+    }
+
+
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
+        //FixedUpdate에서 몇번 불릴지 모르는 함수
+
+        //if (_rootMotionRequested == true)
+        //{
+        //    float rootMoveSimulatedDistance = (_currentSpeed * deltaTime).magnitude;
+
+        //    //시뮬레이션 거리가 최대거리를 넘어설 예정이다
+        //    if (rootMoveSimulatedDistance > _rootMoveMaxDistance)
+        //    {
+
+        //    }
+        //}
+
+
+
         currentVelocity = _currentSpeed + _gravitySpeed;
-        _jumpRequested = false;
+
+        //Ver 0
+        {
+            //if (_rootMotionRequested == true)
+            //{
+            //    Vector3 dst = _anchoredPosition + _rootDelta; //여기에 도달해야만함
+            //    _currentSpeed = (dst - transform.position) / deltaTime;
+            //}
+
+            //currentVelocity = _currentSpeed + _gravitySpeed;
+        }
+
+
+
+
     }
 }
