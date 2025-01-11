@@ -9,7 +9,7 @@ namespace KinematicCharacterController
     /// The system that manages the simulation of KinematicCharacterMotor and PhysicsMover
     /// </summary>
     [DefaultExecutionOrder(-100)]
-    public class KinematicCharacterSystem : MonoBehaviour
+    public class KinematicCharacterSystem : MMonoBehaviour
     {
         private static KinematicCharacterSystem _instance;
 
@@ -120,12 +120,10 @@ namespace KinematicCharacterController
             _instance = this;
         }
 
-        private void KCCCall()
+        private void KCCCall(float deltaTime)
         {
             if (Settings.AutoSimulation)
             {
-                float deltaTime = Time.deltaTime;
-
                 if (Settings.Interpolate)
                 {
                     PreSimulationInterpolationUpdate(deltaTime);
@@ -142,17 +140,18 @@ namespace KinematicCharacterController
 
         private void Update()
         {
-            //KCCCall();
+            //KCCCall(Time.deltaTime);
+            SynchronizedUpdate(KCCCall, true);
         }
 
         private void FixedUpdate()
         {
-            //KCCCall();
+            //KCCCall(Time.deltaTime);
         }
 
         private void LateUpdate()
         {
-            KCCCall();
+            //KCCCall();
 
             if (Settings.Interpolate)
             {

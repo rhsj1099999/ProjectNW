@@ -16,6 +16,12 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     private bool _inAir = false;
 
     private bool _jumpRequested = false;
+
+    /*-------------------------------------------------------
+    |NOTI| 경사각 이하에서 속도가 얼마든 바닥에 붙음을 보장합니다
+    오토바이같은거 타면 끄세요
+    -------------------------------------------------------*/
+    private bool _isAttachedMove = true; 
     
     private Vector3 _capsuleCheckLocal_High = Vector3.zero;
     private Vector3 _capsuleCheckLocal_Low = Vector3.zero;
@@ -23,6 +29,8 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     private Vector3 _currentSpeed = Vector3.zero;
     private Quaternion _currentRotation = Quaternion.identity;
     private RaycastHit _hit;
+
+    [SerializeField] private float _maxDownHillDeg = 60.0f;
 
 
     public override void LookAt_Plane(Vector3 dir)
@@ -52,7 +60,6 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         |NOTI| 난간에서 _motor.GroundingStatus.IsStableOnGround 가 불안정해서
         CapsuleCast를 씁니다
         ------------------------------------------------------------------*/
-
         return _inAir;
         //return InAircheck();
         //return !_motor.GroundingStatus.IsStableOnGround;
@@ -62,8 +69,6 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     //{
     //    Debug.Log(_motor.GroundingStatus.IsStableOnGround);
     //}
-
-
 
     private bool InAircheck()
     {
@@ -165,6 +170,14 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         }
     }
 
+    public void BeforeCharacterUpdate(float deltaTime)
+    {
+        if (_jumpRequested == true)
+        {
+            JumpRequestedExecute();
+        }
+    }
+
     public void AfterCharacterUpdate(float deltaTime) 
     {
         _latestPlaneVelocityDontUseY = _motor.Velocity;
@@ -177,13 +190,7 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         }
     }
 
-    public void BeforeCharacterUpdate(float deltaTime) 
-    {
-        if (_jumpRequested == true)
-        {
-            JumpRequestedExecute();
-        }
-    }
+
 
     public bool IsColliderValidForCollisions(Collider coll) { return true; }
 
@@ -224,13 +231,37 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         -------------------------------------------------------------*/
 
         Vector3 verticalSpeed = Vector3.zero;
+        Vector3 planeSpeed = _currentSpeed;
 
-        if (_motor.GroundingStatus.IsStableOnGround == false) 
+        bool isGrounded = _motor.GroundingStatus.IsStableOnGround;
+
+        if (isGrounded == false) 
         {
             verticalSpeed = _gravitySpeed;
         }
 
-        currentVelocity = _currentSpeed + verticalSpeed;
+        ReArrangePlaneSpeedVector(ref planeSpeed);
+
+        currentVelocity = planeSpeed + verticalSpeed;
+    }
+
+    private void ReArrangePlaneSpeedVector(ref Vector3 planeSpeedVector)
+    {
+        //슬라이딩 모드가 아니다
+        if (_isAttachedMove == false)
+        {
+            return; 
+        }
+
+        bool isGrounded = _motor.GroundingStatus.IsStableOnGround;
+
+        //바닥에 안붙어있다
+        if (isGrounded == false)
+        {
+            return;
+        }
+
+        planeSpeedVector = _motor.GetDirectionTangentToSurface(planeSpeedVector, _motor.GroundingStatus.GroundNormal) * planeSpeedVector.magnitude;
     }
 }
 

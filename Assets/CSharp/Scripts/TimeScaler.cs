@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,14 +10,16 @@ public class TimeScaler : SubManager
     private int _fixedUpdateCountACC = 0;
     private int _updateCountACC = 0;
     private int _lateUpdateCountACC = 0;
+    private int _currentFrameFixedUpdateCalled = 0;
 
-    private float _fixedUpdateDeltaTimeACC = 0.0f;
-    private float _updateDeltaTimeACC = 0.0f;
-    private float _lateUpdateDeltaTimeACC = 0.0f;
+    private double _fixedUpdateDeltaTimeACC = 0.0f;
+    private double _updateDeltaTimeACC = 0.0f;
+    private double _lateUpdateDeltaTimeACC = 0.0f;
 
-    private float _fixedUpdateMaxACC = 0.0f;
-    private float _updateMaxACC = 0.0f;
-    private float _lateUpdateMaxACC = 0.0f;
+    private double _fixedUpdateMaxACC = 0.0f;
+    private double _updateMaxACC = 0.0f;
+    private double _prevUpdateMaxACC = 0.0f;
+    private double _lateUpdateMaxACC = 0.0f;
 
     public static TimeScaler Instance
     {
@@ -50,40 +53,88 @@ public class TimeScaler : SubManager
 
     public override void SubManagerFixedUpdate()
     {
+        _fixedUpdateMaxACC += Time.deltaTime;
+        _currentFrameFixedUpdateCalled++;
         _fixedUpdateCountACC++;
         _fixedUpdateDeltaTimeACC += Time.deltaTime;
-        _fixedUpdateMaxACC += Time.deltaTime;
     }
 
     public override void SubManagerUpdate()
     {
+        //Phase 1
+        {
+            double delta = _updateDeltaTimeACC - _fixedUpdateDeltaTimeACC;
+            double step = delta / Time.fixedDeltaTime;
+
+            if (Math.Abs(delta) >= Time.fixedDeltaTime)
+            {
+                int a = 10;
+            }
+        }
+
+
+        _prevUpdateMaxACC = _updateMaxACC;
+        _updateMaxACC = Time.deltaTime;
+
         _updateCountACC++;
         _updateDeltaTimeACC += Time.deltaTime;
-        _updateMaxACC = Time.deltaTime;
+
+        //Phase 2
+        {
+            double delta = _updateDeltaTimeACC - _fixedUpdateDeltaTimeACC;
+            double step = delta / Time.fixedDeltaTime;
+
+            if (Math.Abs(delta) >= Time.fixedDeltaTime)
+            {
+                int a = 10;
+            }
+        }
     }
 
     public override void SubManagerLateUpdate()
     {
+        
+        if (_updateMaxACC < _fixedUpdateMaxACC)
+        {
+            //Debug.Assert(false, "fixed°¡ ³Ñ¾î¼¹´Ù");
+            //Debug.Break();
+        }
+
+        double delta = _updateDeltaTimeACC - _fixedUpdateDeltaTimeACC;
+        double step = delta / Time.fixedDeltaTime;
+
+        if (Math.Abs(delta) >= Time.fixedDeltaTime)
+        {
+            int a = 10;
+        }
+
+
+
         _lateUpdateCountACC++;
         _lateUpdateDeltaTimeACC += Time.deltaTime;
+        _currentFrameFixedUpdateCalled = 0;
+        _fixedUpdateMaxACC = 0.0f;
+        //_updateMaxACC = 0.0f;
     }
 
-    public float GetCustomFixedDeltaTime()
+    public float GetSynchronizedDeltaTime()
     {
-        if (_fixedUpdateMaxACC >= _updateMaxACC)
-        {
-            return 0.0f;
-        }
+        //if (_fixedUpdateMaxACC >= _updateMaxACC)
+        //{
+        //    return 0.0f;
+        //}
 
-        float delta = _updateMaxACC - _fixedUpdateMaxACC;
+        //float delta = _updateMaxACC - _fixedUpdateMaxACC;
 
-        if (delta >= Time.fixedDeltaTime)
-        {
-            return Time.fixedDeltaTime;
-        }
-        else
-        {
-            return delta;
-        }
+        //if (delta >= Time.fixedDeltaTime)
+        //{
+        //    return Time.fixedDeltaTime;
+        //}
+        //else
+        //{
+        //    return delta;
+        //}
+
+        return 0.0f;
     }
 }

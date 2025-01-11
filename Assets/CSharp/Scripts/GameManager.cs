@@ -33,8 +33,10 @@ public class GameManager : MonoBehaviour
             Destroy(this.gameObject);
             return;
         }
-
+        
         DontDestroyOnLoad(gameObject);
+
+        Application.targetFrameRate = -1; // 제한 없음
 
         foreach (var subManager in _subManagers)
         {
