@@ -762,7 +762,9 @@ public class StateContoller : GameCharacterSubScript
 
         Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
 
-        return _owner.GCST<CharacterContollerable>().transform.localToWorldMatrix * deltaLocalHip;
+
+        //return _owner.GCST<CharacterContollerable>().transform.localToWorldMatrix * deltaLocalHip;
+        return Matrix4x4.TRS(Vector3.zero, transform.localToWorldMatrix.rotation, transform.localToWorldMatrix.lossyScale) * deltaLocalHip;
     }
 
     private void SwitchFunc_RootMove()

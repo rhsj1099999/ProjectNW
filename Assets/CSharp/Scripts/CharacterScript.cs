@@ -241,8 +241,15 @@ public class CharacterScript : MonoBehaviour, IHitable
     {
         // State Controller를 비활성화 한다.
         GetCharacterSubcomponent<StateContoller>().enabled = false;
+
+        CharacterController ownerCharacterController = GetComponent<CharacterController>();
+        if (ownerCharacterController != null)
+        {
+            ownerCharacterController.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
+        }
+
         // 모든 충돌처리를 비활성화한다 (지면 빼고)
-        //GetCharacterSubcomponent<CharacterController>().excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
+        //GetCharacterSubcomponent<CharacterController>().excludeLayers = );
     }
 
 
@@ -748,7 +755,6 @@ public class CharacterScript : MonoBehaviour, IHitable
             _created.Clear();
         }
     }
-
 
     //void OnControllerColliderHit(ControllerColliderHit hit)
     //{

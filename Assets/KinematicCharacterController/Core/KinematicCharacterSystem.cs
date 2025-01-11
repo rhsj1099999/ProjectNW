@@ -147,11 +147,13 @@ namespace KinematicCharacterController
 
         private void FixedUpdate()
         {
-            KCCCall();
+            //KCCCall();
         }
 
         private void LateUpdate()
         {
+            KCCCall();
+
             if (Settings.Interpolate)
             {
                 CustomInterpolationUpdate();

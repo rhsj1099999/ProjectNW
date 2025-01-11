@@ -3,6 +3,7 @@ using MagicaCloth2;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Xsl;
+using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
@@ -11,22 +12,18 @@ using static UnityEngine.Rendering.DebugUI;
 public class KinematicControllerWrapper : CharacterContollerable, ICharacterController
 {
     [SerializeField] private KinematicCharacterMotor _motor = null;
-    private List<Vector3> _debuggingList = new List<Vector3>();
-    private Vector3 _rootStartPosition = Vector3.zero;
-    private bool _fiset = false;
+
+    private bool _inAir = false;
+
+    private bool _jumpRequested = false;
+    
+    private Vector3 _capsuleCheckLocal_High = Vector3.zero;
+    private Vector3 _capsuleCheckLocal_Low = Vector3.zero;
 
     private Vector3 _currentSpeed = Vector3.zero;
     private Quaternion _currentRotation = Quaternion.identity;
-    private bool _rootMotionRequested = false;
+    private RaycastHit _hit;
 
-    private float _destTarget = 0.0f;
-    private Vector3 _anchoredPosition = Vector3.zero;
-    private Vector3 _destinyPosition = Vector3.zero;
-    private Vector3 _rootDelta = Vector3.zero;
-    private Vector3 _rootMovedACC = Vector3.zero;
-    private float _rootMoveMaxDistance = 0.0f;
-
-    [SerializeField] private float _rootMoveScale = 1.0f;
 
     public override void LookAt_Plane(Vector3 dir)
     {
@@ -41,33 +38,59 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         _motor.CharacterController = this;
     }
 
-    private void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.P) == true) 
-        {
-            Vector3 totalRoot = Vector3.zero;
-            foreach (var item in _debuggingList)
-            {
-                totalRoot += item;
-            }
-
-            Vector3 delta = transform.position - _rootStartPosition;
-        }
+        _capsuleCheckLocal_High = _motor.Capsule.center + Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
+        _capsuleCheckLocal_Low = _motor.Capsule.center - Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
     }
 
     public override void SubScriptStart() {}
 
     public override bool GetIsInAir()
     {
-        return !_motor.GroundingStatus.IsStableOnGround;
+        /*------------------------------------------------------------------
+        |NOTI| 난간에서 _motor.GroundingStatus.IsStableOnGround 가 불안정해서
+        CapsuleCast를 씁니다
+        ------------------------------------------------------------------*/
+
+        return _inAir;
+        //return InAircheck();
+        //return !_motor.GroundingStatus.IsStableOnGround;
     }
+
+    //private void Update()
+    //{
+    //    Debug.Log(_motor.GroundingStatus.IsStableOnGround);
+    //}
+
+
+
+    private bool InAircheck()
+    {
+        Vector3 currentPosition = transform.position;
+
+        /*------------------------------------------------
+        |NOTI| 캡슐사이즈 변경되면 High, Low 바꿔야합니다
+        그게 싫다면 동적으로 계산하기
+        ------------------------------------------------*/
+
+        Vector3 point1 = currentPosition + _capsuleCheckLocal_High;
+        Vector3 point2 = currentPosition + _capsuleCheckLocal_Low;
+
+        float checkDistance = 0.2f;
+        float checkRadius = _motor.Capsule.radius - 0.005f;
+
+        _inAir = !Physics.CapsuleCast(point1, point2, checkRadius, Vector3.down, out _hit, checkDistance, LayerMask.GetMask("StaticNavMeshLayer"));
+
+        return _inAir;
+    }
+
 
     public override void StateChanged()
     {
-        _rootMotionRequested = false;
-        _anchoredPosition = Vector3.zero;
-        _rootDelta = Vector3.zero;
+        SafeReArrange();
     }
+
 
     public override void CharacterInertiaMove(float ratio)
     {
@@ -81,17 +104,31 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     {
         if (_moveTriggerd == false)
         {
-            //이동명령이 온적이 없다.
             _currentSpeed = Vector3.zero;
         }
 
         _moveTriggerd = false;
     }
 
-    public override void GravityUpdate()
+    private void SafeReArrange()
+    {
+        _jumpRequested = false;
+    }
+
+    public override void GravityUpdate() 
     {
         _gravitySpeed += (_mass * 9.81f * Vector3.down) * Time.deltaTime;
+        InAircheck();
     }
+
+    private void JumpRequestedExecute()
+    {
+        _inAir = true;
+        _jumpRequested = false;
+        _motor.ForceUnground(0.1f);
+        _gravitySpeed = new Vector3(0.0f, _jumpForce, 0.0f);
+    }
+
 
     public override void DoJump()
     {
@@ -100,8 +137,7 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
             return; //더블 점프 컨텐츠, 스킬 생기면 어떻게할꺼야
         }
 
-        _gravitySpeed = new Vector3(0.0f, _jumpForce, 0.0f);
-        _motor.ForceUnground(0.1f);
+        _jumpRequested = true;
     }
 
 
@@ -129,51 +165,31 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         }
     }
 
-
-
-
-    
-
-
-
     public void AfterCharacterUpdate(float deltaTime) 
     {
         _latestPlaneVelocityDontUseY = _motor.Velocity;
+        _jumpRequested = false;
 
         if (_motor.GroundingStatus.IsStableOnGround == true)
         {
             _gravitySpeed = Vector3.zero;
+            return; //더블 점프 컨텐츠, 스킬 생기면 어떻게할꺼야
         }
-
-        _rootMotionRequested = false;
-        _anchoredPosition = Vector3.zero;
-        _rootDelta = Vector3.zero;
-
-        //if (_destTarget >= 0.0f)
-        //{
-        //    float moved = (_currentSpeed * deltaTime).magnitude;
-        //    _destTarget -= moved;
-        //    Debug.Log("Remain = " + _destTarget);
-
-        //    if (_destTarget <= 0.0f)
-        //    {
-        //        Debug.Log("End!");
-        //        _destTarget = -1.0f;
-        //        _currentSpeed = Vector3.zero;
-        //    }
-        //}
-
-        //_destinyPosition = Vector3.zero;
-        //_rootDelta = Vector3.zero;
     }
 
-    public void BeforeCharacterUpdate(float deltaTime) { }
+    public void BeforeCharacterUpdate(float deltaTime) 
+    {
+        if (_jumpRequested == true)
+        {
+            JumpRequestedExecute();
+        }
+    }
 
     public bool IsColliderValidForCollisions(Collider coll) { return true; }
 
     public void OnDiscreteCollisionDetected(Collider hitCollider) { }
 
-    public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
+    public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) {}
 
     public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
 
@@ -186,8 +202,6 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         currentRotation = _currentRotation;
     }
 
-
-
     public override void CharacterMove(Vector3 inputDirection, float similarities, float ratio)
     {
         _moveTriggerd = true;
@@ -199,78 +213,69 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     {
         _moveTriggerd = true;
 
-        _anchoredPosition = transform.position;
-        _rootDelta = delta;
-        _rootMotionRequested = true;
-
-        if (_fiset == false)
-        {
-            _fiset = true;
-            _rootStartPosition = transform.position;
-        }
-
-        _debuggingList.Add(delta);
-
-        //_currentSpeed = (delta / Time.fixedDeltaTime) / _motor.MaxMovementIterations;
-
-
-
-        //밑에 FixedUpdate를 통해서 이동하지만 이거 이상 이동할수는 없다-------------------
-        //_rootMoveMaxDistance = delta.magnitude;
-        //----------------------------------------------------------------------------
-
-
-        //_destTarget = (delta.magnitude);
-
-        //Debug.Log("RootMoveCall" + _destTarget);
-
-
-
-        //_rootMovedACC = Vector3.zero;
-
-        //_rootDelta = delta;
-
-
-        //if (_rootMotionRequested == false)
-        //{
-
-        //}
-
+        _currentSpeed = delta / Time.deltaTime;
     }
 
 
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
-        //FixedUpdate에서 몇번 불릴지 모르는 함수
+        /*-------------------------------------------------------------
+        |NOTI| 쓸데없는 y축 속도가 있으면 안된다(이미 바닥인데 중력같은거)
+        -------------------------------------------------------------*/
 
-        //if (_rootMotionRequested == true)
-        //{
-        //    float rootMoveSimulatedDistance = (_currentSpeed * deltaTime).magnitude;
+        Vector3 verticalSpeed = Vector3.zero;
 
-        //    //시뮬레이션 거리가 최대거리를 넘어설 예정이다
-        //    if (rootMoveSimulatedDistance > _rootMoveMaxDistance)
-        //    {
-
-        //    }
-        //}
-
-
-
-        currentVelocity = _currentSpeed + _gravitySpeed;
-
-        //Ver 0
+        if (_motor.GroundingStatus.IsStableOnGround == false) 
         {
-            //if (_rootMotionRequested == true)
-            //{
-            //    Vector3 dst = _anchoredPosition + _rootDelta; //여기에 도달해야만함
-            //    _currentSpeed = (dst - transform.position) / deltaTime;
-            //}
-
-            //currentVelocity = _currentSpeed + _gravitySpeed;
+            verticalSpeed = _gravitySpeed;
         }
 
-
-
-
+        currentVelocity = _currentSpeed + verticalSpeed;
     }
 }
+
+
+
+//private void PrivateGravityUpdate()
+//{
+//    bool prevInAir = _inAir;
+//    bool currInAir = false;
+
+//    Vector3 currentPosition = transform.position;
+//    Vector3 point1 = currentPosition + _motor.Capsule.center + Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
+//    Vector3 point2 = currentPosition + _motor.Capsule.center - Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
+
+//    float checkDistance = 0.2f;
+//    float checkRadius = _motor.Capsule.radius - 0.01f;
+
+//    if (prevInAir == true && _gravitySpeed.y > 0.0f)
+//    {
+//        _gravitySpeed += (_mass * 9.81f * Vector3.down) * Time.deltaTime;
+//        return;
+//    }
+
+//    currInAir = !Physics.CapsuleCast(point1, point2, checkRadius, Vector3.down, out _hit, checkDistance, LayerMask.GetMask("StaticNavMeshLayer"));
+
+//    _inAir = currInAir;
+
+//    if (currInAir == true)
+//    {
+//        _gravitySpeed += (_mass * 9.81f * Vector3.down) * Time.deltaTime;
+//        return;
+//    }
+
+//    _gravitySpeed = Vector3.zero;
+
+//    float moveDistance = (currInAir != prevInAir)
+//        ? _hit.distance
+//        : _hit.distance - checkRadius;
+
+//    //float moveDistance = _hit.distance;
+
+//    if (moveDistance <= 0)
+//    {
+//        return;
+//    }
+
+//    _motor.SetPosition(transform.position + Vector3.down * moveDistance);
+//}

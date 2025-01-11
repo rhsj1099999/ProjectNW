@@ -28,14 +28,17 @@ namespace KinematicCharacterController.Walkthrough.PlayerCameraCharacterSetup
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
+
+
         }
 
         private void LateUpdate()
         {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+
             HandleCameraInput();
         }
 

@@ -71,4 +71,12 @@ public class GameManager : MonoBehaviour
             subManager.SubManagerUpdate();
         }
     }
+
+    private void LateUpdate()
+    {
+        foreach (var subManager in _subManagers)
+        {
+            subManager.SubManagerLateUpdate();
+        }
+    }
 }
