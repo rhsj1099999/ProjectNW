@@ -1,3 +1,4 @@
+using MagicaCloth2;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -64,6 +65,11 @@ public class IKScript : MonoBehaviour
 
     public void RegistIK(AvatarIKGoal goal, Transform targetTransform, IKTargetDesc desc)
     {
+        if (_ikDic.ContainsKey(desc) == true)
+        {
+            _ikDic.Remove(desc);
+        }
+
         _ikDic.Add(desc, new IKDesc(desc, targetTransform, goal));
 
         Debug.Log("IKDic Count = " + _ikDic.Count);

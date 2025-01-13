@@ -34,6 +34,11 @@ public class CharacterMoveScript2 : CharacterContollerable
         return !_characterController.isGrounded;
     }
 
+    public override void CharacterRotate(Quaternion rotation)
+    {
+        transform.rotation = rotation;
+    }
+
     public override void GravityUpdate() //매 프레임마다 호출될 함수니까
     {
         _gravitySpeed += new Vector3(0.0f, Time.deltaTime * Physics.gravity.y * _mass, 0.0f);
@@ -67,6 +72,8 @@ public class CharacterMoveScript2 : CharacterContollerable
         Vector3 desiredMove = delta * similarities * ratio;
 
         _characterController.Move(desiredMove);
+
+        Debug.Log("Moved" + desiredMove);
 
         _latestPlaneVelocityDontUseY = _characterController.velocity;
     }

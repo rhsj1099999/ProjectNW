@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.Playables;
 using static BodyPartBlendingWork;
 using static CharacterScript;
 
@@ -95,13 +97,22 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     protected List<Coroutine> _currentBodyCoroutine = new List<Coroutine>();
     protected List<Action_LayerType> _bodyPartDelegates = new List<Action_LayerType>();
 
-    
+
     [SerializeField] protected int _currentBusyAnimatorLayer_BitShift = 0;
     [SerializeField] protected List<AnimatorLayerTypes> _usingBodyPart = new List<AnimatorLayerTypes>();
     protected List<AnimatorBlendingDesc> _partBlendingDesc = new List<AnimatorBlendingDesc>();
     protected List<LinkedList<BodyPartBlendingWork>> _bodyPartWorks = new List<LinkedList<BodyPartBlendingWork>>();
 
     [SerializeField] protected AnimationClip _ifWeaponIsLight = null;
+
+
+
+
+
+
+
+
+
 
     public int GetBusyLayer() { return _currentBusyAnimatorLayer_BitShift; }
     public Animator GetCurrActivatedAnimator() { return _animator; }
@@ -128,10 +139,19 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         return _animator.IsInTransition(targetLayer);
     }
-    
+
 
     protected RigBuilder _characterRigBuilder = null;
     protected Rig _characterRig = null;
+
+    private void OnDestroy()
+    {
+        if (_playableGraph.IsValid() == true)
+        {
+            _playableGraph.Stop();
+            _playableGraph.Destroy();
+        }
+    }
 
 
 
@@ -151,59 +171,84 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
+    private PlayableGraph _playableGraph;
+    private AnimationPlayableOutput _playableOutput;
+    private AnimationLayerMixerPlayable _layerMixer;
+
 
     public override void Init(CharacterScript owner)
     {
-        _owner = owner;
-        _myType = typeof(CharacterAnimatorScript);
-
-        _animator = GetComponentInChildren<Animator>();
-        _gameBasicAvatar = _animator.avatar;
-
-        Debug.Assert(_animator != null, "Animator가 없다");
-        _characterModelObject = _animator.gameObject;
-        _gameBasicCharacter = Instantiate(_characterModelObject, transform);
-        _gameBasicCharacter.SetActive(false);
-
-        _characterRig = GetComponentInChildren<Rig>();
-        _characterRigBuilder = GetComponentInChildren<RigBuilder>();
-
-
-        _overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
-        _animator.runtimeAnimatorController = _overrideController;
-
-        for (int i = 0; i < (int)AnimatorLayerTypes.End; i++)
         {
-            _partBlendingDesc.Add(null);
-            _currentBusyAnimatorLayer.Add(false);
-            _bodyPartWorks.Add(new LinkedList<BodyPartBlendingWork>());
-            _bodyCoroutineStarted.Add(false);
-            _currentBodyCoroutine.Add(null);
-        }
+            _owner = owner;
+            _myType = typeof(CharacterAnimatorScript);
 
-        foreach (var type in _usingBodyPart)
-        {
-            if (_partBlendingDesc[(int)type] != null)
+            _animator = GetComponentInChildren<Animator>();
+            _gameBasicAvatar = _animator.avatar;
+
+            Debug.Assert(_animator != null, "Animator가 없다");
+            _characterModelObject = _animator.gameObject;
+            _gameBasicCharacter = Instantiate(_characterModelObject, transform);
+            _gameBasicCharacter.SetActive(false);
+
+            _characterRig = GetComponentInChildren<Rig>();
+            _characterRigBuilder = GetComponentInChildren<RigBuilder>();
+
+
+            _overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
+            _animator.runtimeAnimatorController = _overrideController;
+
+            for (int i = 0; i < (int)AnimatorLayerTypes.End; i++)
             {
-                continue;
+                _partBlendingDesc.Add(null);
+                _currentBusyAnimatorLayer.Add(false);
+                _bodyPartWorks.Add(new LinkedList<BodyPartBlendingWork>());
+                _bodyCoroutineStarted.Add(false);
+                _currentBodyCoroutine.Add(null);
             }
 
-            _partBlendingDesc[(int)type] = new AnimatorBlendingDesc(type, _animator);
+            foreach (var type in _usingBodyPart)
+            {
+                if (_partBlendingDesc[(int)type] != null)
+                {
+                    continue;
+                }
+
+                _partBlendingDesc[(int)type] = new AnimatorBlendingDesc(type, _animator);
+            }
+
+
+            if (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody] == null)
+            {
+                Debug.Assert(false, "FullBody는 반드시 사용해야 한다");
+                Debug.Break();
+                _partBlendingDesc[(int)AnimatorLayerTypes.FullBody] = new AnimatorBlendingDesc(AnimatorLayerTypes.FullBody, _animator);
+            }
+
+            if (_gameBasicAvatar == null)
+            {
+                Debug.Assert(false, "캐릭터 초기값 아바타입니다. 반드시 설정돼있어야합니다");
+                Debug.Break();
+            }
         }
 
 
-        if (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody] == null)
+        // PlayableGraph 생성
+        _playableGraph = PlayableGraph.Create("AvatarMaskChanger");
+        _playableOutput = AnimationPlayableOutput.Create(_playableGraph, "Animation", _animator);
+
+        // AnimationLayerMixerPlayable 생성 (Animator의 모든 레이어를 제어 가능)
+        _layerMixer = AnimationLayerMixerPlayable.Create(_playableGraph, _animator.layerCount);
+        _playableOutput.SetSourcePlayable(_layerMixer);
+
+        // 기존 AnimatorController 레이어 연결
+        for (int i = 0; i < _animator.layerCount; i++)
         {
-            Debug.Assert(false, "FullBody는 반드시 사용해야 한다");
-            Debug.Break();
-            _partBlendingDesc[(int)AnimatorLayerTypes.FullBody] = new AnimatorBlendingDesc(AnimatorLayerTypes.FullBody, _animator);
+            var controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, _animator.runtimeAnimatorController);
+            _playableGraph.Connect(controllerPlayable, 0, _layerMixer, i);
         }
 
-        if (_gameBasicAvatar == null)
-        {
-            Debug.Assert(false, "캐릭터 초기값 아바타입니다. 반드시 설정돼있어야합니다");
-            Debug.Break();
-        }
+        // PlayableGraph 실행
+        _playableGraph.Play();
     }
 
     public override void SubScriptStart()
@@ -1175,7 +1220,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         _owner.CreateWeaponModelAndEquip(layerType, nextWeaponPrefab);
     }
 
-    public IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveNextLayer(AnimatorLayerTypes layerType)
+    protected IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveNextLayer(AnimatorLayerTypes layerType)
     {
         AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
 
@@ -1222,7 +1267,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
-    public IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveAllLayer(AnimatorLayerTypes layerType)
+    protected IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveAllLayer(AnimatorLayerTypes layerType)
     {
         AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
 
@@ -1262,7 +1307,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
-    public IEnumerator ChangeNextLayerWeightSubCoroutine_DeActiveAllLayer(AnimatorLayerTypes layerType)
+    protected IEnumerator ChangeNextLayerWeightSubCoroutine_DeActiveAllLayer(AnimatorLayerTypes layerType)
     {
         AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
 
@@ -1297,7 +1342,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
-    public IEnumerator ChangeNextLayerWeightSubCoroutine_TurnOffAllLayer(AnimatorLayerTypes layerType)
+    protected IEnumerator ChangeNextLayerWeightSubCoroutine_TurnOffAllLayer(AnimatorLayerTypes layerType)
     {
         AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
 

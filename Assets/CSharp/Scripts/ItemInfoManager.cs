@@ -433,14 +433,14 @@ public class ItemInfoManager : SubManager
 
 
         testItemInfo = new ItemInfo();
-        testItemInfo._itemName = "Noel_Skin2";
+        testItemInfo._itemName = "Beidou_Skin";
         testItemInfo._sprite = null;
         testItemInfo._isStackAble = true;
         testItemInfo._itemKey = 42;
         testItemInfo._sizeX = 2;
-        testItemInfo._sizeY = 4;
+        testItemInfo._sizeY = 5;
         testItemInfo._equipType = ItemInfo.EquipType.All;
-        testItemInfo._meshObjectName = "Noel2";
+        testItemInfo._meshObjectName = "Beidou";
         testItemInfo._equipMeshIndicies = new List<int>();
         testItemInfo._equipMeshIndicies.Add(0);
         _items.Add(testItemInfo._itemKey, testItemInfo);
@@ -456,8 +456,6 @@ public class ItemInfoManager : SubManager
         testItemInfo._sizeY = 2;
         testItemInfo._equipType = ItemInfo.EquipType.Weapon;
         _items.Add(testItemInfo._itemKey, testItemInfo);
-
-
 
     }
 }

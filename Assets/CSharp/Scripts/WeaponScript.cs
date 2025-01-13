@@ -233,8 +233,6 @@ public class WeaponScript : MonoBehaviour
 
     public virtual void InitIK()
     {
-        _ownerIKSkript = _owner.GetComponentInChildren<CharacterAnimatorScript>().gameObject.GetComponentInChildren<IKScript>();
-
         //IK 세팅 단계
         IKTargetScript[] ikTargets = gameObject.GetComponentsInChildren<IKTargetScript>();
 
@@ -272,6 +270,11 @@ public class WeaponScript : MonoBehaviour
                 {
                     goal = AvatarIKGoal.RightHand;
                 }
+            }
+
+            if (_createdIKTargets.ContainsKey(goal) == true)
+            {
+                _createdIKTargets.Remove(goal);
             }
 
             _createdIKTargets.Add(goal, ikTarget.GetDesc());
@@ -330,218 +333,4 @@ public class WeaponScript : MonoBehaviour
     virtual public void TurnOnAim() { }
     virtual public void TurnOffAim() { }
     virtual public void UnEquip() { }
-
-
-
-    //public SortedDictionary<int, List<LinkedState>> GetEntryStates()
-    //{
-    //    return _entryStates;
-    //}
-
-
-    //public int CalculateConditionWeight(List<ConditionDesc> conditions)
-    //{
-    //    int retWeight = 0;
-
-    //    foreach (ConditionDesc condition in conditions)
-    //    {
-    //        //기본적으로 조건이 하나 걸려있으면 가중치 +1입니다.
-    //        //콤보 키, KeyInput경우에는 키가 어려울수록 가중치가 더들어갑니다.
-    //        switch (condition._singleConditionType)
-    //        {
-    //            default:
-    //                retWeight++;
-    //                break;
-
-    //            case ConditionType.KeyInput:
-    //                {
-    //                    //총 키 개수 ... ver 1
-    //                    List<KeyInputConditionDesc> keys = condition._keyInputConditionTarget;
-    //                    retWeight += keys.Count;
-    //                }
-    //                break;
-
-    //            case ConditionType.ComboKeyCommand:
-    //                {
-    //                    //조합키들 총 개수 + 콤보개수 ... ver 1
-    //                    List<ComboKeyCommandDesc> comboKeys = condition._commandInputConditionTarget;
-    //                    foreach (ComboKeyCommandDesc command in comboKeys)
-    //                    {
-    //                        retWeight += command._targetCommandKeys.Count;
-    //                    }
-    //                    retWeight += condition._commandInputConditionTarget.Count;
-    //                }
-    //                break;
-    //        }
-    //    }
-
-    //    return retWeight;
-    //}
-
-
-    //protected void GraphLinking()
-    //{
-    //    Dictionary<StateAsset, State> tempReadyAssets = new Dictionary<StateAsset, State>();
-
-    //    //EntryState를 미리 만들어둔다.
-    //    for (int i = 0; i < _weaponStateAssets.Count; i++)
-    //    {
-    //        StateAsset entryNode = _weaponStateAssets[i]._states[0]._state;
-
-    //        if (tempReadyAssets.ContainsKey(entryNode) == false)//최초 순회 된 노드이다.
-    //        {
-    //            //State newState = new State(entryNode);
-    //            State newState = ResourceDataManager.Instance.GetState(entryNode);
-    //            tempReadyAssets.Add(entryNode, newState);
-    //            Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions != null, "Entry 인데 null이면 안됩니다.");
-    //            Debug.Assert(_weaponStateAssets[i]._states[0]._entryConditions.Count > 0, "Entry 인데 Count가 0이면 안됩니다.");
-    //            StateNodeDesc newStateNode = new StateNodeDesc();
-    //            _weaponStates.Add(newState, newStateNode);
-
-    //            int entryWeight = CalculateConditionWeight(_weaponStateAssets[i]._states[0]._entryConditions);
-
-    //            //Dictionary<int, List<State>>
-    //            if (_entryStates.ContainsKey(entryWeight) == false)
-    //            {
-    //                _entryStates.Add(entryWeight, new List<LinkedState>());
-    //            }
-    //            LinkedState newEntryState = new LinkedState();
-    //            newEntryState._state = newState;
-    //            newEntryState._multiConditions = _weaponStateAssets[i]._states[0]._entryConditions;
-    //            _entryStates[entryWeight].Add(newEntryState);
-    //        }
-    //    }
-
-    //    //State Linking 단계
-    //    for (int i = 0; i < _weaponStateAssets.Count; i++)
-    //    {
-    //        for (int j = 0; j < _weaponStateAssets[i]._states.Count; j++)
-    //        {
-    //            StateAsset node = _weaponStateAssets[i]._states[j]._state;
-
-    //            State targetState = null;
-    //            tempReadyAssets.TryGetValue(node, out targetState);
-
-    //            if (targetState == null)//최초 순회 된 노드이다.
-    //            {
-    //                //State newState = new State(node);
-    //                State newState = ResourceDataManager.Instance.GetState(node);
-    //                tempReadyAssets.Add(node, newState);
-    //                StateNodeDesc newStateNode = new StateNodeDesc();
-    //                _weaponStates.Add(newState, newStateNode);
-    //            }
-
-    //            //Next Combo State 연결 ...  다음 콤보가 있다면 ... 
-    //            if ((j + 1) < _weaponStateAssets[i]._states.Count)
-    //            {
-    //                StateAsset nextComboNode = _weaponStateAssets[i]._states[j + 1]._state;
-
-    //                State nextComboState = null;
-    //                tempReadyAssets.TryGetValue(nextComboNode, out nextComboState);
-
-    //                if (nextComboState == null)//최초 순회 된 노드이다.
-    //                {
-    //                    //State newState = new State(nextComboNode);
-    //                    State newState = ResourceDataManager.Instance.GetState(nextComboNode);
-    //                    tempReadyAssets.Add(nextComboNode, newState);
-    //                    StateNodeDesc newStateNode = new StateNodeDesc();
-    //                    _weaponStates.Add(newState, newStateNode);
-    //                }
-    //                nextComboState = tempReadyAssets[nextComboNode];
-
-    //                //   [[ --- targetState  --->>  stateWillBeLinked --- ]]
-    //                Debug.Assert(_weaponStates.ContainsKey(targetState) != false, "없으면 안됩니다");
-    //                StateNodeDesc targetLinkedDesc = _weaponStates[targetState];
-
-    //                if (targetLinkedDesc.FindNode(nextComboState) == false)
-    //                {
-    //                    LinkedState linkingDesc = new LinkedState();
-    //                    linkingDesc._state = nextComboState;
-    //                    linkingDesc._multiConditions = _weaponStateAssets[i]._states[j + 1]._nextStateConditions;
-
-    //                    int stateWeight = CalculateConditionWeight(linkingDesc._multiConditions);
-    //                    targetLinkedDesc.AddNode(stateWeight, linkingDesc);
-    //                }
-    //            }
-
-
-    //            // Jumping Linking State 연결
-    //            {
-    //                for (int k = 0; k < _weaponStateAssets[i]._states[j]._linkedStates.Count; k++)
-    //                {
-    //                    StateAsset linkedNode = _weaponStateAssets[i]._states[j]._linkedStates[k]._stateAsset;
-
-    //                    State willBeLinkedState = null;
-    //                    tempReadyAssets.TryGetValue(linkedNode, out willBeLinkedState);
-
-    //                    if (willBeLinkedState == null)//최초 순회 된 노드이다.
-    //                    {
-    //                        //State newState = new State(linkedNode);
-    //                        State newState = ResourceDataManager.Instance.GetState(linkedNode);
-    //                        tempReadyAssets.Add(linkedNode, newState);
-    //                        StateNodeDesc newStateNode = new StateNodeDesc();
-    //                        _weaponStates.Add(newState, newStateNode);
-    //                    }
-
-    //                    willBeLinkedState = tempReadyAssets[linkedNode];
-
-
-    //                    //   [[ --- targetState  --->>  stateWillBeLinked --- ]]
-    //                    Debug.Assert(_weaponStates.ContainsKey(targetState) != false, "없으면 안됩니다");
-    //                    StateNodeDesc targetLinkedDesc = _weaponStates[targetState];
-
-    //                    if (targetLinkedDesc.FindNode(willBeLinkedState) == false)
-    //                    {
-    //                        LinkedState linkingDesc = new LinkedState();
-    //                        linkingDesc._state = willBeLinkedState;
-    //                        linkingDesc._multiConditions = _weaponStateAssets[i]._states[j]._linkedStates[k]._multiConditionAsset;
-
-    //                        int stateWeight = CalculateConditionWeight(linkingDesc._multiConditions);
-    //                        targetLinkedDesc.AddNode(stateWeight, linkingDesc);
-    //                    }
-    //                }
-    //            }
-
-
-    //            //Entry State 연결 ... 동일 콤보의 Entry로는 넘어갈 수 없다.
-    //            {
-    //                for (int k = 0; k < _weaponStateAssets.Count; k++)
-    //                {
-    //                    List<WeaponStateDesc.EachState> temoComboList = _weaponStateAssets[k]._states;
-
-    //                    if (k == i)
-    //                    {
-    //                        continue;
-    //                    }
-
-    //                    StateAsset EntryState = temoComboList[0]._state;
-    //                    State willBeLinkedState = null;
-    //                    tempReadyAssets.TryGetValue(EntryState, out willBeLinkedState);
-    //                    Debug.Assert(willBeLinkedState != null, "없으면 안됩니다");
-
-    //                    if (targetState == willBeLinkedState)
-    //                    {
-    //                        continue;
-    //                    }
-
-    //                    //   [[ --- targetState  --->>  stateWillBeLinked --- ]]
-    //                    Debug.Assert(_weaponStates.ContainsKey(targetState) != false, "없으면 안됩니다");
-    //                    Debug.Assert(_weaponStates.ContainsKey(willBeLinkedState) != false, "없으면 안됩니다");
-
-    //                    StateNodeDesc targetLinkedDesc = _weaponStates[targetState];
-    //                    if (targetLinkedDesc.FindNode(willBeLinkedState) == false)
-    //                    {
-    //                        LinkedState linkingDesc = new LinkedState();
-    //                        linkingDesc._state = willBeLinkedState;
-    //                        linkingDesc._multiConditions = temoComboList[0]._entryConditions;
-
-    //                        int stateWeight = CalculateConditionWeight(linkingDesc._multiConditions);
-    //                        targetLinkedDesc.AddNode(stateWeight, linkingDesc);
-    //                    }
-
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
 }

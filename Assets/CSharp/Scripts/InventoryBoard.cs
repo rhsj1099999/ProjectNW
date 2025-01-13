@@ -542,36 +542,10 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
     private void TestCode()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha7) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha8) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha9) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32));
-        }
-
         if (Input.GetKeyDown(KeyCode.Alpha0) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33));
         }
-
-        if (Input.GetKeyDown(KeyCode.Alpha6) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34));
-        }
-
-
-
-
-
-
 
         if (Input.GetKeyDown(KeyCode.Alpha1) == true)
         {
@@ -591,17 +565,36 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         if (Input.GetKeyDown(KeyCode.Alpha4) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(40));
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(42));
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha5) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(41));
         }
+
         if (Input.GetKeyDown(KeyCode.Alpha5) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(43));
         }
 
+        if (Input.GetKeyDown(KeyCode.Alpha6) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(37));
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(38));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha6) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha7) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30));
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31));
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32));
+        }
     }
     private void DebugCells()
     {

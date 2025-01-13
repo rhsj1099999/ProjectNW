@@ -46,6 +46,11 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         _motor.CharacterController = this;
     }
 
+    public override void CharacterRotate(Quaternion rotation)
+    {
+        _currentRotation = rotation;
+    }
+
     private void Start()
     {
         _capsuleCheckLocal_High = _motor.Capsule.center + Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
@@ -60,7 +65,14 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         |NOTI| 난간에서 _motor.GroundingStatus.IsStableOnGround 가 불안정해서
         CapsuleCast를 씁니다
         ------------------------------------------------------------------*/
+
+        if (_gravitySpeed.y > 0.0f)
+        {
+            return true;
+        }
+
         return _inAir;
+
         //return InAircheck();
         //return !_motor.GroundingStatus.IsStableOnGround;
     }

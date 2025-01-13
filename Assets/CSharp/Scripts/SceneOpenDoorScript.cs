@@ -25,6 +25,8 @@ public class SceneOpenDoorScript : MonoBehaviour
 
     private bool _objectActivated = false;
 
+    [SerializeField] private bool _firstCreated = false;
+
     private Animator _ownerAnimator = null;
 
     private Coroutine _interactionCoroutine = null;
@@ -50,6 +52,14 @@ public class SceneOpenDoorScript : MonoBehaviour
         AnimatorStateInfo stateInfo = _ownerAnimator.GetCurrentAnimatorStateInfo(0);
 
         StartCoroutine(ActivateCoroutine(stateInfo.length));
+    }
+
+    private void Start()
+    {
+        if (_firstCreated == true)
+        {
+            StartCoroutine(OpenDoor());
+        }
     }
 
     private IEnumerator ActivateCoroutine(float targetTime)
@@ -192,17 +202,26 @@ public class SceneOpenDoorScript : MonoBehaviour
     public IEnumerator OpenDoor()
     {
         Camera mainCamera = Camera.main;
-        GameObject mainCameraObject = mainCamera.gameObject;
-        GameObject subCameraObject = new GameObject("SubCamera_OpenDoorLayer");
-        subCameraObject.transform.localPosition = Vector3.zero;
-        subCameraObject.transform.localRotation = Quaternion.identity;
-        subCameraObject.transform.SetParent(mainCameraObject.transform);
 
-        Camera subCamera = subCameraObject.AddComponent<Camera>();
-        subCamera.clearFlags = CameraClearFlags.SolidColor;
-        subCamera.backgroundColor = Color.black;
-        subCamera.targetTexture = _openDoorRenderTexture;
-        subCamera.cullingMask = LayerMask.GetMask("OpenDoorLayer");
+        Transform mainCameraChild = mainCamera.transform.Find("SubCamera_OpenDoorLayer");
+
+        if (mainCameraChild == null)
+        {
+            GameObject mainCameraObject = mainCamera.gameObject;
+            GameObject subCameraObject = new GameObject("SubCamera_OpenDoorLayer");
+            subCameraObject.transform.SetParent(mainCameraObject.transform);
+            subCameraObject.transform.localPosition = Vector3.zero;
+            subCameraObject.transform.localRotation = Quaternion.identity;
+            mainCameraChild = subCameraObject.transform;
+
+            Camera subCamera = mainCameraChild.gameObject.AddComponent<Camera>();
+            subCamera.clearFlags = CameraClearFlags.SolidColor;
+            subCamera.backgroundColor = Color.black;
+            subCamera.targetTexture = _openDoorRenderTexture;
+            subCamera.cullingMask = LayerMask.GetMask("OpenDoorLayer");
+        }
+
+
         
         Instantiate(_effectPrefabObject, transform);
 

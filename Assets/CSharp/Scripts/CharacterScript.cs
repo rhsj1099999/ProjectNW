@@ -114,14 +114,19 @@ public class CharacterScript : MonoBehaviour, IHitable
 
 
 
+    public void CalculateAffectingLayer(WeaponScript caller, ref List<int> layerList)
+    {
 
-    public T GetCharacterSubcomponent<T>() where T : Component
+    }
+
+
+    public T GetCharacterSubcomponent<T>(bool isNullable = false) where T : Component
     {
         Component target = null;
 
         _mySubScripts.TryGetValue(typeof(T), out target);
 
-        if (target == null)
+        if (target == null && isNullable == true)
         {
             Debug.Assert(false, "없는 컴포넌트를 찾으려 하고있다" + typeof(T));
             Debug.Break();
@@ -226,7 +231,7 @@ public class CharacterScript : MonoBehaviour, IHitable
 
     public virtual void YouKillThisObject(GameObject killObject)
     {
-        AimScript2 aimScript = GetCharacterSubcomponent<AimScript2>();
+        AimScript2 aimScript = GetCharacterSubcomponent<AimScript2>(true);
         if (aimScript != null &&
             aimScript.GetLockOnObject().transform.parent.gameObject == killObject)
         {

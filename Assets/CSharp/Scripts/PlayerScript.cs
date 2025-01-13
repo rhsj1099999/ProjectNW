@@ -12,26 +12,7 @@ public class PlayerScript : CharacterScript
     protected override void Update()
     {
         base.Update();
-        //타임디버깅
-        {
-            if (Input.GetKeyDown(KeyCode.Slash))  // S키를 누르면 게임 속도를 느리게 함
-            {
-                Time.timeScale = 0.01f;
-                Time.fixedDeltaTime = Time.timeScale * 0.02f;  // 물리적 시간 업데이트
-            }
 
-            if (Input.GetKeyDown(KeyCode.L))  // S키를 누르면 게임 속도를 느리게 함
-            {
-                Time.timeScale = 0.1f;
-                Time.fixedDeltaTime = Time.timeScale * 0.02f;  // 물리적 시간 업데이트
-            }
-
-            if (Input.GetKeyDown(KeyCode.O))  // R키를 누르면 게임 속도를 정상으로 복원
-            {
-                Time.timeScale = 1.0f;
-                Time.fixedDeltaTime = Time.timeScale * 0.02f;
-            }
-        }
 
         //임시 Hit 디버깅 코드
         {

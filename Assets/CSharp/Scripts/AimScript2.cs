@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.UIElements;
@@ -32,6 +33,7 @@ public class AimScript2 : GameCharacterSubScript
     [SerializeField] private float _lockOnDeadZoneDegree = 5.0f; //+- 10도까지는 아무 업데이트를 안한다
     [SerializeField] private float _lockOnHardLimitZoneDegree = 25.0f; //+= 30도까지는 벗어나면 안된다.
     [SerializeField] private float _lockOnHardLimitZoneDegree2 = 150.0f; //+= 30도까지는 벗어나면 안된다.
+    [SerializeField] private GameObject _debuggingMeshObject = null;
 
 
 
@@ -119,6 +121,11 @@ public class AimScript2 : GameCharacterSubScript
             Vector3 aimSatellitePosition = _aimOribit.transform.position;
             aimSatellitePosition += _aimOribit.transform.forward * _aimSatelliteZOffset;
             _aimSatellite.transform.position = aimSatellitePosition;
+
+            if (_debuggingMeshObject != null)
+            {
+                Instantiate(_debuggingMeshObject, _aimSatellite.transform);
+            }
         }
 
         //카메라 세팅
@@ -493,6 +500,7 @@ public class AimScript2 : GameCharacterSubScript
                 {
                     _freeRunCamera.m_XAxis.Value = _lockOnCamera.m_XAxis.Value;
                     _freeRunCamera.m_YAxis.Value = _lockOnCamera.m_YAxis.Value;
+                    _aimOribit.transform.localRotation = Quaternion.identity;
                 }
                 break;
 
@@ -538,15 +546,16 @@ public class AimScript2 : GameCharacterSubScript
             return;
         }
 
-        //캐릭터 y축 회전 (수평회전)
+        //캐릭터 y축 회전 (수평회전 = 트랜스폼 회전)
         {
             _calaculatedVal.y += rotatedValue.x;
             //타겟값이 갱신됐다. 따라서 적용할 값을 댐핑한다
             currentAimRotation.y = Mathf.SmoothDamp(currentAimRotation.y, _calaculatedVal.y, ref currentVelocity.y, smoothTime.x);
-            transform.rotation = Quaternion.Euler(transform.rotation.x, currentAimRotation.y, 0f);
+
+            _owner.GCST<CharacterContollerable>().CharacterRotate(Quaternion.Euler(transform.rotation.x, currentAimRotation.y, 0f));
         }
 
-        //캐릭터 x축 회전 (수평회전)
+        //캐릭터 x축 회전 (수직회전 = 리깅회전)
         {
             _calaculatedVal.x += rotatedValue.y;
             //타겟값이 갱신됐다. 따라서 적용할 값을 댐핑한다

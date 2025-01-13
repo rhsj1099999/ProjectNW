@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,6 +14,7 @@ public class Gunscript2 : WeaponScript
     [SerializeField]  private GameObject _firePosition = null;
     [SerializeField]  private GameObject _stockPosition = null;
     [SerializeField] UnityEvent _whenShootEvent = null;
+    [SerializeField] private AvatarMask _additiveTargetMask = null;
     private AimScript2 _aimScript = null;
 
     // private GameObject _bullet = null;
@@ -47,6 +49,13 @@ public class Gunscript2 : WeaponScript
     private Vector2 _calculatedAimShakeForce = new Vector2();
     protected Transform _shoulderStock_Unity = null;
     protected Transform _elbowPosition_Unity = null;
+    private List<int> _firingEffectedLayer = new List<int>();
+
+    private void Awake()
+    {
+    }
+
+
 
     void Update()
     {
@@ -214,7 +223,7 @@ public class Gunscript2 : WeaponScript
 
     public void FireCheck()
     {
-        if (Input.GetKey(KeyCode.Mouse0) == true && _coolTime < float.Epsilon)
+        if (false/*총을 발사했다는 조건을 구현할것*/ && _coolTime < float.Epsilon)
         {
             //Fire();
 
@@ -222,23 +231,33 @@ public class Gunscript2 : WeaponScript
 
             _coolTime = _coolTimeOriginal;
 
-            if (_aimShakeDuration <= 0.0f)
-            {
-            }
-            else
-            {
-            }
             StartCoroutine("AimShakeCoroutine");
 
-
-
-
             StartCoroutine("CooltimeCoroutine");
+
+            FireAnimation();
 
             _whenShootEvent.Invoke();
         }
     }
 
+    private void FireAnimation()
+    {
+        //총을 격발할때, 현재 영향을 받는 레이어에게
+        //애니메이션을 바꿨다가, 다시 돌아오게 하는 함수
+
+        _firingEffectedLayer.Clear();
+        _owner.CalculateAffectingLayer(this, ref _firingEffectedLayer);
+        CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
+        //Animator 
+        foreach (var layer in _firingEffectedLayer)
+        {
+            
+        }
+
+
+
+    }
 
 
     private void RayCheck()

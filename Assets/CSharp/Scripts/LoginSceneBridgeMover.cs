@@ -68,7 +68,7 @@ public class LoginSceneBridgeMover : MonoBehaviour
                 _isMoving = false;
 
                 GameObject door = Instantiate(_doorPrefab, _doorSpawnPosition.transform);
-                door.GetComponent<SceneOpenDoorScript>().SetTargetState("StageScene_1");
+                door.GetComponent<SceneOpenDoorScript>().SetTargetState("StageScene_3");
                 _isMoving = false;
                 break;
             }
