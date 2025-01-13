@@ -17,6 +17,23 @@ using static CharacterScript;
 구조가 필요하다.
 ----------------------------------------------------*/
 
+
+
+/*----------------------------------------------------
+|TODO| 
+
+몬스터가 플레이어를 죽이면 nullref 오류 = 몬스터는 AimScript가 없어서
+
+Aim을 했다가 풀고 죽이면 nullref 오류 = 죽였을때 null의 trnasform을 받아와서
+
+Lock On 햇다가 바로 Aim하면 이동속도 더 빠름
+----------------------------------------------------*/
+
+
+
+
+
+
 public class BodyPartBlendingWork
 {
     public enum BodyPartWorkType
@@ -232,23 +249,23 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
 
 
-        // PlayableGraph 생성
-        _playableGraph = PlayableGraph.Create("AvatarMaskChanger");
-        _playableOutput = AnimationPlayableOutput.Create(_playableGraph, "Animation", _animator);
+        //// PlayableGraph 생성
+        //_playableGraph = PlayableGraph.Create("AvatarMaskChanger");
+        //_playableOutput = AnimationPlayableOutput.Create(_playableGraph, "Animation", _animator);
 
-        // AnimationLayerMixerPlayable 생성 (Animator의 모든 레이어를 제어 가능)
-        _layerMixer = AnimationLayerMixerPlayable.Create(_playableGraph, _animator.layerCount);
-        _playableOutput.SetSourcePlayable(_layerMixer);
+        //// AnimationLayerMixerPlayable 생성 (Animator의 모든 레이어를 제어 가능)
+        //_layerMixer = AnimationLayerMixerPlayable.Create(_playableGraph, _animator.layerCount);
+        //_playableOutput.SetSourcePlayable(_layerMixer);
 
-        // 기존 AnimatorController 레이어 연결
-        for (int i = 0; i < _animator.layerCount; i++)
-        {
-            var controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, _animator.runtimeAnimatorController);
-            _playableGraph.Connect(controllerPlayable, 0, _layerMixer, i);
-        }
+        //// 기존 AnimatorController 레이어 연결
+        //for (int i = 0; i < _animator.layerCount; i++)
+        //{
+        //    var controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, _animator.runtimeAnimatorController);
+        //    _playableGraph.Connect(controllerPlayable, 0, _layerMixer, i);
+        //}
 
-        // PlayableGraph 실행
-        _playableGraph.Play();
+        //// PlayableGraph 실행
+        //_playableGraph.Play();
     }
 
     public override void SubScriptStart()
