@@ -21,7 +21,7 @@ public class AnimationAttackManager : SubManager
         }
     }
 
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != this && _instance != null)
         {
@@ -30,7 +30,10 @@ public class AnimationAttackManager : SubManager
         }
 
         _instance = this;
+    }
 
+    public override void SubManagerInit()
+    {
         ReadyAnimationAttackFrames();
     }
 

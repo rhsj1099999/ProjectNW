@@ -27,7 +27,7 @@ public class RenderManager : SubManager
         }
     }
 
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != this && _instance != null)
         {
@@ -36,6 +36,11 @@ public class RenderManager : SubManager
         }
 
         _instance = this;
+    }
+
+    public override void SubManagerInit()
+    {
+
     }
 
 

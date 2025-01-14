@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class TimeScaler : SubManager
@@ -21,6 +22,18 @@ public class TimeScaler : SubManager
     private double _prevUpdateMaxACC = 0.0f;
     private double _lateUpdateMaxACC = 0.0f;
 
+
+    public Action<float> _timeChanged = null;
+    public void AddTimeChangeDelegate(Action<float> func)
+    {
+        _timeChanged += func;
+    }
+    public void RemoveTimeChangeDelegate(Action<float> func)
+    {
+        _timeChanged -= func;
+    }
+
+
     public static TimeScaler Instance
     {
         get
@@ -38,7 +51,7 @@ public class TimeScaler : SubManager
         }
     }
 
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != this && _instance != null)
         {
@@ -51,6 +64,12 @@ public class TimeScaler : SubManager
         DontDestroyOnLoad(this.gameObject);
     }
 
+
+    public override void SubManagerInit()
+    {
+
+    }
+
     public override void SubManagerFixedUpdate()
     {
         _fixedUpdateMaxACC += Time.deltaTime;
@@ -59,6 +78,8 @@ public class TimeScaler : SubManager
         _fixedUpdateDeltaTimeACC += Time.deltaTime;
     }
 
+
+
     public override void SubManagerUpdate()
     {
         //타임디버깅
@@ -66,34 +87,20 @@ public class TimeScaler : SubManager
             if (Input.GetKeyDown(KeyCode.Slash))  // S키를 누르면 게임 속도를 느리게 함
             {
                 Time.timeScale = 0.01f;
-                Time.fixedDeltaTime = Time.timeScale * 0.02f;  // 물리적 시간 업데이트
             }
 
             if (Input.GetKeyDown(KeyCode.L))  // S키를 누르면 게임 속도를 느리게 함
             {
                 Time.timeScale = 0.1f;
-                Time.fixedDeltaTime = Time.timeScale * 0.02f;  // 물리적 시간 업데이트
             }
 
             if (Input.GetKeyDown(KeyCode.O))  // R키를 누르면 게임 속도를 정상으로 복원
             {
                 Time.timeScale = 1.0f;
-                Time.fixedDeltaTime = Time.timeScale * 0.02f;
             }
+
+            _timeChanged?.Invoke(Time.timeScale);
         }
-
-
-        //Phase 1
-        {
-            double delta = _updateDeltaTimeACC - _fixedUpdateDeltaTimeACC;
-            double step = delta / Time.fixedDeltaTime;
-
-            if (Math.Abs(delta) >= Time.fixedDeltaTime)
-            {
-                int a = 10;
-            }
-        }
-
 
         _prevUpdateMaxACC = _updateMaxACC;
         _updateMaxACC = Time.deltaTime;
@@ -101,62 +108,14 @@ public class TimeScaler : SubManager
         _updateCountACC++;
         _updateDeltaTimeACC += Time.deltaTime;
 
-        //Phase 2
-        {
-            double delta = _updateDeltaTimeACC - _fixedUpdateDeltaTimeACC;
-            double step = delta / Time.fixedDeltaTime;
-
-            if (Math.Abs(delta) >= Time.fixedDeltaTime)
-            {
-                int a = 10;
-            }
-        }
     }
 
     public override void SubManagerLateUpdate()
     {
         
-        if (_updateMaxACC < _fixedUpdateMaxACC)
-        {
-            //Debug.Assert(false, "fixed가 넘어섰다");
-            //Debug.Break();
-        }
-
-        double delta = _updateDeltaTimeACC - _fixedUpdateDeltaTimeACC;
-        double step = delta / Time.fixedDeltaTime;
-
-        if (Math.Abs(delta) >= Time.fixedDeltaTime)
-        {
-            int a = 10;
-        }
-
-
-
         _lateUpdateCountACC++;
         _lateUpdateDeltaTimeACC += Time.deltaTime;
         _currentFrameFixedUpdateCalled = 0;
         _fixedUpdateMaxACC = 0.0f;
-        //_updateMaxACC = 0.0f;
-    }
-
-    public float GetSynchronizedDeltaTime()
-    {
-        //if (_fixedUpdateMaxACC >= _updateMaxACC)
-        //{
-        //    return 0.0f;
-        //}
-
-        //float delta = _updateMaxACC - _fixedUpdateMaxACC;
-
-        //if (delta >= Time.fixedDeltaTime)
-        //{
-        //    return Time.fixedDeltaTime;
-        //}
-        //else
-        //{
-        //    return delta;
-        //}
-
-        return 0.0f;
     }
 }

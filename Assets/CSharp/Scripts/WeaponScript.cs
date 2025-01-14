@@ -238,47 +238,22 @@ public class WeaponScript : MonoBehaviour
 
         foreach (IKTargetScript ikTarget in ikTargets)
         {
-            IKTargetDesc desc = ikTarget.GetDesc();
+            IKTargetDesc desc = ikTarget._desc;
 
             if (desc._isRightSide != _isRightHandWeapon)
             {
+                //IK 중복 방지 코드입니다. 오른손에 쥐었을때 오른손만 활성화하게
                 continue;
             }
 
-            ikTarget.RegistIK(_ownerIKSkript, _isRightHandWeapon);
+            AvatarIKGoal goal = ikTarget.CalculateIKGoalType(_isRightHandWeapon);
 
-            AvatarIKGoal goal = AvatarIKGoal.LeftHand;
-            
-            if (_isRightHandWeapon == true)
-            {
-                if (ikTarget._isMainHandle == true)
-                {
-                    goal = AvatarIKGoal.RightHand;
-                }
-                else
-                {
-                    goal = AvatarIKGoal.LeftHand;
-                }
-            }
-            else 
-            {
-                if (ikTarget._isMainHandle == true)
-                {
-                    goal = AvatarIKGoal.LeftHand;
-                }
-                else
-                {
-                    goal = AvatarIKGoal.RightHand;
-                }
-            }
+            IKDesc newIKDesc = new IKDesc();
+            newIKDesc._targetDesc = desc;
+            newIKDesc._activated = false;
+            newIKDesc._targetTransform = ikTarget.transform;
 
-            if (_createdIKTargets.ContainsKey(goal) == true)
-            {
-                _createdIKTargets.Remove(goal);
-            }
-
-            _createdIKTargets.Add(goal, ikTarget.GetDesc());
-            _ownerIKSkript.OffIK(ikTarget.GetDesc());
+            _ownerIKSkript.RegistIK(this, goal, newIKDesc);
         }
     }
 
@@ -293,14 +268,16 @@ public class WeaponScript : MonoBehaviour
     {
         if (_isRightHandWeapon == true)
         {
-            transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation_Right);
             transform.position = (transform.rotation * _pivotPosition_Right) + _socketTranform.position;
+            transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation_Right);
         }
         else 
         {
-            transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation_Left);
             transform.position = (transform.rotation * _pivotPosition_Left) + _socketTranform.position;
+            transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation_Left);
         }
+
+        Debug.Log(Vector3.Distance(transform.position, _socketTranform.position));
     }
 
 

@@ -15,8 +15,7 @@ public class GameManager : MonoBehaviour
             if (_instance == null)
             {
                 GameObject gameObject = new GameObject("GameManager");
-                GameManager component = gameObject.AddComponent<GameManager>();
-                _instance = component;
+                _instance = gameObject.AddComponent<GameManager>();
                 DontDestroyOnLoad(gameObject);
             }
 
@@ -36,14 +35,12 @@ public class GameManager : MonoBehaviour
         
         DontDestroyOnLoad(gameObject);
 
-        Application.targetFrameRate = -1; // 제한 없음
-
         foreach (var subManager in _subManagers)
         {
-            subManager.SubManagerAwake();
+            subManager.SubManagerInit();
         }
 
-        foreach(var FRAMEDROPOBJECT in _FIRSTINTANTIATE)
+        foreach (var FRAMEDROPOBJECT in _FIRSTINTANTIATE)
         {
             GameObject newGameObject = Instantiate(FRAMEDROPOBJECT);
             Destroy(newGameObject);
@@ -80,5 +77,16 @@ public class GameManager : MonoBehaviour
         {
             subManager.SubManagerLateUpdate();
         }
+    }
+
+
+    private void OnDestroy()
+    {
+        //foreach (var subManager in _subManagers)
+        //{
+        //    Destroy(subManager.gameObject);
+        //}
+
+        _subManagers.Clear();
     }
 }

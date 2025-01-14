@@ -204,7 +204,7 @@ public class NavigationManager : SubManager
         }
     }
 
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != this && _instance != null)
         {
@@ -215,7 +215,10 @@ public class NavigationManager : SubManager
         _instance = this;
 
         DontDestroyOnLoad(gameObject);
+    }
 
+    public override void SubManagerInit()
+    {
         NavMesh.RemoveAllNavMeshData();
 
 

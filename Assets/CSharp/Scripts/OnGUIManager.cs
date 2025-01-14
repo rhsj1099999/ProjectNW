@@ -33,7 +33,7 @@ public class OnGUIManager : SubManager
         }
     }
 
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != this && _instance != null)
         {
@@ -44,7 +44,10 @@ public class OnGUIManager : SubManager
         _instance = this;
 
         DontDestroyOnLoad(this.gameObject);
+    }
 
+    public override void SubManagerInit()
+    {
         _style = new GUIStyle();
         _style.fontSize = (int)_fontSize;
         _style.normal.textColor = Color.red;

@@ -102,6 +102,8 @@ public class StateGraphAsset : ScriptableObject
         ReadyHipCurve();
     }
 
+
+
     /*-----------------------------------------
     |TODO| Scriptable Object의 Awake가 불리는 조건을 찾고
     ClearData 함수를 없애라

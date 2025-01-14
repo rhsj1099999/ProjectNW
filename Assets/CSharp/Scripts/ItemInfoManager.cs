@@ -113,7 +113,7 @@ public class ItemInfoManager : SubManager
         }
     }
 
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != null && _instance != this)
         {
@@ -124,7 +124,10 @@ public class ItemInfoManager : SubManager
         _instance = this;
 
         DontDestroyOnLoad(_instance.gameObject);
+    }
 
+    public override void SubManagerInit()
+    {
         InitEquipments();
 
         InitItem_TestCode_MustDel();

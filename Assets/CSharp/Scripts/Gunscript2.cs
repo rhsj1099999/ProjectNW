@@ -14,7 +14,11 @@ public class Gunscript2 : WeaponScript
     [SerializeField]  private GameObject _firePosition = null;
     [SerializeField]  private GameObject _stockPosition = null;
     [SerializeField] UnityEvent _whenShootEvent = null;
-    [SerializeField] private AvatarMask _additiveTargetMask = null;
+
+    [SerializeField] private AnimationClip _shootAnimationClip = null;
+    [SerializeField] private AnimationClip _reloadingClip = null;
+
+
     private AimScript2 _aimScript = null;
 
     // private GameObject _bullet = null;
@@ -51,22 +55,24 @@ public class Gunscript2 : WeaponScript
     protected Transform _elbowPosition_Unity = null;
     private List<int> _firingEffectedLayer = new List<int>();
 
-    private void Awake()
-    {
-    }
+
+
 
 
 
     void Update()
     {
-        FireCheck();
+        if (Input.GetKeyDown(KeyCode.Y) == true)
+        {
+            FireAnimation();
+        }
 
-        FollowSocketTransform();
+        FireCheck();
     }
 
     protected override void LateUpdate()
     {
-
+        FollowSocketTransform();
     }
 
     public override void FollowSocketTransform()
@@ -137,30 +143,29 @@ public class Gunscript2 : WeaponScript
 
     private void CalculateAimIK(bool isAimed)
     {
-        if (isAimed == true)
+        if (isAimed == false)
         {
-            //반대손에 뭔가를 들고있습니까의 bool 변수
-            bool isOppositeHandBusy = (_owner.GetCurrentWeaponScript(!_isRightHandWeapon) != null);
-
-            AvatarIKGoal type = (_isRightHandWeapon == true)
-                ? AvatarIKGoal.LeftHand
-                : AvatarIKGoal.RightHand;
-
-            foreach (KeyValuePair<AvatarIKGoal, IKTargetDesc> ikTargetPair in _createdIKTargets)
-            {
-                if (ikTargetPair.Key == type && isOppositeHandBusy == true)
-                {
-                    continue;
-                }
-                _ownerIKSkript.OnIK(ikTargetPair.Value);
-            }
+            //다 꺼주세요
+            _ownerIKSkript.SwitchOnOffIK(this, false);
+            return;
         }
-        else 
+
+        //반대손에 뭔가를 들고있습니까의 bool 변수
+        bool isOppositeHandBusy = (_owner.GetCurrentWeaponScript(!_isRightHandWeapon) != null);
+
+        if (isOppositeHandBusy == true)
         {
-            foreach (KeyValuePair<AvatarIKGoal, IKTargetDesc> ikTargetPair in _createdIKTargets)
-            {
-                _ownerIKSkript.OffIK(ikTargetPair.Value);
-            }
+            AvatarIKGoal type = (_isRightHandWeapon == true)
+                ? AvatarIKGoal.RightHand
+                : AvatarIKGoal.LeftHand;
+
+            //들고있는 손만 켜주세요
+            _ownerIKSkript.SwitchOnOffIK(this, true, false, type);
+        }
+        else
+        {
+            //다 켜주세요
+            _ownerIKSkript.SwitchOnOffIK(this, true);
         }
     }
 
@@ -168,9 +173,8 @@ public class Gunscript2 : WeaponScript
     {
         foreach (KeyValuePair<AvatarIKGoal, IKTargetDesc> iks in _createdIKTargets)
         {
-            _ownerIKSkript.DestroyIK(iks.Value);
+            _ownerIKSkript.DestroyIK(this);
         }
-        
     }
 
 
@@ -180,14 +184,10 @@ public class Gunscript2 : WeaponScript
 
         //견착위치
         {
-            //_shoulderStock_Unity = _ownerAnimator.GetBoneTransform(HumanBodyBones.RightShoulder);
-
             _shoulderStock_Unity = (_isRightHandWeapon == true)
               ? _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightUpperArm)
               : _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.LeftUpperArm);
             Debug.Assert(_stockPosition != null, "자세제어를 위해 견착위치가 필요합니다(권총도 마찬가지)");
-
-
 
             _elbowPosition_Unity = (_isRightHandWeapon == true)
               ? _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightLowerArm)
@@ -243,20 +243,42 @@ public class Gunscript2 : WeaponScript
 
     private void FireAnimation()
     {
-        //총을 격발할때, 현재 영향을 받는 레이어에게
-        //애니메이션을 바꿨다가, 다시 돌아오게 하는 함수
-
         _firingEffectedLayer.Clear();
         _owner.CalculateAffectingLayer(this, ref _firingEffectedLayer);
         CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
-        //Animator 
-        foreach (var layer in _firingEffectedLayer)
+
+        AvatarMask myAvatarMask = null;
+
+        if (_isRightHandWeapon == true)
         {
-            
+            if (_owner.GetCurrentWeapon(AnimatorLayerTypes.LeftHand) != null)
+            {
+                myAvatarMask = ResourceDataManager.Instance.GetAvatarMask("UpperBodyExceptLeft");
+            }
+            else
+            {
+                myAvatarMask = ResourceDataManager.Instance.GetAvatarMask("UpperBody");
+            }
+        }
+        else 
+        {
+            if (_owner.GetCurrentWeapon(AnimatorLayerTypes.RightHand) != null)
+            {
+                myAvatarMask = ResourceDataManager.Instance.GetAvatarMask("UpperBodyExceptRight");
+            }
+            else
+            {
+                myAvatarMask = ResourceDataManager.Instance.GetAvatarMask("UpperBody");
+            }
         }
 
+        /*---------------------------------------------
+        |NOTI| 반동 제어 = 반동 제어 잘될수록 애니메이션을
+        덜 섞을겁니다.
+        ---------------------------------------------*/
+        float GunRecoilPower = 1.0f;
 
-
+        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, _shootAnimationClip, false, GunRecoilPower);
     }
 
 
@@ -279,8 +301,6 @@ public class Gunscript2 : WeaponScript
         {
             return;
         }
-
-        //hitable.DealMe(1, gameObject);
     }
 
     public IEnumerator CooltimeCoroutine()

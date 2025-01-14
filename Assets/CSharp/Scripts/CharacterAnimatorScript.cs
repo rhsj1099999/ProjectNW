@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -163,6 +165,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
     private void OnDestroy()
     {
+        //TimeScaler.Instance.RemoveTimeChangeDelegate(TimeChanged);
+
         if (_playableGraph.IsValid() == true)
         {
             _playableGraph.Stop();
@@ -170,103 +174,214 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
-
+    private void TimeChanged(float timeScale)
+    {
+        _layerMixer.SetSpeed(timeScale);
+    }
 
 
     private void LateUpdate()
     {
-        if (_currStateAsset._myState._isSubAnimationStateMachineExist == true)
+        if (_currStateAsset._myState._isSubAnimationStateMachineExist == false)
         {
-            int animationIndex = _owner.GCST<StateContoller>().SubAnimationStateIndex(_currStateAsset);
-
-            if (animationIndex != _currAnimIndex)
-            {
-                AnimationClip nextAnimation = _currStateAsset._myState._subAnimationStateMachine._animations[animationIndex];
-                FullBodyAnimationChange(nextAnimation);
-                _currAnimIndex = animationIndex;
-            }
+            return;
         }
+
+        int animationIndex = _owner.GCST<StateContoller>().SubAnimationStateIndex(_currStateAsset);
+
+        if (animationIndex == _currAnimIndex)
+        {
+            return;
+        }
+
+        AnimationClip nextAnimation = _currStateAsset._myState._subAnimationStateMachine._animations[animationIndex];
+        FullBodyAnimationChange(nextAnimation);
+        _currAnimIndex = animationIndex;
     }
 
     private PlayableGraph _playableGraph;
+    private AnimatorControllerPlayable _controllerPlayable;
     private AnimationPlayableOutput _playableOutput;
     private AnimationLayerMixerPlayable _layerMixer;
+    private AvatarMask _currentAdditiveAvatarMask = null;
 
+    private Coroutine _clipPlayableDetachCoroutine = null;
+
+    private IEnumerator ClipPlayableDetachCoroutine(float time)
+    {
+        float timeACC = 0.0f;
+
+        while (true)
+        {
+            timeACC += Time.deltaTime;
+
+            if (timeACC >= time)
+            {
+                _clipPlayableDetachCoroutine = null;
+                AnimationClipPlayable? oldPlayable = (AnimationClipPlayable)_layerMixer.GetInput(1);
+
+                if (oldPlayable == null) 
+                {
+                    Debug.Assert(false, "ClipPlayable을 잃어버렸습니다");
+                    Debug.Break();
+                }
+
+                _layerMixer.DisconnectInput(1);
+                oldPlayable.Value.Destroy();
+
+                break;
+            }
+
+            yield return null;
+        }
+    }
 
     public override void Init(CharacterScript owner)
     {
+        _owner = owner;
+        _myType = typeof(CharacterAnimatorScript);
+
+        _animator = GetComponentInChildren<Animator>();
+        _gameBasicAvatar = _animator.avatar;
+
+        Debug.Assert(_animator != null, "Animator가 없다");
+        _characterModelObject = _animator.gameObject;
+        _gameBasicCharacter = Instantiate(_characterModelObject, transform);
+        _gameBasicCharacter.SetActive(false);
+
+        _characterRig = GetComponentInChildren<Rig>();
+        _characterRigBuilder = GetComponentInChildren<RigBuilder>();
+
+
+        _overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
+        _animator.runtimeAnimatorController = _overrideController;
+
+        for (int i = 0; i < (int)AnimatorLayerTypes.End; i++)
         {
-            _owner = owner;
-            _myType = typeof(CharacterAnimatorScript);
+            _partBlendingDesc.Add(null);
+            _currentBusyAnimatorLayer.Add(false);
+            _bodyPartWorks.Add(new LinkedList<BodyPartBlendingWork>());
+            _bodyCoroutineStarted.Add(false);
+            _currentBodyCoroutine.Add(null);
+        }
 
-            _animator = GetComponentInChildren<Animator>();
-            _gameBasicAvatar = _animator.avatar;
-
-            Debug.Assert(_animator != null, "Animator가 없다");
-            _characterModelObject = _animator.gameObject;
-            _gameBasicCharacter = Instantiate(_characterModelObject, transform);
-            _gameBasicCharacter.SetActive(false);
-
-            _characterRig = GetComponentInChildren<Rig>();
-            _characterRigBuilder = GetComponentInChildren<RigBuilder>();
-
-
-            _overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
-            _animator.runtimeAnimatorController = _overrideController;
-
-            for (int i = 0; i < (int)AnimatorLayerTypes.End; i++)
+        foreach (var type in _usingBodyPart)
+        {
+            if (_partBlendingDesc[(int)type] != null)
             {
-                _partBlendingDesc.Add(null);
-                _currentBusyAnimatorLayer.Add(false);
-                _bodyPartWorks.Add(new LinkedList<BodyPartBlendingWork>());
-                _bodyCoroutineStarted.Add(false);
-                _currentBodyCoroutine.Add(null);
+                continue;
             }
 
-            foreach (var type in _usingBodyPart)
-            {
-                if (_partBlendingDesc[(int)type] != null)
-                {
-                    continue;
-                }
-
-                _partBlendingDesc[(int)type] = new AnimatorBlendingDesc(type, _animator);
-            }
-
-
-            if (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody] == null)
-            {
-                Debug.Assert(false, "FullBody는 반드시 사용해야 한다");
-                Debug.Break();
-                _partBlendingDesc[(int)AnimatorLayerTypes.FullBody] = new AnimatorBlendingDesc(AnimatorLayerTypes.FullBody, _animator);
-            }
-
-            if (_gameBasicAvatar == null)
-            {
-                Debug.Assert(false, "캐릭터 초기값 아바타입니다. 반드시 설정돼있어야합니다");
-                Debug.Break();
-            }
+            _partBlendingDesc[(int)type] = new AnimatorBlendingDesc(type, _animator);
         }
 
 
-        //// PlayableGraph 생성
-        //_playableGraph = PlayableGraph.Create("AvatarMaskChanger");
-        //_playableOutput = AnimationPlayableOutput.Create(_playableGraph, "Animation", _animator);
+        if (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody] == null)
+        {
+            Debug.Assert(false, "FullBody는 반드시 사용해야 한다");
+            Debug.Break();
+            _partBlendingDesc[(int)AnimatorLayerTypes.FullBody] = new AnimatorBlendingDesc(AnimatorLayerTypes.FullBody, _animator);
+        }
 
-        //// AnimationLayerMixerPlayable 생성 (Animator의 모든 레이어를 제어 가능)
-        //_layerMixer = AnimationLayerMixerPlayable.Create(_playableGraph, _animator.layerCount);
-        //_playableOutput.SetSourcePlayable(_layerMixer);
+        if (_gameBasicAvatar == null)
+        {
+            Debug.Assert(false, "캐릭터 초기값 아바타입니다. 반드시 설정돼있어야합니다");
+            Debug.Break();
+        }
 
-        //// 기존 AnimatorController 레이어 연결
-        //for (int i = 0; i < _animator.layerCount; i++)
-        //{
-        //    var controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, _animator.runtimeAnimatorController);
-        //    _playableGraph.Connect(controllerPlayable, 0, _layerMixer, i);
-        //}
+        _playableGraph = PlayableGraph.Create("AvatarMaskChanger");
+        _playableOutput = AnimationPlayableOutput.Create(_playableGraph, "Animation", _animator);
+        _controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, _animator.runtimeAnimatorController);
 
-        //// PlayableGraph 실행
-        //_playableGraph.Play();
+
+        _layerMixer = AnimationLayerMixerPlayable.Create(_playableGraph, 2);
+        _layerMixer.ConnectInput(0, _controllerPlayable, 0);
+
+        _layerMixer.SetLayerAdditive(1, true);
+        _layerMixer.SetInputWeight(0, 1.0f);
+        _playableOutput.SetSourcePlayable(_layerMixer);
+        _playableGraph.Play();
+
+        TimeScaler.Instance.AddTimeChangeDelegate(TimeChanged);
     }
+
+
+
+    public void RunAdditivaAnimationClip(AvatarMask additiveAvatarMask, AnimationClip targetAnimationClip, bool isLoop, float weight)
+    {
+        _currentAdditiveAvatarMask = additiveAvatarMask;
+
+        _layerMixer.SetInputWeight(1, weight);
+
+        if (_currentAdditiveAvatarMask != additiveAvatarMask)
+        {
+            _layerMixer.SetLayerMaskFromAvatarMask(1, additiveAvatarMask);
+            if (_layerMixer.IsLayerAdditive(1) == false)
+            {
+                Debug.Assert(false);
+            }
+            
+        }
+
+        if (_clipPlayableDetachCoroutine != null)
+        {
+            StopCoroutine(_clipPlayableDetachCoroutine);
+            _clipPlayableDetachCoroutine = null;
+        }
+
+        if (isLoop == false)
+        {
+            _clipPlayableDetachCoroutine = StartCoroutine(ClipPlayableDetachCoroutine(targetAnimationClip.length));
+        }
+
+        AnimationClipPlayable oldPlayable = (AnimationClipPlayable)_layerMixer.GetInput(1);
+
+        if (oldPlayable.IsValid() == true)
+        {
+            if (oldPlayable.GetAnimationClip() == targetAnimationClip)
+            {
+                oldPlayable.SetTime(0.0f);
+                return;
+            }
+
+            _layerMixer.DisconnectInput(1);
+            oldPlayable.Destroy();
+        }
+
+        AnimationClipPlayable newPlayable = AnimationClipPlayable.Create(_playableGraph, targetAnimationClip);
+
+
+        bool temp = newPlayable.GetApplyFootIK();
+
+        _layerMixer.ConnectInput(1, newPlayable, 0);
+
+        _layerMixer.SetInputWeight(1, 1.0f);
+
+        _layerMixer.SetLayerMaskFromAvatarMask(1, additiveAvatarMask);
+    }
+
+    public bool IsLayerConnected(int layerIndex)
+    {
+        if (_layerMixer.GetInputCount() <= layerIndex)
+        {
+            return false;
+        }
+
+        return _layerMixer.GetInput(layerIndex).IsValid();
+    }
+
+    public void StopAdditivaAnimationClip()
+    {
+        if (IsLayerConnected(1) == false)
+        {
+            return;
+        }
+
+        AnimationClipPlayable? oldPlayable = (AnimationClipPlayable)_layerMixer.GetInput(1);
+        _layerMixer.DisconnectInput(1);
+        oldPlayable.Value.Destroy();
+    }
+
 
     public override void SubScriptStart()
     {
@@ -308,8 +423,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         StartCoroutine(WaitNextFrameCoroutine(newModel, newOverrideController, meshRenderers));
 
-
-
         return newModel;
     }
 
@@ -337,13 +450,17 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         CharacterColliderScript ownerCharacterColliderScript = GetComponentInParent<CharacterColliderScript>();
         ownerCharacterColliderScript.InitModelCollider(newModel);
 
+
+
         Destroy(destroyThis);
     }
 
 
+
+
     void SyncAnimatorState(Animator sourceAnimator, Animator targetAnimator, AnimatorOverrideController targetOverrideController)
     {
-        //2. 변수 동기화
+        //1. 변수 동기화
         {
             foreach (AnimatorControllerParameter parameter in sourceAnimator.parameters)
             {
@@ -374,8 +491,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             }
         }
 
-
-        //1. 런타임 클립 동기화
+        //2. 런타임 클립 동기화
         {
             AnimatorOverrideController sourceOverrideController = sourceAnimator.runtimeAnimatorController as AnimatorOverrideController;
             List<KeyValuePair<AnimationClip, AnimationClip>> paris = new List<KeyValuePair<AnimationClip, AnimationClip>>();
@@ -386,8 +502,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 targetOverrideController[clipPair.Key] = clipPair.Value;
             }
         }
-
-
 
         //3. Weight 동기화
         {
@@ -406,6 +520,19 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                     index++;
                 }
             }
+        }
+
+        //4. Playable 동기화
+        {
+            _layerMixer.DisconnectInput(0);
+            _controllerPlayable.Destroy();
+            _controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, targetAnimator.runtimeAnimatorController);
+            _layerMixer.ConnectInput(0, _controllerPlayable, 0);
+
+            _layerMixer.SetInputWeight(0, 1.0f);
+            _playableOutput.SetSourcePlayable(_layerMixer);
+
+            _playableOutput.SetTarget(targetAnimator);
         }
     }
 

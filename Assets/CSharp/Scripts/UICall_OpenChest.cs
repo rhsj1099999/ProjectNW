@@ -24,6 +24,12 @@ public class UICall_OpenChest : UICallScript
     {
         _originalRotation = _chestLid.transform.rotation;
 
+
+    }
+
+
+    private void Start()
+    {
         InventoryBoard boardComponent = GetComponentInChildren<InventoryBoard>();
 
         foreach (int itemKey in _fixedCreateTryItemList)
@@ -31,7 +37,6 @@ public class UICall_OpenChest : UICallScript
             boardComponent.AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(itemKey));
         }
     }
-
 
 
     public override void UICall_Off()

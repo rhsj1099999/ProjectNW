@@ -32,7 +32,7 @@ public class UIManager : SubManager
         }
     }
 
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != null && _instance != this)
         {
@@ -42,6 +42,11 @@ public class UIManager : SubManager
 
         _instance = this;
 
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public override void SubManagerInit()
+    {
         if (_mainCanvas == null)
         {
             Debug.Assert(false, "MainCanvas는 반드시 존재해야한다");

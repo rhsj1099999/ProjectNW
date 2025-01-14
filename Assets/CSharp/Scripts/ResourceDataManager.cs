@@ -78,7 +78,7 @@ public class ResourceDataManager : SubManager
         }
     }
 
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != this && _instance != null)
         {
@@ -87,12 +87,16 @@ public class ResourceDataManager : SubManager
         }
 
         _instance = this;
+    }
 
+    public override void SubManagerInit()
+    {
         ReadyAnimationHipCurve();
         ReadyAnimationFrameData();
         ReadyStateData();
         ReadyZeroFrameAnimations();
         StateGraphAssets();
+        ReadyAvatarMasks();
     }
 
     /*-----------------------------------
@@ -230,6 +234,33 @@ public class ResourceDataManager : SubManager
         return dataByClip[type];
     }
 
+
+
+    /*-----------------------------------
+    Data Section _ Avatar Masks
+    -----------------------------------*/
+    [SerializeField] private List<AvatarMask> _avatarMasks = new List<AvatarMask>();
+    private Dictionary<string, AvatarMask> _readiedMasks = new Dictionary<string, AvatarMask>();
+
+    private void ReadyAvatarMasks()
+    {
+        foreach (var mask in _avatarMasks) 
+        {
+            if (_readiedMasks.ContainsKey(mask.name) == true)
+            {
+                Debug.Assert(false, "AvatarMask 이미 있습니다" + mask.name);
+                Debug.Break();
+                continue;
+            }
+
+            _readiedMasks.Add(mask.name, mask);
+        }
+    }
+
+    public AvatarMask GetAvatarMask(string name) 
+    {
+        return _readiedMasks[name];
+    }
 
 
 

@@ -23,7 +23,7 @@ public class SynchronizedUpdater : SubManager
         }
     }
 
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != this && _instance != null)
         {
@@ -34,6 +34,10 @@ public class SynchronizedUpdater : SubManager
         _instance = this;
 
         DontDestroyOnLoad(this.gameObject);
+    }
+
+    public override void SubManagerInit()
+    {
     }
 
 

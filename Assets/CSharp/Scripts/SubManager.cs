@@ -9,6 +9,6 @@ public class SubManager : MonoBehaviour
     public virtual void SubManagerLateUpdate() {}
 
 
-    public virtual void SubManagerAwake() { }
+    public virtual void SubManagerInit() { }
     public virtual void SubManagerStart() { }
 }

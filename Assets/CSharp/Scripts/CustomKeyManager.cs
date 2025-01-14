@@ -98,8 +98,7 @@ public class CustomKeyManager : SubManager
         }
     }
 
-
-    public override void SubManagerAwake()
+    private void Awake()
     {
         if (_instance != null && _instance != this)
         {
@@ -110,6 +109,11 @@ public class CustomKeyManager : SubManager
         _instance = this;
 
         DontDestroyOnLoad(gameObject);
+    }
+
+    public override void SubManagerInit()
+    {
+
     }
 
 
