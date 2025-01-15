@@ -38,12 +38,8 @@ public class IKScript : MonoBehaviour
     /*------------------------------------------
     IK Section.
     ------------------------------------------*/
-
-
-
     private Dictionary<MonoBehaviour/*등록자*/, Dictionary<AvatarIKGoal, IKDesc>/*종류들*/> _ikDic = new Dictionary<MonoBehaviour, Dictionary<AvatarIKGoal, IKDesc>>();
     private Animator _ikAnimator = null;
-    private bool _ikRunning = true;
 
     private void Awake()
     {

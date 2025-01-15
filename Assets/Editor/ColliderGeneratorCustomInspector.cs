@@ -6,15 +6,8 @@ using NUnit.Framework;
 [CustomEditor(typeof(ColliderGenerator))]
 public class ColliderGeneratorCustomInspector : Editor
 {
-
     private string _colliderName = "CapsuleCollider(Clone)";
     private GameObject _dubuggingCapsulePrefab = null;
-    
-
-
-    private string _colliderDataName = string.Empty;
-    private GameObject _colliderOwnerObject = null;
-
 
     private CapsuleColliderDesc _creatingCapsuleCollider = new CapsuleColliderDesc();
 

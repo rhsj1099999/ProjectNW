@@ -6,10 +6,8 @@ public class UIComponent : MonoBehaviour
 {
     [SerializeField] private GameObject _parentGameObjectToReturn = null;
     [SerializeField] private bool _isConsumeInputUI = false;
-    private bool _hided = false;
 
     private Canvas _canvas = null;
-
 
     public GameObject GetReturnObject() { return _parentGameObjectToReturn; }
     
@@ -24,7 +22,6 @@ public class UIComponent : MonoBehaviour
         }
 
         _canvas = GetComponent<Canvas>();
-        //Debug.Assert( _canvas != null, "Canvas는 널일 수 없다" );
         
         if( _canvas != null )
         {

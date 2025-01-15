@@ -86,8 +86,9 @@ public class DamageDesc
 
 public class CharacterScript : MonoBehaviour, IHitable
 {
-    private bool _objectWillDestroy = false;
-    private bool _fakeDead = false;
+    //private bool _objectWillDestroy = false;
+    //private bool _fakeDead = false;
+
     private bool _dead = false;
     public bool GetDead() { return _dead; }
 
@@ -109,9 +110,6 @@ public class CharacterScript : MonoBehaviour, IHitable
     {
         public GameObject _created = null;
     }
-    [SerializeField] private GameObject _debuggingMesh = null;
-    private LinkedList<GameObject> _created = new LinkedList<GameObject>();
-
 
 
     public void CalculateAffectingLayer(WeaponScript caller, ref List<int> layerList)
@@ -232,7 +230,9 @@ public class CharacterScript : MonoBehaviour, IHitable
     public virtual void YouKillThisObject(GameObject killObject)
     {
         AimScript2 aimScript = GetCharacterSubcomponent<AimScript2>(true);
+
         if (aimScript != null &&
+            aimScript.GetLockOnObject() != null &&
             aimScript.GetLockOnObject().transform.parent.gameObject == killObject)
         {
             aimScript.OffAimState();
@@ -750,38 +750,7 @@ public class CharacterScript : MonoBehaviour, IHitable
             GCST<CharacterContollerable>().GravityUpdate();
             GCST<CharacterContollerable>().ClearLatestVelocity();
         }
-
-        if (Input.GetKeyDown(KeyCode.B) == true)
-        {
-            foreach (var item in _created)
-            {
-                Destroy(item);
-            }
-            _created.Clear();
-        }
     }
-
-    //void OnControllerColliderHit(ControllerColliderHit hit)
-    //{
-    //    // 충돌한 지점의 월드 좌표
-    //    Vector3 collisionPoint = hit.point;
-
-    //    // 충돌한 물체의 표면 법선
-    //    Vector3 surfaceNormal = hit.normal;
-
-    //    //Debug.Log($"Collision Point: {collisionPoint}, Surface Normal: {surfaceNormal}");
-
-    //    GameObject normalHit = Instantiate(_debuggingMesh);
-    //    normalHit.transform.position = collisionPoint;
-    //    _created.AddLast(normalHit);
-
-    //    if (_created.Count > 10000)
-    //    {
-    //        Destroy(_created.First());
-    //        _created.RemoveFirst();
-    //    }
-    //}
-
 
 
     public void StateChanged(StateAsset nextState)
@@ -790,8 +759,6 @@ public class CharacterScript : MonoBehaviour, IHitable
         GCST<CharacterColliderScript>().StateChanged();
         GCST<CharacterContollerable>().StateChanged();
     }
-
-
 
 
     public void SetWeapon(bool isRightWeapon, int index, GameObject weaponPrefab)

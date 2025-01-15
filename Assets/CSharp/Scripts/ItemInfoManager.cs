@@ -88,7 +88,7 @@ public class ItemStoreDesc
 
 }
 
-public class ItemInfoManager : SubManager
+public class ItemInfoManager : SubManager<ItemInfoManager>
 {
     Dictionary<string, GameObject>       _equipmentPrefabs = new Dictionary<string, GameObject>();
     Dictionary<string, GameObject>       _weaponPrefabs = new Dictionary<string, GameObject>();
@@ -97,45 +97,7 @@ public class ItemInfoManager : SubManager
 
     [SerializeField] List<ItemAsset> _initItems = new List<ItemAsset>();
 
-    private static ItemInfoManager _instance = null;
 
-    public static ItemInfoManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject gameObject = new GameObject("ItemInfoMananger");
-                _instance = gameObject.AddComponent<ItemInfoManager>();
-                DontDestroyOnLoad(gameObject);
-            }
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(_instance.gameObject);
-    }
-
-    public override void SubManagerInit()
-    {
-        InitEquipments();
-
-        InitItem_TestCode_MustDel();
-
-        InitItem();
-
-        InitWeapons();
-    }
 
     private void InitItem()
     {
@@ -460,5 +422,33 @@ public class ItemInfoManager : SubManager
         testItemInfo._equipType = ItemInfo.EquipType.Weapon;
         _items.Add(testItemInfo._itemKey, testItemInfo);
 
+    }
+
+    public override void SubManagerInit()
+    {
+        SingletonAwake();
+        InitEquipments();
+
+        InitItem_TestCode_MustDel();
+
+        InitItem();
+
+        InitWeapons();
+    }
+
+    public override void SubManagerUpdate()
+    {
+    }
+
+    public override void SubManagerFixedUpdate()
+    {
+    }
+
+    public override void SubManagerLateUpdate()
+    {
+    }
+
+    public override void SubManagerStart()
+    {
     }
 }

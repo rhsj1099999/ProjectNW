@@ -11,16 +11,16 @@ public class Gunscript2 : WeaponScript
     /*------------------------------------------
     Component Section.
     ------------------------------------------*/
-    [SerializeField]  private GameObject _firePosition = null;
-    [SerializeField]  private GameObject _stockPosition = null;
-    [SerializeField] UnityEvent _whenShootEvent = null;
-
-    [SerializeField] private AnimationClip _shootAnimationClip = null;
-    [SerializeField] private AnimationClip _reloadingClip = null;
-
-
     private AimScript2 _aimScript = null;
 
+    [SerializeField] UnityEvent _whenShootEvent = null;
+    [SerializeField] private GameObject _firePosition = null;
+    [SerializeField] private GameObject _stockPosition = null;
+    [SerializeField] private AnimationClip _shootAnimationClip = null;
+
+
+
+    //[SerializeField] private AnimationClip _reloadingClip = null;
     // private GameObject _bullet = null;
     //[SerializeField] private Transform _followingTransformStartPoint = null;
 
@@ -28,12 +28,14 @@ public class Gunscript2 : WeaponScript
     /*------------------------------------------
     Spec Section.
     ------------------------------------------*/
-    [SerializeField] private bool _isAutomatic = false;
+    //[SerializeField] private bool _isAutomatic = false;
+    //[SerializeField] private float _dampingTime = 0.01f;
+
     [SerializeField] private float _coolTimeOriginal = 0.1f;
-    [SerializeField] private float _dampingTime = 0.01f;
     [SerializeField] private float _aimShakeDurationOriginal = 0.1f;
     [SerializeField] private Vector2 _absAimShakeForceMin = new Vector2(0.1f, 0.1f);
     [SerializeField] private Vector2 _absAimShakeForceMax = new Vector2(0.3f, 0.3f);
+
     [SerializeField] private float _dampingSpeed = 0.1f;
     private Vector3 _followPositionRef = Vector3.zero;
 
@@ -45,7 +47,7 @@ public class Gunscript2 : WeaponScript
     /*------------------------------------------
     런타임중 정보저장용 변수들
     ------------------------------------------*/
-    private bool _isAimShaking = false;
+    //private bool _isAimShaking = false;
     private bool _isAimed = false;
     private float _coolTime = 0.0f;
     private float _aimShakeDuration = 0.0f;

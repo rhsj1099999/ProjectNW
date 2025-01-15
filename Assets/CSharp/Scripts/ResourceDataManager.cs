@@ -59,38 +59,13 @@ public class FrameData
 }
 
 
-public class ResourceDataManager : SubManager
+public class ResourceDataManager : SubManager<ResourceDataManager>
 {
-    static private ResourceDataManager _instance;
-
-    static public ResourceDataManager Instance
-    {
-        get 
-        { 
-            if (_instance == null)
-            {
-                GameObject newGameObject = new GameObject("ResourceDataManager");
-                DontDestroyOnLoad(newGameObject);
-                _instance = newGameObject.AddComponent<ResourceDataManager>();
-            }
-
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != this && _instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-    }
 
     public override void SubManagerInit()
     {
+        SingletonAwake();
+
         ReadyAnimationHipCurve();
         ReadyAnimationFrameData();
         ReadyStateData();
@@ -356,5 +331,21 @@ public class ResourceDataManager : SubManager
         {
             stateGraphAsset.InitlaizeGraphAsset();
         }
+    }
+
+    public override void SubManagerUpdate()
+    {
+    }
+
+    public override void SubManagerFixedUpdate()
+    {
+    }
+
+    public override void SubManagerLateUpdate()
+    {
+    }
+
+    public override void SubManagerStart()
+    {
     }
 }

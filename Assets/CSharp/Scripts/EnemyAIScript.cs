@@ -17,19 +17,19 @@ public class EnemyAIScript : GameCharacterSubScript
 
     //StateSection
     [SerializeField] private float _detectRange = 3.0f;
-    [SerializeField] private float _detectRayCastTick = 1.0f;
     [SerializeField] private float _detectHorizontalDeg = 60.0f;
-    [SerializeField] private float _stateAcc = 0.0f;
+    //[SerializeField] private float _detectRayCastTick = 1.0f;
+    //[SerializeField] private float _stateAcc = 0.0f;
 
     //--------------IdleState Vars
-    [SerializeField] private float _idleStateTarget = 3.0f;
+    //[SerializeField] private float _idleStateTarget = 3.0f;
 
 
 
 
     //--------------PatrolState Vars
-    [SerializeField] private float _patrolSpeedRatio = 0.5f;
-    [SerializeField] private float _patrolRotateSpeedRatio = 0.5f;
+    //[SerializeField] private float _patrolSpeedRatio = 0.5f;
+    //[SerializeField] private float _patrolRotateSpeedRatio = 0.5f;
 
 
 

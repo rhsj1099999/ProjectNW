@@ -409,6 +409,7 @@ namespace MagicaCloth2
         }
 
         [BurstCompile]
+#pragma warning disable CS0649 // CS0649 경고 비활성화
         struct Work_IntersectPointJob : IJobParallelFor
         {
             public float3 localRayPos;
@@ -449,6 +450,7 @@ namespace MagicaCloth2
                 hitList.AddNoResize(hit);
             }
         }
+#pragma warning restore CS0649 // CS0649 경고 비활성화
 
         [BurstCompile]
         struct Work_IntersetcSortJob : IJob

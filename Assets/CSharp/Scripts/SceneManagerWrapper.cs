@@ -3,49 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneManagerWrapper : SubManager
+public class SceneManagerWrapper : SubManager<SceneManagerWrapper>
 {
     /*--------------------------------------------
     |NOTI| 씬 로딩, 씬 전환 등을 관리하는 매니저
     원래 기능은 유니티에서 제공하는데 감싼다 (커튼때문에)
     --------------------------------------------*/
 
-    private static SceneManagerWrapper _instance = null;
-
     public List<GameObject> _curtainCallPrefabList = new List<GameObject>();
     public List<GameObject> GetCurtainCallList() { return _curtainCallPrefabList; }
     private Dictionary<CurtainCallType, GameObject> _curtainCallPrefabs = new Dictionary<CurtainCallType, GameObject>();
 
-    public static SceneManagerWrapper Instance 
-    {
-        get
-        {
-            if (_instance == null) 
-            {
-                GameObject newSceneManagerWrapper = new GameObject("SceneManagerWrapper");
-                DontDestroyOnLoad(newSceneManagerWrapper);
-                _instance = newSceneManagerWrapper.AddComponent<SceneManagerWrapper>();
-            }
-
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(gameObject);
-    }
-
     public override void SubManagerInit()
     {
+        SingletonAwake();
         ReadyCurtainCallPrefabs();
     }
 
@@ -178,5 +149,13 @@ public class SceneManagerWrapper : SubManager
     public GameObject GetCurtainCallPrefab(CurtainCallType type)
     {
         return _curtainCallPrefabs[type];
+    }
+
+    public override void SubManagerFixedUpdate()
+    {
+    }
+
+    public override void SubManagerLateUpdate()
+    {
     }
 }

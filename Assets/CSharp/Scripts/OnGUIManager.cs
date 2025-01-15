@@ -4,10 +4,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class OnGUIManager : SubManager
+public class OnGUIManager : SubManager<OnGUIManager>
 {
-    private static OnGUIManager _instance = null;
-
     private GUIStyle _style = null;
     private List<int> _frameDebug = new List<int>();
     private int _currentFrame = 0;
@@ -16,44 +14,17 @@ public class OnGUIManager : SubManager
     [SerializeField] private float _fontSize = 10.0f;
     private float _lineSize = 5.0f;
 
-    public static OnGUIManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject singletonObject = new GameObject();
-                _instance = singletonObject.AddComponent<OnGUIManager>();
-                singletonObject.name = typeof(OnGUIManager).ToString();
-
-                DontDestroyOnLoad(singletonObject);
-            }
-
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != this && _instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(this.gameObject);
-    }
 
     public override void SubManagerInit()
     {
+        SingletonAwake();
+
         _style = new GUIStyle();
         _style.fontSize = (int)_fontSize;
         _style.normal.textColor = Color.red;
     }
 
-    override public void SubManagerUpdate()
+    public override void SubManagerUpdate()
     {
         _currentTimeAcc += Time.deltaTime;
         _style.fontSize = (int)_fontSize;
@@ -148,7 +119,15 @@ public class OnGUIManager : SubManager
         _debugStrings.Remove(key);
     }
 
+    public override void SubManagerFixedUpdate()
+    {
+    }
 
+    public override void SubManagerLateUpdate()
+    {
+    }
 
-
+    public override void SubManagerStart()
+    {
+    }
 }

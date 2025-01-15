@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
-
-
-
+using UnityEngine.UIElements;
 
 public enum WeaponUseType
 {
@@ -56,6 +55,9 @@ public class WeaponScript : MonoBehaviour
     public Vector3 _pivotRotation_Left = Vector3.zero;
     public Vector3 _pivotPosition_Left = Vector3.zero;
 
+    //[SerializeField] private Transform _socketAbsoluteHandlingTransform = null;
+    private Quaternion _addRotation = quaternion.identity;
+    private Vector3 _addPosition = Vector3.zero;
 
     /*------------------------------------------
     Item Spec Section.
@@ -213,24 +215,6 @@ public class WeaponScript : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-
-
-    private void Awake()
-    {
-        /*-----------------------------------------------------------------------------------------------------------------
-        |NOTI| 아이템 프리팹은 기본 PIVOT을 들고있다.
-        무기의 위치는 자식 Transform으로 결정돠면 안된다 : (IK를 이용할 가능성 때문에)
-        따라서 _pivotPosition, _pivotRotation = 무기마다 들고있는 고유 피벗 프리팹 인스펙터 창에서 미리 설정해둔다
-        -----------------------------------------------------------------------------------------------------------------*/
-    }
-
     public virtual void InitIK()
     {
         //IK 세팅 단계
@@ -266,18 +250,8 @@ public class WeaponScript : MonoBehaviour
 
     virtual public void FollowSocketTransform()
     {
-        if (_isRightHandWeapon == true)
-        {
-            transform.position = (transform.rotation * _pivotPosition_Right) + _socketTranform.position;
-            transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation_Right);
-        }
-        else 
-        {
-            transform.position = (transform.rotation * _pivotPosition_Left) + _socketTranform.position;
-            transform.rotation = _socketTranform.rotation * Quaternion.Euler(_pivotRotation_Left);
-        }
-
-        Debug.Log(Vector3.Distance(transform.position, _socketTranform.position));
+        transform.rotation = _socketTranform.rotation * Quaternion.Inverse(_addRotation);
+        transform.position = _socketTranform.position + (transform.rotation * (-_addPosition));
     }
 
 
@@ -286,6 +260,26 @@ public class WeaponScript : MonoBehaviour
     {
         _owner = itemOwner;
         Equip_OnSocket(followTransform);
+
+
+        {
+            //피벗 구하기
+
+            //Weapon과 Socket에는 AbsoluteHandling 이 있다
+            //반드시 있어야한다.
+
+            //둘의 위치가 같기 위한 rotation 과 포지션이 같아지기 위한
+            //중간 변수가 있을것. 그걸 피벗으로 결정한다
+
+            string targetName = (_isRightHandWeapon == true)
+                ? "HandlingAbsolute_Right"
+                : "HandlingAbsolute_Left";
+
+            Transform targetTransform = transform.Find(targetName).transform;
+
+            _addRotation = targetTransform.localRotation;
+            _addPosition = targetTransform.localPosition;
+        }
     }
 
     public void Equip_OnSocket(Transform followTransform)

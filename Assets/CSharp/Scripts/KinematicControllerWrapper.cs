@@ -30,7 +30,7 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     private Quaternion _currentRotation = Quaternion.identity;
     private RaycastHit _hit;
 
-    [SerializeField] private float _maxDownHillDeg = 60.0f;
+    //[SerializeField] private float _maxDownHillDeg = 60.0f;
 
 
     public override void LookAt_Plane(Vector3 dir)

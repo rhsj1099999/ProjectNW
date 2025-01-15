@@ -4,23 +4,22 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class TimeScaler : SubManager
+public class TimeScaler : SubManager<TimeScaler>
 {
-    private static TimeScaler _instance = null;
 
     private int _fixedUpdateCountACC = 0;
     private int _updateCountACC = 0;
-    private int _lateUpdateCountACC = 0;
-    private int _currentFrameFixedUpdateCalled = 0;
+
 
     private double _fixedUpdateDeltaTimeACC = 0.0f;
     private double _updateDeltaTimeACC = 0.0f;
-    private double _lateUpdateDeltaTimeACC = 0.0f;
 
-    private double _fixedUpdateMaxACC = 0.0f;
-    private double _updateMaxACC = 0.0f;
-    private double _prevUpdateMaxACC = 0.0f;
-    private double _lateUpdateMaxACC = 0.0f;
+
+    private double _DT_currFixedUpdate = 0.0f;
+    private double _DT_prevFixedUpdate = 0.0f;
+
+    private double _DT_currUpdate = 0.0f;
+    private double _DT_prevUpdate = 0.0f;
 
 
     public Action<float> _timeChanged = null;
@@ -34,48 +33,20 @@ public class TimeScaler : SubManager
     }
 
 
-    public static TimeScaler Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject singletonObject = new GameObject();
-                _instance = singletonObject.AddComponent<TimeScaler>();
-                singletonObject.name = typeof(TimeScaler).ToString();
-
-                DontDestroyOnLoad(singletonObject);
-            }
-
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != this && _instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(this.gameObject);
-    }
-
-
     public override void SubManagerInit()
     {
-
+        SingletonAwake();
     }
+
+
 
     public override void SubManagerFixedUpdate()
     {
-        _fixedUpdateMaxACC += Time.deltaTime;
-        _currentFrameFixedUpdateCalled++;
         _fixedUpdateCountACC++;
         _fixedUpdateDeltaTimeACC += Time.deltaTime;
+
+        _DT_prevFixedUpdate = _DT_currFixedUpdate;
+        _DT_currFixedUpdate = Time.deltaTime;
     }
 
 
@@ -102,20 +73,19 @@ public class TimeScaler : SubManager
             _timeChanged?.Invoke(Time.timeScale);
         }
 
-        _prevUpdateMaxACC = _updateMaxACC;
-        _updateMaxACC = Time.deltaTime;
-
         _updateCountACC++;
         _updateDeltaTimeACC += Time.deltaTime;
 
+        _DT_prevUpdate = _DT_currUpdate;
+        _DT_currUpdate = Time.deltaTime;
     }
 
     public override void SubManagerLateUpdate()
     {
-        
-        _lateUpdateCountACC++;
-        _lateUpdateDeltaTimeACC += Time.deltaTime;
-        _currentFrameFixedUpdateCalled = 0;
-        _fixedUpdateMaxACC = 0.0f;
+    }
+
+
+    public override void SubManagerStart()
+    {
     }
 }

@@ -1,15 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static State;
-//using static StateNodeDesc;
-using static UnityEngine.Rendering.DebugUI;
 using static StateGraphAsset;
-//using static AnimationClipEditor;
-using System.Security.Policy;
-using Unity.Mathematics;
 using static MyUtil;
 
 public enum StateActionType
@@ -346,11 +339,9 @@ public class StateContoller : GameCharacterSubScript
 
 
     private StateAsset _currState = null;
-    private StateAsset _prevState = null;
+    //private StateAsset _prevState = null;
     public StateAsset GetCurrState() { return _currState; }
 
-    [SerializeField] private float _stateChangeTime = 0.085f;
-    private bool _stateChangeCoroutineStarted = false;
 
     [SerializeField] private List<StateGraphInitialWrapper> _initialStateGraphes = new List<StateGraphInitialWrapper>();
     private Dictionary<StateGraphType, StateGraphAsset> _initialStateGraphesDict = new Dictionary<StateGraphType, StateGraphAsset>();
@@ -458,7 +449,7 @@ public class StateContoller : GameCharacterSubScript
             DoActions(_currState._myState._ExitStateActionTypes);
         }
 
-        _prevState = _currState;
+        //_prevState = _currState;
         _previousGraphType = _currentGraphType;
 
         _currentGraphType = nextGraphType;

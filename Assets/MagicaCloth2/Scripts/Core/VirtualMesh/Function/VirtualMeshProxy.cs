@@ -1145,6 +1145,7 @@ namespace MagicaCloth2
         }
 
         //=========================================================================================
+#pragma warning disable CS0649 // CS0649 경고 비활성화
         struct SkinningBoneInfo
         {
             //public int transformIndex;
@@ -1153,6 +1154,7 @@ namespace MagicaCloth2
             public int childTransformIndex;
             public float3 childPos;
         }
+#pragma warning restore CS0649 // 이후 경고 활성화
 
         /// <summary>
         /// カスタムスキニング情報の作成

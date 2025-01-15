@@ -1,14 +1,53 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 
-public class SubManager : MonoBehaviour
+public interface ISubManager
 {
-    public virtual void SubManagerUpdate() {}
-    public virtual void SubManagerFixedUpdate() {}
-    public virtual void SubManagerLateUpdate() {}
+    public abstract void SubManagerUpdate();
+    public abstract void SubManagerFixedUpdate();
+    public abstract void SubManagerLateUpdate();
+    public abstract void SubManagerInit();
+    public abstract void SubManagerStart();
+}
+
+public abstract class SubManager<T> : MonoBehaviour, ISubManager where T : SubManager<T>
+{
+    protected static T _instance = null;
+
+    public static T Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                GameObject newGameObject = new GameObject(_instance.GetType().ToString());
+                _instance = newGameObject.AddComponent<T>();
+                DontDestroyOnLoad(newGameObject);
+            }
+
+            return _instance;
+        }
+    }
+
+    public void SingletonAwake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        _instance = (T)this;
+
+        DontDestroyOnLoad(gameObject);
+    }
 
 
-    public virtual void SubManagerInit() { }
-    public virtual void SubManagerStart() { }
+    public abstract void SubManagerUpdate();
+    public abstract void SubManagerFixedUpdate();
+    public abstract void SubManagerLateUpdate();
+    public abstract void SubManagerInit();
+    public abstract void SubManagerStart();
 }

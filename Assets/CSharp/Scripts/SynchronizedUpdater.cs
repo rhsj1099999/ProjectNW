@@ -2,48 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SynchronizedUpdater : SubManager
+public class SynchronizedUpdater : SubManager<SynchronizedUpdater>
 {
-    static private SynchronizedUpdater _instance = null;
-
-    public static SynchronizedUpdater Instance
+    public override void SubManagerFixedUpdate()
     {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject singletonObject = new GameObject();
-                _instance = singletonObject.AddComponent<SynchronizedUpdater>();
-                singletonObject.name = typeof(SynchronizedUpdater).ToString();
-
-                DontDestroyOnLoad(singletonObject);
-            }
-
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != this && _instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(this.gameObject);
     }
 
     public override void SubManagerInit()
     {
+        SingletonAwake();
     }
 
+    public override void SubManagerLateUpdate()
+    {
+    }
 
+    public override void SubManagerStart()
+    {
+    }
 
     public override void SubManagerUpdate()
     {
-        base.SubManagerUpdate();
     }
 }

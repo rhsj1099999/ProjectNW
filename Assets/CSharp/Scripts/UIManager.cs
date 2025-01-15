@@ -8,45 +8,17 @@ using UnityEngine.UI;
 
 
 
-public class UIManager : SubManager
+public class UIManager : SubManager<UIManager>
 {
     [SerializeField] private GameObject _mainCanvas = null;
     public GameObject GetMainCanvasObject(){return _mainCanvas;}
     [SerializeField] private EventSystem _eventSystem = null;
     [SerializeField] private int _consumeInputUICount = 0;
 
-    private static UIManager _instance = null;
-    
-    public static UIManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject newGameObject = new GameObject("UIManager");
-                _instance = newGameObject.AddComponent<UIManager>();
-                DontDestroyOnLoad(newGameObject);
-            }
-
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(gameObject);
-    }
-
     public override void SubManagerInit()
     {
+        SingletonAwake();
+
         if (_mainCanvas == null)
         {
             Debug.Assert(false, "MainCanvas는 반드시 존재해야한다");
@@ -152,5 +124,21 @@ public class UIManager : SubManager
         {
             results.Reverse();
         }
+    }
+
+    public override void SubManagerUpdate()
+    {
+    }
+
+    public override void SubManagerFixedUpdate()
+    {
+    }
+
+    public override void SubManagerLateUpdate()
+    {
+    }
+
+    public override void SubManagerStart()
+    {
     }
 }

@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    [SerializeField] private List<SubManager> _subManagers = new List<SubManager>();
+    private List<ISubManager> _subManagers = new List<ISubManager>();
 
     private void Awake()
     {
@@ -35,9 +35,11 @@ public class GameManager : MonoBehaviour
         
         DontDestroyOnLoad(gameObject);
 
-        foreach (var subManager in _subManagers)
+        ISubManager[] components = GetComponents<ISubManager>();
+        foreach (ISubManager sub in components) 
         {
-            subManager.SubManagerInit();
+            sub.SubManagerInit();
+            _subManagers.Add(sub);
         }
 
         foreach (var FRAMEDROPOBJECT in _FIRSTINTANTIATE)

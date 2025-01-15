@@ -46,7 +46,7 @@ public class ComboCommandKeyDesc
 
 
 
-public class CustomKeyManager : SubManager
+public class CustomKeyManager : SubManager<CustomKeyManager>
 {
     /*-----------------------------------------------------
     유니티가 지원하지 않는 부차적인 기능들을 하는 클래스입니다
@@ -77,46 +77,6 @@ public class CustomKeyManager : SubManager
 
 
 
-
-
-
-
-
-    private static CustomKeyManager _instance = null;
-    public static CustomKeyManager Instance
-    {
-        get 
-        { 
-            if (_instance == null)
-            {
-                GameObject newGameObject = new GameObject("CustomKeyManager");
-                DontDestroyOnLoad(newGameObject);
-                CustomKeyManager component = newGameObject.AddComponent<CustomKeyManager>();
-                _instance = component;
-            }
-            return _instance; 
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(gameObject);
-    }
-
-    public override void SubManagerInit()
-    {
-
-    }
-
-
     public KeyInputDesc GetKeyInputDesc(KeyCode target)
     {
         if (_usingKeyInputDesc.ContainsKey(target) == false)
@@ -132,11 +92,7 @@ public class CustomKeyManager : SubManager
         return _usingKeyInputDesc[target];
     }
 
-    public override void SubManagerUpdate()
-    {
-        NormalKeyUpdate();
-        ComboKeyCommandUpdate2();
-    }
+
 
 
     private void NormalKeyUpdate()
@@ -305,6 +261,29 @@ public class CustomKeyManager : SubManager
         }
 
         Debug.Assert(keyDebugCount < 2, "delta Time이 구분하지 못하는 키 입력속도에 도달했다");
+    }
+
+    public override void SubManagerInit()
+    {
+        SingletonAwake();
+    }
+
+    public override void SubManagerUpdate()
+    {
+        NormalKeyUpdate();
+        ComboKeyCommandUpdate2();
+    }
+
+    public override void SubManagerFixedUpdate()
+    {
+    }
+
+    public override void SubManagerLateUpdate()
+    {
+    }
+
+    public override void SubManagerStart()
+    {
     }
 
 

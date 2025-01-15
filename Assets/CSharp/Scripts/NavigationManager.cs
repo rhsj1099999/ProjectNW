@@ -96,9 +96,9 @@ public struct NavMeshObject
     public List<NavMeshSurface> _navMeshSurfaceComponent;
 }
 
-public class NavigationManager : SubManager
+public class NavigationManager : SubManager<NavigationManager>
 {
-    private static NavigationManager _instance = null;
+    
     private Dictionary<string, HashSet<NavMeshSurface>> _stageNavMeshes = new Dictionary<string, HashSet<NavMeshSurface>>();
     private Dictionary<NavMeshSurface, NavMeshDataInstance> _activatedNavMeshIsntances = new Dictionary<NavMeshSurface, NavMeshDataInstance>();
 
@@ -106,6 +106,7 @@ public class NavigationManager : SubManager
     [SerializeField] private GameObject _debuggingPlayer;
     [SerializeField] private GameObject _debuggingCornerSpherePrefab;
     [SerializeField] private GameObject _debuggingCornerCapsulePrefab;
+    //[SerializeField] private int _debuggingTriangleCount = 2;
 
     private List<GameObject> _createdDebuggingCornerSphere = new List<GameObject>();
     private List<GameObject> _createdDebuggingCornerCapsule = new List<GameObject>();
@@ -118,19 +119,18 @@ public class NavigationManager : SubManager
     private List<GameObject> _debuggingCapsules = new List<GameObject>();
     private bool _isDrawPlane = true;
     private bool _isDrawCapsules = true;
-    [SerializeField] private int _debuggingTriangleCount = 2;
 
     //NavSplitSection
-    private List<TriangleDesc> _triangleRecording = new List<TriangleDesc>();
-    private List<SplittedNav> _splittedNavs = new List<SplittedNav>();
-    private bool _isDrawSplittedNav = true;
-    private List<GameObject> _debuggingPlaneVectorCapsules = new List<GameObject>();
-    private bool _isDrawPlaneVectorCapsule = true;
+    //private List<TriangleDesc> _triangleRecording = new List<TriangleDesc>();
+    //private List<SplittedNav> _splittedNavs = new List<SplittedNav>();
+    //private bool _isDrawSplittedNav = true;
+    //private List<GameObject> _debuggingPlaneVectorCapsules = new List<GameObject>();
+    //private bool _isDrawPlaneVectorCapsule = true;
 
-    [SerializeField] private float _offMeshLinkRadius = 1.0f; //설치가 가능하다면 최소 하나를 보장하되 2개이상부터는 이 거리만큼 설치한다
-    [SerializeField] private float _offMeshLinkOffset = 1.0f; //이 거리만큼 [x-z]떨어진곳에 Ray Casting하여 설치한다.
-    [SerializeField] private float _offMeshLinkJumpDistance = 1.0f; //이 거리만큼 점프 y를 고려한다
-    [SerializeField] private float _offMeshLinkDropHeight = 1.0f; //이 거리만큼 낙하 y를 고려한다
+    //[SerializeField] private float _offMeshLinkRadius = 1.0f; //설치가 가능하다면 최소 하나를 보장하되 2개이상부터는 이 거리만큼 설치한다
+    //[SerializeField] private float _offMeshLinkOffset = 1.0f; //이 거리만큼 [x-z]떨어진곳에 Ray Casting하여 설치한다.
+    //[SerializeField] private float _offMeshLinkJumpDistance = 1.0f; //이 거리만큼 점프 y를 고려한다
+    //[SerializeField] private float _offMeshLinkDropHeight = 1.0f; //이 거리만큼 낙하 y를 고려한다
 
 
 
@@ -156,12 +156,6 @@ public class NavigationManager : SubManager
         }
     }
 
-    public override void SubManagerUpdate()
-    {
-        DrawPlane();
-        DrawCapsule();
-    }
-
     private void DrawPlane()
     {
         if (Input.GetKeyDown(KeyCode.LeftBracket) == true)
@@ -185,15 +179,15 @@ public class NavigationManager : SubManager
 
     private void DrawPlaneVectorCapsules()
     {
-        if (Input.GetKeyDown(KeyCode.Slash) == true)
-        {
-            _isDrawPlaneVectorCapsule = !_isDrawPlaneVectorCapsule;
+        //if (Input.GetKeyDown(KeyCode.Slash) == true)
+        //{
+        //    _isDrawPlaneVectorCapsule = !_isDrawPlaneVectorCapsule;
 
-            foreach (var capsule in _debuggingPlaneVectorCapsules)
-            {
-                capsule.SetActive(_isDrawPlaneVectorCapsule);
-            }
-        }
+        //    foreach (var capsule in _debuggingPlaneVectorCapsules)
+        //    {
+        //        capsule.SetActive(_isDrawPlaneVectorCapsule);
+        //    }
+        //}
     }
 
     private void OnDestroy()
@@ -204,57 +198,13 @@ public class NavigationManager : SubManager
         }
     }
 
-    private void Awake()
-    {
-        if (_instance != this && _instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(gameObject);
-    }
-
-    public override void SubManagerInit()
-    {
-        NavMesh.RemoveAllNavMeshData();
-
-
-        Color color = Color.red;
-        _colors.Add(color);
-
-        color = Color.yellow;
-        _colors.Add(color);
-
-        color = Color.black;
-        _colors.Add(color);
-
-        color = Color.green;
-        _colors.Add(color);
-    }
+    
 
 
     private void Start()
     {
         //현재 씬 네비만 활성화
         //NavMesh.RemoveAllNavMeshData();
-    }
-
-    public static NavigationManager Instance
-    {
-        get 
-        {
-            if (_instance == null)
-            {
-                GameObject gameObject = new GameObject("NavManager_AfterCreated");
-                DontDestroyOnLoad (gameObject);
-                NavigationManager component = gameObject.AddComponent<NavigationManager>();
-                _instance = component;
-            }
-            return _instance;
-        }
     }
 
     public void DeActiveAllNavMesh()
@@ -524,181 +474,217 @@ public class NavigationManager : SubManager
     }
 
 
-    private void SplitMesh(NavMeshTriangulation triangulation)
-    {
-        int currTriangles = 0;
+    //private void SplitMesh(NavMeshTriangulation triangulation)
+    //{
+    //    int currTriangles = 0;
 
-        int[] currIndices = new int[3];
-        Vector3[] currVertices = new Vector3[3];
+    //    int[] currIndices = new int[3];
+    //    Vector3[] currVertices = new Vector3[3];
 
-        List<int> neighborNavIndices = new List<int>();
+    //    List<int> neighborNavIndices = new List<int>();
 
-        for (int i = 0; i < triangulation.areas.Length; i++)
-        {
-            neighborNavIndices.Clear();
+    //    for (int i = 0; i < triangulation.areas.Length; i++)
+    //    {
+    //        neighborNavIndices.Clear();
 
-            TriangleDesc currTriangle = new TriangleDesc();
-            currIndices[0] = triangulation.indices[(i * 3) + 0];
-            currIndices[1] = triangulation.indices[(i * 3) + 1];
-            currIndices[2] = triangulation.indices[(i * 3) + 2];
-            currTriangle._positions = new Vector3[3];
-            currTriangle._positions[0] = triangulation.vertices[currIndices[0]];
-            currTriangle._positions[1] = triangulation.vertices[currIndices[1]];
-            currTriangle._positions[2] = triangulation.vertices[currIndices[2]];
-            //삼각형이 하나 완성됐다.
+    //        TriangleDesc currTriangle = new TriangleDesc();
+    //        currIndices[0] = triangulation.indices[(i * 3) + 0];
+    //        currIndices[1] = triangulation.indices[(i * 3) + 1];
+    //        currIndices[2] = triangulation.indices[(i * 3) + 2];
+    //        currTriangle._positions = new Vector3[3];
+    //        currTriangle._positions[0] = triangulation.vertices[currIndices[0]];
+    //        currTriangle._positions[1] = triangulation.vertices[currIndices[1]];
+    //        currTriangle._positions[2] = triangulation.vertices[currIndices[2]];
+    //        //삼각형이 하나 완성됐다.
 
-            //이 삼각형은 기존에 있던 삼각형들과 이웃인가?
+    //        //이 삼각형은 기존에 있던 삼각형들과 이웃인가?
 
-            for (int j = 0; j < _splittedNavs.Count; j++)
-            {
-                List<TriangleDesc> navTriangles = _splittedNavs[j]._triangles;
+    //        for (int j = 0; j < _splittedNavs.Count; j++)
+    //        {
+    //            List<TriangleDesc> navTriangles = _splittedNavs[j]._triangles;
 
-                for (int k = 0; k < navTriangles.Count; k++)
-                {
-                    TriangleDesc existed = navTriangles[k];
+    //            for (int k = 0; k < navTriangles.Count; k++)
+    //            {
+    //                TriangleDesc existed = navTriangles[k];
 
-                    //if (existed._isNeighbor0 == true && existed._isNeighbor1 == true && existed._isNeighbor2 == true)
-                    //{
-                    //    continue;
-                    //}
+    //                //if (existed._isNeighbor0 == true && existed._isNeighbor1 == true && existed._isNeighbor2 == true)
+    //                //{
+    //                //    continue;
+    //                //}
 
-                    bool isNeighbor = currTriangle.isNeighbor(navTriangles[k]);
+    //                bool isNeighbor = currTriangle.isNeighbor(navTriangles[k]);
 
-                    if (isNeighbor == true)
-                    {
-                        neighborNavIndices.Add(j);
-                        break;
-                    }
-                }
-            }
+    //                if (isNeighbor == true)
+    //                {
+    //                    neighborNavIndices.Add(j);
+    //                    break;
+    //                }
+    //            }
+    //        }
 
-            if (neighborNavIndices.Count == 0)
-            {
-                SplittedNav newSplittedNav = new SplittedNav();
-                newSplittedNav._triangles = new List<TriangleDesc>();
-                newSplittedNav.AddTriangle(currTriangle);
-                _splittedNavs.Add(newSplittedNav);
-            }
+    //        if (neighborNavIndices.Count == 0)
+    //        {
+    //            SplittedNav newSplittedNav = new SplittedNav();
+    //            newSplittedNav._triangles = new List<TriangleDesc>();
+    //            newSplittedNav.AddTriangle(currTriangle);
+    //            _splittedNavs.Add(newSplittedNav);
+    //        }
 
-            if (neighborNavIndices.Count == 1) //하나만 있다
-            {
-                List<TriangleDesc> navTriangles = _splittedNavs[neighborNavIndices[0]]._triangles;
-                navTriangles.Add(currTriangle);
-            }
+    //        if (neighborNavIndices.Count == 1) //하나만 있다
+    //        {
+    //            List<TriangleDesc> navTriangles = _splittedNavs[neighborNavIndices[0]]._triangles;
+    //            navTriangles.Add(currTriangle);
+    //        }
 
-            if (neighborNavIndices.Count > 1) //두개 이상이다
-            {
-                List<TriangleDesc> navTriangles = _splittedNavs[neighborNavIndices[0]]._triangles;
-                navTriangles.Add(currTriangle);
+    //        if (neighborNavIndices.Count > 1) //두개 이상이다
+    //        {
+    //            List<TriangleDesc> navTriangles = _splittedNavs[neighborNavIndices[0]]._triangles;
+    //            navTriangles.Add(currTriangle);
 
-                for (int x = 1; x < neighborNavIndices.Count; x++)
-                {
-                    List<TriangleDesc> navTrianglesCopy = _splittedNavs[neighborNavIndices[x]]._triangles;
+    //            for (int x = 1; x < neighborNavIndices.Count; x++)
+    //            {
+    //                List<TriangleDesc> navTrianglesCopy = _splittedNavs[neighborNavIndices[x]]._triangles;
 
-                    for (int y = 0; y < navTrianglesCopy.Count; y++)
-                    {
-                        navTriangles.Add(navTrianglesCopy[y]);
-                    }
-                }
+    //                for (int y = 0; y < navTrianglesCopy.Count; y++)
+    //                {
+    //                    navTriangles.Add(navTrianglesCopy[y]);
+    //                }
+    //            }
 
-                int removeCount = 0;
-                for (int x = 1; x < neighborNavIndices.Count; x++)
-                {
-                    _splittedNavs.Remove(_splittedNavs[neighborNavIndices[x] - removeCount]);
-                    removeCount++;
-                }
-            }
+    //            int removeCount = 0;
+    //            for (int x = 1; x < neighborNavIndices.Count; x++)
+    //            {
+    //                _splittedNavs.Remove(_splittedNavs[neighborNavIndices[x] - removeCount]);
+    //                removeCount++;
+    //            }
+    //        }
 
-            currTriangles++;
-        }
+    //        currTriangles++;
+    //    }
 
-        int debugCount = 0;
-        foreach (var tris in _splittedNavs)
-        {
-            debugCount += tris._triangles.Count;
-        }
+    //    int debugCount = 0;
+    //    foreach (var tris in _splittedNavs)
+    //    {
+    //        debugCount += tris._triangles.Count;
+    //    }
 
 
 
-        if (currTriangles != (triangulation.areas.Length))
-        {
-            Debug.Assert(false, "삼각형 개수가 다를수도 있습니까?");
-        }
+    //    if (currTriangles != (triangulation.areas.Length))
+    //    {
+    //        Debug.Assert(false, "삼각형 개수가 다를수도 있습니까?");
+    //    }
 
-        if (debugCount != (triangulation.areas.Length))
-        {
-            Debug.Assert(false, "삼각형 개수가 다를수도 있습니까?");
-        }
-    }
+    //    if (debugCount != (triangulation.areas.Length))
+    //    {
+    //        Debug.Assert(false, "삼각형 개수가 다를수도 있습니까?");
+    //    }
+    //}
 
-    private void PlaceOffMeshLinks()
-    {
-        //생성된 삼각형 전부를 대상으로 한다
+    //private void PlaceOffMeshLinks()
+    //{
+    //    //생성된 삼각형 전부를 대상으로 한다
 
-        for (int i = 0; i < 1/*무언가의 정보 개수(점프 거리들)*/; i++)
-        {
-            foreach (var splittedNav in _splittedNavs)
-            {
-                foreach (var triangle in splittedNav._triangles)
-                {
-                    TriangleDesc currTriangle = triangle;
+    //    for (int i = 0; i < 1/*무언가의 정보 개수(점프 거리들)*/; i++)
+    //    {
+    //        foreach (var splittedNav in _splittedNavs)
+    //        {
+    //            foreach (var triangle in splittedNav._triangles)
+    //            {
+    //                TriangleDesc currTriangle = triangle;
 
-                    //각 변의 중점,수직한방향으로 위 스펙만큼 떨어져서 레이캐스팅 한다
+    //                //각 변의 중점,수직한방향으로 위 스펙만큼 떨어져서 레이캐스팅 한다
 
-                    //결과가 나온다면 
+    //                //결과가 나온다면 
 
-                }
-            }
-        }
-    }
+    //            }
+    //        }
+    //    }
+    //}
 
-    private void PlaceDebuggingPlaneVector()
-    {
-        Vector3[] betweens = new Vector3[3];
-        Vector3[] dirs = new Vector3[3];
+    //private void PlaceDebuggingPlaneVector()
+    //{
+    //    Vector3[] betweens = new Vector3[3];
+    //    Vector3[] dirs = new Vector3[3];
 
-        foreach (var splittedNav in _splittedNavs)
-        {
-            foreach (var triangle in splittedNav._triangles)
-            {
-                TriangleDesc currTriangle = triangle;
+    //    foreach (var splittedNav in _splittedNavs)
+    //    {
+    //        foreach (var triangle in splittedNav._triangles)
+    //        {
+    //            TriangleDesc currTriangle = triangle;
                 
-                betweens[0] = (currTriangle._positions[0] + currTriangle._positions[1]) / 2.0f;
-                betweens[1] = (currTriangle._positions[1] + currTriangle._positions[2]) / 2.0f;
-                betweens[2] = (currTriangle._positions[2] + currTriangle._positions[0]) / 2.0f;
+    //            betweens[0] = (currTriangle._positions[0] + currTriangle._positions[1]) / 2.0f;
+    //            betweens[1] = (currTriangle._positions[1] + currTriangle._positions[2]) / 2.0f;
+    //            betweens[2] = (currTriangle._positions[2] + currTriangle._positions[0]) / 2.0f;
 
-                dirs[0] = currTriangle._positions[0] - currTriangle._positions[1];
-                dirs[1] = currTriangle._positions[1] - currTriangle._positions[2];
-                dirs[2] = currTriangle._positions[2] - currTriangle._positions[0];
+    //            dirs[0] = currTriangle._positions[0] - currTriangle._positions[1];
+    //            dirs[1] = currTriangle._positions[1] - currTriangle._positions[2];
+    //            dirs[2] = currTriangle._positions[2] - currTriangle._positions[0];
 
-                Vector3 normal = Vector3.Cross(dirs[0], dirs[1]);
-                Vector3 centor = (betweens[0] + betweens[1] + betweens[2]) / 3.0f;
-
-
-
-                for (int j = 0; j < 3; j++)
-                {
-                    GameObject createdCapsule = Instantiate(_debuggingCornerCapsulePrefab);
-
-                    createdCapsule.transform.position = betweens[j];
-                    Vector3 targetUp = Vector3.Cross(normal, dirs[j]);
-
-                    createdCapsule.transform.up = targetUp;
-                    Vector3 localScale = createdCapsule.transform.localScale;
-                    createdCapsule.transform.position += targetUp.normalized * localScale.y;
+    //            Vector3 normal = Vector3.Cross(dirs[0], dirs[1]);
+    //            Vector3 centor = (betweens[0] + betweens[1] + betweens[2]) / 3.0f;
 
 
-                    localScale.y = 0.25f;
-                    createdCapsule.transform.localScale = localScale;
+
+    //            for (int j = 0; j < 3; j++)
+    //            {
+    //                GameObject createdCapsule = Instantiate(_debuggingCornerCapsulePrefab);
+
+    //                createdCapsule.transform.position = betweens[j];
+    //                Vector3 targetUp = Vector3.Cross(normal, dirs[j]);
+
+    //                createdCapsule.transform.up = targetUp;
+    //                Vector3 localScale = createdCapsule.transform.localScale;
+    //                createdCapsule.transform.position += targetUp.normalized * localScale.y;
 
 
-                    createdCapsule.GetComponent<MeshRenderer>().material.color = Color.green;
+    //                localScale.y = 0.25f;
+    //                createdCapsule.transform.localScale = localScale;
 
-                    _debuggingPlaneVectorCapsules.Add(createdCapsule);
-                }
-            }
-        }
-        //생성된 삼각형 전부를 대상으로 한다
+
+    //                createdCapsule.GetComponent<MeshRenderer>().material.color = Color.green;
+
+    //                _debuggingPlaneVectorCapsules.Add(createdCapsule);
+    //            }
+    //        }
+    //    }
+    //    //생성된 삼각형 전부를 대상으로 한다
+    //}
+
+    public override void SubManagerInit()
+    {
+        SingletonAwake();
+        NavMesh.RemoveAllNavMeshData();
+
+
+        Color color = Color.red;
+        _colors.Add(color);
+
+        color = Color.yellow;
+        _colors.Add(color);
+
+        color = Color.black;
+        _colors.Add(color);
+
+        color = Color.green;
+        _colors.Add(color);
     }
 
+    public override void SubManagerUpdate()
+    {
+        DrawPlane();
+        DrawCapsule();
+    }
+
+    public override void SubManagerFixedUpdate()
+    {
+    }
+
+    public override void SubManagerLateUpdate()
+    {
+    }
+
+    public override void SubManagerStart()
+    {
+    }
 }

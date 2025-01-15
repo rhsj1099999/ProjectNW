@@ -9,14 +9,13 @@ using UnityEngine;
 [Serializable]
 public class InteractionUIDesc
 {
-    private string _uiName = "상자열기";
-    private Sprite _uiSprite = null;
+    //private string _uiName = "상자열기";
+    //private Sprite _uiSprite = null;
 }
 
 public class UIInteractionableScript : MonoBehaviour
 {
     [SerializeField] private InteractionUIDesc _interactionUIDesc = null;
-    [SerializeField] private GameObject _uiWorkScript = null;
     [SerializeField] private UICallScript _uiCallScript = null;
 
     public InteractionUIDesc GetInteractionUIDesc()
@@ -37,7 +36,6 @@ public class UIInteractionableScript : MonoBehaviour
     {
         Debug.Log("UICall!");
         _uiCallScript.UICall();
-        //_uiWorkScript ->call
     }
 
     public void UICall_Off()

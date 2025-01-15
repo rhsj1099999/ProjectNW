@@ -30,9 +30,7 @@ public class AimScript2 : GameCharacterSubScript
 
 
 
-    [SerializeField] private float _lockOnDeadZoneDegree = 5.0f; //+- 10도까지는 아무 업데이트를 안한다
-    [SerializeField] private float _lockOnHardLimitZoneDegree = 25.0f; //+= 30도까지는 벗어나면 안된다.
-    [SerializeField] private float _lockOnHardLimitZoneDegree2 = 150.0f; //+= 30도까지는 벗어나면 안된다.
+    [SerializeField] private float _lockOnHardLimitZoneDegree = 150.0f;
     [SerializeField] private GameObject _debuggingMeshObject = null;
 
 
@@ -236,12 +234,12 @@ public class AimScript2 : GameCharacterSubScript
 
         float angle = Mathf.Abs(Vector3.Angle(ownerToCameraPlaneDir, ownerToTargetPlaneDir));
 
-        if (angle > _lockOnHardLimitZoneDegree2)
+        if (angle > _lockOnHardLimitZoneDegree)
         {
             return;
         }
 
-        float deltaAngle = _lockOnHardLimitZoneDegree2 - angle;
+        float deltaAngle = _lockOnHardLimitZoneDegree - angle;
 
         bool isLeft = (Vector3.Cross(ownerToTargetPlaneDir, ownerToCameraPlaneDir).y < 0.0f);
         if (isLeft == true) 

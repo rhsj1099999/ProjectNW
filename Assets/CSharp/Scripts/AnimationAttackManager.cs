@@ -2,40 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AnimationAttackManager : SubManager
+public class AnimationAttackManager : SubManager<AnimationAttackManager>
 {
-    static private AnimationAttackManager _instance;
 
-    static public AnimationAttackManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject newGameObject = new GameObject("AnimationAttackManager");
-                DontDestroyOnLoad(newGameObject);
-                _instance = newGameObject.AddComponent<AnimationAttackManager>();
-            }
-
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance != this && _instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        _instance = this;
-    }
-
-    public override void SubManagerInit()
-    {
-        ReadyAnimationAttackFrames();
-    }
 
     public List<AnimationAttackFrameAsset> _animationAttackFrameList = new List<AnimationAttackFrameAsset>();
     private Dictionary<AnimationClip, List<AnimationAttackFrameAsset.AttackFrameDesc>> _animationAttackFrame = new Dictionary<AnimationClip, List<AnimationAttackFrameAsset.AttackFrameDesc>>();
@@ -116,5 +85,27 @@ public class AnimationAttackManager : SubManager
         {
             list.Clear();
         }
+    }
+
+    public override void SubManagerUpdate()
+    {
+    }
+
+    public override void SubManagerFixedUpdate()
+    {
+    }
+
+    public override void SubManagerLateUpdate()
+    {
+    }
+
+    public override void SubManagerInit()
+    {
+        SingletonAwake();
+        ReadyAnimationAttackFrames();
+    }
+
+    public override void SubManagerStart()
+    {
     }
 }

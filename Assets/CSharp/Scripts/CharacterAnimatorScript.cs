@@ -416,50 +416,38 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         newModel.transform.rotation = _characterModelObject.transform.rotation;
 
         Animator newAnimator = newModel.GetComponentInChildren<Animator>();
-        AnimatorOverrideController newOverrideController = new AnimatorOverrideController(newAnimator.runtimeAnimatorController);
-        newAnimator.runtimeAnimatorController = newOverrideController;
+        newAnimator.runtimeAnimatorController = new AnimatorOverrideController(newAnimator.runtimeAnimatorController);
 
-        SyncAnimatorState(_animator, newAnimator, newOverrideController);
+        SyncAnimatorState(_animator, newAnimator);
 
-        StartCoroutine(WaitNextFrameCoroutine(newModel, newOverrideController, meshRenderers));
+        StartCoroutine(WaitNextFrameCoroutine(newModel, meshRenderers));
 
         return newModel;
     }
 
-    private IEnumerator WaitNextFrameCoroutine(GameObject newModel, AnimatorOverrideController overrideController, SkinnedMeshRenderer[] meshRenderers)
+
+    void SyncAnimatorState(Animator sourceAnimator, Animator targetAnimator)
     {
-        yield return new WaitForEndOfFrame();
-
-        GameObject destroyThis = _characterModelObject;
-
-        foreach (var meshRenderer in meshRenderers)
+        //0. Playable 동기화
         {
-            meshRenderer.enabled = true;
+            float firstLayerWeight = _layerMixer.GetInputWeight(0);
+            float secondLayerWeight = _layerMixer.GetInputWeight(1);
+
+            _layerMixer.DisconnectInput(0);
+
+            AnimatorControllerPlayable oldPlayable = _controllerPlayable;
+            _controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, targetAnimator.runtimeAnimatorController);
+
+            _layerMixer.ConnectInput(0, _controllerPlayable, 0);
+
+            _layerMixer.SetInputWeight(0, firstLayerWeight);
+            _layerMixer.SetInputWeight(1, secondLayerWeight);
+
+            _playableOutput.SetTarget(targetAnimator);
+
+            oldPlayable.Destroy();
         }
 
-        _characterModelObject = newModel;
-        _characterRig = _characterModelObject.GetComponentInChildren<Rig>();
-        _characterRigBuilder = _characterModelObject.GetComponentInChildren<RigBuilder>();
-
-        _animator = newModel.GetComponentInChildren<Animator>();
-        _overrideController = overrideController;
-
-        _owner.GetComponentInChildren<AimScript2>().SetRigging(_characterRigBuilder, _characterRig);
-        _owner.MoveWeapons(newModel);
-
-        CharacterColliderScript ownerCharacterColliderScript = GetComponentInParent<CharacterColliderScript>();
-        ownerCharacterColliderScript.InitModelCollider(newModel);
-
-
-
-        Destroy(destroyThis);
-    }
-
-
-
-
-    void SyncAnimatorState(Animator sourceAnimator, Animator targetAnimator, AnimatorOverrideController targetOverrideController)
-    {
         //1. 변수 동기화
         {
             foreach (AnimatorControllerParameter parameter in sourceAnimator.parameters)
@@ -494,12 +482,19 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         //2. 런타임 클립 동기화
         {
             AnimatorOverrideController sourceOverrideController = sourceAnimator.runtimeAnimatorController as AnimatorOverrideController;
+            AnimatorOverrideController targeteOverrideController = targetAnimator.runtimeAnimatorController as AnimatorOverrideController;
+
+
             List<KeyValuePair<AnimationClip, AnimationClip>> paris = new List<KeyValuePair<AnimationClip, AnimationClip>>();
             sourceOverrideController.GetOverrides(paris);
 
             foreach (var clipPair in paris)
             {
-                targetOverrideController[clipPair.Key] = clipPair.Value;
+                if (clipPair.Value == null)
+                {
+                    continue;
+                }
+                targeteOverrideController[clipPair.Key] = clipPair.Value;
             }
         }
 
@@ -522,19 +517,46 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             }
         }
 
-        //4. Playable 동기화
-        {
-            _layerMixer.DisconnectInput(0);
-            _controllerPlayable.Destroy();
-            _controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, targetAnimator.runtimeAnimatorController);
-            _layerMixer.ConnectInput(0, _controllerPlayable, 0);
 
-            _layerMixer.SetInputWeight(0, 1.0f);
-            _playableOutput.SetSourcePlayable(_layerMixer);
 
-            _playableOutput.SetTarget(targetAnimator);
-        }
+
     }
+
+    private IEnumerator WaitNextFrameCoroutine(GameObject newModel, SkinnedMeshRenderer[] meshRenderers)
+    {
+        yield return new WaitForEndOfFrame();
+
+        GameObject destroyThis = _characterModelObject;
+
+        foreach (var meshRenderer in meshRenderers)
+        {
+            meshRenderer.enabled = true;
+        }
+
+        _characterModelObject = newModel;
+        _characterRig = _characterModelObject.GetComponentInChildren<Rig>();
+        _characterRigBuilder = _characterModelObject.GetComponentInChildren<RigBuilder>();
+
+        _animator = newModel.GetComponentInChildren<Animator>();
+        _overrideController = _animator.runtimeAnimatorController as AnimatorOverrideController;
+
+        _owner.GetComponentInChildren<AimScript2>().SetRigging(_characterRigBuilder, _characterRig);
+        _owner.MoveWeapons(newModel);
+
+        CharacterColliderScript ownerCharacterColliderScript = GetComponentInParent<CharacterColliderScript>();
+        ownerCharacterColliderScript.InitModelCollider(newModel);
+
+
+
+        Destroy(destroyThis);
+
+
+    }
+
+
+
+
+
 
 
     public void StateChanged(StateAsset nextState)
