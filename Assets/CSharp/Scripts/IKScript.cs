@@ -26,7 +26,12 @@ public class IKTargetDesc
 
 public class IKDesc
 {
-    public Transform _targetTransform = null;
+    public Transform _ikGoalTransform = null;
+    public Transform _ikTargetTransform = null;
+
+    public Vector3 _ikPositionOffset = Vector3.zero;
+    public Quaternion _ikRotationOffset = Quaternion.identity;
+
     public IKTargetDesc _targetDesc = null;
 
     public bool _activated = true;
@@ -149,8 +154,6 @@ public class IKScript : MonoBehaviour
 
     public void OnAnimatorIK(int layerIndex)
     {
-        /*-------------------------------------------------------
-        -------------------------------------------------------*/
         foreach (var callersIKs in _ikDic)
         {
             foreach (var ikRunDesc in callersIKs.Value)
@@ -160,28 +163,20 @@ public class IKScript : MonoBehaviour
                     continue;
                 }
 
+
+
+                Quaternion targetRotation = ikRunDesc.Value._ikGoalTransform.rotation;
                 if (ikRunDesc.Value._targetDesc._isRotationIK == true)
                 {
                     _ikAnimator.SetIKPositionWeight(ikRunDesc.Key, ikRunDesc.Value._targetDesc._rotationIKWeight);
-                    _ikAnimator.SetIKRotation(ikRunDesc.Key, ikRunDesc.Value._targetTransform.rotation);
+                    _ikAnimator.SetIKRotation(ikRunDesc.Key, targetRotation);
                 }
 
-
-
-                Vector3 ikGoalPosition = ikRunDesc.Value._targetTransform.position;
-
-                if (ikRunDesc.Key == AvatarIKGoal.LeftHand || ikRunDesc.Key == AvatarIKGoal.RightHand)
-                {
-                    //손에 쥘려고 합니다. i
-                    WeaponScript weaponScript = (WeaponScript)callersIKs.Key;
-
-                }
-                
-
+                Vector3 targetPosition = ikRunDesc.Value._ikGoalTransform.position - (ikRunDesc.Value._ikTargetTransform.rotation * ikRunDesc.Value._ikPositionOffset);
                 if (ikRunDesc.Value._targetDesc._isPositionIK == true)
                 {
                     _ikAnimator.SetIKPositionWeight(ikRunDesc.Key, ikRunDesc.Value._targetDesc._positionIKWeight);
-                    _ikAnimator.SetIKPosition(ikRunDesc.Key, ikRunDesc.Value._targetTransform.position);
+                    _ikAnimator.SetIKPosition(ikRunDesc.Key, targetPosition);
                 }
             }
         }

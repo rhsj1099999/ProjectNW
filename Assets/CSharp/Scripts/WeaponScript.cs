@@ -133,6 +133,21 @@ public class WeaponScript : MonoBehaviour
         }
     }
 
+    public virtual void UseWeapon()
+    {
+
+    }
+
+    public virtual bool isUsingMe()
+    {
+        return false;
+    }
+
+    public virtual bool isWeaponUseReady()
+    {
+        return false;
+    }
+
 
     public AnimationClip _handlingIdleAnimation_OneHand = null;
     public AnimationClip _handlingIdleAnimation_TwoHand = null;
@@ -235,11 +250,30 @@ public class WeaponScript : MonoBehaviour
             IKDesc newIKDesc = new IKDesc();
             newIKDesc._targetDesc = desc;
             newIKDesc._activated = false;
-            newIKDesc._targetTransform = ikTarget.transform;
+
+            newIKDesc._ikGoalTransform = ikTarget.transform;
+
+            /*---------------------------------------------------
+            |NOTI| IK는 Unity Humanoid Bone 밖에 지원을 안합니다
+            근데 실제로 붙어야 할건, 무기가 붙을 '소켓' 기준입니다
+            그래서 추가적인 계산을 위해 _ikTargetTransform에 붙입니다
+            ---------------------------------------------------*/
+
+            //소켓의 부모뼈
+            newIKDesc._ikTargetTransform = _socketTranform.parent;
+
+            //소켓은 손뼈부터 이만큼 떨어져있다...오프셋으로 지정
+            newIKDesc._ikPositionOffset = _socketTranform.localPosition;
+
+            //소켓은 손뼈부터 이만큼 회전해있다...오프셋으로 지정
+            newIKDesc._ikRotationOffset = _socketTranform.localRotation;
 
             _ownerIKSkript.RegistIK(this, goal, newIKDesc);
         }
     }
+    
+
+
 
     protected virtual void LateUpdate()
     {

@@ -12,13 +12,6 @@ public class GameManager : MonoBehaviour
     {
         get 
         {
-            if (_instance == null)
-            {
-                GameObject gameObject = new GameObject("GameManager");
-                _instance = gameObject.AddComponent<GameManager>();
-                DontDestroyOnLoad(gameObject);
-            }
-
             return _instance;
         }
     }
@@ -79,16 +72,5 @@ public class GameManager : MonoBehaviour
         {
             subManager.SubManagerLateUpdate();
         }
-    }
-
-
-    private void OnDestroy()
-    {
-        //foreach (var subManager in _subManagers)
-        //{
-        //    Destroy(subManager.gameObject);
-        //}
-
-        _subManagers.Clear();
     }
 }

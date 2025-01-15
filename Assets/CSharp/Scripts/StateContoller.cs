@@ -46,6 +46,8 @@ public enum StateActionType
     AttackLookAtLockOnTarget,
 
     AddCoroutine_DeadCall,
+
+
 }
 
 public enum ConditionType
@@ -86,6 +88,8 @@ public enum ConditionType
     IsLockOnTarget, //락온을 한 상태입니다.
 
     IsHoldingWeaponKey, //무기 사용키(왼클, 오른클)을 누르고 있습니다. 무기도 들고 있습니다.
+
+    IsWeaponUseReady, //격발할 준비가 됐습니다 -> 무기마다 따로 Override
 }
 
 

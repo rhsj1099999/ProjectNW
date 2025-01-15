@@ -165,7 +165,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
     private void OnDestroy()
     {
-        //TimeScaler.Instance.RemoveTimeChangeDelegate(TimeChanged);
+        TimeScaler.Instance?.RemoveTimeChangeDelegate(TimeChanged);
 
         if (_playableGraph.IsValid() == true)
         {

@@ -59,17 +59,39 @@ public class Gunscript2 : WeaponScript
 
 
 
-
-
-
-    void Update()
+    public override bool isUsingMe()
     {
-        if (Input.GetKeyDown(KeyCode.Y) == true)
+        //격발하면 AimShake가 다 끝날떄까지 안놔줄거임
+        return false;
+    }
+
+
+
+    public override bool isWeaponUseReady()
+    {
+        if (_coolTime >= float.Epsilon)
         {
-            FireAnimation();
+            return false;
         }
 
-        FireCheck();
+        return base.isWeaponUseReady();
+    }
+
+
+
+    public override void UseWeapon()
+    {
+        //Fire();
+
+        //RayCheck();
+
+        _coolTime = _coolTimeOriginal;
+
+        StartCoroutine("AimShakeCoroutine");
+
+        StartCoroutine("CooltimeCoroutine");
+
+        FireAnimation();
     }
 
     protected override void LateUpdate()
@@ -221,26 +243,6 @@ public class Gunscript2 : WeaponScript
     public void Fire()
     {
         //Do RayCast
-    }
-
-    public void FireCheck()
-    {
-        if (false/*총을 발사했다는 조건을 구현할것*/ && _coolTime < float.Epsilon)
-        {
-            //Fire();
-
-            //RayCheck();
-
-            _coolTime = _coolTimeOriginal;
-
-            StartCoroutine("AimShakeCoroutine");
-
-            StartCoroutine("CooltimeCoroutine");
-
-            FireAnimation();
-
-            _whenShootEvent.Invoke();
-        }
     }
 
     private void FireAnimation()

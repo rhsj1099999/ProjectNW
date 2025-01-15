@@ -20,12 +20,12 @@ public abstract class SubManager<T> : MonoBehaviour, ISubManager where T : SubMa
     {
         get
         {
-            if (_instance == null)
-            {
-                GameObject newGameObject = new GameObject(_instance.GetType().ToString());
-                _instance = newGameObject.AddComponent<T>();
-                DontDestroyOnLoad(newGameObject);
-            }
+            //if (_instance == null)
+            //{
+            //    GameObject newGameObject = new GameObject(_instance.GetType().ToString());
+            //    _instance = newGameObject.AddComponent<T>();
+            //    DontDestroyOnLoad(newGameObject);
+            //}
 
             return _instance;
         }
@@ -44,6 +44,10 @@ public abstract class SubManager<T> : MonoBehaviour, ISubManager where T : SubMa
         DontDestroyOnLoad(gameObject);
     }
 
+    private void OnDestroy()
+    {
+        _instance = null;
+    }
 
     public abstract void SubManagerUpdate();
     public abstract void SubManagerFixedUpdate();
