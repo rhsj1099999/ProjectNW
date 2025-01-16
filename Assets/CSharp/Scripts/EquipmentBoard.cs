@@ -136,7 +136,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
                 return false;
             }
         }
-
+        
         return true;
     }
 

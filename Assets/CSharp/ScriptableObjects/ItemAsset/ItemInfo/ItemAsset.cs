@@ -21,6 +21,7 @@ public class ItemAsset : ScriptableObject
     [SerializeField] private EquipType _equipType;
     public EquipType _EquipType => _equipType;
 
+
     public enum WeaponType //캐릭터마다 무기 파지법이 달라질 수 있으니 구체화 해놓지는 않는다
     {
         NotWeapon = 0,
@@ -35,6 +36,11 @@ public class ItemAsset : ScriptableObject
     [SerializeField] private WeaponType _weaponType;
     public WeaponType _WeaponType => _weaponType;
 
+    /*
+    아이템 마다 달라진다 = 같은 ItemKey에 따라서도 달라질 수 있다
+    '나한테만 유효한'
+    '테이블에 저장할 수 없는' = '유저마다 정보가 다름'
+     */
 
     [SerializeField] private string _itemName;
     public string _ItemName => _itemName;

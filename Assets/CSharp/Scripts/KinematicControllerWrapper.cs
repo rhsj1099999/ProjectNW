@@ -245,9 +245,7 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         Vector3 verticalSpeed = Vector3.zero;
         Vector3 planeSpeed = _currentSpeed;
 
-        bool isGrounded = _motor.GroundingStatus.IsStableOnGround;
-
-        if (isGrounded == false) 
+        if (_motor.GroundingStatus.IsStableOnGround == false) 
         {
             verticalSpeed = _gravitySpeed;
         }
@@ -270,6 +268,7 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         //바닥에 안붙어있다
         if (isGrounded == false)
         {
+            
             return;
         }
 

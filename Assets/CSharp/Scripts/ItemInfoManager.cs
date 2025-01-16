@@ -58,6 +58,14 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
     Dictionary<ItemAsset, ItemSubInfo_WeaponInfo>   _itemSubInfo_WeaponInfo = new Dictionary<ItemAsset, ItemSubInfo_WeaponInfo>();
     Dictionary<ItemAsset, ItemSubInfo_UsingInfo>    _itemSubInfo_UsingInfo = new Dictionary<ItemAsset, ItemSubInfo_UsingInfo>();
 
+
+    /*
+    
+    */
+
+
+
+
     //Dictionary<Type, Dictionary<ItemAsset, ItemSubInfo>> _itemSubInfo_Total = new Dictionary<Type, Dictionary<ItemAsset, ItemSubInfo>>();
 
     [SerializeField] List<ItemAsset>                _itemAssets_Init = new List<ItemAsset>();
@@ -94,18 +102,6 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
             }
 
             targetContainer.Add(targetItemInfo, item);
-
-            //if (!_itemSubInfo_Total.ContainsKey(typeof(T)))
-            //{
-            //    _itemSubInfo_Total[typeof(T)] = targetContainer.ToDictionary(
-            //        pair => pair.Key,
-            //        pair => (ItemSubInfo)pair.Value
-            //    );
-            //}
-            //else
-            //{
-            //    Debug.Assert(false, $"Type {typeof(T)} already exists in _itemSubInfo_Total");
-            //}
         }
     }
 
@@ -167,17 +163,6 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
 
         return asset;
     }
-
-
-
-
-    //public GameObject GetEquipmentPrefab(string prefabName)
-    //{
-    //    //Debug.Assert(_equipmentInfo.ContainsKey(prefabName) == true, "존재하지 않는 프리팹을 요청합니다. 리소스 변화가 있었습니까?");
-    //    //return _equipmentInfo[prefabName];
-    //    return null;
-    //}
-
 
 
 
