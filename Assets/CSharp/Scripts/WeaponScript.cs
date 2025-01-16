@@ -63,8 +63,8 @@ public class WeaponScript : MonoBehaviour
     Item Spec Section.
     ------------------------------------------*/
     public bool _onlyTwoHand = false;
-    public ItemInfo _itemInfo = null;
-    public ItemInfo.WeaponType _weaponType = ItemInfo.WeaponType.NotWeapon;
+    public ItemAsset _itemInfo = null;
+    public ItemAsset.WeaponType _weaponType = ItemAsset.WeaponType.NotWeapon;
     public DamageDesc _weaponDamageDesc = new DamageDesc();
 
 

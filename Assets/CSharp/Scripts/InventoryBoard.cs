@@ -1,47 +1,50 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 public class InventoryBoard : MonoBehaviour, IMoveItemStore
 {
+    private RectTransform _myRectTransform = null;
 
     [SerializeField] private int _rows = 4;
     [SerializeField] private int _cols = 4;
     [SerializeField] private GameObject _cellPrefab = null;
     [SerializeField] private GameObject _itemUIPrefab = null;
 
-    private RectTransform _myRectTransform = null;
     /*-------------
     계속 바뀔 변수들
     -------------*/
+
     private int _blank = 0;
     private bool[,] _blankDispaly;
     private List<GameObject> _cells = new List<GameObject>();
-    
-    private Dictionary<int/*키*/, Dictionary<int/*저장된 칸*/, ItemStoreDesc>>      _items = new Dictionary<int, Dictionary<int, ItemStoreDesc>>();  //아이템이 있는지 없는지 확인용
-    private Dictionary<int/*저장된 칸*/, GameObject>                                _itemUIs = new Dictionary<int, GameObject>();                   //실제로 들어있는 아이템 렌더링 담당
+
+    //아이템이 있는지 없는지 확인용
+    private Dictionary<int/*키*/, Dictionary<int/*저장된 칸*/, ItemStoreDesc>> _items = new Dictionary<int, Dictionary<int, ItemStoreDesc>>();
+
+    //아이템 저장 UI 저장용
+    private Dictionary<ItemStoreDesc/*저장정보*/, GameObject/*조작용 UI*/> _itemUIs = new Dictionary<ItemStoreDesc, GameObject>();
 
 
     public void OnValidate()
     {
-        //EditorApplication.delayCall += () =>
-        //{
-        //    if (this == null) // 오브젝트가 유효한지 확인
-        //    {
-        //        return;
-        //    }
+        EditorApplication.delayCall += () =>
+        {
+            if (this == null) // 오브젝트가 유효한지 확인
+            {
+                return;
+            }
 
-        //    RectTransform rectTransform = GetComponent<RectTransform>();
+            RectTransform rectTransform = GetComponent<RectTransform>();
 
-        //    if (rectTransform == null)
-        //    {
-        //        return;
-        //    }
+            if (rectTransform == null)
+            {
+                return;
+            }
 
-        //    rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
-        //};
+            rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
+        };
     }
 
     private void Awake()
@@ -56,7 +59,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         
         _myRectTransform.sizeDelta = new Vector2(20 * _cols, 20 * _rows);
 
-        InventoryCellDesc cellDesc = new InventoryCellDesc();
+        BoardCellDesc cellDesc = new BoardCellDesc();
         cellDesc._owner = this;
 
         for (int i = 0; i < _rows; i++)
@@ -72,7 +75,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
                 InventoryCell cellComponent = cellObject.GetComponent<InventoryCell>();
                 Debug.Assert(cellComponent != null, "cellComponent는 널일 수 없다");
-                cellComponent.Initialize(ref cellDesc);
+                cellComponent.Initialize(cellDesc);
                 
                 cellObject.SetActive(false);
                 _cells.Add(cellObject);
@@ -93,10 +96,6 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     }
 
 
-    void Start()
-    {
-    }
-
 
     void Update()
     {
@@ -104,6 +103,9 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
         DebugCells();
     }
+
+
+
 
     public GameObject getCell(int index)
     {
@@ -115,25 +117,19 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         return _cells[index];
     }
 
-    public GameObject getItem(int index)
+
+
+
+
+    public GameObject getItem(ItemStoreDesc storeDesc)
     {
-        if (index >= _itemUIs.Count)
-        {
-            Debug.Assert(false, "getItem에서 인덱스를 벗어났다");
-            return null;
-        }
-        return _itemUIs[index];
+        return _itemUIs[storeDesc];
     }
 
 
 
-    public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, ItemBase callerItem)
+    public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation)
     {
-        /*---------------------------------------------------------------------------
-        |TODO| 동일 아이템이면 겹친 칸만큼 보정해줘야한다
-        ---------------------------------------------------------------------------*/
-        //if ((storedDesc._info._sizeX * storedDesc._info._sizeY) > _blank) { return false; } //애초에 들어갈 공간이 없다
-
         Vector2 currPosition = Input.mousePosition;
         Vector2 boardSize = new Vector2(_myRectTransform.rect.width, _myRectTransform.rect.height);
         Vector2 boardStartPosition = new Vector2(_myRectTransform.position.x + (-boardSize.x / 2), _myRectTransform.position.y + (boardSize.y / 2));
@@ -141,8 +137,8 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         int IndexX = (int)(delta.x / 20);
         int IndexY = (int)(-delta.y / 20);
 
-        int itemSizeX = (callerItem.GetRotated() == false) ? storedDesc._info._sizeX : storedDesc._info._sizeY;
-        int itemSizeY = (callerItem.GetRotated() == false) ? storedDesc._info._sizeY : storedDesc._info._sizeX;
+        int itemSizeX = (grabRotation == false) ? storedDesc._itemAsset._SizeX : storedDesc._itemAsset._SizeY;
+        int itemSizeY = (grabRotation == false) ? storedDesc._itemAsset._SizeY : storedDesc._itemAsset._SizeX;
         
         if (IndexX + itemSizeX > _cols || IndexY + itemSizeY > _rows)
         {
@@ -153,19 +149,15 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         HashSet<int> sameItemIndex = new HashSet<int>();
 
 
-        /*---------------------------------------------------------------------------
-        |TODO|  비교조건 수정해라 (참일때 하는 일은 템옮기기일때 동일아이템이 움직였을때 겹친칸 continue용도
-        ---------------------------------------------------------------------------*/
-        if (
-            callerItem != null && 
-            (storedDesc._owner is InventoryBoard) && 
-            (InventoryBoard)storedDesc._owner == this &&
-            _itemUIs.Count > 0 &&
-            _itemUIs[storedDesc._storedIndex].GetComponent<ItemBase>() == callerItem
-            )
+        if (_itemUIs.ContainsKey(storedDesc) == true )
         {
-            int existingSizeX = (storedDesc._isRotated == false) ? storedDesc._info._sizeX: storedDesc._info._sizeY;
-            int existingSizeY = (storedDesc._isRotated == false) ? storedDesc._info._sizeY : storedDesc._info._sizeX;
+            /*----------------------------------------------------
+            |NOTI| 내 인벤토리에서 내 인벤토리로 움직인 경우입니다
+            HashSet에 무시할 칸들을 세팅합니다
+            ----------------------------------------------------*/
+
+            int existingSizeX = (storedDesc._isRotated == false) ? storedDesc._itemAsset._SizeX : storedDesc._itemAsset._SizeY;
+            int existingSizeY = (storedDesc._isRotated == false) ? storedDesc._itemAsset._SizeY : storedDesc._itemAsset._SizeX;
 
             int existingIndexY = storedDesc._storedIndex / _cols;
             int existingIndexX = storedDesc._storedIndex - (existingIndexY * _cols);
@@ -179,7 +171,6 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
                 }
             }
         }
-
 
         for (int i = 0; i < itemSizeY; i++)
         {
@@ -208,27 +199,22 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
 
 
-
-    private GameObject CreateInventoryItem(ItemInfo info, int targetX, int targetY, bool isAdditionalRotated = false)
+    //실제로 저장될 ItemUI를 만드는 함수...
+    private GameObject CreateInventoryItem(ItemAsset info, int targetX, int targetY, int storedIndex, int count, bool isAdditionalRotated)
     {
         GameObject itemUI = Instantiate(_itemUIPrefab, _myRectTransform);
 
-        if (itemUI == null)
-        {
-            Debug.Assert(itemUI != null, "itemUI 생성 실패");
-            return null;
-        }
-
         RectTransform itemUIRectTransform = itemUI.GetComponent<RectTransform>();
+
         //사이즈변경
-        itemUIRectTransform.sizeDelta = new Vector2(info._sizeX * 20, info._sizeY * 20);
+        itemUIRectTransform.sizeDelta = new Vector2(info._SizeX * 20, info._SizeY * 20);
 
         //위치변경
         Vector2 cellIndexToMyPosition = new Vector2(-_myRectTransform.rect.size.x / 2 + 10, _myRectTransform.rect.size.y / 2 - 10);
         cellIndexToMyPosition.x += (targetX * 20);
         cellIndexToMyPosition.y -= (targetY * 20);
 
-        Vector2 itemUISize = new Vector2(info._sizeX * 20, info._sizeY * 20);
+        Vector2 itemUISize = new Vector2(info._SizeX * 20, info._SizeY * 20);
         Vector2 itemUISizeDelta = new Vector2(itemUISize.x / 2, -itemUISize.y / 2);
         Vector3 itemOffset = new Vector3(-10, 10, 0);
 
@@ -243,90 +229,120 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
             itemUIRectTransform.RotateAround(cellPosition, new Vector3(0.0f, 0.0f, 1.0f), 90);
 
-            itemUIRectTransform.anchoredPosition -= new Vector2(0.0f, info._sizeX * 20);
-        }
-
-
-        if (info._sprite != null)
-        {
-            itemUI.GetComponent<Image>().sprite = info._sprite;
+            itemUIRectTransform.anchoredPosition -= new Vector2(0.0f, info._SizeX * 20);
         }
 
         return itemUI;
     }
 
-    public void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY, bool isAdditionalRotated = false)
+
+
+
+    /*----------------------------------------------------
+    |NOTI| 인벤토리 보드 -> 인벤토리 보드 의 경우
+    삭제하고 넣을때, 넣는순간 이 함수가 호출됐다.
+    ----------------------------------------------------*/
+    public void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY)
     {
-        //드래그 드랍으로 아이템을 넣을때 인덱스가 결정돼있는 상태,
-        GameObject itemUI = CreateInventoryItem(storedDesc._info, targetX, targetY, isAdditionalRotated);
-
-        //다음 검사 시 빨리 찾기위한 공간갱신
-        _blank -= storedDesc._info._sizeX * storedDesc._info._sizeY;
-
-        //격자갱신
-        int rows = (isAdditionalRotated == true) ? storedDesc._info._sizeX : storedDesc._info._sizeY;
-        int cols = (isAdditionalRotated == true) ? storedDesc._info._sizeY : storedDesc._info._sizeX;
-        int targetX_modified = (isAdditionalRotated == true) ? targetX - 1 : targetX;
-        for (int y = 0; y < rows; y++)
-        {
-            for (int x = 0; x < cols; x++)
-            {
-                _blankDispaly[targetY + y, targetX + x] = true;
-            }
-        }
-
-        //탐색용 구조체 갱신
         int inventoryIndex = _cols * targetY + targetX;
+        storedDesc._storedIndex = inventoryIndex;
+        storedDesc._owner = this;
+        UpdateBlank(true, storedDesc);
 
-        if (_items.ContainsKey(storedDesc._info._itemKey) == false) //추가된적이 없다.
+        GameObject itemUI = CreateInventoryItem(storedDesc._itemAsset, targetX, targetY, inventoryIndex, storedDesc._count, storedDesc._isRotated);
+        itemUI.GetComponent<ItemBase>().Initialize(this, storedDesc);
+
+        Dictionary<int, ItemStoreDesc> sameKeyItems = null;
+        _items.TryGetValue(storedDesc._itemAsset._ItemKey, out sameKeyItems);
+        if (sameKeyItems == null) 
         {
-            _items.Add(storedDesc._info._itemKey, new Dictionary<int, ItemStoreDesc>());
+            //해당 Key의 Item이 최초추가 됐다.
+            _items.Add(storedDesc._itemAsset._ItemKey, new Dictionary<int, ItemStoreDesc>());
         }
 
-        Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[storedDesc._info._itemKey];
+        sameKeyItems = _items[storedDesc._itemAsset._ItemKey];
 
-        //둘중 하나의 경우다 1. 스택카운트가 넘어서 새롭게 넣어주던가, 2. 동일종류 템이 하나도 없고 최초였던가
-
-        ItemStoreDesc storeDesc = new ItemStoreDesc();
-        storeDesc._count = 0;
-        storeDesc._storedIndex = inventoryIndex;
-        storeDesc._isRotated = isAdditionalRotated;
-        storeDesc._owner = this;
-        storeDesc._info = storedDesc._info;
-        itemKeyCategory.Add(inventoryIndex, storeDesc);
-
-        ItemBase itemBaseComponent = itemUI.GetComponent<ItemBase>();
-        if (itemBaseComponent != null)
+        if (sameKeyItems.ContainsKey(storedDesc._storedIndex) == true)
         {
-            itemBaseComponent.Initialize(this, storeDesc);
+            Debug.Assert(false, "자리가 겹치려고 하고있다");
+            Debug.Break();
         }
 
-        Debug.Assert(_itemUIs.ContainsKey(inventoryIndex) == false, "겹치려고 하고있다");
-        _itemUIs.Add(inventoryIndex, itemUI);
+        sameKeyItems.Add(inventoryIndex, storedDesc);
+
+
+        if (_itemUIs.ContainsKey(storedDesc) == true)
+        {
+            Debug.Assert(false, "해당 저장정보로 이미 UI가 생성됐다");
+            Debug.Break();
+        }
+
+        _itemUIs.Add(storedDesc, itemUI);
     }
 
 
-    public void AddItemAutomatic(ItemInfo info, int itemCount = 1)
+
+
+
+
+
+
+
+
+
+    public bool CheckItemStackAble(ItemAsset itemInfo, out ItemStoreDesc storeDescTarget, int itemCount)
     {
-        if ((info._sizeX * info._sizeY) > _blank) { return; } //애초에 들어갈 공간이 없다
+        storeDescTarget = null;
+
+        int itemMaxStack = itemInfo._MaxStack;
+
+        if (itemMaxStack <= 1)
+        {
+            //그 아이템은 쌓을수가 없어요
+            return false;
+        }
+
+        /*----------------------------------------------------
+        Dictionary<int, Dictionary<int, ItemStoreDesc>> _items;
+        ----------------------------------------------------*/
+
+        Dictionary<int, ItemStoreDesc> currSameKeyItems = null;
+        _items.TryGetValue(itemInfo._ItemKey, out currSameKeyItems);
+
+        if (currSameKeyItems == null) 
+        {
+            //애당초 그 아이템은 인벤토리에 없어요
+            return false;
+        }
+
+        foreach (KeyValuePair<int, ItemStoreDesc> indexStoreDescPair in currSameKeyItems)
+        {
+            ItemStoreDesc storeDesc = indexStoreDescPair.Value;
+
+            int currItemCount = storeDesc._count;
+
+            if (currItemCount + itemCount <= itemMaxStack) 
+            {
+                storeDescTarget = storeDesc;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+
+    public void AddItemAutomatic(ItemAsset info, int itemCount)
+    {
+        if ((info._SizeX * info._SizeY) > _blank) { return; } //애초에 들어갈 공간이 없다
 
         //기존에 스택가능한 아이템이 있는경우 = 빨리 넣고 함수종료
-        bool jobFinished = false;
-
-        if (_items.ContainsKey(info._itemKey) == true &&
-            _items[info._itemKey].Count > 0 &&
-            info._isStackAble == true)
         {
-
-            foreach (KeyValuePair<int, ItemStoreDesc>? item in _items[info._itemKey])
+            ItemStoreDesc targetStoreDesc = null;
+            if (CheckItemStackAble(info, out targetStoreDesc, itemCount) == true)
             {
-                item.Value.Value.PlusItem();
-                jobFinished = true;
-                break;
-            }
-
-            if (jobFinished == true)
-            {
+                targetStoreDesc._count += itemCount;
                 return;
             }
         }
@@ -336,21 +352,25 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         int targetY = -1;
         bool isRotated = false;
 
-        bool isPushAble = CheckInventorySpace_MustOpt(ref info, ref targetX, ref targetY, ref isRotated);
+        //여분이 없으면 종료.
+        if (CheckInventorySpace_MustOpt(info, ref targetX, ref targetY, ref isRotated) == false)
+        {
+            return;
+        }
 
-        if (isPushAble == false) { return; }
+        //인벤토리 셀의 X,Y 인덱스, 회전값이 결정됐다.
 
-        //여분이 있다.
+        int inventoryIndex = _cols * targetY + targetX;
 
         //오브젝트 준비
-        GameObject itemUI = CreateInventoryItem(info, targetX, targetY, isRotated);
+        GameObject itemUI = CreateInventoryItem(info, targetX, targetY, inventoryIndex, itemCount, isRotated);
 
         //다음 검사 시 빨리 찾기위한 공간갱신
-        _blank -= info._sizeX * info._sizeY;
+        _blank -= info._SizeX * info._SizeY;
 
         //격자갱신
-        int rows = (isRotated == true) ? info._sizeX : info._sizeY;
-        int cols = (isRotated == true) ? info._sizeY : info._sizeX;
+        int rows = (isRotated == true) ? info._SizeX : info._SizeY;
+        int cols = (isRotated == true) ? info._SizeY : info._SizeX;
         for (int y = 0; y < rows; y++)
         {
             for (int x = 0; x < cols; x++)
@@ -360,63 +380,42 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         }
 
         //탐색용 구조체 갱신
-        int inventoryIndex = _cols * targetY + targetX;
         
-        if (_items.ContainsKey(info._itemKey) == false) //추가된적이 없다.
+        if (_items.ContainsKey(info._ItemKey) == false) //추가된적이 없다.
         {
-            _items.Add(info._itemKey, new Dictionary<int, ItemStoreDesc>());
+            _items.Add(info._ItemKey, new Dictionary<int, ItemStoreDesc>());
         }
 
-        Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[info._itemKey];
+        Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[info._ItemKey];
 
-        //둘중 하나의 경우다 1. 스택카운트가 넘어서 새롭게 넣어주던가, 2. 동일종류 템이 하나도 없고 최초였던가
-        ItemStoreDesc storeDesc = new ItemStoreDesc();
-        storeDesc._count = itemCount;
-        storeDesc._storedIndex = inventoryIndex;
-        storeDesc._isRotated = isRotated;
-        storeDesc._owner = this;
-        storeDesc._info = info;
+        ItemStoreDesc storeDesc = new ItemStoreDesc(info, itemCount, inventoryIndex, isRotated, this);
+
         itemKeyCategory.Add(inventoryIndex, storeDesc);
 
         ItemBase itemBaseComponent = itemUI.GetComponent<ItemBase>();
+
         if (itemBaseComponent != null)
         {
             itemBaseComponent.Initialize(this, storeDesc);
         }
 
-        _itemUIs.Add(inventoryIndex, itemUI);
+        _itemUIs.Add(storeDesc, itemUI);
     }
 
 
-    public void DeleteOnMe(ItemStoreDesc storedDesc) // : IMoveItemStore
+    private void UpdateBlank(bool target, ItemStoreDesc storedDesc)
     {
-        //아이템을 드래그 드롭 했을때 한꺼번에 옮기는 함수 = 전부다 없앨것이다.
-
-        if (_items.ContainsKey(storedDesc._info._itemKey) == false)
-        {
-            Debug.Assert(false, "없는 아이템을 지우려하고있다");
-            return;
-        }
-
-        Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[storedDesc._info._itemKey]; //적어도 하나는 들어있었어야 한다
-
-        if (itemKeyCategory.ContainsKey(storedDesc._storedIndex) == false)
-        {
-            Debug.Assert(false, "없는 아이템을 지우려하고있다. 이미 삭제됐나?");
-            return;
-        }
-
         //칸 수 갱신
         {
-            _blank += storedDesc._info._sizeX * storedDesc._info._sizeY;
+            _blank += storedDesc._itemAsset._SizeX * storedDesc._itemAsset._SizeY;
         }
 
         //여백 갱신
         {
-            bool isRotated = itemKeyCategory[storedDesc._storedIndex]._isRotated;
+            bool isRotated = storedDesc._isRotated;
 
-            int rows = (isRotated == true) ? storedDesc._info._sizeX : storedDesc._info._sizeY;
-            int cols = (isRotated == true) ? storedDesc._info._sizeY : storedDesc._info._sizeX;
+            int rows = (isRotated == true) ? storedDesc._itemAsset._SizeX : storedDesc._itemAsset._SizeY;
+            int cols = (isRotated == true) ? storedDesc._itemAsset._SizeY : storedDesc._itemAsset._SizeX;
 
             int targetRow = (int)(storedDesc._storedIndex / _cols);
             int targetCol = storedDesc._storedIndex - (targetRow * _cols);
@@ -425,29 +424,40 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
             {
                 for (int j = 0; j < cols; j++)
                 {
-                    _blankDispaly[targetRow + i, targetCol + j] = false;
+                    _blankDispaly[targetRow + i, targetCol + j] = target;
                 }
             }
         }
-
-        RemoveItemUsingCellIndex(storedDesc);
     }
 
-    public void SuccessCall(GameObject uiObject)
+
+
+    public void DeleteOnMe(ItemStoreDesc storedDesc)
     {
+        //격자가 갱신된다.
+        UpdateBlank(false, storedDesc);
 
+        _itemUIs.Remove(storedDesc);
+
+        if (_items.ContainsKey(storedDesc._itemAsset._ItemKey) == false)
+        {
+            Debug.Assert(false, "추가된적도 없는 아이템을 지우려한다");
+            return;
+        }
+
+        Dictionary<int, ItemStoreDesc> sameItemsByItemKey = _items[storedDesc._itemAsset._ItemKey];
+
+        if (sameItemsByItemKey.ContainsKey(storedDesc._storedIndex) == false)
+        {
+            Debug.Assert(false, "해당 자리에는 이 아이템이 없는데 지우려 한다");
+            return;
+        }
+        
+        sameItemsByItemKey.Remove(storedDesc._storedIndex);
     }
 
 
-    private void RemoveItemUsingCellIndex(ItemStoreDesc storedDesc)
-    {
-        _itemUIs.Remove(storedDesc._storedIndex);
-        Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[storedDesc._info._itemKey]; //적어도 하나는 들어있었어야 한다
-        itemKeyCategory.Remove(storedDesc._storedIndex);
-    }
-
-
-    public bool CheckInventorySpace_MustOpt(ref ItemInfo itemInfo, ref int targetX, ref int targetY, ref bool isRotated, int startX = 0, int startY = 0)
+    public bool CheckInventorySpace_MustOpt(ItemAsset itemInfo, ref int targetX, ref int targetY, ref bool isRotated, int startX = 0, int startY = 0)
     {
         /*------------------------------------------
         |TODO| = 너무 BruteForce다 최적화가 필요하다
@@ -467,11 +477,11 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
                 }
 
                 {//인포 자체로 검사
-                    if (i + itemInfo._sizeY <= _rows && j + itemInfo._sizeX <= _cols)
+                    if (i + itemInfo._SizeY <= _rows && j + itemInfo._SizeX <= _cols)
                     {
-                        for (int y = 0; y < itemInfo._sizeY; y++)
+                        for (int y = 0; y < itemInfo._SizeY; y++)
                         {
-                            for (int x = 0; x < itemInfo._sizeX; x++)
+                            for (int x = 0; x < itemInfo._SizeX; x++)
                             {
                                 if (_blankDispaly[i + y, j + x] == true)
                                 {
@@ -501,11 +511,11 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
                 {//90도 시계방향으로 돌려서 검사
                     isFind = true;
 
-                    if (i + itemInfo._sizeX <= _rows && j + itemInfo._sizeY <= _cols)
+                    if (i + itemInfo._SizeX <= _rows && j + itemInfo._SizeY <= _cols)
                     {
-                        for (int y = 0; y < itemInfo._sizeX; y++)
+                        for (int y = 0; y < itemInfo._SizeX; y++)
                         {
-                            for (int x = 0; x < itemInfo._sizeY; x++)
+                            for (int x = 0; x < itemInfo._SizeY; x++)
                             {
                                 if (_blankDispaly[i + y, j + x] == true)
                                 {
@@ -522,11 +532,6 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
                         if (isFind == true)
                         {
-                            //targetX = j + (itemInfo._sizeX - 1);
-                            //targetY = i;
-                            //isRotated = true;
-                            //return true;
-
                             targetX = j;
                             targetY = i;
                             isRotated = true;
@@ -544,58 +549,14 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     {
         if (Input.GetKeyDown(KeyCode.Alpha0) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha1) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(35));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha2) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(36));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha3) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(39));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha4) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(40));
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(42));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha5) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(41));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha5) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(43));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha6) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(37));
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(38));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha6) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34));
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha7) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30));
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31));
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32));
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31), 1);
         }
     }
+
+
+
+
     private void DebugCells()
     {
         for (int i = 0; i < _rows; i++)
@@ -617,4 +578,39 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
             }
         }
     }
+
+
 }
+
+
+
+//public void MoveItemSameInventory(ItemStoreDesc storedDesc, int targetX, int targetY)
+//{
+//    //다음 검사 시 빨리 찾기위한 공간갱신
+//    {
+//        UpdateBlank(false, storedDesc);
+//        int inventoryIndex = _cols * targetY + targetX;
+//        storedDesc._storedIndex = inventoryIndex;
+//        UpdateBlank(true, storedDesc);
+//    }
+//}
+
+
+//public void MoveItemDiffrentInventory(ItemStoreDesc storedDesc, int targetX, int targetY)
+//{
+//    int inventoryIndex = _cols * targetY + targetX;
+//    storedDesc._storedIndex = inventoryIndex;
+//    UpdateBlank(true, storedDesc);
+
+//    GameObject itemUI = CreateInventoryItem(storedDesc._itemAsset, targetX, targetY, inventoryIndex, storedDesc._count, storedDesc._isRotated);
+//    itemUI.GetComponent<ItemBase>().Initialize(this, storedDesc);
+
+//    _items.Add(storedDesc._itemAsset._ItemKey, new Dictionary<int, ItemStoreDesc>());
+
+//    Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[storedDesc._itemAsset._ItemKey];
+
+//    itemKeyCategory.Add(inventoryIndex, storedDesc);
+
+//    Debug.Assert(_itemUIs.ContainsKey(storedDesc) == false, "겹치려고 하고있다");
+//    _itemUIs.Add(storedDesc, itemUI);
+//}

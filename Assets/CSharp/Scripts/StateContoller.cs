@@ -152,7 +152,7 @@ public class KeyInputConditionDesc
 public class ConditionDesc
 {
     public ConditionType _singleConditionType;
-    public ItemInfo.WeaponType _weaponTypeGoal;
+    public ItemAsset.WeaponType _weaponTypeGoal;
     public List<KeyInputConditionDesc> _keyInputConditionTarget;
     public List<ComboKeyCommandDesc> _commandInputConditionTarget;
     public FrameDataType _animationFrameDataType = FrameDataType.End;

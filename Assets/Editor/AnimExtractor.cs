@@ -132,4 +132,37 @@ public class AnimExtractor : EditorWindow
     }
 
 
+
+
+
+
+
+
+    [MenuItem("Tools/ConvertAnimClip")]
+    public static void ConvertAnimProperties()
+    {
+        Object[] selectedObjects = Selection.objects;
+
+        foreach (Object asset in selectedObjects)
+        {
+            string assetPath = AssetDatabase.GetAssetPath(asset);
+
+            Object[] assetElements = AssetDatabase.LoadAllAssetRepresentationsAtPath(assetPath);
+
+            foreach (Object assetElement in assetElements)
+            {
+                if (assetElement is not AnimationClip)
+                {
+                    continue;
+                }
+
+                AnimationClip clip = (AnimationClip)assetElement;
+            }
+        }
+
+        // 변경 사항 적용
+        AssetDatabase.Refresh();
+    }
+
+
 }

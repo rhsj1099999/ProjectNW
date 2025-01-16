@@ -12,7 +12,7 @@ public class WeaponSocketScript : MonoBehaviour
         Middle,
     }
     public SideType _sideType = SideType.Middle;
-    public List<ItemInfo.WeaponType> _equippableWeaponTypes = new List<ItemInfo.WeaponType>();
+    public List<ItemAsset.WeaponType> _equippableWeaponTypes = new List<ItemAsset.WeaponType>();
     public Animator _ownerAnimator = null;
 
     private void Awake()

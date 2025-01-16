@@ -5,37 +5,47 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
 using Unity.VisualScripting;
+using static ItemAsset;
 
 public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler
 {
     private RectTransform _myRectTransform = null;
+
+    /*-------------------------------------------------------
+    아이템을 인벤토리, 장비창 등 생성될때 이것을 사용해 생성한다.
+    -------------------------------------------------------*/
+    private ItemStoreDesc _itemStoreDesc;
 
     /*-----------------
     기능 실행마다 바뀔 변수들
      ----------------*/
     private Vector2 _mouseCatchingPosition = Vector2.zero;
     private Vector2 _myPosition = Vector2.zero;
-    private ItemStoreDesc _itemStoreDesc;
-    private IMoveItemStore _itemStoreAbleInstance = null;
     private bool _isDragging = false;
-    private bool _isRotated = false;
-    private GameObject _returnParent = null;
 
-    public void Initialize(IMoveItemStore inventoryBoard, ItemStoreDesc storeDesc)
+    private bool _additionalRotating_Dynamic = false;
+
+    public void Initialize(IMoveItemStore fromOwner, ItemStoreDesc storeDesc)
     {
-        if (inventoryBoard == null)
+        if (fromOwner == null)
         {
-            Debug.Assert(inventoryBoard != null, "인벤토리 보드가 널이다");
+            Debug.Assert(fromOwner != null, "인벤토리 보드가 널이다");
         }
-        _itemStoreAbleInstance = inventoryBoard;
+
+        {
+            //이미지 컴포넌트 세팅
+
+            //Debug.Assert(false, "이곳은 수정해야합니다");
+            //Debug.Break();
+            //if (info._sprite != null)
+            //{
+            //    itemUI.GetComponent<Image>().sprite = info._sprite;
+            //}
+        }
+
         _itemStoreDesc = storeDesc;
     }
 
-
-    public GameObject GetReturnParent()
-    {
-        return _returnParent;
-    }
 
     void Awake()
     {
@@ -72,18 +82,14 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     {
         UIManager.Instance.IncreaseConsumeInput();
     }
+
+
+
     public void OnPointerUp(PointerEventData eventData)
     {
         UIManager.Instance.DecreaseConsumeInput();
 
         _isDragging = false;
-
-        if (_returnParent != null)
-        {
-            transform.SetParent(_returnParent.transform);
-        }
-
-        _returnParent = null;
 
         _myRectTransform.anchoredPosition = _myPosition;
 
@@ -114,26 +120,26 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             return;
         }
 
-        //최상단이 CellComponent이다
+        //최상단이 InventoryCell 이다
         InventoryCell cellComponent = topObject.GetComponent<InventoryCell>();
         if (cellComponent != null) 
         {
-            if (cellComponent.TryMoveItemDropOnBoard(_itemStoreDesc, this) == true)
+            int startX = -1;
+            int startY = -1;
+            if (cellComponent.TryMoveItemDropOnCell(_itemStoreDesc, ref startX, ref startY, _additionalRotating_Dynamic) == false)
             {
-                EquipmentBoard equipmentBoard = _itemStoreDesc._owner as EquipmentBoard;
-                if (equipmentBoard != null &&
-                    _itemStoreDesc._info._equipType == ItemInfo.EquipType.All)
-                {
-                    List<GameObject> restItemUIs = equipmentBoard.GetRestEquipmetItems(this.gameObject);
-
-                    foreach (var item in restItemUIs)
-                    {
-                        Destroy(item.gameObject);
-                    }
-                }
-
-                StartCoroutine(DestroyCoroutine());
+                return;
             }
+
+            /*--------------------------------------------------------------------------------------------------------
+            |NOTI| 새로운 ItemStoreDesc 초기화 오버헤드가 있지만 무조건 삭제하고 넣는 구조를 택합니다.
+            이전 owner 가 Equip일수도있고, Inventory 일수도 있습니다. 통일성을 위해서입니다.
+            --------------------------------------------------------------------------------------------------------*/
+            _itemStoreDesc._owner.DeleteOnMe(_itemStoreDesc);
+            _itemStoreDesc._isRotated = _additionalRotating_Dynamic;
+            cellComponent.GetOwner().AddItemUsingForcedIndex(_itemStoreDesc, startX, startY);
+            StartCoroutine(DestroyCoroutine());
+
             return;
         }
 
@@ -141,10 +147,17 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         EquipmentCell equipmentCellComponent = topObject.GetComponent<EquipmentCell>();
         if (equipmentCellComponent != null) 
         {
-            if (equipmentCellComponent.TryEquipItem(_itemStoreDesc) == true)
+            int startX = -1;
+            int startY = -1;
+            if (cellComponent.TryMoveItemDropOnCell(_itemStoreDesc, ref startX, ref startY, _additionalRotating_Dynamic) == false)
             {
-                StartCoroutine(DestroyCoroutine());
+                return;
             }
+
+            _itemStoreDesc._owner.DeleteOnMe(_itemStoreDesc);
+            _itemStoreDesc._isRotated = _additionalRotating_Dynamic;
+            cellComponent.GetOwner().AddItemUsingForcedIndex(_itemStoreDesc, startX, startY); //장착코드가 될것
+            StartCoroutine(DestroyCoroutine());
             return;
         }
 
@@ -167,19 +180,19 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     public void OnBeginDrag(PointerEventData eventData)
     {
         _isDragging = true;
+        _additionalRotating_Dynamic = _itemStoreDesc._isRotated;
+
+
+        _myRectTransform.sizeDelta = new Vector2(_itemStoreDesc._itemAsset._SizeX * 20, _itemStoreDesc._itemAsset._SizeY * 20);
 
         _myPosition = _myRectTransform.anchoredPosition;
 
-        _returnParent = transform.parent.gameObject;
-
         UIManager.Instance.SetMeFinalZOrder(gameObject);
-
-        _isRotated = _itemStoreDesc._isRotated;
 
         _myRectTransform.position = Input.mousePosition;
 
-        int sizeX = (_isRotated == false) ? _itemStoreDesc._info._sizeX * 20: _itemStoreDesc._info._sizeY * 20;
-        int sizeY = (_isRotated == false) ? _itemStoreDesc._info._sizeY * 20 : _itemStoreDesc._info._sizeX * 20;
+        int sizeX = (_itemStoreDesc._isRotated == false) ? _itemStoreDesc._itemAsset._SizeX * 20: _itemStoreDesc._itemAsset._SizeY * 20;
+        int sizeY = (_itemStoreDesc._isRotated == false) ? _itemStoreDesc._itemAsset._SizeY * 20 : _itemStoreDesc._itemAsset._SizeX * 20;
 
         _myRectTransform.position = Input.mousePosition;
         _myRectTransform.position += new Vector3(sizeX / 2, -sizeY / 2, 0);
@@ -190,13 +203,12 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     private void RotateInGrab()
     {
-        _isRotated = !_isRotated;
+        _additionalRotating_Dynamic = !_additionalRotating_Dynamic;
 
-        //mouse catching position 갱신
         _myRectTransform.position = Input.mousePosition;
 
-        int sizeX = (_isRotated == false) ? _itemStoreDesc._info._sizeX * 20 : _itemStoreDesc._info._sizeY * 20;
-        int sizeY = (_isRotated == false) ? _itemStoreDesc._info._sizeY * 20 : _itemStoreDesc._info._sizeX * 20;
+        int sizeX = (_additionalRotating_Dynamic == false) ? _itemStoreDesc._itemAsset._SizeX * 20 : _itemStoreDesc._itemAsset._SizeY * 20;
+        int sizeY = (_additionalRotating_Dynamic == false) ? _itemStoreDesc._itemAsset._SizeY * 20 : _itemStoreDesc._itemAsset._SizeX * 20;
 
         _myRectTransform.position = Input.mousePosition;
         _myRectTransform.position += new Vector3(sizeX / 2, -sizeY / 2, 0);
@@ -206,20 +218,20 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         _mouseCatchingPosition = _myRectTransform.position;
 
         Vector3 axis = new Vector3(0.0f, 0.0f, 1.0f);
-        float angle = (_isRotated == true) ? 90.0f : -90.0f;
+        float angle = (_itemStoreDesc._isRotated == true) ? 90.0f : -90.0f;
 
         _myRectTransform.RotateAround(_mouseCatchingPosition, axis, angle);
     }
 
 
-    public bool GetRotated()
-    {
-        return _isRotated;
-    }
+    //public bool GetRotated()
+    //{
+    //    return _itemStoreDesc._isRotated;
+    //}
 
 
-    public ItemStoreDesc getStoredDesc()
-    {
-        return _itemStoreDesc;
-    }
+    //public ItemStoreDesc getStoredDesc()
+    //{
+    //    return _itemStoreDesc;
+    //}
 }

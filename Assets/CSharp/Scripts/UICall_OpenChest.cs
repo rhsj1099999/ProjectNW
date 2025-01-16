@@ -32,10 +32,10 @@ public class UICall_OpenChest : UICallScript
     {
         InventoryBoard boardComponent = GetComponentInChildren<InventoryBoard>();
 
-        foreach (int itemKey in _fixedCreateTryItemList)
-        {
-            boardComponent.AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(itemKey));
-        }
+        //foreach (int itemKey in _fixedCreateTryItemList)
+        //{
+        //    boardComponent.AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(itemKey));
+        //}
     }
 
 

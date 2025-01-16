@@ -77,12 +77,12 @@ public class InventoryData : MonoBehaviour
     {
         Destroy(_itemUIs[storedDesc._storedIndex]);
         _itemUIs.Remove(storedDesc._storedIndex);
-        Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[storedDesc._info._itemKey]; //적어도 하나는 들어있었어야 한다
+        Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[storedDesc._itemAsset._ItemKey]; //적어도 하나는 들어있었어야 한다
         itemKeyCategory.Remove(storedDesc._storedIndex);
     }
 
 
-    public bool CheckInventorySpace_MustOpt(ref ItemInfo itemInfo, ref int targetX, ref int targetY, ref bool isRotated, int startX = 0, int startY = 0)
+    public bool CheckInventorySpace_MustOpt(ItemAsset itemInfo, ref int targetX, ref int targetY, ref bool isRotated, int startX = 0, int startY = 0)
     {
         //|TODO| = 너무 BruteForce다 최적화가 필요하다
 
@@ -101,11 +101,11 @@ public class InventoryData : MonoBehaviour
                 }
 
                 {//인포 자체로 검사
-                    if (i + itemInfo._sizeY <= _rows && j + itemInfo._sizeX <= _cols)
+                    if (i + itemInfo._SizeY <= _rows && j + itemInfo._SizeX <= _cols)
                     {
-                        for (int y = 0; y < itemInfo._sizeY; y++)
+                        for (int y = 0; y < itemInfo._SizeY; y++)
                         {
-                            for (int x = 0; x < itemInfo._sizeX; x++)
+                            for (int x = 0; x < itemInfo._SizeX; x++)
                             {
                                 if (_blankDispaly[i + y, j + x] == true)
                                 {
@@ -135,11 +135,11 @@ public class InventoryData : MonoBehaviour
                 {//90도 시계방향으로 돌려서 검사
                     isFind = true;
 
-                    if (i + itemInfo._sizeX <= _rows && j + itemInfo._sizeY <= _cols)
+                    if (i + itemInfo._SizeX <= _rows && j + itemInfo._SizeY <= _cols)
                     {
-                        for (int y = 0; y < itemInfo._sizeX; y++)
+                        for (int y = 0; y < itemInfo._SizeX; y++)
                         {
-                            for (int x = 0; x < itemInfo._sizeY; x++)
+                            for (int x = 0; x < itemInfo._SizeY; x++)
                             {
                                 if (_blankDispaly[i + y, j + x] == true)
                                 {
@@ -156,7 +156,7 @@ public class InventoryData : MonoBehaviour
 
                         if (isFind == true)
                         {
-                            targetX = j + (itemInfo._sizeX - 1);
+                            targetX = j + (itemInfo._SizeX - 1);
                             targetY = i;
                             isRotated = true;
                             return true;

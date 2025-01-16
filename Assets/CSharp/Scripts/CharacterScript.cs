@@ -405,7 +405,7 @@ public class CharacterScript : MonoBehaviour, IHitable
 
             Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
 
-            ItemInfo.WeaponType targetType = nextWeaponScript._weaponType;
+            ItemAsset.WeaponType targetType = nextWeaponScript._weaponType;
 
             foreach (var socketComponent in weaponSockets)
             {
@@ -437,7 +437,7 @@ public class CharacterScript : MonoBehaviour, IHitable
         GameObject newObject = Instantiate(nextWeaponPrefab);
         {
             nextWeaponScript = newObject.GetComponent<WeaponScript>();
-            nextWeaponScript._weaponType = ItemInfo.WeaponType.MediumGun;
+            nextWeaponScript._weaponType = ItemAsset.WeaponType.MediumGun;
             nextWeaponScript.Equip(this, correctSocket);
             newObject.transform.SetParent(transform);
 
@@ -960,60 +960,63 @@ public class CharacterScript : MonoBehaviour, IHitable
 
             case AdditionalBehaveType.UseItem_Drink:
                 {
-                    ItemInfo newTestingItem = null;
+                    //Debug.Assert(false, "이곳은 수정해야합니다");
+                    //Debug.Break();
 
-                    if (Input.GetKeyDown(_useItemKeyCode1) == true)
-                    {
-                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
-                    }
+                    //ItemInfo newTestingItem = null;
 
-                    if (newTestingItem == null)
-                    {
-                        return;
-                    }
+                    //if (Input.GetKeyDown(_useItemKeyCode1) == true)
+                    //{
+                    //    newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
+                    //}
 
-                    if (GCST<StateContoller>().GetCurrState()._myState._canUseItem == false)
-                    {
-                        return;
-                    }
+                    //if (newTestingItem == null)
+                    //{
+                    //    return;
+                    //}
 
-
-                    //사용 부위 체크
-                    int willBusyLayer = 0;
-
-                    {
-                        //순수 아이템만으로 필요한 레이어 체크
-                        if (newTestingItem._usingItemMustNotBusyLayers != null || newTestingItem._usingItemMustNotBusyLayers.Count > 0)
-                        {
-                            if (newTestingItem._usingItemMustNotBusyLayer < 0)
-                            {
-                                newTestingItem._usingItemMustNotBusyLayer = 0;
-
-                                foreach (var item in newTestingItem._usingItemMustNotBusyLayers)
-                                {
-                                    newTestingItem._usingItemMustNotBusyLayer = (newTestingItem._usingItemMustNotBusyLayer | 1 << (int)item);
-                                }
-                            }
-
-                            willBusyLayer = newTestingItem._usingItemMustNotBusyLayer;
-                        }
-
-                        //현재 무기 파지법에 의해 필요한 레이어 체크
-                        if (_tempCurrRightWeapon != null)
-                        {
-                            willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.RightHand);
-                        }
-                    }
+                    //if (GCST<StateContoller>().GetCurrState()._myState._canUseItem == false)
+                    //{
+                    //    return;
+                    //}
 
 
+                    ////사용 부위 체크
+                    //int willBusyLayer = 0;
 
-                    if ((currentAnimatorBusyLayerBitShift & willBusyLayer) != 0)
-                    {
-                        return; //해당 부위들은 지금 할일이 있다
-                    }
+                    //{
+                    //    ////순수 아이템만으로 필요한 레이어 체크
+                    //    //if (newTestingItem._usingItemMustNotBusyLayers != null || newTestingItem._usingItemMustNotBusyLayers.Count > 0)
+                    //    //{
+                    //    //    if (newTestingItem._usingItemMustNotBusyLayer < 0)
+                    //    //    {
+                    //    //        newTestingItem._usingItemMustNotBusyLayer = 0;
 
-                    //Work를 담는다 이전에 Lock 계산을 끝낼것.
-                    GCST<CharacterAnimatorScript>().CalculateBodyWorkType_UseItem_Drink(_tempGrabFocusType, newTestingItem, willBusyLayer);
+                    //    //        foreach (var item in newTestingItem._usingItemMustNotBusyLayers)
+                    //    //        {
+                    //    //            newTestingItem._usingItemMustNotBusyLayer = (newTestingItem._usingItemMustNotBusyLayer | 1 << (int)item);
+                    //    //        }
+                    //    //    }
+
+                    //    //    willBusyLayer = newTestingItem._usingItemMustNotBusyLayer;
+                    //    //}
+
+                    //    ////현재 무기 파지법에 의해 필요한 레이어 체크
+                    //    //if (_tempCurrRightWeapon != null)
+                    //    //{
+                    //    //    willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+                    //    //}
+                    //}
+
+
+
+                    //if ((currentAnimatorBusyLayerBitShift & willBusyLayer) != 0)
+                    //{
+                    //    return; //해당 부위들은 지금 할일이 있다
+                    //}
+
+                    ////Work를 담는다 이전에 Lock 계산을 끝낼것.
+                    //GCST<CharacterAnimatorScript>().CalculateBodyWorkType_UseItem_Drink(_tempGrabFocusType, newTestingItem, willBusyLayer);
                 }
                 break;
 

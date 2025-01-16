@@ -2,20 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static ItemInfo;
+using static ItemAsset;
 
 
-public struct EquipmentCellDesc
-{
-    public EquipmentBoard _owner;
-}
 
-public class EquipmentCell : MonoBehaviour
+public class EquipmentCell : BoardUICellBase
 {
     [SerializeField] private EquipType _equipType = EquipType.None;
 
-    private EquipmentBoard _ownerEquipmentBoard = null;
-    private ItemStoreDesc _itemStoreDesc = null;
     
 
     private void Awake()
@@ -23,56 +17,59 @@ public class EquipmentCell : MonoBehaviour
         Debug.Assert(_equipType != EquipType.None, "장착셀에 None이 설정돼있으면 안된다");
     }
 
+    //private ItemStoreDesc _itemStoreDesc = null;
 
-    public void SetItemStoreDesc(ItemStoreDesc storeDesc)
+    //public void SetItemStoreDesc(ItemStoreDesc storeDesc)
+    //{
+    //    if (_itemStoreDesc != null)
+    //    {
+    //        Debug.Assert(false, "이미 할당된 장착셀입니다");
+    //        Debug.Break();
+    //    }
+
+    //    _itemStoreDesc = storeDesc;
+    //}
+
+
+    //public ItemStoreDesc GetItemStoreDesc()
+    //{
+    //    return _itemStoreDesc;
+    //}
+
+
+    //public void ClearItemStoreDesc()
+    //{
+    //    if (_itemStoreDesc == null)
+    //    {
+    //        Debug.Assert(false, "이미 비워진 장착셀입니다");
+    //        Debug.Break();
+    //    }
+
+    //    _itemStoreDesc = null;
+    //}
+
+
+
+
+    public override bool TryMoveItemDropOnCell(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation)
     {
-        if (_itemStoreDesc != null)
-        {
-            Debug.Assert(false, "이미 할당된 장착셀입니다");
-            Debug.Break();
-        }
+        Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
 
-        _itemStoreDesc = storeDesc;
-    }
-
-
-    public ItemStoreDesc GetItemStoreDesc()
-    {
-        return _itemStoreDesc;
-    }
-
-
-    public void ClearItemStoreDesc()
-    {
-        if (_itemStoreDesc == null)
-        {
-            Debug.Assert(false, "이미 비워진 장착셀입니다");
-            Debug.Break();
-        }
-        
-        _itemStoreDesc = null;
-    }
-
-
-    public void Initialize(EquipmentCellDesc cellDesc)
-    {
-        Debug.Assert(cellDesc._owner != null, "EquipCell초기화시 owner가 null입니다");
-        _ownerEquipmentBoard = cellDesc._owner;
-    }
-
-    public bool TryEquipItem(ItemStoreDesc storedDesc)
-    {
-        Debug.Assert(_ownerEquipmentBoard != null, "Equipcell Owner가 제대로 설정되지 않았습니다");
-
-        //착용 부위가 다른템이다
-        //이정도는 board 말고 cell 선에서 컷
-        if ((storedDesc._info._equipType & _equipType) == (int)EquipType.None)
+        //장착하려는 셀과 다른 타입입니다.
+        if ((storedDesc._itemAsset._EquipType & _equipType) == (int)EquipType.None)
         {
             return false;
         }
 
-        return _ownerEquipmentBoard.EquipItem(storedDesc, this.gameObject);
+        //해당 마우스 포지션으로는 아이템을 넣을 수 없다.
+        if (_owner.CheckItemDragDrop(storedDesc, ref startX, ref startY, grabRotation) == false)
+        {
+            return false;
+        }
+
+        return true;
     }
+
 
     public EquipType GetCellType()
     {
