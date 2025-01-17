@@ -36,12 +36,6 @@ public class ItemAsset : ScriptableObject
     [SerializeField] private WeaponType _weaponType;
     public WeaponType _WeaponType => _weaponType;
 
-    /*
-    아이템 마다 달라진다 = 같은 ItemKey에 따라서도 달라질 수 있다
-    '나한테만 유효한'
-    '테이블에 저장할 수 없는' = '유저마다 정보가 다름'
-     */
-
     [SerializeField] private string _itemName;
     public string _ItemName => _itemName;
 
@@ -56,4 +50,9 @@ public class ItemAsset : ScriptableObject
 
     [SerializeField] private int _maxStack = 100;
     public int _MaxStack => _maxStack;
+
+    //바닥에 뿌릴 수 있습니까? => 모델이 존재해야한다
+    //모델이 없으면 기본모델을 정의한다.
+    [SerializeField] private bool _fieldExistAble = true;
+    public bool _FieldExistAble => _fieldExistAble;
 }

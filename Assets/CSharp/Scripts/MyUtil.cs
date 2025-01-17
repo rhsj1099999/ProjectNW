@@ -57,7 +57,14 @@ public static class MyUtil
         return halfwayRotation;
     }
 
-
+    public static U GetOrAdd<T, U>(this Dictionary<T, U> dictionary, T key) where U : new()
+    {
+        if (dictionary.ContainsKey(key) == false)
+        {
+            dictionary.Add(key, new U());
+        }
+        return dictionary[key];
+    }
 
     public static int CalculateConditionWeight(List<ConditionAssetWrapper> conditions)
     {

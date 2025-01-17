@@ -23,7 +23,7 @@ public class InventoryCell : BoardUICellBase
         Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
 
         //해당 마우스 포지션으로는 아이템을 넣을 수 없다.
-        if (_owner.CheckItemDragDrop(storedDesc, ref startX, ref startY, grabRotation) == false)
+        if (_owner.CheckItemDragDrop(storedDesc, ref startX, ref startY, grabRotation, this) == false)
         {
             return false; 
         }

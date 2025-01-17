@@ -47,27 +47,14 @@ public class WeaponComboEntry
 
 public class WeaponScript : MonoBehaviour
 {
-    /*------------------------------------------
-    Pivot Section.
-    ------------------------------------------*/
-    public Vector3 _pivotRotation_Right = Vector3.zero;
-    public Vector3 _pivotPosition_Right = Vector3.zero;
-    public Vector3 _pivotRotation_Left = Vector3.zero;
-    public Vector3 _pivotPosition_Left = Vector3.zero;
-
-    //[SerializeField] private Transform _socketAbsoluteHandlingTransform = null;
-    private Quaternion _addRotation = quaternion.identity;
-    private Vector3 _addPosition = Vector3.zero;
-
+    #region 인포로 빼세요
     /*------------------------------------------
     Item Spec Section.
     ------------------------------------------*/
     public bool _onlyTwoHand = false;
     public ItemAsset _itemInfo = null;
-    public ItemAsset.WeaponType _weaponType = ItemAsset.WeaponType.NotWeapon;
     public DamageDesc _weaponDamageDesc = new DamageDesc();
-
-
+    public ItemAsset.WeaponType _weaponType = ItemAsset.WeaponType.NotWeapon;
 
     /*------------------------------------------
     PutAway/Draw AnimationClips Section.
@@ -133,21 +120,6 @@ public class WeaponScript : MonoBehaviour
         }
     }
 
-    public virtual void UseWeapon()
-    {
-
-    }
-
-    public virtual bool isUsingMe()
-    {
-        return false;
-    }
-
-    public virtual bool isWeaponUseReady()
-    {
-        return false;
-    }
-
 
     public AnimationClip _handlingIdleAnimation_OneHand = null;
     public AnimationClip _handlingIdleAnimation_TwoHand = null;
@@ -200,34 +172,32 @@ public class WeaponScript : MonoBehaviour
             return _handlingIdleAnimation_TwoHand_Mirrored;
         }
     }
+    /*------------------------------------------
+    State Section.
+    ------------------------------------------*/
+    public StateGraphAsset _weaponStateGraph = null;
+    #endregion 인포로 빼세요
 
+    public CharacterScript _owner = null;
+    protected bool _isRightHandWeapon = false;
 
+    /*------------------------------------------
+    Pivot Section.
+    ------------------------------------------*/
+    public Transform _socketTranform = null;
+    private Quaternion _addRotation = quaternion.identity;
+    private Vector3 _addPosition = Vector3.zero;
 
     /*------------------------------------------
     IK Section.
     ------------------------------------------*/
     protected IKScript _ownerIKSkript = null;
     protected Dictionary<AvatarIKGoal, IKTargetDesc> _createdIKTargets = new Dictionary<AvatarIKGoal, IKTargetDesc>();
-    
 
 
-    /*------------------------------------------
-    State Section.
-    ------------------------------------------*/
-    public StateGraphAsset _weaponStateGraph = null;
-
-
-
-
-    /*------------------------------------------
-    런타임중 정보저장용 변수들
-    ------------------------------------------*/
-    public Transform _socketTranform = null;
-    protected bool _isRightHandWeapon = false;
-    public CharacterScript _owner = null;
-
-
-
+    public virtual bool isWeaponUseReady() {return false;}
+    public virtual void UseWeapon() {}
+    public virtual bool isUsingMe() {return false;}
 
 
     public virtual void InitIK()
@@ -295,25 +265,14 @@ public class WeaponScript : MonoBehaviour
         _owner = itemOwner;
         Equip_OnSocket(followTransform);
 
+        string targetName = (_isRightHandWeapon == true)
+            ? "HandlingAbsolute_Right"
+            : "HandlingAbsolute_Left";
 
-        {
-            //피벗 구하기
+        Transform targetTransform = transform.Find(targetName).transform;
 
-            //Weapon과 Socket에는 AbsoluteHandling 이 있다
-            //반드시 있어야한다.
-
-            //둘의 위치가 같기 위한 rotation 과 포지션이 같아지기 위한
-            //중간 변수가 있을것. 그걸 피벗으로 결정한다
-
-            string targetName = (_isRightHandWeapon == true)
-                ? "HandlingAbsolute_Right"
-                : "HandlingAbsolute_Left";
-
-            Transform targetTransform = transform.Find(targetName).transform;
-
-            _addRotation = targetTransform.localRotation;
-            _addPosition = targetTransform.localPosition;
-        }
+        _addRotation = targetTransform.localRotation;
+        _addPosition = targetTransform.localPosition;
     }
 
     public void Equip_OnSocket(Transform followTransform)

@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static ItemAsset;
+using static MyUtil;
 using static UnityEditor.Progress;
 
 public class EquipmentBoard : MonoBehaviour, IMoveItemStore
@@ -16,30 +18,19 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
     /*-------------
     계속 바뀔 변수들
     -------------*/
-    private List<GameObject> _leftWeaponEquipCells = new List<GameObject>();
-    private List<GameObject> _rightWeaponEquipCells = new List<GameObject>();
-    private List<GameObject> _itemEquipCells = new List<GameObject>();
-    private Dictionary<EquipType, GameObject> _equipmentEquipCells = new Dictionary<EquipType, GameObject>();
+    //private List<EquipmentCell> _leftWeaponEquipCells = new List<EquipmentCell>();
+    //private List<EquipmentCell> _rightWeaponEquipCells = new List<EquipmentCell>();
+    //private List<EquipmentCell> _itemEquipCells = new List<EquipmentCell>();
+
+    private Dictionary<EquipType, BoardUICellBase> _equipCellLinked_Armor = new Dictionary<EquipType, BoardUICellBase>();
 
 
+    private HashSet<BoardUICellBase> _currActivatedCell = new HashSet<BoardUICellBase>();
+    private Dictionary<ItemStoreDesc, HashSet<BoardUICellBase>> _currActivatedCell_ByItem = new Dictionary<ItemStoreDesc, HashSet<BoardUICellBase>>();
 
-    private Dictionary<EquipType, GameObject> _currEquippedMesh = new Dictionary<EquipType, GameObject>();
-    private Dictionary<EquipType, GameObject> _currEquippedItemUIs = new Dictionary<EquipType, GameObject>();
 
-    public void DeleteOnMe(ItemStoreDesc storeDesc)
-    {
-        if (storeDesc._itemAsset._EquipType == EquipType.Weapon)
-        {
-            UnEquipItem_Weapon(storeDesc);
-        }
-        else
-        {
-            //UnEquipUI(storeDesc);
-            //UnEquipMesh(storeDesc);
-        }
-    }
-
-    
+    private Dictionary<ItemStoreDesc, List<GameObject>> _currEquippedItemUIObject = new Dictionary<ItemStoreDesc, List<GameObject>>();
+    private Dictionary<ItemStoreDesc, List<GameObject>> _currEqippedItemMeshObject = new Dictionary<ItemStoreDesc, List<GameObject>>();
     
     private void Awake()
     {
@@ -56,128 +47,127 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
         foreach (EquipmentCell component in components) 
         {
-            EquipType cellType = component.GetCellType();
-
             component.Initialize(desc);
+            //_equipCells.Add(component);
 
-            GameObject equipCellObject = component.gameObject;
-
-            if (cellType == EquipType.Weapon)
+            EquipType cellType = component.GetCellType();
+            if (cellType >= EquipType.HumanHead && cellType <= EquipType.HumanBody)
             {
-                List<GameObject> pushTarget = (equipCellObject.name.Contains("Right") == true)
-                    ? _rightWeaponEquipCells
-                    : _leftWeaponEquipCells;
-                
-                pushTarget.Add(equipCellObject);
-
-                continue;
+                _equipCellLinked_Armor.Add(cellType, component);
             }
-
-            if (cellType == EquipType.UseAndComsumeableByCharacter)
-            {
-                _itemEquipCells.Add(equipCellObject);
-                continue;
-            }
-
-            Debug.Assert(_equipmentEquipCells.ContainsKey(component.GetCellType()) == false, "셀의 장착타입이 중복됩니다.");
-            _equipmentEquipCells.Add(component.GetCellType(), equipCellObject);
         }
     }
 
+    public void DeleteOnMe(ItemStoreDesc storeDesc)
+    {
+        {
+            if (storeDesc._itemAsset._EquipType == EquipType.Weapon)
+            {
+                //무기 장착 해제 함수
+                UnEquipItem_Weapon(storeDesc);
+            }
+            else if (storeDesc._itemAsset._EquipType == EquipType.UseAndComsumeableByCharacter)
+            {
+                //사용템 장착 해제 함수
+            }
+            else
+            {
+                UnEquipMesh(storeDesc);
+            }
+        }
+
+        UnEquipUI(storeDesc);
+    }
 
 
-
-    public void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY) 
+    public void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY, BoardUICellBase caller) 
     {
         //장착 성공하면 여기 불린다
         storedDesc._isRotated = false;
         storedDesc._owner = this;
 
-        if (storedDesc._itemAsset._EquipType == EquipType.Weapon)
-        {
-            //무기장착 함수 콜
-            return;
-        }
+        EquipUI(storedDesc, caller);
 
-        if (storedDesc._itemAsset._EquipType == EquipType.UseAndComsumeableByCharacter)
         {
-            //사용템 장착 함수 콜
-        }
+            if (storedDesc._itemAsset._EquipType == EquipType.Weapon)
+            {
+                //무기장착 함수 콜
+                EquipItem_Weapon(storedDesc, caller);
+                return;
+            }
 
-        EquipItem_Mesh(storedDesc, targetX, targetY);
+            if (storedDesc._itemAsset._EquipType == EquipType.UseAndComsumeableByCharacter)
+            {
+                //사용템 장착 함수 콜
+                return;
+            }
+
+            EquipItemMesh(storedDesc);
+        }
     }
 
-    public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation)
+
+
+    private void EquipUI(ItemStoreDesc storedDesc, BoardUICellBase caller)
+    {
+        HashSet<BoardUICellBase> cells = CalculateTargetEquipcells_Equip(storedDesc, caller);
+
+        foreach (var cell in cells)
+        {
+            //UI를 해당 Cell의 자식으로 생성합니다.
+            RectTransform equipCellTransform = cell.GetComponent<RectTransform>();
+            GameObject equipmentUIObject = Instantiate(_equipmentUIObjectPrefab, equipCellTransform);
+            ItemBase itemBaseComponent = equipmentUIObject.GetComponent<ItemBase>();
+            itemBaseComponent.Initialize(storedDesc);
+
+            //크기, 위치를 낑겨넣습니다.
+            RectTransform equipmentUIObjectTransform = equipmentUIObject.GetComponent<RectTransform>();
+            equipmentUIObjectTransform.sizeDelta = new Vector2(equipCellTransform.rect.width, equipCellTransform.rect.height);
+            equipmentUIObjectTransform.position = equipCellTransform.position;
+
+            _currActivatedCell.Add(cell);
+
+            HashSet<BoardUICellBase> currActivateCellSameItem = _currActivatedCell_ByItem.GetOrAdd(storedDesc);
+            currActivateCellSameItem.Add(cell);
+
+            List<GameObject> createdUIs = _currEquippedItemUIObject.GetOrAdd(storedDesc);
+            createdUIs.Add(equipmentUIObject);
+        }
+    }
+
+    public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
     {
         startX = 0;
         startY = 0;
 
-        if (storedDesc._itemAsset._EquipType == ItemAsset.EquipType.UseAndComsumeableByCharacter)
+        if (storedDesc._itemAsset._EquipType == EquipType.UseAndComsumeableByCharacter)
         {
-            Debug.Assert(false, "사용템 장착 순서입니다");
+            Debug.Assert(false, "사용템 장착 순서입니다 미구현!");
             Debug.Break();
             return false;
         }
 
-
-        if (storedDesc._itemAsset._EquipType == ItemAsset.EquipType.Weapon)
+        if (_currActivatedCell.Contains(caller) == true)
         {
-            return true;
+            return false;
         }
 
-        List<GameObject> cells = GetCells(storedDesc);
+        HashSet<BoardUICellBase> cells = CalculateTargetEquipcells_Equip(storedDesc, caller);
 
         foreach (var cell in cells)
         {
-            //장착하려는 아이템중에 겹치는게 하나라도 있으면 무조건 종료
-            //예를들어 전신장비 입으려는데 머리를 미리 장착하고 있다.
-            if (_currEquippedItemUIs.ContainsKey(cell.GetComponent<EquipmentCell>().GetCellType()) == true)
-            {
-                return false;
-            }
+            //장착하려는 아이템중에 겹치는게 하나라도 있으면 무조건 종료 => 머리를 장착하고 있는데 전신장비를 입고있다 그런거..
+            if (_currActivatedCell.Contains(cell) == true) {return false;}
         }
-        
+
         return true;
     }
 
-
-
-    public List<GameObject> GetRestEquipmetItems(GameObject callerUI)
+    public void EquipItem_Weapon(ItemStoreDesc storeDesc, BoardUICellBase caller)
     {
-        List<GameObject> restEquipments = new List<GameObject>();
-        foreach (var item in _equipmentEquipCells)
-        {
-            GameObject childObject = item.Value.transform.GetChild(0).gameObject;
+        bool isRight = caller.gameObject.name.Contains("Right");
 
-            if (childObject == callerUI.gameObject)
-            {
-                continue;
-            }
-
-            restEquipments.Add(childObject);
-        }
-        return restEquipments;
-    }
-
-    public void EquipItem_Weapon(ItemStoreDesc storeDesc, GameObject callerEquipCell)
-    {
-        GameObject equipmentUIObject =  Instantiate(_equipmentUIObjectPrefab, callerEquipCell.transform);
-
-        RectTransform equipmentUIRectTransform = (RectTransform)equipmentUIObject.transform;
-        RectTransform cellRectTransform = (RectTransform)callerEquipCell.transform;
-
-        equipmentUIRectTransform.sizeDelta = new Vector2(cellRectTransform.rect.width, cellRectTransform.rect.height);
-        equipmentUIRectTransform.position = cellRectTransform.position;
-
-        ItemBase itemBaseComponent = equipmentUIObject.GetComponent<ItemBase>();
-
-        storeDesc._owner = this;
-
-        itemBaseComponent.Initialize(this, storeDesc);
-
-        bool isRight = callerEquipCell.gameObject.name.Contains("Right");
-
-        int index = callerEquipCell.gameObject.name.Last() - 49;
+        int index = caller.gameObject.name.Last() - 49;
 
         GameObject weaponPrefab = ItemInfoManager.Instance.GetItemSubInfo_Weapon(storeDesc._itemAsset)._WeaponPrefab;
 
@@ -188,174 +178,77 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
     public void UnEquipItem_Weapon(ItemStoreDesc storeDesc)
     {
-        //GameObject targetObject = null;
-        //EquipmentCell equipcellComponent = null;
-        //foreach (var uiObject in _rightWeaponEquipCells)
-        //{
-        //    equipcellComponent = uiObject.GetComponent<EquipmentCell>();
-        //    if (equipcellComponent.GetItemStoreDesc() == storeDesc)
-        //    {
-        //        targetObject = uiObject;
-        //        break;
-        //    }
-        //}
+        //기존에 이 무기를 장착하고 있던 셀
+        HashSet<BoardUICellBase> targetCells = null; 
+        _currActivatedCell_ByItem.TryGetValue(storeDesc, out targetCells);
+        if (targetCells == null)
+        {
+            Debug.Assert(false, "무기를 장착한적이 없다??");
+            Debug.Break();
+        }
 
-        //if (targetObject == null)
-        //{
-        //    foreach (var uiObject in _leftWeaponEquipCells)
-        //    {
-        //        equipcellComponent = uiObject.GetComponent<EquipmentCell>();
-        //        if (equipcellComponent.GetItemStoreDesc() == storeDesc)
-        //        {
-        //            targetObject = uiObject;
-        //            break;
-        //        }
-        //    }
-        //}
+        if (targetCells.Count >= 2)
+        {
+            Debug.Assert(false, "무기를 2칸 이상 장착했다???");
+            Debug.Break();
+        }
 
-        //if (targetObject == null)
-        //{
-        //    Debug.Assert(false, "못찾았다");
-        //    Debug.Break();
-        //}
+        BoardUICellBase targetCell = targetCells.First();
 
+        UIComponent myUIComponent = GetComponentInParent<UIComponent>();
 
-        //UIComponent myUIComponent = GetComponentInParent<UIComponent>();
+        bool isRight = targetCell.gameObject.name.Contains("Right");
 
-        //bool isRight = targetObject.name.Contains("Right");
+        int index = targetCell.gameObject.name.Last() - 49;
 
-        //int index = targetObject.name.Last() - 49;
-
-        //myUIComponent.GetReturnObject().GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, null);
-
-        //equipcellComponent.ClearItemStoreDesc();
+        myUIComponent.GetReturnObject().GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, null);
     }
 
-
-    private void EquipItem_Mesh(ItemStoreDesc storedDesc, int targetX, int targetY)
+    private void UnEquipUI(ItemStoreDesc storeDesc)
     {
-        List<GameObject> cells = GetCells(storedDesc);
-
-        foreach (var cell in cells)
+        HashSet<BoardUICellBase> targets = CalculateTargetEquipcells_UnEquip(storeDesc);
+        foreach (BoardUICellBase target in targets) 
         {
-            //UI를 해당 Cell의 자식으로 생성합니다.
-            RectTransform equipCellTransform = cell.GetComponent<RectTransform>();
-            GameObject equipmentUIObject = Instantiate(_equipmentUIObjectPrefab, equipCellTransform);
-            ItemBase itemBaseComponent = equipmentUIObject.GetComponent<ItemBase>();
-            itemBaseComponent.Initialize(this, storedDesc);
-
-            //크기, 위치를 낑겨넣습니다.
-            RectTransform equipmentUIObjectTransform = equipmentUIObject.GetComponent<RectTransform>();
-            equipmentUIObjectTransform.sizeDelta = new Vector2(equipCellTransform.rect.width, equipCellTransform.rect.height);
-            equipCellTransform.position = equipCellTransform.position;
-
-            _currEquippedItemUIs.Add(cell.GetComponent<EquipmentCell>().GetCellType(), equipmentUIObject);
+            _currActivatedCell.Remove(target);
         }
 
-        //메쉬 장착
+
+        _currActivatedCell_ByItem.Remove(storeDesc);
+        
         {
-            EquipItemMesh(storedDesc);
+            List<GameObject> createdItemUISameStoreDesc = _currEquippedItemUIObject.GetOrAdd(storeDesc);
+            foreach (GameObject gObj in createdItemUISameStoreDesc)
+            {
+                ItemBase component = gObj.GetComponent<ItemBase>();
+                if (component != null)
+                {
+                    StartCoroutine(component.DestroyCoroutine());
+                }
+            }
+            _currEquippedItemUIObject.Remove(storeDesc);
         }
 
-        //foreach (var item in _equipCellUIs)
-        //{
-        //    if ((item.Key & storeDesc._itemAsset._EquipType) != EquipType.None)
-        //    {
-        //        item.Value.GetComponent<EquipmentCell>().SetItemStoreDesc(storeDesc);
-        //    }
-        //}
     }
 
-
-
-    //public bool EquipItem(ItemStoreDesc storeDesc, GameObject callerEquipCell)
-    //{
-    //    List<GameObject> cells = GetCells(storeDesc);
-
-    //    foreach (var cell in cells)
-    //    {
-    //        if (_currEquippedItemUIs.ContainsKey(cell.GetComponent<EquipmentCell>().GetCellType()) == true) return false;
-    //    }
-
-    //    storeDesc._owner.DeleteOnMe(storeDesc);
-
-    //    foreach (var cell in cells)
-    //    {
-    //        GameObject equipmentUIObject = (storeDesc._itemAsset._EquipType == EquipType.All)
-    //            ? Instantiate(_equipmentUIObjectPrefab, _equipCellUIs[cell.GetComponent<EquipmentCell>().GetCellType()].gameObject.transform)
-    //            : Instantiate(_equipmentUIObjectPrefab, callerEquipCell.transform);
-
-    //        RectTransform equipmentUIRectTransform = equipmentUIObject.GetComponent<RectTransform>();
-    //        RectTransform cellRectTransform = cell.GetComponent<RectTransform>();
-    //        equipmentUIRectTransform.sizeDelta = new Vector2(cellRectTransform.rect.width, cellRectTransform.rect.height);
-    //        equipmentUIRectTransform.position = cellRectTransform.position;
-
-    //        ItemBase itemBaseComponent = equipmentUIObject.GetComponent<ItemBase>();
-
-    //        storeDesc._owner = this;
-
-    //        itemBaseComponent.Initialize(this, storeDesc);
-
-    //        _currEquippedItemUIs.Add(cell.GetComponent<EquipmentCell>().GetCellType(), equipmentUIObject);
-    //    }
-
-    //    //메쉬 장착
-    //    {
-    //        EquipItemMesh(storeDesc);
-    //    }
-
-    //    foreach (var item in _equipCellUIs)
-    //    {
-    //        if ((item.Key & storeDesc._itemAsset._EquipType) != EquipType.None)
-    //        {
-    //            item.Value.GetComponent<EquipmentCell>().SetItemStoreDesc(storeDesc);
-    //        }
-    //    }
-
-    //    return true;
-    //}
-
-    //private void UnEquipUI(ItemStoreDesc storeDesc)
-    //{
-    //    var keys = _currEquippedItemUIs.Keys.ToList();
-    //    foreach (var key in keys)
-    //    {
-    //        if ((key & storeDesc._itemAsset._EquipType) == EquipType.None)
-    //        {
-    //            continue;
-    //        }
-
-    //        _equipCellUIs[key].GetComponent<EquipmentCell>().ClearItemStoreDesc();
-    //        _currEquippedItemUIs.Remove(key);
-    //    }
-    //}
-
-    //private void UnEquipMesh(ItemStoreDesc storeDesc)
-    //{
-    //    if (IsSameSkelaton(storeDesc._itemAsset) == true)
-    //    {
-    //        GameObject mesh = _currEquippedMesh[storeDesc._itemAsset._EquipType];
-    //        Destroy(mesh);
-    //    }
-    //    else
-    //    {
-    //        UIComponent myUIComponent = GetComponentInParent<UIComponent>();
-    //        GameObject uiReturnOwner = myUIComponent.GetReturnObject();
-    //        CharacterAnimatorScript ownerCharacterAnimatorScript = uiReturnOwner.GetComponentInChildren<CharacterAnimatorScript>();
-    //        ownerCharacterAnimatorScript.ResetCharacterModel();
-    //    }
-
-    //    foreach (var item in _equipCellUIs)
-    //    {
-    //        if ((item.Key & storeDesc._itemAsset._EquipType) == EquipType.None)
-    //        {
-    //            //Debug.Assert(_currEquippedMesh.ContainsKey(storeDesc._info._equipType) != false, "장착하지 않았는데 장착해제합니다??");
-    //            continue;
-    //        }
-
-    //        _currEquippedMesh.Remove(item.Key);
-    //    }
-    //}
+    private void UnEquipMesh(ItemStoreDesc storeDesc)
+    {
+        if (IsSameSkelaton(storeDesc._itemAsset) == true)
+        {
+            List<GameObject> meshes = _currEqippedItemMeshObject[storeDesc];
+            foreach (GameObject mesh in meshes)
+            {
+                Destroy(mesh);
+            }
+            _currEqippedItemMeshObject.Remove(storeDesc);
+        }
+        else
+        {
+            UIComponent myUIComponent = GetComponentInParent<UIComponent>();
+            GameObject uiReturnOwner = myUIComponent.GetReturnObject();
+            CharacterAnimatorScript ownerCharacterAnimatorScript = uiReturnOwner.GetComponentInChildren<CharacterAnimatorScript>();
+            ownerCharacterAnimatorScript.ResetCharacterModel();
+        }
+    }
 
 
     private void EquipItemMesh(ItemStoreDesc storeDesc)
@@ -374,8 +267,6 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
         GameObject originalAnimatorGameObject = ownerCharacterAnimatorScript.GetCurrActivatedModelObject();
 
-        GameObject equippedMesh = null;
-
         ItemSubInfo_EquipMesh equipInfo = ItemInfoManager.Instance.GetItemSubInfo_EquipmentMesh(storeDesc._itemAsset);
 
         if (IsSameSkelaton(storeDesc._itemAsset) == true)
@@ -384,24 +275,20 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
             foreach (var item in equipMeshes) //보통 하나임
             {
-                equippedMesh = Instantiate(item, originalAnimatorGameObject.transform);
+                GameObject equippedMesh = Instantiate(item, originalAnimatorGameObject.transform);
                 SkinnedMeshRenderer skinnedMeshRenderer = equippedMesh.GetComponent<SkinnedMeshRenderer>();
                 skinnedMeshRenderer.bones = originalAnimatorGameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones;
                 skinnedMeshRenderer.updateWhenOffscreen = true;
+
+                List<GameObject> equippedMeshSameStoreDesc = _currEqippedItemMeshObject.GetOrAdd(storeDesc);
+                equippedMeshSameStoreDesc.Add(equippedMesh);
             }
         }
         else
         {
-            equippedMesh = ownerCharacterAnimatorScript.ModelChange(equipInfo._EquipmentPrefab);
+            ownerCharacterAnimatorScript.ModelChange(equipInfo._EquipmentPrefab);
         }
 
-        //foreach (var item in _equipCellUIs)
-        //{
-        //    if ((item.Key & storeDesc._itemAsset._EquipType) != EquipType.None)
-        //    {
-        //        _currEquippedMesh.Add(item.Key, equippedMesh);
-        //    }
-        //}
     }
 
     private bool IsSameSkelaton(ItemAsset itemAsset)
@@ -430,18 +317,35 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
         return ownerCharacterAnimatorScript.IsSameSkeleton(equipmentSubInfo._EquipmentAvatar);
     }
 
-    private List<GameObject> GetCells(ItemStoreDesc storeDesc)
+    private HashSet<BoardUICellBase> CalculateTargetEquipcells_Equip(ItemStoreDesc storeDesc, BoardUICellBase caller)
     {
-        List<GameObject> retCells = new List<GameObject>();
+        HashSet<BoardUICellBase> retCells = new HashSet<BoardUICellBase>();
 
-        foreach (KeyValuePair<EquipType, GameObject> cell in _equipmentEquipCells)
+        //장착하려는게 Armor 다
+        if ((storeDesc._itemAsset._EquipType >= EquipType.HumanHead && storeDesc._itemAsset._EquipType <= EquipType.HumanBackpack) ||
+            storeDesc._itemAsset._EquipType >= EquipType.All)
         {
-            if ((cell.Key & storeDesc._itemAsset._EquipType) != EquipType.None)
+            foreach (KeyValuePair<EquipType, BoardUICellBase> cell in _equipCellLinked_Armor)
             {
-                retCells.Add(cell.Value);
+                if ((cell.Key & storeDesc._itemAsset._EquipType) != EquipType.None)
+                {
+                    retCells.Add(cell.Value);
+                }
             }
         }
 
+        if (retCells.Contains(caller) == false)
+        {
+            retCells.Add(caller);
+        }
+        
         return retCells;
+    }
+
+    private HashSet<BoardUICellBase> CalculateTargetEquipcells_UnEquip(ItemStoreDesc storeDesc)
+    {
+        //이 아이템 정보로 장착된 정보가 있습니까?
+
+        return _currActivatedCell_ByItem.GetOrAdd(storeDesc);
     }
 }

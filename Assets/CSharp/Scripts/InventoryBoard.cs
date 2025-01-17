@@ -128,7 +128,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
 
 
-    public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation)
+    public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
     {
         Vector2 currPosition = Input.mousePosition;
         Vector2 boardSize = new Vector2(_myRectTransform.rect.width, _myRectTransform.rect.height);
@@ -242,7 +242,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     |NOTI| 인벤토리 보드 -> 인벤토리 보드 의 경우
     삭제하고 넣을때, 넣는순간 이 함수가 호출됐다.
     ----------------------------------------------------*/
-    public void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY)
+    public void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY, BoardUICellBase caller)
     {
         int inventoryIndex = _cols * targetY + targetX;
         storedDesc._storedIndex = inventoryIndex;
@@ -250,7 +250,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         UpdateBlank(true, storedDesc);
 
         GameObject itemUI = CreateInventoryItem(storedDesc._itemAsset, targetX, targetY, inventoryIndex, storedDesc._count, storedDesc._isRotated);
-        itemUI.GetComponent<ItemBase>().Initialize(this, storedDesc);
+        itemUI.GetComponent<ItemBase>().Initialize(storedDesc);
 
         Dictionary<int, ItemStoreDesc> sameKeyItems = null;
         _items.TryGetValue(storedDesc._itemAsset._ItemKey, out sameKeyItems);
@@ -396,7 +396,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
         if (itemBaseComponent != null)
         {
-            itemBaseComponent.Initialize(this, storeDesc);
+            itemBaseComponent.Initialize(storeDesc);
         }
 
         _itemUIs.Add(storeDesc, itemUI);
@@ -551,6 +551,33 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34), 1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(35), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(36), 1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(37), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(38), 1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(39), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(40), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(41), 1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha4) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34), 1);
         }
     }
 

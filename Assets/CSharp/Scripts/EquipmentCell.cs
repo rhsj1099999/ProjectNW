@@ -10,7 +10,8 @@ public class EquipmentCell : BoardUICellBase
 {
     [SerializeField] private EquipType _equipType = EquipType.None;
 
-    
+    //private ItemStoreDesc _itemStoreDesc = null;
+    //public ItemStoreDesc _ItemStoreDesc { get ; set; }
 
     private void Awake()
     {
@@ -62,7 +63,7 @@ public class EquipmentCell : BoardUICellBase
         }
 
         //해당 마우스 포지션으로는 아이템을 넣을 수 없다.
-        if (_owner.CheckItemDragDrop(storedDesc, ref startX, ref startY, grabRotation) == false)
+        if (_owner.CheckItemDragDrop(storedDesc, ref startX, ref startY, grabRotation, this) == false)
         {
             return false;
         }

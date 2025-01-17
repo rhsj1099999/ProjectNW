@@ -12,20 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a5d78b3d45b17142858457466dc15c0, type: 3}
   m_Name: Potion
   m_EditorClassIdentifier: 
-  _itemInfo:
-    _itemKey: 60
-    _itemName: "\uD3EC\uC158"
-    _sizeX: 0
-    _sizeY: 0
-    _isStackAble: 0
-    _maxStack: 0
-    _sprite: {fileID: 0}
-    _weaponType: 0
-    _equipType: 0
-    _meshObjectName: 
-    _equipMeshIndicies: 
-    _usingItemMustNotBusyLayers: 0200000003000000
-    _usingItemMustNotBusyLayer: 12
-    _usingItemState: {fileID: 0}
-    _usingItemAnimation: {fileID: 7400000, guid: 9dad94ccba34eff4ea11aa5df3a5ced0,
-      type: 2}
+  _equipType: 64
+  _weaponType: 0
+  _itemName: HPPotion
+  _itemKey: 1
+  _sizeX: 1
+  _sizeY: 1
+  _maxStack: 10
