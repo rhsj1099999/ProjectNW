@@ -72,7 +72,39 @@ public class ResourceDataManager : SubManager<ResourceDataManager>
         ReadyZeroFrameAnimations();
         StateGraphAssets();
         ReadyAvatarMasks();
+        ReadyWeaponHandlingAnimation();
     }
+
+    /*-----------------------------------
+    Data Section _ WeaponHandling
+    -----------------------------------*/
+    public List<ItemSubInfo_HandlingAnimationInfo> _weaponHandlingAnimations_Init = new List<ItemSubInfo_HandlingAnimationInfo>();
+    private Dictionary<ItemAsset_Weapon.WeaponType, ItemSubInfo_HandlingAnimationInfo> _weaponHandlingAnimations = new Dictionary<ItemAsset_Weapon.WeaponType, ItemSubInfo_HandlingAnimationInfo>();
+    private void ReadyWeaponHandlingAnimation()
+    {
+        foreach (ItemSubInfo_HandlingAnimationInfo item in _weaponHandlingAnimations_Init)
+        {
+            if (_weaponHandlingAnimations.ContainsKey(item._TargetWeaponType) == true)
+            {
+                Debug.Log("해당 데이터가 이미 있다" + item._TargetWeaponType);
+            }
+            _weaponHandlingAnimations.Add(item._TargetWeaponType, item);
+        }
+    }
+
+    public ItemSubInfo_HandlingAnimationInfo GetHandlingAnimationInfo(ItemAsset_Weapon.WeaponType weaponType)
+    {
+        ItemSubInfo_HandlingAnimationInfo ret = null;
+        _weaponHandlingAnimations.TryGetValue(weaponType, out ret);
+        if (ret == null)
+        {
+            Debug.Assert(false, "찾으려는 애니메이션이 없습니다" + weaponType);
+            Debug.Break();
+        }
+        return ret;
+    }
+
+
 
     /*-----------------------------------
     Data Section _ Hip Curve

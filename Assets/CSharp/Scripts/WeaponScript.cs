@@ -47,136 +47,8 @@ public class WeaponComboEntry
 
 public class WeaponScript : MonoBehaviour
 {
-    #region 인포로 빼세요
-    /*------------------------------------------
-    Item Spec Section.
-    ------------------------------------------*/
-    public bool _onlyTwoHand = false;
-    public ItemAsset _itemInfo = null;
-    public DamageDesc _weaponDamageDesc = new DamageDesc();
-    public ItemAsset.WeaponType _weaponType = ItemAsset.WeaponType.NotWeapon;
-
-    /*------------------------------------------
-    PutAway/Draw AnimationClips Section.
-    ------------------------------------------*/
-    public AnimationClip _putawayAnimation = null;
-    public AnimationClip _drawAnimation = null;
-    public AnimationClip _putawayAnimation_Mirrored = null;
-    public AnimationClip _drawAnimation_Mirrored = null;
-    public AnimationClip GetDrawAnimation(AnimatorLayerTypes layerType)
-    {
-        if (layerType == AnimatorLayerTypes.RightHand)
-        {
-            return _drawAnimation;
-        }
-        else if (layerType == AnimatorLayerTypes.LeftHand)
-        {
-            return _drawAnimation_Mirrored;
-        }
-        else
-        {
-            Debug.Assert(false, "무기를 꺼내는 애니메이션이 설정돼있지 않습니다");
-            Debug.Break();
-        }
-        return null;
-    }
-    public AnimationClip GetDrawAnimation(bool isRightHand)
-    {
-        if (isRightHand == true)
-        {
-            return _drawAnimation;
-        }
-        else
-        {
-            return _drawAnimation_Mirrored;
-        }
-    }
-    public AnimationClip GetPutawayAnimation(AnimatorLayerTypes layerType)
-    {
-        if (layerType == AnimatorLayerTypes.RightHand)
-        {
-            return _putawayAnimation;
-        }
-        else if (layerType == AnimatorLayerTypes.LeftHand)
-        {
-            return _putawayAnimation_Mirrored;
-        }
-        else
-        {
-            Debug.Assert(false, "무기를 집어넣는 애니메이션이 설정돼있지 않습니다");
-            Debug.Break();
-        }
-        return null;
-    }
-    public AnimationClip GetPutawayAnimation(bool isRightHand)
-    {
-        if (isRightHand == true)
-        {
-            return _putawayAnimation;
-        }
-        else
-        {
-            return _putawayAnimation_Mirrored;
-        }
-    }
-
-
-    public AnimationClip _handlingIdleAnimation_OneHand = null;
-    public AnimationClip _handlingIdleAnimation_TwoHand = null;
-    public AnimationClip _handlingIdleAnimation_OneHand_Mirrored = null;
-    public AnimationClip _handlingIdleAnimation_TwoHand_Mirrored = null;
-    public AnimationClip GetOneHandHandlingAnimation(AnimatorLayerTypes layerType)
-    {
-        if (layerType == AnimatorLayerTypes.RightHand)
-        {
-            return _handlingIdleAnimation_OneHand;
-        }
-        else if (layerType == AnimatorLayerTypes.LeftHand)
-        {
-            return _handlingIdleAnimation_OneHand_Mirrored;
-        }
-
-        return null;
-    }
-    public AnimationClip GetOneHandHandlingAnimation(bool isRightHand)
-    {
-        if (isRightHand == true)
-        {
-            return _handlingIdleAnimation_OneHand;
-        }
-        else
-        {
-            return _handlingIdleAnimation_OneHand_Mirrored;
-        }
-    }
-    public AnimationClip GetTwoHandHandlingAnimation(AnimatorLayerTypes layerType)
-    {
-        if (layerType == AnimatorLayerTypes.RightHand)
-        {
-            return _handlingIdleAnimation_TwoHand;
-        }
-        else if (layerType == AnimatorLayerTypes.LeftHand)
-        {
-            return _handlingIdleAnimation_TwoHand_Mirrored;
-        }
-        return null;
-    }
-    public AnimationClip GetTwoHandHandlingAnimation(bool isRightHand)
-    {
-        if (isRightHand == true)
-        {
-            return _handlingIdleAnimation_TwoHand;
-        }
-        else
-        {
-            return _handlingIdleAnimation_TwoHand_Mirrored;
-        }
-    }
-    /*------------------------------------------
-    State Section.
-    ------------------------------------------*/
-    public StateGraphAsset _weaponStateGraph = null;
-    #endregion 인포로 빼세요
+    private ItemAsset_Weapon _itemInfo = null;
+    public ItemAsset_Weapon _ItemInfo => _itemInfo;
 
     public CharacterScript _owner = null;
     protected bool _isRightHandWeapon = false;
@@ -199,6 +71,10 @@ public class WeaponScript : MonoBehaviour
     public virtual void UseWeapon() {}
     public virtual bool isUsingMe() {return false;}
 
+    public virtual void Init(ItemAsset_Weapon info)
+    {
+        _itemInfo = info;
+    }
 
     public virtual void InitIK()
     {
@@ -263,13 +139,16 @@ public class WeaponScript : MonoBehaviour
     virtual public void Equip(CharacterScript itemOwner, Transform followTransform)
     {
         _owner = itemOwner;
+
         Equip_OnSocket(followTransform);
 
         string targetName = (_isRightHandWeapon == true)
             ? "HandlingAbsolute_Right"
             : "HandlingAbsolute_Left";
 
-        Transform targetTransform = transform.Find(targetName).transform;
+        Transform target = transform.Find(targetName);
+
+        Transform targetTransform = target.transform;
 
         _addRotation = targetTransform.localRotation;
         _addPosition = targetTransform.localPosition;

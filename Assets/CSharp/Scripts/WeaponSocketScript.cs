@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static ItemAsset_Weapon;
 
 public class WeaponSocketScript : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class WeaponSocketScript : MonoBehaviour
         Middle,
     }
     public SideType _sideType = SideType.Middle;
-    public List<ItemAsset.WeaponType> _equippableWeaponTypes = new List<ItemAsset.WeaponType>();
+    public List<WeaponType> _equippableWeaponTypes = new List<WeaponType>();
     public Animator _ownerAnimator = null;
 
     private void Awake()

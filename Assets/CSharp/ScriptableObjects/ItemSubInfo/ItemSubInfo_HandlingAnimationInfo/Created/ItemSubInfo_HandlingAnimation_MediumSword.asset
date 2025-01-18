@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bd04fd037c9e3c4696c0083fedffadd, type: 3}
+  m_Name: ItemSubInfo_HandlingAnimation_MediumSword
+  m_EditorClassIdentifier: 
+  _targetWeaponType: 2
+  _putawayAnimation: {fileID: 7400000, guid: 155973e1fd058b14a94f5d55adf8f344, type: 2}
+  _drawAnimation: {fileID: 7400000, guid: e75752b21318da546805a1bcecd1f6ed, type: 2}
+  _putawayAnimation_Mirrored: {fileID: 7400000, guid: 85e57c9f8af3be84aa693d8be442e5ee,
+    type: 2}
+  _drawAnimation_Mirrored: {fileID: 7400000, guid: faac1bb116322764990d138e38fd4520,
+    type: 2}
+  _handlingIdleAnimation_OneHand: {fileID: 7400000, guid: fb86a702addc3704b9d0dbff511ee1da,
+    type: 2}
+  _handlingIdleAnimation_TwoHand: {fileID: 7400000, guid: bb67f8c9d41224c4cb65ac7a7a91709a,
+    type: 2}
+  _handlingIdleAnimation_OneHand_Mirrored: {fileID: 7400000, guid: e61da0fc5b12b204d985d0b13a0786f0,
+    type: 2}
+  _handlingIdleAnimation_TwoHand_Mirrored: {fileID: 7400000, guid: 2b9a4187e3482754db72810c424dd8c2,
+    type: 2}

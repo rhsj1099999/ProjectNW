@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a85df13d390c6e439f9b53c26e264ee, type: 3}
+  m_Name: EquipMesh_VanguardArmor
+  m_EditorClassIdentifier: 
+  _equipType: 2147483647
+  _ItemKey: 5
+  _itemName: VanguardArmor
+  _sizeX: 3
+  _sizeY: 5
+  _maxStack: 1
+  _itemModel: {fileID: 7836199337402979831, guid: cd70876d9612e634680ac5fb22126ae1,
+    type: 3}
+  _fieldExistAble: 1
+  _itemImage: {fileID: 0}
+  _equipmentPrefab: {fileID: 2296666141149735760, guid: bbe646a4416397146b1a6e01aecb45ac,
+    type: 3}
+  _equipmentAvatar: {fileID: 9000000, guid: f121985dc23276b48bb038d8fe4fbfc4, type: 3}
+  _equipmentMeshes:
+  - {fileID: 1916768426745132808, guid: c7e66b0bcab84b2419d4949fb96d3dfd, type: 3}

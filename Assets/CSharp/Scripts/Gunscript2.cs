@@ -167,6 +167,10 @@ public class Gunscript2 : WeaponScript
 
     private void CalculateAimIK(bool isAimed)
     {
+        AnimatorLayerTypes oppositeLayer = (_isRightHandWeapon == true)
+            ? AnimatorLayerTypes.LeftHand
+            : AnimatorLayerTypes.RightHand;
+
         if (isAimed == false)
         {
             //다 꺼주세요
@@ -175,7 +179,7 @@ public class Gunscript2 : WeaponScript
         }
 
         //반대손에 뭔가를 들고있습니까의 bool 변수
-        bool isOppositeHandBusy = (_owner.GetCurrentWeaponScript(!_isRightHandWeapon) != null);
+        bool isOppositeHandBusy = (_owner.GetCurrentWeapon(oppositeLayer) != null);
 
         if (isOppositeHandBusy == true)
         {
@@ -208,10 +212,12 @@ public class Gunscript2 : WeaponScript
 
         //견착위치
         {
+            _stockPosition = transform.Find("StockPosition").gameObject;
+            Debug.Assert(_stockPosition != null, "자세제어를 위해 견착위치가 필요합니다(권총도 마찬가지)");
+
             _shoulderStock_Unity = (_isRightHandWeapon == true)
               ? _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightUpperArm)
               : _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.LeftUpperArm);
-            Debug.Assert(_stockPosition != null, "자세제어를 위해 견착위치가 필요합니다(권총도 마찬가지)");
 
             _elbowPosition_Unity = (_isRightHandWeapon == true)
               ? _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightLowerArm)
@@ -235,6 +241,7 @@ public class Gunscript2 : WeaponScript
 
         //발사 위치 세팅
         {
+            _firePosition = transform.Find("FirePosition").gameObject;
             Debug.Assert(_firePosition != null, "발사할곳이 없는데 이게 총입니까?");
         }
     }

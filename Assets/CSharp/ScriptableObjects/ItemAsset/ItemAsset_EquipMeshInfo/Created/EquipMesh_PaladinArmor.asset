@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a85df13d390c6e439f9b53c26e264ee, type: 3}
+  m_Name: EquipMesh_PaladinArmor
+  m_EditorClassIdentifier: 
+  _equipType: 2147483647
+  _ItemKey: 2
+  _itemName: PaladinArmor
+  _sizeX: 3
+  _sizeY: 4
+  _maxStack: 1
+  _itemModel: {fileID: 7200478851520927282, guid: 47cc6c6472d8a414cb66b7e9f521391d,
+    type: 3}
+  _fieldExistAble: 1
+  _itemImage: {fileID: 0}
+  _equipmentPrefab: {fileID: 2296666141149735760, guid: baae371e80789ff4fbc3bedde4a334a1,
+    type: 3}
+  _equipmentAvatar: {fileID: 9000000, guid: 3904558c6786e264198eece67c789c9f, type: 3}
+  _equipmentMeshes:
+  - {fileID: 4719992212867584767, guid: 54a5888499a5ea8449b16312aeecc696, type: 3}

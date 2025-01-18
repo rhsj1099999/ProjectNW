@@ -549,36 +549,60 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     {
         if (Input.GetKeyDown(KeyCode.Alpha0) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(30), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(31), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(32), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(33), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("PaladinArmor"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("VanguardArmor"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("NoelArmor"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("BeidouArmor"), 1);
+
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(35), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(36), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SoldierVest"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SoldierGlove"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SoldierHat"), 1);
         }
+
 
         if (Input.GetKeyDown(KeyCode.Alpha2) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(37), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(38), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SimpleSword"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SimpleShield"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SimpleKnuckle"), 1);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha3) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(39), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(40), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(41), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("HeizoKnuckle"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Hammer"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("M16"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("D_Eagle"), 1);
+
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha4) == true)
-        {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34), 1);
-        }
+        //if (Input.GetKeyDown(KeyCode.Alpha1) == true)
+        //{
+        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(35), 1);
+        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(36), 1);
+        //}
+
+        //if (Input.GetKeyDown(KeyCode.Alpha2) == true)
+        //{
+        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(37), 1);
+        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(38), 1);
+        //}
+
+        //if (Input.GetKeyDown(KeyCode.Alpha3) == true)
+        //{
+        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(39), 1);
+        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(40), 1);
+        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(41), 1);
+        //}
+
+        //if (Input.GetKeyDown(KeyCode.Alpha4) == true)
+        //{
+        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34), 1);
+        //}
     }
 
 

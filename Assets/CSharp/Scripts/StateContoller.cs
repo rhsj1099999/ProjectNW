@@ -152,7 +152,7 @@ public class KeyInputConditionDesc
 public class ConditionDesc
 {
     public ConditionType _singleConditionType;
-    public ItemAsset.WeaponType _weaponTypeGoal;
+    public ItemAsset_Weapon.WeaponType _weaponTypeGoal;
     public List<KeyInputConditionDesc> _keyInputConditionTarget;
     public List<ComboKeyCommandDesc> _commandInputConditionTarget;
     public FrameDataType _animationFrameDataType = FrameDataType.End;
@@ -1688,10 +1688,12 @@ public class StateContoller : GameCharacterSubScript
                         : KeyCode.Mouse0;
 
                     bool isRightWeapon = (nextStateGraphType == StateGraphType.WeaponState_RightGraph);
+                    
+                    AnimatorLayerTypes targetLayer = (isRightWeapon == true)
+                        ? AnimatorLayerTypes.RightHand
+                        : AnimatorLayerTypes.LeftHand;
 
-                    WeaponScript currWeapon = _owner.GetCurrentWeaponScript(isRightWeapon);
-
-                    if (currWeapon == null)
+                    if (_owner.GetCurrentWeapon(targetLayer) == null)
                     {
                         ret = false;
                         break;

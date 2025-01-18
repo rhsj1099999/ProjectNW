@@ -41,6 +41,18 @@ public static class MyUtil
         "Layer19",
     };
 
+
+
+    public enum CustomToolOrder
+    {
+        NoneFirst = 0,
+        CreateItemAsset = 1,
+        CreateItemSubInfo = 2,
+    };
+
+
+
+
     public static float FloatMod(float a, float b)
     {
         return (a % b + b) % b;

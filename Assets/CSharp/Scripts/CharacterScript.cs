@@ -6,6 +6,7 @@ using System.Linq;
 using static AnimationAttackFrameAsset;
 using static StateGraphAsset;
 using static StatScript;
+using static ItemAsset_Weapon;
 
 
 
@@ -104,18 +105,7 @@ public class CharacterScript : MonoBehaviour, IHitable
     private Dictionary<Type, Component> _mySubScripts = new Dictionary<Type, Component>();
 
 
-
-    //디버깅용
-    class DebuggingMeshWrapper
-    {
-        public GameObject _created = null;
-    }
-
-
-    public void CalculateAffectingLayer(WeaponScript caller, ref List<int> layerList)
-    {
-
-    }
+    public void CalculateAffectingLayer(WeaponScript caller, ref List<int> layerList) {}
 
 
     public T GetCharacterSubcomponent<T>(bool isNullable = false) where T : Component
@@ -257,6 +247,10 @@ public class CharacterScript : MonoBehaviour, IHitable
         //GetCharacterSubcomponent<CharacterController>().excludeLayers = );
     }
 
+    protected KeyCode _useItemKeyCode1 = KeyCode.N;
+    protected KeyCode _useItemKeyCode2 = KeyCode.M;
+    protected KeyCode _useItemKeyCode3 = KeyCode.Comma;
+    protected KeyCode _useItemKeyCode4 = KeyCode.Period;
 
     /*---------------------------------------------------
     |TODO| Weapon과 관련된 스크립트를 만들어서 밖으로 빼세요
@@ -264,23 +258,14 @@ public class CharacterScript : MonoBehaviour, IHitable
     ---------------------------------------------------*/
     #region WeaponSection
 
-    [SerializeField] protected List<GameObject> _tempLeftWeaponPrefabs = new List<GameObject>();
-    [SerializeField] protected List<GameObject> _tempRightWeaponPrefabs = new List<GameObject>();
     protected KeyCode _changeRightHandWeaponHandlingKey = KeyCode.B;
     protected KeyCode _changeLeftHandWeaponHandlingKey = KeyCode.V;
-    protected KeyCode _useItemKeyCode1 = KeyCode.N;
-    protected KeyCode _useItemKeyCode2 = KeyCode.M;
-    protected KeyCode _useItemKeyCode3 = KeyCode.Comma;
-    protected KeyCode _useItemKeyCode4 = KeyCode.Period;
     protected KeyCode _changeRightWeaponKey = KeyCode.T;
     protected KeyCode _changeLeftWeaponKey = KeyCode.R;
-    [SerializeField] protected int _currLeftWeaponIndex = 0;
-    [SerializeField] protected int _currRightWeaponIndex = 0;
-    protected int _tempMaxWeaponSlot = 3;
+
+    //현재 손에 쥐고있다 = 객체화가 됐다 = GameObject 로 들고있는데 맞음---------------------------
     protected GameObject _tempCurrLeftWeapon = null;
     protected GameObject _tempCurrRightWeapon = null;
-    public GameObject GetLeftWeapon() { return _tempCurrLeftWeapon; }
-    public GameObject GetRightWeapon() { return _tempCurrRightWeapon; }
     public GameObject GetCurrentWeapon(AnimatorLayerTypes layerType)
     {
         if (layerType == AnimatorLayerTypes.RightHand)
@@ -296,9 +281,11 @@ public class CharacterScript : MonoBehaviour, IHitable
             return null;
         }
     }
-    public GameObject GetLeftWeaponPrefab() { return _tempLeftWeaponPrefabs[_currLeftWeaponIndex]; }
-    public GameObject GetRightWeaponPrefab() { return _tempRightWeaponPrefabs[_currRightWeaponIndex]; }
-    public GameObject GetCurrentWeaponPrefab(AnimatorLayerTypes layerType)
+    //----------------------------------------------------------------------------------------
+
+    [SerializeField] protected List<ItemAsset_Weapon> _tempLeftWeaponPrefabs = new List<ItemAsset_Weapon>();
+    [SerializeField] protected List<ItemAsset_Weapon> _tempRightWeaponPrefabs = new List<ItemAsset_Weapon>();
+    public ItemAsset_Weapon GetCurrentWeaponInfo(AnimatorLayerTypes layerType)
     {
         if (layerType == AnimatorLayerTypes.RightHand)
         {
@@ -313,14 +300,57 @@ public class CharacterScript : MonoBehaviour, IHitable
             return null;
         }
     }
+    public ItemAsset_Weapon GetNextWeaponInfo(AnimatorLayerTypes layerType)
+    {
+        if (layerType != AnimatorLayerTypes.LeftHand &&
+            layerType != AnimatorLayerTypes.RightHand)
+        {
+            return null;
+        }
+
+        int nextWeaponIndex = (layerType == AnimatorLayerTypes.LeftHand)
+            ? _currLeftWeaponIndex + 1
+            : _currRightWeaponIndex + 1;
+
+        if (nextWeaponIndex >= _tempMaxWeaponSlot)
+        {
+            nextWeaponIndex = nextWeaponIndex % _tempMaxWeaponSlot;
+        }
+
+        ItemAsset_Weapon weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
+            ? _tempLeftWeaponPrefabs[nextWeaponIndex]
+            : _tempRightWeaponPrefabs[nextWeaponIndex];
+
+        return weaponPrefab;
+    }
+
+
+    [SerializeField] protected int _currLeftWeaponIndex = 0;
+    [SerializeField] protected int _currRightWeaponIndex = 0;
+    protected int _tempMaxWeaponSlot = 3;
+
+
+
+    protected bool _tempUsingRightHandWeapon = false; //최근에 사용한 무기가 오른손입니까?
+    public bool _isRightWeaponAimed = false;
+    public bool _isLeftWeaponAimed = false;
+
     protected WeaponGrabFocus _tempGrabFocusType = WeaponGrabFocus.Normal;
     public WeaponGrabFocus GetGrabFocusType() { return _tempGrabFocusType; }
-    protected bool _tempUsingRightHandWeapon = false; //최근에 사용한 무기가 오른손입니까?
+    public void ChangeGrabFocusType(WeaponGrabFocus targetType)
+    {
+        _tempGrabFocusType = targetType;
+    }
+
+
+
     public bool GetLatestWeaponUse() { return _tempUsingRightHandWeapon; }
     public void SetLatestWeaponUse(bool isRightHandWeapon)
     {
         _tempUsingRightHandWeapon = isRightHandWeapon;
     }
+
+
     public void IncreaseWeaponIndex(AnimatorLayerTypes layerType)
     {
         if (layerType != AnimatorLayerTypes.LeftHand &&
@@ -350,9 +380,6 @@ public class CharacterScript : MonoBehaviour, IHitable
             //_tempCurrRightWeapon = _tempRightWeaponPrefabs[_currRightWeaponIndex];
         }
     }
-    public bool _isRightWeaponAimed = false;
-    public bool _isLeftWeaponAimed = false;
-
     public void DestroyWeapon(AnimatorLayerTypes layerType)
     {
         StateGraphType targetType = StateGraphType.End;
@@ -380,21 +407,17 @@ public class CharacterScript : MonoBehaviour, IHitable
         GetCharacterSubcomponent<StateContoller>().EquipStateGraph(basicAsset, targetType);
     }
 
-    public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, GameObject nextWeaponPrefab)
-    {
-        if (layerType != AnimatorLayerTypes.RightHand &&
-            layerType != AnimatorLayerTypes.LeftHand)
-        {
-            return;
-        }
 
+    #endregion WeaponSection
+
+    public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemAsset_Weapon nextItemInfo)
+    {
+        if (layerType != AnimatorLayerTypes.RightHand &&layerType != AnimatorLayerTypes.LeftHand) {return;}
+
+   
         WeaponSocketScript.SideType targetSide = (layerType == AnimatorLayerTypes.RightHand)
             ? WeaponSocketScript.SideType.Right
             : WeaponSocketScript.SideType.Left;
-
-        WeaponScript nextWeaponScript = nextWeaponPrefab.GetComponent<WeaponScript>();
-
-        Debug.Assert(nextWeaponScript != null, "무기는 WeaponScript가 있어야 한다");
 
         //소켓 찾기
         Transform correctSocket = null;
@@ -405,7 +428,7 @@ public class CharacterScript : MonoBehaviour, IHitable
 
             Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
 
-            ItemAsset.WeaponType targetType = nextWeaponScript._weaponType;
+            WeaponType targetType = nextItemInfo._WeaponType;
 
             foreach (var socketComponent in weaponSockets)
             {
@@ -434,23 +457,33 @@ public class CharacterScript : MonoBehaviour, IHitable
         }
 
         //아이템 프리팹 생성, 장착
-        GameObject newObject = Instantiate(nextWeaponPrefab);
+        GameObject weaponModel = Instantiate(nextItemInfo._ItemModel, transform);
+
+        WeaponScript weaponScript = null;
+
+        if (nextItemInfo._WeaponType >= WeaponType.SmallGun && nextItemInfo._WeaponType <= WeaponType.LargeGun)
         {
-            nextWeaponScript = newObject.GetComponent<WeaponScript>();
-            nextWeaponScript._weaponType = ItemAsset.WeaponType.MediumGun;
-            nextWeaponScript.Equip(this, correctSocket);
-            newObject.transform.SetParent(transform);
+            weaponScript = weaponModel.AddComponent<Gunscript2>();
+        }
+        else
+        {
+            weaponScript = weaponModel.AddComponent<WeaponScript>();
+        }
+
+        {
+            weaponScript.Init(nextItemInfo);
+            weaponScript.Equip(this, correctSocket);
 
             if (layerType == AnimatorLayerTypes.RightHand)
             {
-                _tempCurrRightWeapon = newObject;
+                _tempCurrRightWeapon = weaponModel;
             }
             else
             {
-                _tempCurrLeftWeapon = newObject;
+                _tempCurrLeftWeapon = weaponModel;
             }
 
-            StateGraphAsset stateGraphAsset = nextWeaponScript._weaponStateGraph;
+            StateGraphAsset stateGraphAsset = nextItemInfo._WeaponStateGraph;
 
             StateGraphType stateGraphType = (layerType == AnimatorLayerTypes.RightHand == true)
                 ? StateGraphType.WeaponState_RightGraph
@@ -461,7 +494,7 @@ public class CharacterScript : MonoBehaviour, IHitable
 
 
             //장착한 후, 콜라이더를 업데이트 한다.
-            ColliderScript weaponColliderScript = nextWeaponScript.GetComponentInChildren<ColliderScript>();
+            ColliderScript weaponColliderScript = weaponModel.GetComponentInChildren<ColliderScript>();
             if (weaponColliderScript != null)
             {
                 /*---------------------------------------------------------
@@ -482,11 +515,6 @@ public class CharacterScript : MonoBehaviour, IHitable
             : _tempCurrLeftWeapon.GetComponent<WeaponScript>();
 
         targetWeaponScript.Equip_OnSocket(work._weaponEquipTransform);
-    }
-
-    public void ChangeGrabFocusType(WeaponGrabFocus targetType)
-    {
-        _tempGrabFocusType = targetType;
     }
 
     public virtual ColliderAttachType CalculateAttachType(ColliderAttachType attachType, AnimatorLayerTypes layerType)
@@ -522,116 +550,27 @@ public class CharacterScript : MonoBehaviour, IHitable
         return type;
     }
 
-    public GameObject GetNextWeaponPrefab(AnimatorLayerTypes layerType)
+    private void TriggerEnterWithWeapon(Collider other)
     {
-        if (layerType != AnimatorLayerTypes.LeftHand &&
-            layerType != AnimatorLayerTypes.RightHand)
-        {
-            return null;
-        }
+        /*-------------------------------------------------------
+        OnTirggerEnter -> TriggerEnterWithWeapon -> DealMe(상태 변경될거임)
+        -------------------------------------------------------*/
 
-        int nextWeaponIndex = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _currLeftWeaponIndex + 1
-            : _currRightWeaponIndex + 1;
+        /*-------------------------------------------------------
+        other = 나와 부딪힌 객체가 무기(장판, 독뎀 등이 아닌)
+        임이 확정인 상태
+        -------------------------------------------------------*/
 
-        if (nextWeaponIndex >= _tempMaxWeaponSlot)
-        {
-            nextWeaponIndex = nextWeaponIndex % _tempMaxWeaponSlot;
-        }
 
-        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _tempLeftWeaponPrefabs[nextWeaponIndex]
-            : _tempRightWeaponPrefabs[nextWeaponIndex];
+        CharacterScript otherCharacterScript = other.gameObject.GetComponentInParent<CharacterScript>();
+        DamageDesc currentDamage = new DamageDesc();
+        otherCharacterScript.CalculateMyCurrentWeaponDamage(ref currentDamage, other);
 
-        return weaponPrefab;
+        
+        DealMe_Final(currentDamage, otherCharacterScript.gameObject);
     }
 
-    public WeaponScript GetNextWeaponScript(AnimatorLayerTypes layerType)
-    {
-        if (layerType != AnimatorLayerTypes.LeftHand &&
-            layerType != AnimatorLayerTypes.RightHand)
-        {
-            return null;
-        }
-
-        int nextWeaponIndex = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _currLeftWeaponIndex + 1
-            : _currRightWeaponIndex + 1;
-
-        if (nextWeaponIndex >= _tempMaxWeaponSlot)
-        {
-            nextWeaponIndex = nextWeaponIndex % _tempMaxWeaponSlot;
-        }
-
-        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _tempLeftWeaponPrefabs[nextWeaponIndex]
-            : _tempRightWeaponPrefabs[nextWeaponIndex];
-
-        if (weaponPrefab == null)
-        {
-            return null;
-        }
-
-        return weaponPrefab.GetComponent<WeaponScript>();
-    }
-
-    public GameObject GetCurrWeaponPrefab(AnimatorLayerTypes layerType)
-    {
-        if (layerType != AnimatorLayerTypes.LeftHand &&
-            layerType != AnimatorLayerTypes.RightHand)
-        {
-            return null;
-        }
-
-        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _tempCurrLeftWeapon
-            : _tempCurrRightWeapon;
-
-        return weaponPrefab;
-    }
-
-    public WeaponScript GetCurrentWeaponScript(AnimatorLayerTypes layerType)
-    {
-        if (layerType != AnimatorLayerTypes.LeftHand &&
-            layerType != AnimatorLayerTypes.RightHand)
-        {
-            return null;
-        }
-
-        GameObject weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _tempCurrLeftWeapon
-            : _tempCurrRightWeapon;
-
-        if (weaponPrefab == null)
-        {
-            return null;
-        }
-
-        return weaponPrefab.GetComponent<WeaponScript>();
-    }
-
-    public WeaponScript GetCurrentWeaponScript(bool isRightHand)
-    {
-        GameObject weaponPrefab = (isRightHand == true)
-            ? _tempCurrRightWeapon
-            : _tempCurrLeftWeapon;
-
-        if (weaponPrefab == null)
-        {
-            return null;
-        }
-
-        return weaponPrefab.GetComponent<WeaponScript>();
-    }
-
-    #endregion WeaponSection
-
-    public virtual LayerMask CalculateWeaponColliderExcludeLayerMask(ColliderAttachType type, GameObject targetObject)
-    {
-        return 0;
-    }
-
-    public void MoveWeapons(GameObject newModelObject)
+    public void MoveWeapons()
     {
         Transform correctSocket_Left = null;
         Transform correctSocket_Right = null;
@@ -664,9 +603,6 @@ public class CharacterScript : MonoBehaviour, IHitable
             }
         }
 
-
-
-
         if (_tempCurrRightWeapon != null)
         {
             WeaponScript rightWeaponScript = _tempCurrRightWeapon.GetComponent<WeaponScript>();
@@ -680,27 +616,10 @@ public class CharacterScript : MonoBehaviour, IHitable
         }
     }
 
-    private void TriggerEnterWithWeapon(Collider other)
+    public virtual LayerMask CalculateWeaponColliderExcludeLayerMask(ColliderAttachType type, GameObject targetObject)
     {
-        /*-------------------------------------------------------
-        OnTirggerEnter -> TriggerEnterWithWeapon -> DealMe(상태 변경될거임)
-        -------------------------------------------------------*/
-
-        /*-------------------------------------------------------
-        other = 나와 부딪힌 객체가 무기(장판, 독뎀 등이 아닌)
-        임이 확정인 상태
-        -------------------------------------------------------*/
-
-
-        CharacterScript otherCharacterScript = other.gameObject.GetComponentInParent<CharacterScript>();
-        DamageDesc currentDamage = new DamageDesc();
-        otherCharacterScript.CalculateMyCurrentWeaponDamage(ref currentDamage, other);
-
-        
-        DealMe_Final(currentDamage, otherCharacterScript.gameObject);
+        return 0;
     }
-
-
 
     private void OnTriggerStay(Collider other)
     {
@@ -761,13 +680,13 @@ public class CharacterScript : MonoBehaviour, IHitable
     }
 
 
-    public void SetWeapon(bool isRightWeapon, int index, GameObject weaponPrefab)
+    public void SetWeapon(bool isRightWeapon, int index, ItemAsset_Weapon weaponInfo)
     {
-        List<GameObject> targetWeaponPrefabs = (isRightWeapon == true)
+        List<ItemAsset_Weapon> targetWeaponPrefabs = (isRightWeapon == true)
             ? _tempRightWeaponPrefabs
             : _tempLeftWeaponPrefabs;
 
-        targetWeaponPrefabs[index] = weaponPrefab;
+        targetWeaponPrefabs[index] = weaponInfo;
 
         int currIndex = (isRightWeapon == true)
             ? _currRightWeaponIndex
@@ -960,63 +879,60 @@ public class CharacterScript : MonoBehaviour, IHitable
 
             case AdditionalBehaveType.UseItem_Drink:
                 {
-                    //Debug.Assert(false, "이곳은 수정해야합니다");
-                    //Debug.Break();
+                    ItemAsset_Consume newTestingItem = null;
 
-                    //ItemInfo newTestingItem = null;
+                    if (Input.GetKeyDown(_useItemKeyCode1) == true)
+                    {
+                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60) as ItemAsset_Consume;
+                    }
 
-                    //if (Input.GetKeyDown(_useItemKeyCode1) == true)
-                    //{
-                    //    newTestingItem = ItemInfoManager.Instance.GetItemInfo(60);
-                    //}
+                    if (newTestingItem == null)
+                    {
+                        return;
+                    }
 
-                    //if (newTestingItem == null)
-                    //{
-                    //    return;
-                    //}
-
-                    //if (GCST<StateContoller>().GetCurrState()._myState._canUseItem == false)
-                    //{
-                    //    return;
-                    //}
+                    if (GCST<StateContoller>().GetCurrState()._myState._canUseItem == false)
+                    {
+                        return;
+                    }
 
 
-                    ////사용 부위 체크
-                    //int willBusyLayer = 0;
+                    //사용 부위 체크
+                    int willBusyLayer = 0;
 
-                    //{
-                    //    ////순수 아이템만으로 필요한 레이어 체크
-                    //    //if (newTestingItem._usingItemMustNotBusyLayers != null || newTestingItem._usingItemMustNotBusyLayers.Count > 0)
-                    //    //{
-                    //    //    if (newTestingItem._usingItemMustNotBusyLayer < 0)
-                    //    //    {
-                    //    //        newTestingItem._usingItemMustNotBusyLayer = 0;
+                    {
+                        ////순수 아이템만으로 필요한 레이어 체크
+                        //if (newTestingItem._UsingItemMustNotBusyLayers != null || newTestingItem._UsingItemMustNotBusyLayers.Count > 0)
+                        //{
+                        //    if (newTestingItem._UsingItemMustNotBusyLayer < 0)
+                        //    {
+                        //        newTestingItem._UsingItemMustNotBusyLayer = 0;
 
-                    //    //        foreach (var item in newTestingItem._usingItemMustNotBusyLayers)
-                    //    //        {
-                    //    //            newTestingItem._usingItemMustNotBusyLayer = (newTestingItem._usingItemMustNotBusyLayer | 1 << (int)item);
-                    //    //        }
-                    //    //    }
+                        //        foreach (var item in newTestingItem._UsingItemMustNotBusyLayers)
+                        //        {
+                        //            newTestingItem._UsingItemMustNotBusyLayer = (newTestingItem._UsingItemMustNotBusyLayer | 1 << (int)item);
+                        //        }
+                        //    }
 
-                    //    //    willBusyLayer = newTestingItem._usingItemMustNotBusyLayer;
-                    //    //}
+                        //    willBusyLayer = newTestingItem._UsingItemMustNotBusyLayer;
+                        //}
 
-                    //    ////현재 무기 파지법에 의해 필요한 레이어 체크
-                    //    //if (_tempCurrRightWeapon != null)
-                    //    //{
-                    //    //    willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.RightHand);
-                    //    //}
-                    //}
+                        //현재 무기 파지법에 의해 필요한 레이어 체크
+                        if (_tempCurrRightWeapon != null)
+                        {
+                            willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+                        }
+                    }
 
 
 
-                    //if ((currentAnimatorBusyLayerBitShift & willBusyLayer) != 0)
-                    //{
-                    //    return; //해당 부위들은 지금 할일이 있다
-                    //}
+                    if ((currentAnimatorBusyLayerBitShift & willBusyLayer) != 0)
+                    {
+                        return; //해당 부위들은 지금 할일이 있다
+                    }
 
-                    ////Work를 담는다 이전에 Lock 계산을 끝낼것.
-                    //GCST<CharacterAnimatorScript>().CalculateBodyWorkType_UseItem_Drink(_tempGrabFocusType, newTestingItem, willBusyLayer);
+                    //Work를 담는다 이전에 Lock 계산을 끝낼것.
+                    GCST<CharacterAnimatorScript>().CalculateBodyWorkType_UseItem_Drink(_tempGrabFocusType, newTestingItem, willBusyLayer);
                 }
                 break;
 
@@ -1060,7 +976,7 @@ public class CharacterScript : MonoBehaviour, IHitable
         WeaponScript otherWeaponScript = other.GetComponentInParent<WeaponScript>();
         if (otherWeaponScript != null)
         {
-            DamageDesc weaponDamageDest = otherWeaponScript._weaponDamageDesc;
+            DamageDesc weaponDamageDest = otherWeaponScript._ItemInfo._WeaponDamageDesc;
             damageDesc._damage += weaponDamageDest._damage;
             damageDesc._damagingStamina += weaponDamageDest._damagingStamina;
             damageDesc._damagePower += weaponDamageDest._damagePower;

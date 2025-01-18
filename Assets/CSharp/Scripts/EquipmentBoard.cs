@@ -169,11 +169,9 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
         int index = caller.gameObject.name.Last() - 49;
 
-        GameObject weaponPrefab = ItemInfoManager.Instance.GetItemSubInfo_Weapon(storeDesc._itemAsset)._WeaponPrefab;
-
         UIComponent myUIComponent = GetComponentInParent<UIComponent>();
 
-        myUIComponent.GetReturnObject().GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, weaponPrefab);
+        myUIComponent.GetReturnObject().GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, storeDesc._itemAsset as ItemAsset_Weapon);
     }
 
     public void UnEquipItem_Weapon(ItemStoreDesc storeDesc)
@@ -267,7 +265,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
         GameObject originalAnimatorGameObject = ownerCharacterAnimatorScript.GetCurrActivatedModelObject();
 
-        ItemSubInfo_EquipMesh equipInfo = ItemInfoManager.Instance.GetItemSubInfo_EquipmentMesh(storeDesc._itemAsset);
+        ItemAsset_EquipMesh equipInfo = storeDesc._itemAsset as ItemAsset_EquipMesh;
 
         if (IsSameSkelaton(storeDesc._itemAsset) == true)
         {
@@ -309,7 +307,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
             Debug.Break();
         }
 
-        ItemSubInfo_EquipMesh equipmentSubInfo = ItemInfoManager.Instance.GetItemSubInfo_EquipmentMesh(itemAsset);
+        ItemAsset_EquipMesh equipmentSubInfo = itemAsset as ItemAsset_EquipMesh;
 
         Animator prefabAnimator = equipmentSubInfo._EquipmentPrefab.GetComponent<Animator>();
         Debug.Assert(prefabAnimator != null, "입으려는 장비Prefab은 반드시 Animator를 가지고 있어야 합니다");

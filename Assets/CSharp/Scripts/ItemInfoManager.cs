@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Animations;
+using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using UnityEngine.UI;
 
@@ -48,39 +49,16 @@ public class ItemStoreDesc
 
 public class ItemInfoManager : SubManager<ItemInfoManager>
 {
-    [SerializeField] List<ItemSubInfo_EquipMesh>    _itemSubInfo_EquipMesh_Init = new List<ItemSubInfo_EquipMesh>();
-    [SerializeField] List<ItemSubInfo_UIInfo>       _itemSubInfo_UIInfo_Init = new List<ItemSubInfo_UIInfo>();
-    [SerializeField] List<ItemSubInfo_WeaponInfo>   _itemSubInfo_WeaponInfo_Init = new List<ItemSubInfo_WeaponInfo>();
-    [SerializeField] List<ItemSubInfo_UsingInfo>    _itemSubInfo_UsingInfo_Init = new List<ItemSubInfo_UsingInfo>();
-
-    Dictionary<ItemAsset, ItemSubInfo_EquipMesh>    _itemSubInfo_EquipMesh = new Dictionary<ItemAsset, ItemSubInfo_EquipMesh>();
-    Dictionary<ItemAsset, ItemSubInfo_UIInfo>       _itemSubInfo_UIInfo = new Dictionary<ItemAsset, ItemSubInfo_UIInfo>();
-    Dictionary<ItemAsset, ItemSubInfo_WeaponInfo>   _itemSubInfo_WeaponInfo = new Dictionary<ItemAsset, ItemSubInfo_WeaponInfo>();
-    Dictionary<ItemAsset, ItemSubInfo_UsingInfo>    _itemSubInfo_UsingInfo = new Dictionary<ItemAsset, ItemSubInfo_UsingInfo>();
-
-
-    /*
-    
-    */
-
-
-
-
-    //Dictionary<Type, Dictionary<ItemAsset, ItemSubInfo>> _itemSubInfo_Total = new Dictionary<Type, Dictionary<ItemAsset, ItemSubInfo>>();
-
-    [SerializeField] List<ItemAsset>                _itemAssets_Init = new List<ItemAsset>();
-    Dictionary<int, ItemAsset>                      _itemInfo = new Dictionary<int, ItemAsset>();
-    
+    [SerializeField] List<ItemAsset> _itemAssets_Init = new List<ItemAsset>();
+    Dictionary<string, int> _itemKeys = new Dictionary<string, int>();
+    Dictionary<int, ItemAsset> _itemAssets = new Dictionary<int, ItemAsset>();
 
     public override void SubManagerInit()
     {
         SingletonAwake();
 
         {
-            InitItemSubInfo(_itemSubInfo_EquipMesh_Init, _itemSubInfo_EquipMesh);
-            InitItemSubInfo(_itemSubInfo_UIInfo_Init, _itemSubInfo_UIInfo);
-            InitItemSubInfo(_itemSubInfo_WeaponInfo_Init, _itemSubInfo_WeaponInfo);
-            InitItemSubInfo(_itemSubInfo_UsingInfo_Init, _itemSubInfo_UsingInfo);
+            //InitItemSubInfo(_itemSubInfo_WeaponInfo_Init, _itemSubInfo_WeaponInfo);
         }
 
         //아이템 인포를 형성한다
@@ -89,21 +67,21 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
         }
     }
 
-    private void InitItemSubInfo<T>(List<T> initContainer, Dictionary<ItemAsset, T> targetContainer) 
-        where T : ItemSubInfo
-    {
-        foreach (T item in initContainer)
-        {
-            ItemAsset targetItemInfo = item._UsingThisItemAssets;
+    //private void InitItemSubInfo<T>(List<T> initContainer, Dictionary<ItemAsset, T> targetContainer) 
+    //    where T : ItemSubInfo
+    //{
+    //    foreach (T item in initContainer)
+    //    {
+    //        ItemAsset targetItemInfo = item._UsingThisItemAssets;
 
-            if (targetContainer.ContainsKey(targetItemInfo) == true)
-            {
-                Debug.Assert(false, "타겟이 중복됩니다" + targetItemInfo.name + "//" + item.ToString());
-            }
+    //        if (targetContainer.ContainsKey(targetItemInfo) == true)
+    //        {
+    //            Debug.Assert(false, "타겟이 중복됩니다" + targetItemInfo.name + "//" + item.ToString());
+    //        }
 
-            targetContainer.Add(targetItemInfo, item);
-        }
-    }
+    //        targetContainer.Add(targetItemInfo, item);
+    //    }
+    //}
 
 
 
@@ -111,58 +89,77 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
 
     private void InitItem()
     {
+        int itemKeyRecord = 0;
+
         foreach (ItemAsset item in _itemAssets_Init)
         {
-            if (_itemInfo.ContainsKey(item._ItemKey) == true)
+            item._ItemKey = itemKeyRecord;
+
+            if (_itemKeys.ContainsKey(item._ItemName) == true)
             {
-                Debug.Assert(false, "타겟이 중복됩니다 아이템 키 : " + item._ItemKey);
+                Debug.Assert(false, "아이템 이름이 중복됩니다" + item._ItemName);
+                Debug.Break();
             }
 
-            _itemInfo.Add(item._ItemKey, item);
+            _itemKeys.Add(item._ItemName, itemKeyRecord);
+            _itemAssets.Add(item._ItemKey, item);
+
+            itemKeyRecord++;
         }
     }
 
 
 
 
+    public ItemAsset GetItemInfo(string itemName)
+    {
+        Debug.Assert(_itemKeys.ContainsKey(itemName) == true, "없는 아이템 인포를 요청했습니다 key : " + itemName);
+        int key = _itemKeys[itemName];
 
+        return _itemAssets[key];
+    }
 
+    public int GetItemKey(string itemName)
+    {
+        Debug.Assert(_itemKeys.ContainsKey(itemName) == true, "없는 아이템 인포를 요청했습니다 key : " + itemName);
+        return _itemKeys[itemName];
+    }
 
     public ItemAsset GetItemInfo(int itemKey)
     {
-        Debug.Assert(_itemInfo.ContainsKey(itemKey) == true, "없는 아이템 인포를 요청했습니다 key : " + itemKey);
-        return _itemInfo[itemKey];
+        Debug.Assert(_itemAssets.ContainsKey(itemKey) == true, "없는 아이템 인포를 요청했습니다 key : " + itemKey);
+        return _itemAssets[itemKey];
     }
 
-    public ItemSubInfo_WeaponInfo GetItemSubInfo_Weapon(ItemAsset itemAsset)
-    {
-        ItemSubInfo_WeaponInfo asset = null;
-        _itemSubInfo_WeaponInfo.TryGetValue(itemAsset, out asset);
-        if (asset == null)
-        {
-            Debug.Assert(false, "해당 아이템은 무기정보가 없습니다");
-            Debug.Break();
-            return null;
-        }
+    //public ItemAsset_Weapon GetItemSubInfo_Weapon(ItemAsset itemAsset)
+    //{
+    //    ItemAsset_Weapon asset = null;
+    //    _itemSubInfo_WeaponInfo.TryGetValue(itemAsset, out asset);
+    //    if (asset == null)
+    //    {
+    //        Debug.Assert(false, "해당 아이템은 무기정보가 없습니다");
+    //        Debug.Break();
+    //        return null;
+    //    }
 
-        return asset;
-    }
+    //    return asset;
+    //}
 
 
 
-    public ItemSubInfo_EquipMesh GetItemSubInfo_EquipmentMesh(ItemAsset itemInfo)
-    {
-        ItemSubInfo_EquipMesh asset = null;
-        _itemSubInfo_EquipMesh.TryGetValue(itemInfo, out asset);
-        if (asset == null)
-        {
-            Debug.Assert(false, "해당 아이템은 장착 메쉬가없습니다");
-            Debug.Break();
-            return null;
-        }
+    //public ItemAsset_EquipMesh GetItemSubInfo_EquipmentMesh(ItemAsset itemInfo)
+    //{
+    //    ItemAsset_EquipMesh asset = null;
+    //    _itemSubInfo_EquipMesh.TryGetValue(itemInfo, out asset);
+    //    if (asset == null)
+    //    {
+    //        Debug.Assert(false, "해당 아이템은 장착 메쉬가없습니다");
+    //        Debug.Break();
+    //        return null;
+    //    }
 
-        return asset;
-    }
+    //    return asset;
+    //}
 
 
 

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a85df13d390c6e439f9b53c26e264ee, type: 3}
+  m_Name: EquipMesh_NoelArmor
+  m_EditorClassIdentifier: 
+  _equipType: 2147483647
+  _ItemKey: 0
+  _itemName: NoelArmor
+  _sizeX: 2
+  _sizeY: 4
+  _maxStack: 1
+  _itemModel: {fileID: 7798419660825824756, guid: 92ed5d5aa0d0cb048b9468ea68411d02,
+    type: 3}
+  _fieldExistAble: 1
+  _itemImage: {fileID: 0}
+  _equipmentPrefab: {fileID: 7242144766837878013, guid: 810260caf6148514e9218af04c8a07eb,
+    type: 3}
+  _equipmentAvatar: {fileID: 9000000, guid: ee3c413ce661b8a4e908daa70c5661f6, type: 3}
+  _equipmentMeshes:
+  - {fileID: 2387456680764724913, guid: 3ae7816671d0cdb4aaef89aaad7f0ee5, type: 3}

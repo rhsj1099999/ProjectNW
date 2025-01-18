@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cafea9b1316198e4a9c0494fb865d792, type: 3}
+  m_Name: ItemAsset_Weapon_HeizoKnuckle
+  m_EditorClassIdentifier: 
+  _equipType: 32
+  _ItemKey: 9
+  _itemName: HeizoKnuckle
+  _sizeX: 1
+  _sizeY: 1
+  _maxStack: 100
+  _itemModel: {fileID: 6978618918734375859, guid: 962c52d0b82bd2044acb80b8e0f82a94,
+    type: 3}
+  _fieldExistAble: 1
+  _itemImage: {fileID: 0}
+  _weaponType: 1
+  _weaponDamageDesc:
+    _damage: 1
+    _damagePower: 1
+    _damagingStamina: 1
+  _weaponStateGraph: {fileID: 11400000, guid: 52c7fc063cc933e488da17006e741ff1, type: 2}

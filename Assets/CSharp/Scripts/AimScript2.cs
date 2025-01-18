@@ -253,16 +253,7 @@ public class AimScript2 : GameCharacterSubScript
 
     public void OnAimState(AimState targetAimState)
     {
-        if (_ownerCharacterHeart == null)
-        {
-            _ownerCharacterHeart =_owner.gameObject.transform.Find("CharacterHeart").gameObject;
-            if (_ownerCharacterHeart == null)
-            {
-                Debug.Assert(false, "CharacterHeart가 없습니다");
-                Debug.Break();
-                return;
-            }
-        }
+
 
         bool isSuccrss = false;
 
@@ -331,6 +322,18 @@ public class AimScript2 : GameCharacterSubScript
 
     private bool Check_TurnOnAim_LockOnAim()
     {
+        if (_ownerCharacterHeart == null)
+        {
+            _ownerCharacterHeart = _owner.gameObject.transform.Find("CharacterHeart").gameObject;
+            if (_ownerCharacterHeart == null)
+            {
+                Debug.Assert(false, "CharacterHeart가 없습니다");
+                Debug.Break();
+                return false;
+            }
+        }
+
+
         _lockedOnObject = null;
 
         Vector3 cameraPosition = Camera.main.transform.position;
