@@ -196,8 +196,8 @@ public class InventoryBoard : BoardUIBaseScript
         GameObject itemUI = Instantiate(_itemUIPrefab, _myRectTransform);
 
         RectTransform itemUIRectTransform = itemUI.transform as RectTransform;
-        //itemUIRectTransform.localPosition = Vector3.zero;
-        //itemUIRectTransform.localRotation = Quaternion.identity;
+        itemUIRectTransform.localPosition = Vector3.zero;
+        itemUIRectTransform.localRotation = Quaternion.identity;
 
         //사이즈변경
         itemUIRectTransform.sizeDelta = new Vector2(info._SizeX * 20, info._SizeY * 20);
@@ -219,11 +219,7 @@ public class InventoryBoard : BoardUIBaseScript
             int index = (targetY * _cols) + targetX;
             RectTransform cellRectTransform = _cells[index].transform as RectTransform;
             itemUIRectTransform.RotateAround(cellRectTransform.position, cellRectTransform.forward, 90.0f);
-            
-            
-            //Vector2 cellPosition = new Vector2(cellRectTransform.position.x, cellRectTransform.position.y);
-            //itemUIRectTransform.Rotate(itemUIRectTransform.forward, 90.0f);
-            //itemUIRectTransform.anchoredPosition -= new Vector2(0.0f, info._SizeX * 20);
+            itemUIRectTransform.position -= new Vector3(0.0f, (info._SizeX - 1) * 20, 0.0f);
         }
 
         return itemUI;

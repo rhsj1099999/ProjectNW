@@ -4,6 +4,18 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "ItemAsset", menuName = "Scriptable Object/Create_ItemAsset", order = (int)MyUtil.CustomToolOrder.CreateItemAsset)]
 public class ItemAsset : ScriptableObject
 {
+    public enum ItemType //For BitShift
+    {
+        None,
+        Bullet,
+        Magazine,
+        Equip,
+    }
+    [SerializeField] private ItemType _itemType;
+    public ItemType itemType => _itemType;
+
+
+
     public enum EquipType //For BitShift
     {
         None = 0,
@@ -50,6 +62,4 @@ public class ItemAsset : ScriptableObject
 
     [SerializeField] private Image _itemImage = null;
     public Image _ItemImage => _itemImage;
-
-
 }

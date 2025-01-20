@@ -23,7 +23,9 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     기능 실행마다 바뀔 변수들
      ----------------*/
     private Vector2 _myOriginalPosition = Vector2.zero;
+    private Quaternion _myOriginalRotation = Quaternion.identity;
     private Vector2 _myOriginalSize = Vector2.zero;
+    private Transform _beforeDragTransform = null;
 
     private bool _additionalRotating_Dynamic = false;
     private bool _isDragging = false;
@@ -90,8 +92,10 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         //드래깅 종료
         {
             _isDragging = false;
+            _myRectTransform.rotation = _myOriginalRotation;
             _myRectTransform.position = _myOriginalPosition;
             _myRectTransform.sizeDelta = _myOriginalSize;
+            transform.SetParent(_beforeDragTransform);
         }
 
 
@@ -277,6 +281,8 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             //마우스를 놨을때 어디로 돌아갈지 세팅
             _myOriginalPosition = _myRectTransform.position;
 
+            _myOriginalRotation = _myRectTransform.rotation;
+
             //나를 마우스에 붙인다
             _myRectTransform.position = Input.mousePosition;
 
@@ -285,6 +291,8 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
             //원래 크기로 돌려놓는다
             _myRectTransform.sizeDelta = new Vector2(_itemStoreDesc._itemAsset._SizeX * 20, _itemStoreDesc._itemAsset._SizeY * 20);
+
+            _beforeDragTransform = transform.parent;
 
             //나를 제일 마지막에 그려라
             UIManager.Instance.SetMeFinalZOrder(gameObject);
@@ -313,7 +321,7 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
 
         Vector3 axis = new Vector3(0.0f, 0.0f, 1.0f);
-        float angle = (_itemStoreDesc._isRotated == true) ? 90.0f : -90.0f;
+        float angle = (_additionalRotating_Dynamic == true) ? 90.0f : -90.0f;
 
         _myRectTransform.RotateAround(_myRectTransform.position, axis, angle);
     }
