@@ -7,7 +7,8 @@ public class UICall_OpenChest : UICallScript
     [SerializeField] private bool _isChestOpened = false;
     [SerializeField] private bool _isChestRotating = false;
     [SerializeField] private GameObject _chestInventory = null;
-    [SerializeField] private List<int> _fixedCreateTryItemList = new List<int>();
+
+    
 
 
     [SerializeField] private float _maxOpenDegree = 100.0f;
@@ -20,11 +21,12 @@ public class UICall_OpenChest : UICallScript
     private float _rotationSpeed = 0.0f;
 
 
+    [SerializeField] private List<int> _fixedCreateTryItemList = new List<int>();
+
+
     private void Awake()
     {
         _originalRotation = _chestLid.transform.rotation;
-
-
     }
 
 
@@ -39,7 +41,7 @@ public class UICall_OpenChest : UICallScript
     }
 
 
-    public override void UICall_Off()
+    public override void UICall_Off(InteractionUIListScript caller)
     {
         CloseChest();
     }
@@ -92,7 +94,7 @@ public class UICall_OpenChest : UICallScript
         }
     }
 
-    public override void UICall()
+    public override void UICall(InteractionUIListScript caller)
     {
         if (_isChestOpened == false)
         {
@@ -102,8 +104,6 @@ public class UICall_OpenChest : UICallScript
         {
             CloseChest();
         }
-
-
 
         return;
     }

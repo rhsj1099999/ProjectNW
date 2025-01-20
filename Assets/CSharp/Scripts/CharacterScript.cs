@@ -85,7 +85,7 @@ public class DamageDesc
 
 
 
-public class CharacterScript : MonoBehaviour, IHitable
+public class CharacterScript : GameActorScript, IHitable
 {
     //private bool _objectWillDestroy = false;
     //private bool _fakeDead = false;
@@ -103,6 +103,13 @@ public class CharacterScript : MonoBehaviour, IHitable
     //대표 컴포넌트들
     public List<GameCharacterSubScript> _components = new List<GameCharacterSubScript>();
     private Dictionary<Type, Component> _mySubScripts = new Dictionary<Type, Component>();
+
+    [SerializeField] protected GameObject _inventoryUIPrefab = null;
+    public GameObject GetInventory() { return _inventoryUIPrefab; }
+
+
+    StatScript _myStat = new StatScript();
+    protected GameObject _characterHeart = null;
 
 
     public void CalculateAffectingLayer(WeaponScript caller, ref List<int> layerList) {}
@@ -155,10 +162,7 @@ public class CharacterScript : MonoBehaviour, IHitable
     }
 
 
-    [SerializeField] protected GameObject _inventoryUIPrefab = null;
 
-    StatScript _myStat = new StatScript();
-    protected GameObject _characterHeart = null;
 
 
 

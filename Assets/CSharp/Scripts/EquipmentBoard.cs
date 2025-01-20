@@ -10,7 +10,7 @@ using static ItemAsset;
 using static MyUtil;
 using static UnityEditor.Progress;
 
-public class EquipmentBoard : MonoBehaviour, IMoveItemStore
+public class EquipmentBoard : BoardUIBaseScript
 {
     [SerializeField] private GameObject _equipmentUIObjectPrefab = null;
     private RectTransform _myRectTransform = null;
@@ -31,9 +31,11 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
     private Dictionary<ItemStoreDesc, List<GameObject>> _currEquippedItemUIObject = new Dictionary<ItemStoreDesc, List<GameObject>>();
     private Dictionary<ItemStoreDesc, List<GameObject>> _currEqippedItemMeshObject = new Dictionary<ItemStoreDesc, List<GameObject>>();
-    
-    private void Awake()
+
+    public override void Init(UIComponent owner)
     {
+        _owner = owner;
+
         Debug.Assert(_equipmentUIObjectPrefab != null, "프리팹 할당 안함");
 
         _myRectTransform = transform as RectTransform;
@@ -45,7 +47,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
         BoardCellDesc desc = new BoardCellDesc();
         desc._owner = this;
 
-        foreach (EquipmentCell component in components) 
+        foreach (EquipmentCell component in components)
         {
             component.Initialize(desc);
             //_equipCells.Add(component);
@@ -58,7 +60,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
         }
     }
 
-    public void DeleteOnMe(ItemStoreDesc storeDesc)
+    public override void DeleteOnMe(ItemStoreDesc storeDesc)
     {
         {
             if (storeDesc._itemAsset._EquipType == EquipType.Weapon)
@@ -80,7 +82,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
     }
 
 
-    public void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY, BoardUICellBase caller) 
+    public override void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY, BoardUICellBase caller) 
     {
         //장착 성공하면 여기 불린다
         storedDesc._isRotated = false;
@@ -135,7 +137,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
         }
     }
 
-    public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
+    public override bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
     {
         startX = 0;
         startY = 0;
@@ -171,7 +173,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
         UIComponent myUIComponent = GetComponentInParent<UIComponent>();
 
-        myUIComponent.GetReturnObject().GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, storeDesc._itemAsset as ItemAsset_Weapon);
+        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, storeDesc._itemAsset as ItemAsset_Weapon);
     }
 
     public void UnEquipItem_Weapon(ItemStoreDesc storeDesc)
@@ -199,7 +201,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
         int index = targetCell.gameObject.name.Last() - 49;
 
-        myUIComponent.GetReturnObject().GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, null);
+        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, null);
     }
 
     private void UnEquipUI(ItemStoreDesc storeDesc)
@@ -242,7 +244,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
         else
         {
             UIComponent myUIComponent = GetComponentInParent<UIComponent>();
-            GameObject uiReturnOwner = myUIComponent.GetReturnObject();
+            GameObject uiReturnOwner = myUIComponent.GetUIControllingComponent().gameObject;
             CharacterAnimatorScript ownerCharacterAnimatorScript = uiReturnOwner.GetComponentInChildren<CharacterAnimatorScript>();
             ownerCharacterAnimatorScript.ResetCharacterModel();
         }
@@ -259,7 +261,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
 
         UIComponent myUIComponent = GetComponentInParent<UIComponent>();
 
-        GameObject uiReturnOwner = myUIComponent.GetReturnObject();
+        GameObject uiReturnOwner = myUIComponent.GetUIControllingComponent().gameObject;
 
         CharacterAnimatorScript ownerCharacterAnimatorScript = uiReturnOwner.GetComponentInChildren<CharacterAnimatorScript>();
 
@@ -299,7 +301,7 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
             Debug.Break();
         }
 
-        CharacterAnimatorScript ownerCharacterAnimatorScript = myUIComponent.GetReturnObject().GetComponentInChildren<CharacterAnimatorScript>();
+        CharacterAnimatorScript ownerCharacterAnimatorScript = myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<CharacterAnimatorScript>();
 
         if (ownerCharacterAnimatorScript == null) 
         {
@@ -343,7 +345,6 @@ public class EquipmentBoard : MonoBehaviour, IMoveItemStore
     private HashSet<BoardUICellBase> CalculateTargetEquipcells_UnEquip(ItemStoreDesc storeDesc)
     {
         //이 아이템 정보로 장착된 정보가 있습니까?
-
         return _currActivatedCell_ByItem.GetOrAdd(storeDesc);
     }
 }

@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 
-public class InventoryBoard : MonoBehaviour, IMoveItemStore
+public class InventoryBoard : BoardUIBaseScript
 {
     private RectTransform _myRectTransform = null;
 
@@ -47,8 +48,10 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         };
     }
 
-    private void Awake()
+    public override void Init(UIComponent owner)
     {
+        _owner = owner;
+
         _myRectTransform = transform as RectTransform;
 
         if (_cellPrefab == null)
@@ -56,7 +59,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
             Debug.Log("셀 프리팹 할당안함");
             return;
         }
-        
+
         _myRectTransform.sizeDelta = new Vector2(20 * _cols, 20 * _rows);
 
         BoardCellDesc cellDesc = new BoardCellDesc();
@@ -76,8 +79,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
                 InventoryCell cellComponent = cellObject.GetComponent<InventoryCell>();
                 Debug.Assert(cellComponent != null, "cellComponent는 널일 수 없다");
                 cellComponent.Initialize(cellDesc);
-                
-                cellObject.SetActive(false);
+
                 _cells.Add(cellObject);
             }
         }
@@ -85,17 +87,6 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         _blank = _cols * _rows;
         _blankDispaly = new bool[_rows, _cols];
     }
-
-
-    private void OnEnable()
-    {
-        foreach (var cell in _cells)
-        {
-            cell.SetActive(true);
-        }
-    }
-
-
 
     void Update()
     {
@@ -128,7 +119,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
 
 
-    public bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
+    public override bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
     {
         Vector2 currPosition = Input.mousePosition;
         Vector2 boardSize = new Vector2(_myRectTransform.rect.width, _myRectTransform.rect.height);
@@ -204,7 +195,9 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     {
         GameObject itemUI = Instantiate(_itemUIPrefab, _myRectTransform);
 
-        RectTransform itemUIRectTransform = itemUI.GetComponent<RectTransform>();
+        RectTransform itemUIRectTransform = itemUI.transform as RectTransform;
+        //itemUIRectTransform.localPosition = Vector3.zero;
+        //itemUIRectTransform.localRotation = Quaternion.identity;
 
         //사이즈변경
         itemUIRectTransform.sizeDelta = new Vector2(info._SizeX * 20, info._SizeY * 20);
@@ -224,12 +217,13 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
         if (isAdditionalRotated == true)
         {
             int index = (targetY * _cols) + targetX;
-            Vector2 cellPosition = new Vector2(_cells[index].transform.position.x, _cells[index].transform.position.y) + new Vector2(itemOffset.x, itemOffset.y);
+            RectTransform cellRectTransform = _cells[index].transform as RectTransform;
+            itemUIRectTransform.RotateAround(cellRectTransform.position, cellRectTransform.forward, 90.0f);
             
-
-            itemUIRectTransform.RotateAround(cellPosition, new Vector3(0.0f, 0.0f, 1.0f), 90);
-
-            itemUIRectTransform.anchoredPosition -= new Vector2(0.0f, info._SizeX * 20);
+            
+            //Vector2 cellPosition = new Vector2(cellRectTransform.position.x, cellRectTransform.position.y);
+            //itemUIRectTransform.Rotate(itemUIRectTransform.forward, 90.0f);
+            //itemUIRectTransform.anchoredPosition -= new Vector2(0.0f, info._SizeX * 20);
         }
 
         return itemUI;
@@ -242,7 +236,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
     |NOTI| 인벤토리 보드 -> 인벤토리 보드 의 경우
     삭제하고 넣을때, 넣는순간 이 함수가 호출됐다.
     ----------------------------------------------------*/
-    public void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY, BoardUICellBase caller)
+    public override void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY, BoardUICellBase caller)
     {
         int inventoryIndex = _cols * targetY + targetX;
         storedDesc._storedIndex = inventoryIndex;
@@ -432,7 +426,7 @@ public class InventoryBoard : MonoBehaviour, IMoveItemStore
 
 
 
-    public void DeleteOnMe(ItemStoreDesc storedDesc)
+    public override void DeleteOnMe(ItemStoreDesc storedDesc)
     {
         //격자가 갱신된다.
         UpdateBlank(false, storedDesc);

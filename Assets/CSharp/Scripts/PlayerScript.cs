@@ -108,11 +108,9 @@ public class PlayerScript : CharacterScript
         {
             Debug.Log("상호작용 추가!");
 
-            UIInteractionableScript component = other.gameObject.GetComponent<UIInteractionableScript>();
+            UICallScript component = other.gameObject.GetComponent<UICallScript>();
 
-            InteractionUIDesc interactionDesc = component.GetInteractionUIDesc();
-
-            _interactionUIPrefab.GetComponentInChildren<InteractionUIListScript>().AddList(other, interactionDesc, component);
+            _interactionUIPrefab.GetComponentInChildren<InteractionUIListScript>().AddList(component);
         }
     }
 
@@ -125,11 +123,9 @@ public class PlayerScript : CharacterScript
         {
             Debug.Log("상호작용 제거!");
 
-            UIInteractionableScript component = other.gameObject.GetComponent<UIInteractionableScript>();
+            UICallScript component = other.gameObject.GetComponent<UICallScript>();
 
-            InteractionUIDesc interactionDesc = component.GetInteractionUIDesc();
-
-            _interactionUIPrefab.GetComponentInChildren<InteractionUIListScript>().RemoveList(other, interactionDesc, component);
+            _interactionUIPrefab.GetComponentInChildren<InteractionUIListScript>().RemoveList(component);
         }
     }
 }

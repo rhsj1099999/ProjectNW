@@ -44,6 +44,9 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     {
         _motor = GetComponent<KinematicCharacterMotor>();
         _motor.CharacterController = this;
+
+        _motor.Capsule.includeLayers = ~0;
+        _motor.Capsule.excludeLayers = ~LayerMask.GetMask("StaticNavMeshLayer");
     }
 
     public override void CharacterRotate(Quaternion rotation)

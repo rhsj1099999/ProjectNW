@@ -26,7 +26,7 @@ public class ItemStoreDesc
         int count,
         int stroredIndex,
         bool isRotated,
-        IMoveItemStore fromInstance
+        BoardUIBaseScript fromInstance
         )
     {
         _itemAsset = itemAsset;
@@ -44,7 +44,7 @@ public class ItemStoreDesc
     public int _count;              //개수
     public bool _isRotated;         //회전된 채로 저장돼있었나?
 
-    public IMoveItemStore _owner;   //여기서로부터 왔다.
+    public BoardUIBaseScript _owner;   //여기서로부터 왔다.
 }
 
 public class ItemInfoManager : SubManager<ItemInfoManager>

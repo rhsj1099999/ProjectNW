@@ -5,14 +5,12 @@ using System.Linq;
 using System;
 using UnityEngine.InputSystem;
 
-public class InteractionUIListScript : MonoBehaviour
+public class InteractionUIListScript : GameUISubComponent
 {
     public class UIListWrapper
     {
-        public Collider _owner = null;
         public GameObject _uiObject = null;
-        public InteractionUIDesc _desc = null;
-        public UIInteractionableScript _uiWorker = null;
+        public UICallScript _uiCall = null;
     }
 
     [SerializeField] private GameObject _eachUIPrefab = null;
@@ -21,12 +19,12 @@ public class InteractionUIListScript : MonoBehaviour
 
     private List<UIListWrapper> _currCreated = new List<UIListWrapper>();
 
-    private Dictionary<Collider, int> _currKeys = new Dictionary<Collider, int>();
-
     private int _currIndex = 0;
 
-    private void Awake()
+    public override void Init(UIComponent owner)
     {
+        _owner = owner;
+
         _myRectTransform = GetComponent<RectTransform>();
 
         RectTransform focusedUIRectTransform = (RectTransform)_focusedUI.transform;
@@ -37,11 +35,9 @@ public class InteractionUIListScript : MonoBehaviour
         float height = pixelAdjustedRect.height;
         float width = pixelAdjustedRect.width;
         focusedUIRectTransform.sizeDelta = new Vector2(width, height);
-
-        //focusedUIRectTransform.sizeDelta = new Vector2(focusedUIRectTransform.rect.width, focusedUIRectTransform.rect.height);
     }
 
-    public void AddList(Collider collider, InteractionUIDesc desc, UIInteractionableScript uiWorker)
+    public void AddList(UICallScript uiCallScript)
     {
         if (_currCreated.Count <= 0)
         {
@@ -51,10 +47,8 @@ public class InteractionUIListScript : MonoBehaviour
             ((RectTransform)newUI.transform).position = _myRectTransform.position;
 
             UIListWrapper newWrapper = new UIListWrapper();
-            newWrapper._owner = collider;
             newWrapper._uiObject = newUI;
-            newWrapper._desc = desc;
-            newWrapper._uiWorker = uiWorker;
+            newWrapper._uiCall = uiCallScript;
 
             _currCreated.Add(newWrapper);
 
@@ -81,11 +75,10 @@ public class InteractionUIListScript : MonoBehaviour
             Vector3 lastPosition = _currCreated.Last()._uiObject.transform.position;
             lastPosition += new Vector3(0.0f, -dynamicHeight, 0.0f);
             GameObject newUI = Instantiate(_eachUIPrefab, _myRectTransform);
+
             UIListWrapper newWrapper = new UIListWrapper();
-            newWrapper._owner = collider;
             newWrapper._uiObject = newUI;
-            newWrapper._desc = desc;
-            newWrapper._uiWorker = uiWorker;
+            newWrapper._uiCall = uiCallScript;
 
             ((RectTransform)newUI.transform).position = lastPosition;
             _currCreated.Add(newWrapper);
@@ -95,24 +88,15 @@ public class InteractionUIListScript : MonoBehaviour
         _focusedUI.transform.SetAsLastSibling();
     }
 
-    public void RemoveList(Collider collider, InteractionUIDesc desc, UIInteractionableScript uiWorker)
+    public void RemoveList(UICallScript uiCallScript)
     {
-        //if (_currKeys.ContainsKey(collider) == false)
-        //{
-        //    Debug.Assert(false, "없는데 지우려하고있습니다");
-        //    Debug.Break();
-        //    return;
-        //}
-
-        //int key = _currKeys[collider];
-
         int index = 0;
 
         UIListWrapper deleteTarget = null;
 
         foreach (UIListWrapper wrapper in _currCreated)
         {
-            if (wrapper._owner == collider)
+            if (wrapper._uiCall == uiCallScript)
             {
                 deleteTarget = wrapper;
                 break;
@@ -139,30 +123,27 @@ public class InteractionUIListScript : MonoBehaviour
             _currCreated[i]._uiObject.transform.position += delta;
         }
 
-        for (int i = index; i > 0; i--)
+        for (int i = index; i >= 0; i--)
         {
             _currCreated[i]._uiObject.transform.position -= delta;
         }
 
-        deleteTarget._uiWorker.UICall_Off();
-
+        deleteTarget._uiCall.UICall_Off(this);
+        _currCreated.Remove(deleteTarget);
         Destroy(deleteTarget._uiObject);
 
-        _currCreated.Remove(deleteTarget);
-
-        //_currKeys.Remove(collider);
 
         if (_currCreated.Count <= 0)
         {
             UIManager.Instance.TurnOffUI(gameObject);
             _focusedUI.SetActive(false);
+            _currIndex = 0;
             return;
         }
 
         if (index == _currIndex)
         {
             _currIndex--;
-            
         }
         _currIndex = Math.Clamp(_currIndex, 0, _currCreated.Count - 1);
         _focusedUI.transform.position = _currCreated[_currIndex]._uiObject.transform.position;
@@ -185,7 +166,7 @@ public class InteractionUIListScript : MonoBehaviour
             Input.GetKeyDown(KeyCode.F) == true)
         {
             UIListWrapper currWrapper = _currCreated[_currIndex];
-            currWrapper._uiWorker.UICall();
+            currWrapper._uiCall.UICall(this);
         }
     }
 
