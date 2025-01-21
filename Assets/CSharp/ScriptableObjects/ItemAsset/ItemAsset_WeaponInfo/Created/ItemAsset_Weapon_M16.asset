@@ -12,16 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cafea9b1316198e4a9c0494fb865d792, type: 3}
   m_Name: ItemAsset_Weapon_M16
   m_EditorClassIdentifier: 
+  _itemType: 0
   _equipType: 32
-  _ItemKey: 0
+  _ItemKey: 10
   _itemName: M16
   _sizeX: 4
   _sizeY: 2
-  _maxStack: 100
+  _maxStack: 1
   _itemModel: {fileID: 6978618918734375859, guid: 0077dbe5efeee3548af7977aeb2a9403,
     type: 3}
   _fieldExistAble: 1
   _itemImage: {fileID: 0}
+  _usingBulletType: 0
   _weaponType: 5
   _weaponDamageDesc:
     _damage: 1

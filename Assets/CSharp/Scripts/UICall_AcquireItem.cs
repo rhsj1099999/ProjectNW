@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
+using static ItemUI;
 
 public class UICall_AcquireItem : UICallScript
 {
     public class UICall_AcquireItemDesc
     {
         public GameObject _itemTarget = null;
-        public ItemStoreDesc _itemStoreDesc = null;
+        public ItemStoreDescBase _itemStoreDesc = null;
         public Collider _offCollider = null;
     }
 
@@ -47,6 +48,7 @@ public class UICall_AcquireItem : UICallScript
                 return;
             }
 
+            bool isSuccess = false;
             foreach (InventoryBoard inventoryBoard in inventories)
             {
                 int targetX = -1;
@@ -58,14 +60,21 @@ public class UICall_AcquireItem : UICallScript
                 {
                     continue;
                 }
+
                 _desc._itemStoreDesc._isRotated = isRotated;
                 inventoryBoard.AddItemUsingForcedIndex(_desc._itemStoreDesc, targetX, targetY, null);
-
+                isSuccess = true;
+                caller.RemoveList(this);
+                Destroy(_desc._itemTarget);
+                break;
             }
 
+            if (isSuccess == false) 
+            {
+                return;
+            }
         }
-        caller.RemoveList(this);
-        Destroy(_desc._itemTarget);
+
     }
 
     public override void UICall_Off(InteractionUIListScript caller)

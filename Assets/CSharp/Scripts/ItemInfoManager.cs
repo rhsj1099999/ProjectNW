@@ -14,38 +14,7 @@ using UnityEngine.UI;
 
 
 
-public class ItemStoreDesc
-{
-    //아이템을 장착하거나 인벤토리에 보유하면, 이 클래스로 감싸서 보관한다.
-    //위치 정보, 회전해있었는지 등등을 갖고있다.
 
-    private ItemStoreDesc() { }
-    public ItemStoreDesc
-        (
-        ItemAsset itemAsset,
-        int count,
-        int stroredIndex,
-        bool isRotated,
-        BoardUIBaseScript fromInstance
-        )
-    {
-        _itemAsset = itemAsset;
-        _count = count;
-        _storedIndex = stroredIndex;
-        _isRotated = isRotated;
-        _owner = fromInstance;
-    }
-
-
-    public UInt64 _absoluteKey = 0;
-
-    public ItemAsset _itemAsset;    //인포
-    public int _storedIndex;        //저장된 칸(장비창이면 거의 0)
-    public int _count;              //개수
-    public bool _isRotated;         //회전된 채로 저장돼있었나?
-
-    public BoardUIBaseScript _owner;   //여기서로부터 왔다.
-}
 
 public class ItemInfoManager : SubManager<ItemInfoManager>
 {

@@ -73,7 +73,42 @@ public class ResourceDataManager : SubManager<ResourceDataManager>
         StateGraphAssets();
         ReadyAvatarMasks();
         ReadyWeaponHandlingAnimation();
+        ReadyGunAnimation();
     }
+
+    /*-----------------------------------
+    Data Section _ Gun Animation
+    -----------------------------------*/
+    public List<ItemSubInfo_GunAnimation> _gunAnimationList_Init = new List<ItemSubInfo_GunAnimation>();
+    private Dictionary<ItemAsset, ItemSubInfo_GunAnimation> _gunAnimations = new Dictionary<ItemAsset, ItemSubInfo_GunAnimation>();
+    private void ReadyGunAnimation()
+    {
+        foreach (ItemSubInfo_GunAnimation item in _gunAnimationList_Init)
+        {
+            if (_gunAnimations.ContainsKey(item._UsingThisAsset) == true)
+            {
+                Debug.Log("해당 데이터가 이미 있다" + item._UsingThisAsset._ItemName);
+            }
+            _gunAnimations.Add(item._UsingThisAsset, item);
+        }
+    }
+    public ItemSubInfo_GunAnimation GetGunAnimation(ItemAsset itemAsset)
+    {
+        ItemSubInfo_GunAnimation ret = null;
+        _gunAnimations.TryGetValue(itemAsset, out ret);
+        if (ret == null)
+        {
+            Debug.Assert(false, "찾으려는 Gun 애니메이션이 없습니다" + itemAsset._ItemName);
+            Debug.Break();
+        }
+        return ret;
+    }
+
+
+
+
+
+
 
     /*-----------------------------------
     Data Section _ WeaponHandling

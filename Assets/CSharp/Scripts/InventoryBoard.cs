@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static ItemUI;
 
 
 public class InventoryBoard : BoardUIBaseScript
@@ -22,10 +23,10 @@ public class InventoryBoard : BoardUIBaseScript
     private List<GameObject> _cells = new List<GameObject>();
 
     //아이템이 있는지 없는지 확인용
-    private Dictionary<int/*키*/, Dictionary<int/*저장된 칸*/, ItemStoreDesc>> _items = new Dictionary<int, Dictionary<int, ItemStoreDesc>>();
+    private Dictionary<int/*키*/, Dictionary<int/*저장된 칸*/, ItemStoreDescBase>> _items = new Dictionary<int, Dictionary<int, ItemStoreDescBase>>();
 
     //아이템 저장 UI 저장용
-    private Dictionary<ItemStoreDesc/*저장정보*/, GameObject/*조작용 UI*/> _itemUIs = new Dictionary<ItemStoreDesc, GameObject>();
+    private Dictionary<ItemStoreDescBase/*저장정보*/, GameObject/*조작용 UI*/> _itemUIs = new Dictionary<ItemStoreDescBase, GameObject>();
 
 
     public void OnValidate()
@@ -112,14 +113,14 @@ public class InventoryBoard : BoardUIBaseScript
 
 
 
-    public GameObject getItem(ItemStoreDesc storeDesc)
+    public GameObject getItem(ItemStoreDescBase storeDesc)
     {
         return _itemUIs[storeDesc];
     }
 
 
 
-    public override bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
+    public override bool CheckItemDragDrop(ItemStoreDescBase storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
     {
         Vector2 currPosition = Input.mousePosition;
         Vector2 boardSize = new Vector2(_myRectTransform.rect.width, _myRectTransform.rect.height);
@@ -189,7 +190,6 @@ public class InventoryBoard : BoardUIBaseScript
     }
 
 
-
     //실제로 저장될 ItemUI를 만드는 함수...
     private GameObject CreateInventoryItem(ItemAsset info, int targetX, int targetY, int storedIndex, int count, bool isAdditionalRotated)
     {
@@ -232,7 +232,7 @@ public class InventoryBoard : BoardUIBaseScript
     |NOTI| 인벤토리 보드 -> 인벤토리 보드 의 경우
     삭제하고 넣을때, 넣는순간 이 함수가 호출됐다.
     ----------------------------------------------------*/
-    public override void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY, BoardUICellBase caller)
+    public override void AddItemUsingForcedIndex(ItemStoreDescBase storedDesc, int targetX, int targetY, BoardUICellBase caller)
     {
         int inventoryIndex = _cols * targetY + targetX;
         storedDesc._storedIndex = inventoryIndex;
@@ -240,14 +240,14 @@ public class InventoryBoard : BoardUIBaseScript
         UpdateBlank(true, storedDesc);
 
         GameObject itemUI = CreateInventoryItem(storedDesc._itemAsset, targetX, targetY, inventoryIndex, storedDesc._count, storedDesc._isRotated);
-        itemUI.GetComponent<ItemBase>().Initialize(storedDesc);
+        itemUI.GetComponent<ItemUI>().Initialize(storedDesc);
 
-        Dictionary<int, ItemStoreDesc> sameKeyItems = null;
+        Dictionary<int, ItemStoreDescBase> sameKeyItems = null;
         _items.TryGetValue(storedDesc._itemAsset._ItemKey, out sameKeyItems);
         if (sameKeyItems == null) 
         {
             //해당 Key의 Item이 최초추가 됐다.
-            _items.Add(storedDesc._itemAsset._ItemKey, new Dictionary<int, ItemStoreDesc>());
+            _items.Add(storedDesc._itemAsset._ItemKey, new Dictionary<int, ItemStoreDescBase>());
         }
 
         sameKeyItems = _items[storedDesc._itemAsset._ItemKey];
@@ -280,7 +280,7 @@ public class InventoryBoard : BoardUIBaseScript
 
 
 
-    public bool CheckItemStackAble(ItemAsset itemInfo, out ItemStoreDesc storeDescTarget, int itemCount)
+    public bool CheckItemStackAble(ItemAsset itemInfo, out ItemStoreDescBase storeDescTarget, int itemCount)
     {
         storeDescTarget = null;
 
@@ -293,10 +293,10 @@ public class InventoryBoard : BoardUIBaseScript
         }
 
         /*----------------------------------------------------
-        Dictionary<int, Dictionary<int, ItemStoreDesc>> _items;
+        Dictionary<int, Dictionary<int, ItemStoreDescBase>> _items;
         ----------------------------------------------------*/
 
-        Dictionary<int, ItemStoreDesc> currSameKeyItems = null;
+        Dictionary<int, ItemStoreDescBase> currSameKeyItems = null;
         _items.TryGetValue(itemInfo._ItemKey, out currSameKeyItems);
 
         if (currSameKeyItems == null) 
@@ -305,9 +305,9 @@ public class InventoryBoard : BoardUIBaseScript
             return false;
         }
 
-        foreach (KeyValuePair<int, ItemStoreDesc> indexStoreDescPair in currSameKeyItems)
+        foreach (KeyValuePair<int, ItemStoreDescBase> indexStoreDescPair in currSameKeyItems)
         {
-            ItemStoreDesc storeDesc = indexStoreDescPair.Value;
+            ItemStoreDescBase storeDesc = indexStoreDescPair.Value;
 
             int currItemCount = storeDesc._count;
 
@@ -329,7 +329,7 @@ public class InventoryBoard : BoardUIBaseScript
 
         //기존에 스택가능한 아이템이 있는경우 = 빨리 넣고 함수종료
         {
-            ItemStoreDesc targetStoreDesc = null;
+            ItemStoreDescBase targetStoreDesc = null;
             if (CheckItemStackAble(info, out targetStoreDesc, itemCount) == true)
             {
                 targetStoreDesc._count += itemCount;
@@ -373,16 +373,27 @@ public class InventoryBoard : BoardUIBaseScript
         
         if (_items.ContainsKey(info._ItemKey) == false) //추가된적이 없다.
         {
-            _items.Add(info._ItemKey, new Dictionary<int, ItemStoreDesc>());
+            _items.Add(info._ItemKey, new Dictionary<int, ItemStoreDescBase>());
         }
 
-        Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[info._ItemKey];
+        Dictionary<int, ItemStoreDescBase> itemKeyCategory = _items[info._ItemKey];
 
-        ItemStoreDesc storeDesc = new ItemStoreDesc(info, itemCount, inventoryIndex, isRotated, this);
+        ItemStoreDescBase storeDesc = null;
+        {
+            if (info._ItemType == ItemAsset.ItemType.Magazine)
+            {
+                storeDesc = new ItemStoreDesc_Magazine(info, itemCount, inventoryIndex, isRotated, this, null);
+            }
+            else
+            {
+                storeDesc = new ItemStoreDescBase(info, itemCount, inventoryIndex, isRotated, this);
+            }
+        }
+        
 
         itemKeyCategory.Add(inventoryIndex, storeDesc);
 
-        ItemBase itemBaseComponent = itemUI.GetComponent<ItemBase>();
+        ItemUI itemBaseComponent = itemUI.GetComponent<ItemUI>();
 
         if (itemBaseComponent != null)
         {
@@ -393,7 +404,7 @@ public class InventoryBoard : BoardUIBaseScript
     }
 
 
-    private void UpdateBlank(bool target, ItemStoreDesc storedDesc)
+    private void UpdateBlank(bool target, ItemStoreDescBase storedDesc)
     {
         //칸 수 갱신
         {
@@ -422,7 +433,7 @@ public class InventoryBoard : BoardUIBaseScript
 
 
 
-    public override void DeleteOnMe(ItemStoreDesc storedDesc)
+    public override void DeleteOnMe(ItemStoreDescBase storedDesc)
     {
         //격자가 갱신된다.
         UpdateBlank(false, storedDesc);
@@ -435,7 +446,7 @@ public class InventoryBoard : BoardUIBaseScript
             return;
         }
 
-        Dictionary<int, ItemStoreDesc> sameItemsByItemKey = _items[storedDesc._itemAsset._ItemKey];
+        Dictionary<int, ItemStoreDescBase> sameItemsByItemKey = _items[storedDesc._itemAsset._ItemKey];
 
         if (sameItemsByItemKey.ContainsKey(storedDesc._storedIndex) == false)
         {
@@ -557,17 +568,26 @@ public class InventoryBoard : BoardUIBaseScript
         if (Input.GetKeyDown(KeyCode.Alpha2) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SimpleSword"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("HeizoKnuckle"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SimpleShield"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SimpleKnuckle"), 1);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha3) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("HeizoKnuckle"), 1);
+            
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Hammer"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("M16"), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("D_Eagle"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("AK47"), 1);
+            //AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("D_Eagle"), 1);
+        }
 
+        if (Input.GetKeyDown(KeyCode.Alpha4) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("탄창_5탄_10발"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("탄창_7탄_45발"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("총알_5탄_레벨1"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("총알_7탄_레벨1"), 1);
         }
 
         //if (Input.GetKeyDown(KeyCode.Alpha1) == true)
@@ -625,7 +645,7 @@ public class InventoryBoard : BoardUIBaseScript
 
 
 
-//public void MoveItemSameInventory(ItemStoreDesc storedDesc, int targetX, int targetY)
+//public void MoveItemSameInventory(ItemStoreDescBase storedDesc, int targetX, int targetY)
 //{
 //    //다음 검사 시 빨리 찾기위한 공간갱신
 //    {
@@ -637,18 +657,18 @@ public class InventoryBoard : BoardUIBaseScript
 //}
 
 
-//public void MoveItemDiffrentInventory(ItemStoreDesc storedDesc, int targetX, int targetY)
+//public void MoveItemDiffrentInventory(ItemStoreDescBase storedDesc, int targetX, int targetY)
 //{
 //    int inventoryIndex = _cols * targetY + targetX;
 //    storedDesc._storedIndex = inventoryIndex;
 //    UpdateBlank(true, storedDesc);
 
 //    GameObject itemUI = CreateInventoryItem(storedDesc._itemAsset, targetX, targetY, inventoryIndex, storedDesc._count, storedDesc._isRotated);
-//    itemUI.GetComponent<ItemBase>().Initialize(this, storedDesc);
+//    itemUI.GetComponent<ItemUI>().Initialize(this, storedDesc);
 
-//    _items.Add(storedDesc._itemAsset._ItemKey, new Dictionary<int, ItemStoreDesc>());
+//    _items.Add(storedDesc._itemAsset._ItemKey, new Dictionary<int, ItemStoreDescBase>());
 
-//    Dictionary<int, ItemStoreDesc> itemKeyCategory = _items[storedDesc._itemAsset._ItemKey];
+//    Dictionary<int, ItemStoreDescBase> itemKeyCategory = _items[storedDesc._itemAsset._ItemKey];
 
 //    itemKeyCategory.Add(inventoryIndex, storedDesc);
 

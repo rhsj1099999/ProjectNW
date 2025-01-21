@@ -16,10 +16,12 @@ public class Gunscript2 : WeaponScript
     [SerializeField] UnityEvent _whenShootEvent = null;
     [SerializeField] private GameObject _firePosition = null;
     [SerializeField] private GameObject _stockPosition = null;
-    [SerializeField] private AnimationClip _shootAnimationClip = null;
+
+    private Coroutine _coolTimeCoroutine = null;
+    private Coroutine _aimShakeCoroutine = null;
 
 
-
+    //[SerializeField] private AnimationClip _shootAnimationClip = null;
     //[SerializeField] private AnimationClip _reloadingClip = null;
     // private GameObject _bullet = null;
     //[SerializeField] private Transform _followingTransformStartPoint = null;
@@ -84,14 +86,6 @@ public class Gunscript2 : WeaponScript
         //Fire();
 
         //RayCheck();
-
-        _coolTime = _coolTimeOriginal;
-
-        StartCoroutine("AimShakeCoroutine");
-
-        StartCoroutine("CooltimeCoroutine");
-
-        FireAnimation();
     }
 
     protected override void LateUpdate()
@@ -247,10 +241,77 @@ public class Gunscript2 : WeaponScript
     }
 
     #region Fire
+    public void Reload()
+    {
+        {
+            //애니메이션 교체작업
+            //IK를 비활성화하고 무기를 손에 붙여야한다.
+            //
+        }
+
+        //-----------------------로직분기점--------------------
+        ReloadAnimation();//                                  |
+        //-----------------------로직분기점--------------------
+
+        {
+            //인벤토리랑 탄창 교체(혹은 그와 관련된 작업들);
+        }
+    }
+
+
+
     public void Fire()
     {
-        //Do RayCast
+        StartAimShake();
+        if (_aimShakeCoroutine == null)
+        {
+            _aimShakeCoroutine = StartCoroutine(AimShakeCoroutine());
+        }
+
+
+        StartCoolTime();
+        if (_coolTimeCoroutine == null)
+        {
+            _coolTimeCoroutine = StartCoroutine(CooltimeCoroutine());
+        }
+
+
+        //-----------------------로직분기점--------------------
+        FireAnimation();//                                    |
+        //-----------------------로직분기점--------------------
+
+
+        {
+            //탄창에 탄알 하나 감소
+        }
+
+        //RayCheck();
     }
+
+    public bool FireCheck()
+    {
+        if (_coolTime > 0.0f) 
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    private void ReloadAnimation()
+    {
+        //레이어 무시하고 재장전은 그냥 다써라
+        //한손으로 재장전할수는 없다
+
+        AvatarMask myAvatarMask = ResourceDataManager.Instance.GetAvatarMask("UpperBody");
+        float GunRecoilPower = 1.0f;
+        CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
+        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation, false, GunRecoilPower);
+    }
+
+
 
     private void FireAnimation()
     {
@@ -289,7 +350,7 @@ public class Gunscript2 : WeaponScript
         ---------------------------------------------*/
         float GunRecoilPower = 1.0f;
 
-        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, _shootAnimationClip, false, GunRecoilPower);
+        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._FireAnimation, false, GunRecoilPower);
     }
 
 
@@ -316,6 +377,8 @@ public class Gunscript2 : WeaponScript
 
     public IEnumerator CooltimeCoroutine()
     {
+        StartCoolTime();
+
         while (true)
         {
             _coolTime -= Time.deltaTime;
@@ -323,6 +386,7 @@ public class Gunscript2 : WeaponScript
             if (_coolTime <= float.Epsilon)
             {
                 _coolTime = 0.0f;
+                _coolTimeCoroutine = null;
                 break;
             }
 
@@ -336,7 +400,13 @@ public class Gunscript2 : WeaponScript
 
 
     #region AimShake
-    public IEnumerator AimShakeCoroutine()
+
+    private void StartCoolTime()
+    {
+        _coolTime = _coolTimeOriginal;
+    }
+
+    private void StartAimShake()
     {
         //에임 흔들림 정도 결정하기
         {
@@ -351,6 +421,11 @@ public class Gunscript2 : WeaponScript
         }
 
         _aimShakeDuration = _aimShakeDurationOriginal;
+    }
+
+    public IEnumerator AimShakeCoroutine()
+    {
+        StartAimShake();
 
         while (true)
         {
@@ -359,6 +434,7 @@ public class Gunscript2 : WeaponScript
             if (_aimShakeDuration < float.Epsilon)
             {
                 _aimShakeDuration = 0.0f;
+                _aimShakeCoroutine = null;
                 break;
             }
 

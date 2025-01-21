@@ -336,10 +336,7 @@ public class StateContoller : GameCharacterSubScript
         }
     }
 
-    public override void SubScriptStart()
-    {
-        
-    }
+    public override void SubScriptStart() {}
 
 
     private StateAsset _currState = null;

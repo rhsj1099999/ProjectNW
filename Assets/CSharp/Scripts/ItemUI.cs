@@ -5,11 +5,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
 using Unity.VisualScripting;
-using static ItemAsset;
-using System;
-using UnityEngine.UIElements;
 
-public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler
+public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler
 {
     /*-------------------------------------------------------
     아이템을 인벤토리, 장비창 등 생성될때 이것을 사용해 생성한다.
@@ -17,7 +14,7 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     맵에 뿌려진 Item은 이것은 아닌데 이거랑 연관이 깊을거다
     -------------------------------------------------------*/
     private RectTransform _myRectTransform = null;
-    private ItemStoreDesc _itemStoreDesc;
+    private ItemStoreDescBase _itemStoreDesc;
 
     /*-----------------
     기능 실행마다 바뀔 변수들
@@ -29,9 +26,12 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     private bool _additionalRotating_Dynamic = false;
     private bool _isDragging = false;
+    private bool _isInitted = false;
 
 
-    public void Initialize(ItemStoreDesc storeDesc)
+    public virtual void OverlapItemWork(ItemUI itemUI) {}
+
+    public void Initialize(ItemStoreDescBase storeDesc)
     {
         {
             //이미지 컴포넌트 세팅
@@ -43,14 +43,18 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             //    itemUI.GetComponent<Image>().sprite = info._sprite;
             //}
         }
-
+        _myRectTransform = GetComponent<RectTransform>();
         _itemStoreDesc = storeDesc;
+        _isInitted = true;
     }
 
-
-    void Awake()
+    private void Start()
     {
-        _myRectTransform = GetComponent<RectTransform>();
+        if (_isInitted == false)
+        {
+            Debug.Assert(false, "Init이 호출되지 않았습니다");
+            Debug.Break();
+        }
     }
 
     void Update()
@@ -221,14 +225,17 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         }
 
 
-        //최상단이 ItemBase이다.
-        ItemBase itemBaseComponent = topObject.GetComponent<ItemBase>();
+        //최상단이 ItemUI이다.
+        ItemUI itemBaseComponent = topObject.GetComponent<ItemUI>();
         if (itemBaseComponent != null)
         {
-            /*------------------------------------------------
-            |NOTI| 만약 무기에 보석박기, 삽탄 컨텐츠를 구현하게 된다면
-            아이템을 아이템에 포개서 시작됨으로 여기에 작업하세요
-            ------------------------------------------------*/
+            bool isDelete = false;
+            itemBaseComponent._itemStoreDesc.OverlapItem(_itemStoreDesc, ref isDelete);
+            if (isDelete == true) 
+            {
+                _itemStoreDesc._owner.DeleteOnMe(_itemStoreDesc);
+                StartCoroutine(DestroyCoroutine());
+            }
             return;
         }
 
@@ -246,7 +253,7 @@ public class ItemBase : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             }
 
             /*--------------------------------------------------------------------------------------------------------
-            |NOTI| 새로운 ItemStoreDesc 초기화 오버헤드가 있지만 무조건 삭제하고 넣는 구조를 택합니다.
+            |NOTI| 새로운 ItemStoreDescBase 초기화 오버헤드가 있지만 무조건 삭제하고 넣는 구조를 택합니다.
             이전 owner 가 Equip일수도있고, Inventory 일수도 있어 통일성을 위해서입니다.
             --------------------------------------------------------------------------------------------------------*/
 

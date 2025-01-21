@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cafea9b1316198e4a9c0494fb865d792, type: 3}
   m_Name: ItemAsset_Weapon_SimpleShield
   m_EditorClassIdentifier: 
+  _itemType: 0
   _equipType: 32
   _ItemKey: 12
   _itemName: SimpleShield
@@ -22,6 +23,7 @@ MonoBehaviour:
     type: 3}
   _fieldExistAble: 1
   _itemImage: {fileID: 0}
+  _usingBulletType: 0
   _weaponType: 1
   _weaponDamageDesc:
     _damage: 1

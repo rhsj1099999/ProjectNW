@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static ItemUI;
 
 public class InventoryCell : BoardUICellBase
 {
@@ -18,7 +19,7 @@ public class InventoryCell : BoardUICellBase
 
 
 
-    public override bool TryMoveItemDropOnCell(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation)
+    public override bool TryMoveItemDropOnCell(ItemStoreDescBase storedDesc, ref int startX, ref int startY, bool grabRotation)
     {
         Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
 
@@ -49,13 +50,13 @@ public class InventoryCell : BoardUICellBase
 
 
 
-    public void TryMoveItemDropOnItem(ItemStoreDesc storedDesc, ItemBase caller)
+    public void TryMoveItemDropOnItem(ItemStoreDescBase storedDesc, ItemUI caller)
     {
         //Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
 
         //GameObject itemUI = _owner.getItem(storedDesc._storedIndex);
 
-        //ItemBase itemBaseComponent = itemUI.GetComponent<ItemBase>();
+        //ItemUI itemBaseComponent = itemUI.GetComponent<ItemUI>();
 
         //if (itemBaseComponent == caller) 
         //{

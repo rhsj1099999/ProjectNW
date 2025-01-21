@@ -46,6 +46,9 @@ public enum AdditionalBehaveType
     UseItem_Drink,
     UseItem_Break,
     UseItem_Throw,
+    
+    Weapon_Reloading,
+    Weapon_Fire,
 }
 
 public enum WeaponGrabFocus
@@ -946,6 +949,112 @@ public class CharacterScript : GameActorScript, IHitable
                     Debug.Break();
                     //Work를 담는다 이전에 Lock 계산을 끝낼것.
                     //CalculateBodyWorkType_UseItem_Break();
+                }
+                break;
+
+            case AdditionalBehaveType.Weapon_Reloading:
+                {
+                    Debug.Log("재장전 검사 시작");
+
+                    GameObject currWeapon = (_tempUsingRightHandWeapon == true)
+                        ? _tempCurrRightWeapon
+                        : _tempCurrLeftWeapon;
+
+                    KeyCode fireKeyCode = KeyCode.R;
+
+                    if (Input.GetKey(fireKeyCode) == false)
+                    {
+                        Debug.Log("키가 안눌렸다");
+                        return;
+                    }
+
+                    if (currWeapon == null)
+                    {
+                        Debug.Log("무기가 없다?");
+                        return;
+                    }
+
+                    Gunscript2 gunScript = currWeapon.GetComponent<Gunscript2>();
+
+                    if (gunScript == null)
+                    {
+                        Debug.Log("gun Script 가 아닌 무기에 이 스테이트가 쓰였다?");
+                        return;
+                    }
+
+                    //bool reloadCheck = gunScript.FireCheck();
+
+                    //if (reloadCheck == false)
+                    //{
+                    //    Debug.Log("다른 탄창이 없다");
+                    //    return;
+                    //}
+
+                    {
+                    }
+                    Debug.Log("발사한다");
+
+                    gunScript.Fire();
+                    //발사
+                }
+                break;
+
+            case AdditionalBehaveType.Weapon_Fire:
+                {
+                    Debug.Log("발사검사 시작");
+                    //현재 사용중인 무기에게 발사했냐를 확인하는 함수
+                    GameObject currWeapon = (_tempUsingRightHandWeapon == true)
+                        ? _tempCurrRightWeapon
+                        : _tempCurrLeftWeapon;
+
+                    KeyCode fireKeyCode = (_tempUsingRightHandWeapon == true)
+                        ? KeyCode.Mouse0
+                        : KeyCode.Mouse1;
+
+                    if (Input.GetKey(fireKeyCode) == false)
+                    {
+                        Debug.Log("키가 안눌렸다");
+                        return;
+                    }
+
+                    if (currWeapon == null)
+                    {
+                        Debug.Log("무기가 없다?");
+                        return;
+                    }
+
+                    Gunscript2 gunScript = currWeapon.GetComponent<Gunscript2>();
+
+                    if (gunScript == null)
+                    {
+                        Debug.Log("gun Script 가 아닌 무기에 이 스테이트가 쓰였다?");
+                        return;
+                    }
+
+                    bool weaponCanFire = gunScript.FireCheck();
+
+                    if (weaponCanFire == false)
+                    {
+                        Debug.Log("발사 준비가 안됐다");
+                        return;
+                    }
+
+
+                    {
+                        //탄창이 없다
+                        //return;
+                    }
+
+
+                    {
+                        //탄창에 탄이없다
+                        //play 딸깍 소리
+                        //return;
+                    }
+                    Debug.Log("발사한다");
+
+                    gunScript.Fire();
+                    //발사
                 }
                 break;
 

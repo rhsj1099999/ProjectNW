@@ -12,7 +12,9 @@ public class ItemAsset : ScriptableObject
         Equip,
     }
     [SerializeField] private ItemType _itemType;
-    public ItemType itemType => _itemType;
+    public ItemType _ItemType => _itemType;
+
+    
 
 
 

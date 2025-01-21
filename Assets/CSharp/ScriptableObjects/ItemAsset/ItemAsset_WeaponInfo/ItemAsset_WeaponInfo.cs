@@ -12,9 +12,9 @@ public class ItemAsset_Weapon : ItemAsset
     {
         NotWeapon = 0,
 
-        SmallSword, //단검같은거
-        MediumSword, //한손검류
-        LargeSword, //대검같은거
+        SmallSword,
+        MediumSword,
+        LargeSword,
 
         SmallGun,
         MediumGun,
@@ -24,6 +24,8 @@ public class ItemAsset_Weapon : ItemAsset
     /*------------------------------------------
     Item Spec Section.
     ------------------------------------------*/
+    [SerializeField] private ItemAsset_Bullet.BulletType _usingBulletType = ItemAsset_Bullet.BulletType.None;
+    public ItemAsset_Bullet.BulletType _UsingBulletType => _usingBulletType;
 
     [SerializeField] private WeaponType _weaponType;
     public WeaponType _WeaponType => _weaponType;
@@ -36,9 +38,4 @@ public class ItemAsset_Weapon : ItemAsset
     ------------------------------------------*/
     [SerializeField] private StateGraphAsset _weaponStateGraph = null;
     public StateGraphAsset _WeaponStateGraph => _weaponStateGraph;
-
-
-
-
-   
 }

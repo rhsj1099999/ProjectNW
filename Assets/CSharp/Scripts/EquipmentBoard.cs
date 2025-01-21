@@ -9,6 +9,7 @@ using UnityEngine.InputSystem;
 using static ItemAsset;
 using static MyUtil;
 using static UnityEditor.Progress;
+using static ItemUI;
 
 public class EquipmentBoard : BoardUIBaseScript
 {
@@ -18,19 +19,13 @@ public class EquipmentBoard : BoardUIBaseScript
     /*-------------
     계속 바뀔 변수들
     -------------*/
-    //private List<EquipmentCell> _leftWeaponEquipCells = new List<EquipmentCell>();
-    //private List<EquipmentCell> _rightWeaponEquipCells = new List<EquipmentCell>();
-    //private List<EquipmentCell> _itemEquipCells = new List<EquipmentCell>();
-
     private Dictionary<EquipType, BoardUICellBase> _equipCellLinked_Armor = new Dictionary<EquipType, BoardUICellBase>();
 
-
     private HashSet<BoardUICellBase> _currActivatedCell = new HashSet<BoardUICellBase>();
-    private Dictionary<ItemStoreDesc, HashSet<BoardUICellBase>> _currActivatedCell_ByItem = new Dictionary<ItemStoreDesc, HashSet<BoardUICellBase>>();
+    private Dictionary<ItemStoreDescBase, HashSet<BoardUICellBase>> _currActivatedCell_ByItem = new Dictionary<ItemStoreDescBase, HashSet<BoardUICellBase>>();
 
-
-    private Dictionary<ItemStoreDesc, List<GameObject>> _currEquippedItemUIObject = new Dictionary<ItemStoreDesc, List<GameObject>>();
-    private Dictionary<ItemStoreDesc, List<GameObject>> _currEqippedItemMeshObject = new Dictionary<ItemStoreDesc, List<GameObject>>();
+    private Dictionary<ItemStoreDescBase, List<GameObject>> _currEquippedItemUIObject = new Dictionary<ItemStoreDescBase, List<GameObject>>();
+    private Dictionary<ItemStoreDescBase, List<GameObject>> _currEqippedItemMeshObject = new Dictionary<ItemStoreDescBase, List<GameObject>>();
 
     public override void Init(UIComponent owner)
     {
@@ -50,7 +45,6 @@ public class EquipmentBoard : BoardUIBaseScript
         foreach (EquipmentCell component in components)
         {
             component.Initialize(desc);
-            //_equipCells.Add(component);
 
             EquipType cellType = component.GetCellType();
             if (cellType >= EquipType.HumanHead && cellType <= EquipType.HumanBody)
@@ -60,7 +54,7 @@ public class EquipmentBoard : BoardUIBaseScript
         }
     }
 
-    public override void DeleteOnMe(ItemStoreDesc storeDesc)
+    public override void DeleteOnMe(ItemStoreDescBase storeDesc)
     {
         {
             if (storeDesc._itemAsset._EquipType == EquipType.Weapon)
@@ -82,7 +76,7 @@ public class EquipmentBoard : BoardUIBaseScript
     }
 
 
-    public override void AddItemUsingForcedIndex(ItemStoreDesc storedDesc, int targetX, int targetY, BoardUICellBase caller) 
+    public override void AddItemUsingForcedIndex(ItemStoreDescBase storedDesc, int targetX, int targetY, BoardUICellBase caller) 
     {
         //장착 성공하면 여기 불린다
         storedDesc._isRotated = false;
@@ -110,7 +104,7 @@ public class EquipmentBoard : BoardUIBaseScript
 
 
 
-    private void EquipUI(ItemStoreDesc storedDesc, BoardUICellBase caller)
+    private void EquipUI(ItemStoreDescBase storedDesc, BoardUICellBase caller)
     {
         HashSet<BoardUICellBase> cells = CalculateTargetEquipcells_Equip(storedDesc, caller);
 
@@ -119,7 +113,7 @@ public class EquipmentBoard : BoardUIBaseScript
             //UI를 해당 Cell의 자식으로 생성합니다.
             RectTransform equipCellTransform = cell.GetComponent<RectTransform>();
             GameObject equipmentUIObject = Instantiate(_equipmentUIObjectPrefab, equipCellTransform);
-            ItemBase itemBaseComponent = equipmentUIObject.GetComponent<ItemBase>();
+            ItemUI itemBaseComponent = equipmentUIObject.GetComponent<ItemUI>();
             itemBaseComponent.Initialize(storedDesc);
 
             //크기, 위치를 낑겨넣습니다.
@@ -137,7 +131,7 @@ public class EquipmentBoard : BoardUIBaseScript
         }
     }
 
-    public override bool CheckItemDragDrop(ItemStoreDesc storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
+    public override bool CheckItemDragDrop(ItemStoreDescBase storedDesc, ref int startX, ref int startY, bool grabRotation, BoardUICellBase caller)
     {
         startX = 0;
         startY = 0;
@@ -165,7 +159,7 @@ public class EquipmentBoard : BoardUIBaseScript
         return true;
     }
 
-    public void EquipItem_Weapon(ItemStoreDesc storeDesc, BoardUICellBase caller)
+    public void EquipItem_Weapon(ItemStoreDescBase storeDesc, BoardUICellBase caller)
     {
         bool isRight = caller.gameObject.name.Contains("Right");
 
@@ -176,7 +170,7 @@ public class EquipmentBoard : BoardUIBaseScript
         myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, storeDesc._itemAsset as ItemAsset_Weapon);
     }
 
-    public void UnEquipItem_Weapon(ItemStoreDesc storeDesc)
+    public void UnEquipItem_Weapon(ItemStoreDescBase storeDesc)
     {
         //기존에 이 무기를 장착하고 있던 셀
         HashSet<BoardUICellBase> targetCells = null; 
@@ -204,7 +198,7 @@ public class EquipmentBoard : BoardUIBaseScript
         myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, null);
     }
 
-    private void UnEquipUI(ItemStoreDesc storeDesc)
+    private void UnEquipUI(ItemStoreDescBase storeDesc)
     {
         HashSet<BoardUICellBase> targets = CalculateTargetEquipcells_UnEquip(storeDesc);
         foreach (BoardUICellBase target in targets) 
@@ -219,7 +213,7 @@ public class EquipmentBoard : BoardUIBaseScript
             List<GameObject> createdItemUISameStoreDesc = _currEquippedItemUIObject.GetOrAdd(storeDesc);
             foreach (GameObject gObj in createdItemUISameStoreDesc)
             {
-                ItemBase component = gObj.GetComponent<ItemBase>();
+                ItemUI component = gObj.GetComponent<ItemUI>();
                 if (component != null)
                 {
                     StartCoroutine(component.DestroyCoroutine());
@@ -230,7 +224,7 @@ public class EquipmentBoard : BoardUIBaseScript
 
     }
 
-    private void UnEquipMesh(ItemStoreDesc storeDesc)
+    private void UnEquipMesh(ItemStoreDescBase storeDesc)
     {
         if (IsSameSkelaton(storeDesc._itemAsset) == true)
         {
@@ -251,7 +245,7 @@ public class EquipmentBoard : BoardUIBaseScript
     }
 
 
-    private void EquipItemMesh(ItemStoreDesc storeDesc)
+    private void EquipItemMesh(ItemStoreDescBase storeDesc)
     {
         /*--------------------------------------------------------------
         |NOTI| 뼈구조가 밀리터리맨과 다르면 무조건 전신갑옷(스킨) 취급입니다.
@@ -317,7 +311,7 @@ public class EquipmentBoard : BoardUIBaseScript
         return ownerCharacterAnimatorScript.IsSameSkeleton(equipmentSubInfo._EquipmentAvatar);
     }
 
-    private HashSet<BoardUICellBase> CalculateTargetEquipcells_Equip(ItemStoreDesc storeDesc, BoardUICellBase caller)
+    private HashSet<BoardUICellBase> CalculateTargetEquipcells_Equip(ItemStoreDescBase storeDesc, BoardUICellBase caller)
     {
         HashSet<BoardUICellBase> retCells = new HashSet<BoardUICellBase>();
 
@@ -342,7 +336,7 @@ public class EquipmentBoard : BoardUIBaseScript
         return retCells;
     }
 
-    private HashSet<BoardUICellBase> CalculateTargetEquipcells_UnEquip(ItemStoreDesc storeDesc)
+    private HashSet<BoardUICellBase> CalculateTargetEquipcells_UnEquip(ItemStoreDescBase storeDesc)
     {
         //이 아이템 정보로 장착된 정보가 있습니까?
         return _currActivatedCell_ByItem.GetOrAdd(storeDesc);

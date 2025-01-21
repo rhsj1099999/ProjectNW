@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cafea9b1316198e4a9c0494fb865d792, type: 3}
   m_Name: ItemAsset_Weapon_D_Eagle
   m_EditorClassIdentifier: 
+  _itemType: 0
   _equipType: 32
-  _ItemKey: 0
+  _ItemKey: 7
   _itemName: D_Eagle
   _sizeX: 2
   _sizeY: 1
@@ -22,6 +23,7 @@ MonoBehaviour:
     type: 3}
   _fieldExistAble: 1
   _itemImage: {fileID: 0}
+  _usingBulletType: 0
   _weaponType: 4
   _weaponDamageDesc:
     _damage: 1
