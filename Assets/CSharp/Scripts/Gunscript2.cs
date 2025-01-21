@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEngine.Rendering.PostProcessing.HistogramMonitor;
 
 public class Gunscript2 : WeaponScript
 {
@@ -19,6 +20,7 @@ public class Gunscript2 : WeaponScript
 
     private Coroutine _coolTimeCoroutine = null;
     private Coroutine _aimShakeCoroutine = null;
+    private Coroutine _reloadingCoroutine = null;
 
 
     //[SerializeField] private AnimationClip _shootAnimationClip = null;
@@ -34,6 +36,7 @@ public class Gunscript2 : WeaponScript
     //[SerializeField] private float _dampingTime = 0.01f;
 
     [SerializeField] private float _coolTimeOriginal = 0.1f;
+    [SerializeField] private float _reloadingTimeOriginal = 0.1f;
     [SerializeField] private float _aimShakeDurationOriginal = 0.1f;
     [SerializeField] private Vector2 _absAimShakeForceMin = new Vector2(0.1f, 0.1f);
     [SerializeField] private Vector2 _absAimShakeForceMax = new Vector2(0.3f, 0.3f);
@@ -51,7 +54,11 @@ public class Gunscript2 : WeaponScript
     ------------------------------------------*/
     //private bool _isAimShaking = false;
     private bool _isAimed = false;
+    private bool _isIK = false;
+
+
     private float _coolTime = 0.0f;
+    private float _reloadingTime = 0.0f;
     private float _aimShakeDuration = 0.0f;
     private Vector2 _aimShakeDampRef = new Vector2();
     private Vector2 _calculatedAimShakeForce = new Vector2();
@@ -93,51 +100,68 @@ public class Gunscript2 : WeaponScript
         FollowSocketTransform();
     }
 
-    public override void FollowSocketTransform()
+    private bool GetAimStateChanged()
     {
+        bool ret = false;
+
         bool targetSied = (_isRightHandWeapon == true)
             ? _owner._isRightWeaponAimed
             : _owner._isLeftWeaponAimed;
 
-        bool changed = false;
+        ret = (_isAimed != targetSied);
+        _isAimed = targetSied;
 
-        if (_isAimed != targetSied)
-        {
-            changed = true;
-            _isAimed = targetSied;
-        }
-        
+        return ret;
+    }
 
-        if (changed == true) 
+    private bool GetIKStateChanged()
+    {
+        bool ret = false;
+
+        bool isReloading = (_reloadingCoroutine != null);
+        bool isAiming = (_isRightHandWeapon == true)
+            ? _owner._isRightWeaponAimed
+            : _owner._isLeftWeaponAimed;
+
+        bool isIK = (isReloading == false && isAiming == true);
+
+        ret = (_isIK != isIK);
+        _isIK = isIK;
+
+        return ret;
+    }
+
+    public override void FollowSocketTransform()
+    {
+        if (GetAimStateChanged() == true)
         {
-            //aim이 바뀐 최초의 시점이면 무슨일을 해야합니까?
-            _aimScript.TurnOnRigging(targetSied);
+            //바뀌었다.
             _aimScript.ResetAimRotation();
-            CalculateAimIK(_isAimed); //1. IK를 해야합니다.
-            
             if (_isAimed == true)
             {
                 _aimScript.OnAimState(AimState.eTPSAim);
             }
-            else 
+            else
             {
                 _aimScript.OffAimState();
             }
-
+            _aimScript.TurnOnRigging(_isAimed);
         }
 
-        if (targetSied == false)
+
+        if (GetIKStateChanged() == true)
         {
-            base.FollowSocketTransform(); //손에 붙음
-            return; //일반 = 손에 붙인다.
+            //바뀌었다.
+            CalculateAimIK(_isIK); //1. IK를 해야합니다.
         }
-        else
+
+        if (_isAimed == true && _reloadingCoroutine == null)
         {
             Vector3 gunPosition = _stockPosition.transform.position;
             Vector3 stockPosition = _shoulderStock_Unity.transform.position;
             Vector3 deltaPosition = stockPosition - gunPosition;
 
-            
+
             Vector3 targetPosition = transform.position + deltaPosition;
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _followPositionRef, _dampingSpeed * Time.smoothDeltaTime);
 
@@ -145,6 +169,26 @@ public class Gunscript2 : WeaponScript
             //총구를 Aim지점을 바라보게 할겁니다. 근데 Animation에 따라서 미세한 조정을 할겁니다.
             DelicateRotationControl();
         }
+        else
+        {
+            base.FollowSocketTransform(); //손에 붙음
+        }
+    }
+
+    public bool ReloadCheck()
+    {
+        /*이미 재장전중이다*/
+        if (_reloadingCoroutine != null)
+        {
+            return false;
+        }
+
+        if (false/*탄창이 없어요*/)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private void DelicateRotationControl()
@@ -157,6 +201,29 @@ public class Gunscript2 : WeaponScript
         }
 
         transform.rotation = MyUtil.LootAtPercentageRotation(transform, _aimScript.GetAimSatellite().transform.position, stateChangingWeight);
+    }
+
+    private void StartReloading(AnimationClip reloadingAnimation)
+    {
+        _reloadingTimeOriginal = reloadingAnimation.length;
+        _reloadingTime = _reloadingTimeOriginal;
+    }
+
+    private IEnumerator ReloadCoroutine()
+    {
+        while (true) 
+        {
+            _reloadingTime -= Time.deltaTime;
+
+            if (_reloadingTime <= 0.0f)
+            {
+                _reloadingTime = 0.0f;
+                _reloadingCoroutine = null;
+                break;
+            }
+
+            yield return null;
+        }
     }
 
     private void CalculateAimIK(bool isAimed)
@@ -244,10 +311,16 @@ public class Gunscript2 : WeaponScript
     public void Reload()
     {
         {
-            //애니메이션 교체작업
-            //IK를 비활성화하고 무기를 손에 붙여야한다.
-            //
+            AnimationClip reloadingAnimation = ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation;
+            StartReloading(reloadingAnimation);
+            if (_reloadingCoroutine == null)
+            {
+                _reloadingCoroutine = StartCoroutine(ReloadCoroutine());
+            }
         }
+
+
+
 
         //-----------------------로직분기점--------------------
         ReloadAnimation();//                                  |
@@ -292,6 +365,12 @@ public class Gunscript2 : WeaponScript
     {
         if (_coolTime > 0.0f) 
         {
+            return false;
+        }
+
+        if (_reloadingCoroutine != null)
+        {
+            //재장전중이다.
             return false;
         }
 
@@ -377,8 +456,6 @@ public class Gunscript2 : WeaponScript
 
     public IEnumerator CooltimeCoroutine()
     {
-        StartCoolTime();
-
         while (true)
         {
             _coolTime -= Time.deltaTime;
@@ -425,8 +502,6 @@ public class Gunscript2 : WeaponScript
 
     public IEnumerator AimShakeCoroutine()
     {
-        StartAimShake();
-
         while (true)
         {
             _aimShakeDuration -= Time.deltaTime;

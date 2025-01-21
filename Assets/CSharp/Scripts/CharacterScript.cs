@@ -982,19 +982,17 @@ public class CharacterScript : GameActorScript, IHitable
                         return;
                     }
 
-                    //bool reloadCheck = gunScript.FireCheck();
+                    bool reloadCheck = gunScript.ReloadCheck();
 
-                    //if (reloadCheck == false)
-                    //{
-                    //    Debug.Log("다른 탄창이 없다");
-                    //    return;
-                    //}
-
+                    if (reloadCheck == false)
                     {
+                        Debug.Log("총을 재장전 할 수 없다.");
+                        return;
                     }
-                    Debug.Log("발사한다");
 
-                    gunScript.Fire();
+                    Debug.Log("재장전시작");
+
+                    gunScript.Reload();
                     //발사
                 }
                 break;
