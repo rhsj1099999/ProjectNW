@@ -219,7 +219,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 _clipPlayableDetachCoroutine = null;
                 AnimationClipPlayable? oldPlayable = (AnimationClipPlayable)_layerMixer.GetInput(1);
 
-                if (oldPlayable == null) 
+                if (oldPlayable == null)
                 {
                     Debug.Assert(false, "ClipPlayable을 잃어버렸습니다");
                     Debug.Break();
@@ -319,7 +319,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             {
                 Debug.Assert(false);
             }
-            
+
         }
 
         if (_clipPlayableDetachCoroutine != null)
@@ -515,10 +515,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 }
             }
         }
-
-
-
-
     }
 
     private IEnumerator WaitNextFrameCoroutine(GameObject newModel, SkinnedMeshRenderer[] meshRenderers)
@@ -667,7 +663,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                         }
                         else
                         {
-                            
+
                             if (ResourceDataManager.Instance.GetHandlingAnimationInfo(oppositeWeaponInfo._WeaponType)._HandlingIdleAnimation_OneHand == null)
                             {
                                 //_overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
@@ -682,7 +678,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                     {
                         ItemAsset_Weapon leftHandWeaponScript = _owner.GetCurrentWeaponInfo(AnimatorLayerTypes.LeftHand);
                         ItemAsset_Weapon rightHandWeaponScript = _owner.GetCurrentWeaponInfo(AnimatorLayerTypes.RightHand);
-                        
+
                         //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
                         float leftHandLayerWeight = (leftHandWeaponScript == null || ResourceDataManager.Instance.GetHandlingAnimationInfo(leftHandWeaponScript._WeaponType)._HandlingIdleAnimation_OneHand == null) //
                             ? 0.0f
@@ -739,7 +735,48 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
+    public void CalculateBodyWorkType_WeaponReload(bool isRightWeaponTrigger)
+    {
+        HashSet<int> lockCompares = new HashSet<int>();
 
+        AnimatorLayerTypes oppositePartType = (isRightWeaponTrigger == true)
+            ? AnimatorLayerTypes.LeftHand
+            : AnimatorLayerTypes.RightHand;
+        int oppositePartIndex = (int)oppositePartType;
+
+        AnimatorLayerTypes targetPartType = (isRightWeaponTrigger == true)
+            ? AnimatorLayerTypes.RightHand
+            : AnimatorLayerTypes.LeftHand;
+        int targetPartIndex = (int)targetPartType;
+
+        GameObject currOppositeWeapon = _owner.GetCurrentWeapon(oppositePartType);
+
+        if (currOppositeWeapon != null) //반대손에 무언가를 들고있다.
+        {
+            ItemAsset_Weapon currentOppositeWeaponInfo = _owner.GetCurrentWeaponInfo(oppositePartType);
+
+            //무기 집어넣기 애니메이션으로 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+            {
+                _bodyPartWorks[(int)oppositePartType].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(currentOppositeWeaponInfo._WeaponType).GetPutawayAnimation(oppositePartType);
+            }
+            //LayerWeight 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            //다 재생할때까지 대기하기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+            //무기삭제하기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyWeapon));
+            //레이어 웨이트 내리기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+
+            lockCompares.Add(oppositePartIndex);
+        }
+
+        foreach (int index in lockCompares)
+        {
+            StartProceduralWork((AnimatorLayerTypes)index, _bodyPartWorks[index].First.Value);
+        }
+    }
 
     public void CalculateBodyWorkType_ChangeWeapon(WeaponGrabFocus ownerWeaponGrabFocusType, bool isRightWeaponTrigger, int layerLockResult, bool forcedGo = false)
     {
@@ -1093,7 +1130,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         Transform rightHandWeaponOriginalTransform = null;
 
         GameObject currRightHandWeapon = _owner.GetCurrentWeapon(AnimatorLayerTypes.RightHand);
-        
+
         //무기를 오른손에 양손으로 잡고있습니까?
         if (ownerWeaponGrabFocusType == WeaponGrabFocus.RightHandFocused &&
             currRightHandWeapon != null)
@@ -1278,7 +1315,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             StartProceduralWork((AnimatorLayerTypes)index, _bodyPartWorks[index].First.Value);
         }
     }
-    
+
     public List<bool> GetCurrentBusyAnimatorLayer()
     {
         return _currentBusyAnimatorLayer;
@@ -1463,7 +1500,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             targetBlendingDesc._blendTarget = Mathf.Clamp(targetBlendingDesc._blendTarget, 0.0f, 1.0f);
             targetBlendingDesc._blendTarget_Sub = Mathf.Clamp(targetBlendingDesc._blendTarget_Sub, 0.0f, 1.0f);
 
-            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex,targetBlendingDesc. _blendTarget);
+            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, targetBlendingDesc._blendTarget);
             targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, targetBlendingDesc._blendTarget_Sub);
 
             float target = (targetBlendingDesc._isUsingFirstLayer == true)
@@ -1485,7 +1522,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         int targetHandMainLayerIndex = (int)targetBlendingDesc._myPart * 2;
         int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
-        
+
         while (true)
         {
             float mainLayerBlendDelta = 0.0f;
@@ -1538,7 +1575,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     protected void StartNextCoroutine(AnimatorLayerTypes layerType)
     {
         LinkedList<BodyPartBlendingWork> target = _bodyPartWorks[(int)layerType];
-
+        Debug.Log("CoroutineDone" + layerType + "//" + target.First.Value._workType);
         target.RemoveFirst();
 
         if (target.Count <= 0)
@@ -1546,7 +1583,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             UpdateBusyAnimatorLayers(1 << (int)layerType, false);
             return;
         }
-
+        Debug.Log("Coroutine Start" + layerType + "//" + target.First.Value._workType);
         StartProceduralWork(layerType, target.First.Value);
     }
 
@@ -1788,415 +1825,4 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         return fullBodySubLayerWeight;
     }
-
-    #region BlendTree...언젠간 해볼것
-    //private PlayableGraph _playableGraph;
-    //private AnimationLayerMixerPlayable _layerMixer;
-    //private Vector2 _blendTreeWeight = Vector2.zero;
-    //private AnimationPlayableOutput _playableOutput;
-    //private AnimatorControllerPlayable _controllerPlayable;
-
-    //private AnimationMixerPlayable _mixerPlayable_Main;
-    //private SubBlendTreeAsset_2D _currBlendTreeAsset_Main = null;
-
-    //private AnimationMixerPlayable _mixerPlayable_Sub;
-    //private SubBlendTreeAsset_2D _currBlendTreeAsset_Sub = null;
-
-
-    //private void Update()
-    //{
-
-    //}
-
-
-    //private void OnDestroy()
-    //{
-    //    //if (_playableGraph.IsValid() == true)
-    //    //{
-    //    //    _playableGraph.Stop();
-    //    //    _playableGraph.Destroy();
-    //    //}
-    //}
-
-
-    ////private void InitFullbodyBlendTree()
-    ////{
-    ////    _playableGraph = PlayableGraph.Create("BlendTreeGraph");
-    ////    _playableOutput = AnimationPlayableOutput.Create(_playableGraph, "Output", _animator);
-    ////    _layerMixer = AnimationLayerMixerPlayable.Create(_playableGraph, 3/*2개의 레이어를 사용합니다. 상수 뺄것*/);
-    ////    _controllerPlayable = AnimatorControllerPlayable.Create(_playableGraph, _animator.runtimeAnimatorController);
-
-    ////    _mixerPlayable_Main = AnimationMixerPlayable.Create(_playableGraph, 4/*4개의 애니메이션 사용합니다. 상수 뺄것*/);
-    ////    _mixerPlayable_Sub = AnimationMixerPlayable.Create(_playableGraph, 4/*4개의 애니메이션 사용합니다. 상수 뺄것*/);
-
-    ////    _playableGraph.Connect(_controllerPlayable, 0, _layerMixer, 0); // Layer 0
-    ////    _playableGraph.Connect(_mixerPlayable_Main, 0, _layerMixer, 1); // Layer 0
-    ////    _playableGraph.Connect(_mixerPlayable_Sub, 0, _layerMixer, 2); // Layer 1
-
-    ////    //_layerMixer.SetInputWeight((int)AnimatorLayerTypes.FullBody * 2, 0.0f);
-    ////    //_layerMixer.SetInputWeight((int)AnimatorLayerTypes.FullBody * 2 + 1, 0.0f);
-    ////    _layerMixer.SetInputWeight(0, 1.0f);
-    ////    _layerMixer.SetInputWeight(1, 0.0f);
-    ////    _layerMixer.SetInputWeight(2, 0.0f);
-
-
-    ////    _playableOutput.SetSourcePlayable(_layerMixer);
-    ////    _playableGraph.Stop();
-    ////}
-
-
-    ////private float CalculateBodyLayerWeight(AnimatorLayerTypes type)
-    ////{
-    ////    if (_partBlendingDesc[(int)type]._isUsingFirstLayer == true)
-    ////    {
-    ////        return _partBlendingDesc[(int)type]._blendTarget;
-    ////    }
-    ////    return _partBlendingDesc[(int)type]._blendTarget_Sub;
-    ////}
-
-    ////private int CalculateBodyLayerInder(AnimatorLayerTypes type)
-    ////{
-    ////    int currBodyTargetget = (_partBlendingDesc[(int)type]._isUsingFirstLayer == true)
-    ////        ? (int)type
-    ////        : (int)type + 1;
-
-    ////    return currBodyTargetget;
-    ////}
-
-
-    ////private AnimationMixerPlayable? CalculateBodyLayerMixer(AnimatorLayerTypes type)
-    ////{
-    ////    AnimationMixerPlayable? currMixer = (_partBlendingDesc[(int)type]._isUsingFirstLayer == true)
-    ////        ? _mixerPlayable_Main
-    ////        : _mixerPlayable_Sub;
-
-    ////    return currMixer;
-    ////}
-
-
-    ////private SubBlendTreeAsset_2D CalculateCurrBlendTree(AnimatorLayerTypes type)
-    ////{
-    ////    if (_partBlendingDesc[(int)type]._isUsingFirstLayer == true)
-    ////    {
-    ////        return _currBlendTreeAsset_Main;
-    ////    }
-
-    ////    return _currBlendTreeAsset_Sub;
-    ////}
-
-
-    ////public void ReadyBlendTree(SubBlendTreeAsset_2D blendTreeAsset)
-    ////{
-    ////    int currFullbodyTarget = CalculateBodyLayerInder(AnimatorLayerTypes.FullBody);
-    ////    AnimationMixerPlayable? currMixer = CalculateBodyLayerMixer(AnimatorLayerTypes.FullBody);
-
-    ////    if (currFullbodyTarget == 0)
-    ////    {
-    ////        _currBlendTreeAsset_Main = blendTreeAsset;
-    ////    }
-    ////    else
-    ////    {
-    ////        _currBlendTreeAsset_Sub = blendTreeAsset;
-    ////    }
-
-    ////    var playable_YUP = AnimationClipPlayable.Create(_playableGraph, blendTreeAsset._animation_YUP);
-    ////    var playable_XUP = AnimationClipPlayable.Create(_playableGraph, blendTreeAsset._animation_XUP);
-    ////    var playable_YDOWN = AnimationClipPlayable.Create(_playableGraph, blendTreeAsset._animation_YDOWN);
-    ////    var playable_XDOWN = AnimationClipPlayable.Create(_playableGraph, blendTreeAsset._animation_XDOWN);
-
-    ////    _playableGraph.Connect(playable_YUP, 0, currMixer.Value, 0);
-    ////    _playableGraph.Connect(playable_XUP, 0, currMixer.Value, 1);
-    ////    _playableGraph.Connect(playable_YDOWN, 0, currMixer.Value, 2);
-    ////    _playableGraph.Connect(playable_XDOWN, 0, currMixer.Value, 3);
-
-    ////    _playableGraph.Play();
-    ////}
-
-
-    ////public void ClearBlendTree()
-    ////{
-    ////    int currFullbodyTarget = CalculateBodyLayerInder(AnimatorLayerTypes.FullBody);
-    ////    AnimationMixerPlayable? currMixer = CalculateBodyLayerMixer(AnimatorLayerTypes.FullBody);
-
-    ////    if (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody]._isUsingFirstLayer == true)
-    ////    {
-    ////        _currBlendTreeAsset_Main = null;
-    ////    }
-    ////    else
-    ////    {
-    ////        _currBlendTreeAsset_Sub = null;
-    ////    }
-
-    ////    if (currMixer.Value.IsValid() == false)
-    ////    {
-    ////        return;
-    ////    }
-
-    ////    for (int i = 0; i < 4; i++)
-    ////    {
-    ////        var oldPlayable = (AnimationClipPlayable)currMixer.Value.GetInput(i);
-    ////        if (oldPlayable.IsValid() == false)
-    ////        {
-    ////            continue;
-    ////        }
-    ////        _playableGraph.Disconnect(currMixer.Value, i);
-    ////        oldPlayable.Destroy();
-    ////    }
-    ////}
-
-
-    //private void LateUpdate()
-    //{
-    //    //int currFullbodyTarget = CalculateBodyLayerInder(AnimatorLayerTypes.FullBody);
-    //    //AnimationMixerPlayable? currMixer = CalculateBodyLayerMixer(AnimatorLayerTypes.FullBody);
-    //    //SubBlendTreeAsset_2D currAsset = CalculateCurrBlendTree(AnimatorLayerTypes.FullBody);
-
-    //    //if (currAsset != null)
-    //    //{
-    //    //    float total = Mathf.Abs(_blendTreeWeight.x) + Mathf.Abs(_blendTreeWeight.y);
-    //    //    float xRatio = Mathf.Abs(_blendTreeWeight.x) / total;
-    //    //    float yRatio = Mathf.Abs(_blendTreeWeight.y) / total;
-
-    //    //    if (_blendTreeWeight.y >= 0.0f)
-    //    //    {
-    //    //        currMixer.Value.SetInputWeight(0, yRatio); // Idle
-    //    //        currMixer.Value.SetInputWeight(2, 0.0f);  // Run
-    //    //    }
-    //    //    else
-    //    //    {
-    //    //        currMixer.Value.SetInputWeight(0, 0.0f); // Idle
-    //    //        currMixer.Value.SetInputWeight(2, yRatio);  // Run
-    //    //    }
-
-    //    //    if (_blendTreeWeight.x >= 0.0f)
-    //    //    {
-    //    //        currMixer.Value.SetInputWeight(1, xRatio); // Walk
-    //    //        currMixer.Value.SetInputWeight(3, 0.0f);  // Run
-    //    //    }
-    //    //    else
-    //    //    {
-    //    //        currMixer.Value.SetInputWeight(1, 0.0f); // Walk
-    //    //        currMixer.Value.SetInputWeight(3, xRatio);  // Run
-    //    //    }
-
-
-    //    //    float currWeight = CalculateBodyLayerWeight(AnimatorLayerTypes.FullBody);
-    //    //    _layerMixer.SetInputWeight(currFullbodyTarget + 1, currWeight);
-    //    //}
-    //}
-
-
-    ////public void SetBlendTreeWeight(Vector2 weight)
-    ////{
-    ////    _blendTreeWeight = weight;
-    ////}
-    #endregion BlendTree...언젠간 해볼것
 }
-
-
-//public void WeaponLayerChange_EnterAttack(WeaponGrabFocus grapFocusType, StateAsset currState, bool isUsingRightWeapon)
-//{
-//    bool isAttackState = true;
-
-//    AnimatorBlendingDesc leftHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.LeftHand];
-//    int leftHandMainLayer = (leftHandBlendingDesc._isUsingFirstLayer == true)
-//        ? (int)AnimatorLayerTypes.LeftHand * 2
-//        : (int)AnimatorLayerTypes.LeftHand * 2 + 1;
-//    AnimatorBlendingDesc rightHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.RightHand];
-//    int rightHandMainLayer = (rightHandBlendingDesc._isUsingFirstLayer == true)
-//        ? (int)AnimatorLayerTypes.RightHand * 2
-//        : (int)AnimatorLayerTypes.RightHand * 2 + 1;
-
-//    bool isMirrored = (isUsingRightWeapon == false);
-
-//    switch (grapFocusType)
-//    {
-//        case WeaponGrabFocus.Normal:
-//            {
-//                //공격 애니메이션이다
-//                if (isAttackState == true)
-//                {
-//                    int usingHandLayer = (isUsingRightWeapon == true)
-//                        ? rightHandMainLayer
-//                        : leftHandMainLayer;
-
-//                    int oppositeHandLayer = (isUsingRightWeapon == true)
-//                        ? leftHandMainLayer
-//                        : rightHandMainLayer;
-
-
-//                    _animator.SetLayerWeight(usingHandLayer, 0.0f); //왼손은 반드시 따라가야해서 0.0f
-
-//                    WeaponScript oppositeWeaponScript = _owner.GetCurrentWeaponScript(!isUsingRightWeapon);
-
-//                    if (oppositeWeaponScript == null) //왼손무기를 쥐고있지 않다면
-//                    {
-//                        _animator.SetLayerWeight(oppositeHandLayer, 0.0f); //왼손 무기를 쥐고있지 않다면 모션을 따라가야해서 레이어를 꺼버린다.
-//                    }
-//                    else
-//                    {
-//                        if (oppositeWeaponScript._handlingIdleAnimation_OneHand == null)
-//                        {
-//                            //_overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
-//                        }
-//                        _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
-//                    }
-
-//                    _animator.SetBool("IsMirroring", isMirrored);
-//                }
-//                //공격 애니메이션이 아니다
-//                else
-//                {
-
-//                    WeaponScript leftHandWeaponScript = _owner.GetCurrentWeaponScript(false);
-//                    WeaponScript rightHandWeaponScript = _owner.GetCurrentWeaponScript(true);
-
-//                    //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
-//                    float leftHandLayerWeight = (leftHandWeaponScript == null || leftHandWeaponScript._handlingIdleAnimation_OneHand == null) //
-//                        ? 0.0f
-//                        : 1.0f;
-//                    _animator.SetLayerWeight(leftHandMainLayer, leftHandLayerWeight);
-
-//                    //오른손 무기를 쥐고있지 않거나 오른손 무기의 파지 애니메이션이 없다
-//                    float rightHandLayerWeight = (rightHandWeaponScript == null || rightHandWeaponScript._handlingIdleAnimation_OneHand == null)
-//                        ? 0.0f
-//                        : 1.0f;
-//                    _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
-
-//                    _animator.SetBool("IsMirroring", false);
-//                }
-//            }
-//            break;
-
-//        case WeaponGrabFocus.RightHandFocused:
-//        case WeaponGrabFocus.LeftHandFocused:
-//            {
-//                float layerWeight = (isAttackState == true)
-//                    ? 0.0f
-//                    : 1.0f;
-
-//                _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
-//                _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
-
-//                _animator.SetBool("IsMirroring", isMirrored);
-
-
-//                if (currState._myState._isAttackState == true)
-//                {
-//                }
-//                else
-//                {
-//                    _animator.SetBool("IsMirroring", false);
-//                }
-//            }
-//            break;
-
-//        case WeaponGrabFocus.DualGrab:
-//            {
-//                Debug.Assert(false, "쌍수 컨텐츠가 추가됐습니까?");
-//            }
-//            break;
-//    }
-//}
-
-//public void WeaponLayerChange_ExitAttack(WeaponGrabFocus grapFocusType, StateAsset currState, bool isUsingRightWeapon)
-//{
-//    bool isAttackState = false;
-
-//    AnimatorBlendingDesc leftHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.LeftHand];
-//    int leftHandMainLayer = (leftHandBlendingDesc._isUsingFirstLayer == true)
-//        ? (int)AnimatorLayerTypes.LeftHand * 2
-//        : (int)AnimatorLayerTypes.LeftHand * 2 + 1;
-//    AnimatorBlendingDesc rightHandBlendingDesc = _partBlendingDesc[(int)AnimatorLayerTypes.RightHand];
-//    int rightHandMainLayer = (rightHandBlendingDesc._isUsingFirstLayer == true)
-//        ? (int)AnimatorLayerTypes.RightHand * 2
-//        : (int)AnimatorLayerTypes.RightHand * 2 + 1;
-
-//    bool isMirrored = (isUsingRightWeapon == false);
-
-//    switch (grapFocusType)
-//    {
-//        case WeaponGrabFocus.Normal:
-//            {
-//                //공격 애니메이션이다
-//                if (isAttackState == true)
-//                {
-//                    int usingHandLayer = (isUsingRightWeapon == true)
-//                        ? rightHandMainLayer
-//                        : leftHandMainLayer;
-
-//                    int oppositeHandLayer = (isUsingRightWeapon == true)
-//                        ? leftHandMainLayer
-//                        : rightHandMainLayer;
-
-
-//                    _animator.SetLayerWeight(usingHandLayer, 0.0f); //왼손은 반드시 따라가야해서 0.0f
-
-//                    WeaponScript oppositeWeaponScript = _owner.GetCurrentWeaponScript(!isUsingRightWeapon);
-
-//                    if (oppositeWeaponScript == null) //왼손무기를 쥐고있지 않다면
-//                    {
-//                        _animator.SetLayerWeight(oppositeHandLayer, 0.0f); //왼손 무기를 쥐고있지 않다면 모션을 따라가야해서 레이어를 꺼버린다.
-//                    }
-//                    else
-//                    {
-//                        if (oppositeWeaponScript.GetComponent<WeaponScript>()._handlingIdleAnimation_OneHand == null)
-//                        {
-//                            //_overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
-//                        }
-//                        _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
-//                    }
-
-//                    _animator.SetBool("IsMirroring", isMirrored);
-//                }
-//                //공격 애니메이션이 아니다
-//                else
-//                {
-//                    WeaponScript leftHandWeaponScript = _owner.GetCurrentWeaponScript(false);
-//                    WeaponScript rightHandWeaponScript = _owner.GetCurrentWeaponScript(true);
-
-//                    //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
-//                    float leftHandLayerWeight = (leftHandWeaponScript == null || leftHandWeaponScript._handlingIdleAnimation_OneHand == null) //
-//                        ? 0.0f
-//                        : 1.0f;
-//                    _animator.SetLayerWeight(leftHandMainLayer, leftHandLayerWeight);
-
-//                    //오른손 무기를 쥐고있지 않거나 오른손 무기의 파지 애니메이션이 없다
-//                    float rightHandLayerWeight = (rightHandWeaponScript == null || rightHandWeaponScript._handlingIdleAnimation_OneHand == null)
-//                        ? 0.0f
-//                        : 1.0f;
-//                    _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
-
-//                    _animator.SetBool("IsMirroring", false);
-//                }
-//            }
-//            break;
-
-//        case WeaponGrabFocus.RightHandFocused:
-//        case WeaponGrabFocus.LeftHandFocused:
-//            {
-//                float layerWeight = (isAttackState == true)
-//                    ? 0.0f
-//                    : 1.0f;
-
-//                _animator.SetLayerWeight(rightHandMainLayer, layerWeight);
-//                _animator.SetLayerWeight(leftHandMainLayer, layerWeight);
-
-//                if (currState._myState._isAttackState == true)
-//                {
-//                    _animator.SetBool("IsMirroring", isMirrored);
-//                }
-//                else
-//                {
-//                    _animator.SetBool("IsMirroring", false);
-//                }
-//            }
-//            break;
-
-//        case WeaponGrabFocus.DualGrab:
-//            {
-//                Debug.Assert(false, "쌍수 컨텐츠가 추가됐습니까?");
-//            }
-//            break;
-//    }
-//}

@@ -209,22 +209,7 @@ public class Gunscript2 : WeaponScript
         _reloadingTime = _reloadingTimeOriginal;
     }
 
-    private IEnumerator ReloadCoroutine()
-    {
-        while (true) 
-        {
-            _reloadingTime -= Time.deltaTime;
 
-            if (_reloadingTime <= 0.0f)
-            {
-                _reloadingTime = 0.0f;
-                _reloadingCoroutine = null;
-                break;
-            }
-
-            yield return null;
-        }
-    }
 
     private void CalculateAimIK(bool isAimed)
     {
@@ -310,24 +295,56 @@ public class Gunscript2 : WeaponScript
     #region Fire
     public void Reload()
     {
+        CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
+        ownerCharacterAnimatorScript.CalculateBodyWorkType_WeaponReload(true);
+        //왼손에 무언가를 들고있었다
         {
-            AnimationClip reloadingAnimation = ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation;
-            StartReloading(reloadingAnimation);
-            if (_reloadingCoroutine == null)
-            {
-                _reloadingCoroutine = StartCoroutine(ReloadCoroutine());
-            }
+            //'왼손에 들고있던걸 집어넣는다'의 코루틴 실행.
+            //대기
         }
 
 
+        //// Task
+        //{
+        //    AnimationClip reloadingAnimation = ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation;
+        //    StartReloading(reloadingAnimation);
+        //    if (_reloadingCoroutine == null)
+        //    {
+        //        _reloadingCoroutine = StartCoroutine(ReloadCoroutine());
+        //    }
+        //}
+        ////-----------------------로직분기점--------------------
+        //ReloadAnimation();//                                  |
+        ////-----------------------로직분기점--------------------
 
 
-        //-----------------------로직분기점--------------------
-        ReloadAnimation();//                                  |
-        //-----------------------로직분기점--------------------
+        //뭔가를 들고있었다
+        {
+            //다시 꺼낸다.
+        }
+
 
         {
             //인벤토리랑 탄창 교체(혹은 그와 관련된 작업들);
+        }
+    }
+
+
+
+    private IEnumerator ReloadCoroutine()
+    {
+        while (true)
+        {
+            _reloadingTime -= Time.deltaTime;
+
+            if (_reloadingTime <= 0.0f)
+            {
+                _reloadingTime = 0.0f;
+                _reloadingCoroutine = null;
+                break;
+            }
+
+            yield return null;
         }
     }
 

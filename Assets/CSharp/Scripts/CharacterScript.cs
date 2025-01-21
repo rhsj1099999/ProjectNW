@@ -954,7 +954,7 @@ public class CharacterScript : GameActorScript, IHitable
 
             case AdditionalBehaveType.Weapon_Reloading:
                 {
-                    Debug.Log("재장전 검사 시작");
+                    //Debug.Log("재장전 검사 시작");
 
                     GameObject currWeapon = (_tempUsingRightHandWeapon == true)
                         ? _tempCurrRightWeapon
@@ -964,13 +964,13 @@ public class CharacterScript : GameActorScript, IHitable
 
                     if (Input.GetKey(fireKeyCode) == false)
                     {
-                        Debug.Log("키가 안눌렸다");
+                        //Debug.Log("키가 안눌렸다");
                         return;
                     }
 
                     if (currWeapon == null)
                     {
-                        Debug.Log("무기가 없다?");
+                        //Debug.Log("무기가 없다?");
                         return;
                     }
 
@@ -978,7 +978,7 @@ public class CharacterScript : GameActorScript, IHitable
 
                     if (gunScript == null)
                     {
-                        Debug.Log("gun Script 가 아닌 무기에 이 스테이트가 쓰였다?");
+                        //Debug.Log("gun Script 가 아닌 무기에 이 스테이트가 쓰였다?");
                         return;
                     }
 
@@ -986,11 +986,11 @@ public class CharacterScript : GameActorScript, IHitable
 
                     if (reloadCheck == false)
                     {
-                        Debug.Log("총을 재장전 할 수 없다.");
+                        //Debug.Log("총을 재장전 할 수 없다.");
                         return;
                     }
 
-                    Debug.Log("재장전시작");
+                    //Debug.Log("재장전시작");
 
                     gunScript.Reload();
                     //발사
@@ -999,7 +999,7 @@ public class CharacterScript : GameActorScript, IHitable
 
             case AdditionalBehaveType.Weapon_Fire:
                 {
-                    Debug.Log("발사검사 시작");
+                    //Debug.Log("발사검사 시작");
                     //현재 사용중인 무기에게 발사했냐를 확인하는 함수
                     GameObject currWeapon = (_tempUsingRightHandWeapon == true)
                         ? _tempCurrRightWeapon
@@ -1011,7 +1011,7 @@ public class CharacterScript : GameActorScript, IHitable
 
                     if (Input.GetKey(fireKeyCode) == false)
                     {
-                        Debug.Log("키가 안눌렸다");
+                        ////Debug.Log("키가 안눌렸다");
                         return;
                     }
 
@@ -1025,7 +1025,7 @@ public class CharacterScript : GameActorScript, IHitable
 
                     if (gunScript == null)
                     {
-                        Debug.Log("gun Script 가 아닌 무기에 이 스테이트가 쓰였다?");
+                        //Debug.Log("gun Script 가 아닌 무기에 이 스테이트가 쓰였다?");
                         return;
                     }
 
@@ -1033,7 +1033,7 @@ public class CharacterScript : GameActorScript, IHitable
 
                     if (weaponCanFire == false)
                     {
-                        Debug.Log("발사 준비가 안됐다");
+                        //Debug.Log("발사 준비가 안됐다");
                         return;
                     }
 
@@ -1049,7 +1049,9 @@ public class CharacterScript : GameActorScript, IHitable
                         //play 딸깍 소리
                         //return;
                     }
-                    Debug.Log("발사한다");
+
+
+                    //Debug.Log("발사한다");
 
                     gunScript.Fire();
                     //발사
