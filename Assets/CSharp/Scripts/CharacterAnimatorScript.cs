@@ -68,7 +68,7 @@ public class BodyPartBlendingWork
     public AnimationClip _animationClip = null;
     public CoroutineLock _coroutineLock = null;
     public Transform _weaponEquipTransform = null;
-    public ItemAsset _createItemAsset = null;
+    public ItemStoreDescBase _createItemStoreDesc = null;
 }
 
 
@@ -842,7 +842,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 //무기 집어넣기 애니메이션으로 바꾸기
                 _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
                 {
-                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(currWeaponScript._ItemInfo._WeaponType).GetPutawayAnimation(targetPartType);
+                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(currWeaponScript.GetItemAsset()._WeaponType).GetPutawayAnimation(targetPartType);
                 }
 
                 //LayerWeight 바꾸기
@@ -854,6 +854,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             }
 
             ItemAsset_Weapon nextWeaponScript = _owner.GetNextWeaponInfo(targetPartType);
+            ItemStoreDesc_Weapon nextWeaponStoreDesc = _owner.GetNextWeaponStoreDesc(targetPartType);
 
             if (nextWeaponScript != null)
             {
@@ -871,7 +872,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 //무기쥐어주기
                 _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
                 {
-                    _bodyPartWorks[(int)targetPartType].Last.Value._createItemAsset = nextWeaponScript;
+                    _bodyPartWorks[(int)targetPartType].Last.Value._createItemStoreDesc = nextWeaponStoreDesc;
                 }
 
                 //무기꺼내기 애니메이션으로 바꾸기
@@ -1042,6 +1043,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
 
         ItemAsset_Weapon oppositeWeaponInfo = _owner.GetCurrentWeaponInfo(oppositePartType);
+        ItemStoreDesc_Weapon oppositeWeaponStoreDesc = _owner.GetCurrentWeaponStoreDesc(oppositePartType);
 
         //반대 손에 양손으로 잡기 전, 무기를 들고있었다.
         if (oppositeWeaponInfo != null)
@@ -1057,7 +1059,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             //무기를 쥐어준다
             _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
             {
-                _bodyPartWorks[oppositeBodyIndex].Last.Value._createItemAsset = oppositeWeaponInfo;
+                _bodyPartWorks[oppositeBodyIndex].Last.Value._createItemStoreDesc = oppositeWeaponStoreDesc;
             }
 
             //반대손을 무기 꺼내기 애니메이션으로 바꾼다.
@@ -1149,7 +1151,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             currRightHandWeapon != null)
         {
             WeaponScript weaponScript = currRightHandWeapon.GetComponent<WeaponScript>();
-            ItemAsset_Weapon weaponItemAsset = weaponScript._ItemInfo;
+            ItemAsset_Weapon weaponItemAsset = weaponScript.GetItemAsset();
 
             //오른손에 양손으로 쥐고 있었다면 잠시 왼손에 쥐어준다.
             _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
@@ -1191,7 +1193,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         else if (currRightHandWeapon != null) //양손으로 잡고있진 않았습니다. 근데 오른손에 무기를 들긴 했습니다.
         {
             WeaponScript weaponScript = currRightHandWeapon.GetComponent<WeaponScript>();
-            ItemAsset_Weapon weaponItemAsset = weaponScript._ItemInfo;
+            ItemAsset_Weapon weaponItemAsset = weaponScript.GetItemAsset();
 
             //반대손을 무기 집어넣기 애니메이션으로 바꾼다.
             _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
@@ -1251,6 +1253,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
 
         ItemAsset_Weapon currRightHandWeaponInfo = _owner.GetCurrentWeaponInfo(AnimatorLayerTypes.RightHand);
+        ItemStoreDesc_Weapon currRightHandWeaponStoreDesc = _owner.GetCurrentWeaponStoreDesc(AnimatorLayerTypes.RightHand); 
 
         if (currRightHandWeaponInfo != null) //오른손에 뭔가 잇었습니다.
         {
@@ -1285,7 +1288,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 //무기를 쥐어준다
                 _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
                 {
-                    _bodyPartWorks[rightHandIndex].Last.Value._createItemAsset = currRightHandWeaponInfo;
+                    _bodyPartWorks[rightHandIndex].Last.Value._createItemStoreDesc = currRightHandWeaponStoreDesc;
                 }
 
                 //무기를 꺼내는 animation으로 바꾼다
@@ -1425,9 +1428,9 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         return null;
     }
 
-    protected IEnumerator CreateWeaponModelAndEquipCoroutine(AnimatorLayerTypes layerType, ItemAsset_Weapon nextItemInfo)
+    protected IEnumerator CreateWeaponModelAndEquipCoroutine(AnimatorLayerTypes layerType, ItemStoreDesc_Weapon nextWeaponStoreDesc)
     {
-        CreateWeaponModelAndEquip(layerType, nextItemInfo);
+        CreateWeaponModelAndEquip(layerType, nextWeaponStoreDesc);
         return null;
     }
 
@@ -1437,9 +1440,9 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         return null;
     }
 
-    protected void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemAsset_Weapon nextItemInfo)
+    protected void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemStoreDesc_Weapon nextWeaponStoreDesc)
     {
-        _owner.CreateWeaponModelAndEquip(layerType, nextItemInfo);
+        _owner.CreateWeaponModelAndEquip(layerType, nextWeaponStoreDesc);
     }
 
     protected IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveNextLayer(AnimatorLayerTypes layerType)
@@ -1713,7 +1716,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                     bool isRightHand = (layerType == AnimatorLayerTypes.RightHand);
                     startedCoroutine = StartCoroutine_CallBackAction
                     (
-                        CreateWeaponModelAndEquipCoroutine(layerType, work._createItemAsset as ItemAsset_Weapon),
+                        CreateWeaponModelAndEquipCoroutine(layerType, work._createItemStoreDesc as ItemStoreDesc_Weapon),
                         StartNextCoroutine,
                         layerType
                     );

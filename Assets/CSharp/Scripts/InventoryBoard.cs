@@ -386,6 +386,29 @@ public class InventoryBoard : BoardUIBaseScript
             {
                 storeDesc = new ItemStoreDesc_Magazine(info, itemCount, inventoryIndex, isRotated, this, null);
             }
+            else if (info._ItemType == ItemAsset.ItemType.Equip)
+            {
+                if (info._EquipType == ItemAsset.EquipType.Weapon)
+                {
+                    ItemAsset_Weapon weaponInfo = info as ItemAsset_Weapon;
+
+                    if (weaponInfo._WeaponType >= ItemAsset_Weapon.WeaponType.SmallGun && weaponInfo._WeaponType <= ItemAsset_Weapon.WeaponType.LargeGun) 
+                    {
+                        //Equip -> Weapon 인듯
+                        storeDesc = new ItemStoreDesc_Weapon_Gun(info, itemCount, inventoryIndex, isRotated, this);
+                    }
+                    else
+                    {
+                        //Equip -> Weapon -> Gun인듯
+                        storeDesc = new ItemStoreDesc_Weapon(info, itemCount, inventoryIndex, isRotated, this);
+                    }
+                }
+                else
+                {
+                    //Equip -> Armor 인듯
+                    storeDesc = new ItemStoreDescBase(info, itemCount, inventoryIndex, isRotated, this);
+                }
+            }
             else
             {
                 storeDesc = new ItemStoreDescBase(info, itemCount, inventoryIndex, isRotated, this);

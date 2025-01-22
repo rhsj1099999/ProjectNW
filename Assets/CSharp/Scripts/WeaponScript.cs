@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -61,11 +62,11 @@ public class WeaponScript : MonoBehaviour
     /*------------------------------------------
     StoreInfo Need.
     ------------------------------------------*/
-    private ItemAsset_Weapon _itemInfo = null;
-    public ItemAsset_Weapon _ItemInfo => _itemInfo;
+    //private ItemAsset_Weapon _itemInfo = null;
+    //public ItemAsset_Weapon _ItemInfo => _itemInfo;
     private ItemStoreDesc_Weapon _itemStoreInfo = null;
     public ItemStoreDesc_Weapon _ItemStoreInfo => _itemStoreInfo;
-
+    public ItemAsset_Weapon GetItemAsset() { return (ItemAsset_Weapon)_itemStoreInfo._itemAsset; }
     public CharacterScript _owner = null;
     protected bool _isRightHandWeapon = false;
 
@@ -81,7 +82,7 @@ public class WeaponScript : MonoBehaviour
     virtual public void TurnOffAim() { }
     virtual public void UnEquip() { }
 
-    public virtual void Init(ItemAsset_Weapon info) {_itemInfo = info;}
+    public virtual void Init(ItemStoreDesc_Weapon info) { _itemStoreInfo = info;}
 
     public virtual void InitIK()
     {

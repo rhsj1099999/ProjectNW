@@ -162,7 +162,7 @@ public class InteractionUIListScript : GameUISubComponent
         }
 
 
-        if (_currCreated.Count >= 0 &&
+        if (_currCreated.Count > 0 &&
             Input.GetKeyDown(KeyCode.F) == true)
         {
             UIListWrapper currWrapper = _currCreated[_currIndex];

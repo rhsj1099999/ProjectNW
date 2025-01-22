@@ -48,7 +48,6 @@ public class Gunscript2 : WeaponScript
     protected Transform _elbowPosition_Unity = null;
     private List<int> _firingEffectedLayer = new List<int>();
 
-    private ItemStoreDesc_Magazine _myMagazine = null;
 
     protected override void LateUpdate()
     {
@@ -169,7 +168,7 @@ public class Gunscript2 : WeaponScript
 
                 ItemAsset_Bullet.BulletType magazineBulletType = ((ItemAsset_Magazine)itemAsset)._MagazineType;
 
-                if (_ItemInfo._UsingBulletType != magazineBulletType)
+                if (((ItemAsset_Weapon)_ItemStoreInfo._itemAsset)._UsingBulletType != magazineBulletType)
                 {
                     continue;
                 }
@@ -287,7 +286,8 @@ public class Gunscript2 : WeaponScript
 
     public void Fire()
     {
-        _myMagazine._bullets.RemoveAt(_myMagazine._bullets.Count - 1);
+        
+        ((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine._bullets.RemoveAt(((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine._bullets.Count - 1);
 
         //데미지는 총알에 의해 결정된다
         {
@@ -317,13 +317,13 @@ public class Gunscript2 : WeaponScript
 
     public bool FireCheck()
     {
-        if (_myMagazine == null)
+        if (((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine == null)
         {
             //탄창이 없는데요
             return false;
         }
 
-        if (_myMagazine._bullets.Count <= 0)
+        if (((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine._bullets.Count <= 0)
         {
             //탄창은 있는데 탄이 없는데요
             return false;
@@ -380,7 +380,7 @@ public class Gunscript2 : WeaponScript
         ---------------------------------------------*/
         float GunRecoilPower = 1.0f;
 
-        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._FireAnimation, false, GunRecoilPower);
+        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(((ItemAsset_Weapon)_ItemStoreInfo._itemAsset))._FireAnimation, false, GunRecoilPower);
     }
 
 
@@ -438,12 +438,12 @@ public class Gunscript2 : WeaponScript
         int targetY = -1;
         bool isRotated = false;
         InventoryBoard targetBoard = null;
-        if (_myMagazine != null)
+        if (((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine != null)
         {
             List<InventoryBoard> ownerInventoryBoards = _owner.GetMyInventoryBoards();
             foreach (InventoryBoard inventoryBoard in ownerInventoryBoards)
             {
-                if (inventoryBoard.CheckInventorySpace_MustOpt(_myMagazine._itemAsset, ref targetX, ref targetY, ref isRotated) == false)
+                if (inventoryBoard.CheckInventorySpace_MustOpt(((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine._itemAsset, ref targetX, ref targetY, ref isRotated) == false)
                 {
                     continue;
                 }
@@ -458,22 +458,22 @@ public class Gunscript2 : WeaponScript
         |TODO| 재장전시 일단 여기서 아이템정보를 세팅하고 갑니다.
         후에 디테일을 수정할때는 이곳을 삭제하세요
         -----------------------------------------------------------------*/
-        if (_myMagazine != null)
+        if (((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine != null)
         {//총에 기존 탄창이 장착이 돼 있을때
 
             if (targetBoard != null)
             {//기존 탄창을 넣을 수 있는 공간이 있다면
 
-                _myMagazine._isRotated = isRotated;
-                targetBoard.AddItemUsingForcedIndex(_myMagazine, targetX, targetY, null);
+                ((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine._isRotated = isRotated;
+                targetBoard.AddItemUsingForcedIndex(((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine, targetX, targetY, null);
             }
             else
             {//없으면 버려라
-                ItemInfoManager.Instance.DropItemToField(transform, _myMagazine);
+                ItemInfoManager.Instance.DropItemToField(transform, ((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine);
             }
         }
 
-        _myMagazine = ownerFirstMagazine as ItemStoreDesc_Magazine;
+        ((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine = ownerFirstMagazine as ItemStoreDesc_Magazine;
         List<GameObject> itemUIs = ownerFirstMagazine._owner.GetItemUIs(ownerFirstMagazine);
         foreach (GameObject itemUI in itemUIs)
         {
@@ -502,7 +502,7 @@ public class Gunscript2 : WeaponScript
 
         ReloadAnimation();
 
-        AnimationClip reloadingAnimation = ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation;
+        AnimationClip reloadingAnimation = ResourceDataManager.Instance.GetGunAnimation(((ItemAsset_Weapon)_ItemStoreInfo._itemAsset))._ReloadAnimation;
         _reloadingTimeOriginal = reloadingAnimation.length;
         _reloadingTime = _reloadingTimeOriginal;
 
@@ -528,7 +528,7 @@ public class Gunscript2 : WeaponScript
 
         AvatarMask myAvatarMask = ResourceDataManager.Instance.GetAvatarMask("UpperBody");
         CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
-        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation, false, 1.0f/*Weight*/);
+        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(((ItemAsset_Weapon)_ItemStoreInfo._itemAsset))._ReloadAnimation, false, 1.0f/*Weight*/);
     }
     #endregion Reload
 

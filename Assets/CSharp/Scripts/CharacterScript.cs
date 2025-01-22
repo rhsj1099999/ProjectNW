@@ -206,6 +206,12 @@ public class CharacterScript : GameActorScript, IHitable
         {
             InitInventory();
         }
+
+        for (int i = 0; i < _tempMaxWeaponSlot; i++)
+        {
+            _tempLeftWeaponPrefabs.Add(null);
+            _tempRightWeaponPrefabs.Add(null);
+        }
     }
 
 
@@ -287,45 +293,104 @@ public class CharacterScript : GameActorScript, IHitable
     }
     //----------------------------------------------------------------------------------------
 
-    [SerializeField] protected List<ItemAsset_Weapon> _tempLeftWeaponPrefabs = new List<ItemAsset_Weapon>();
-    [SerializeField] protected List<ItemAsset_Weapon> _tempRightWeaponPrefabs = new List<ItemAsset_Weapon>();
+    protected List<ItemStoreDesc_Weapon> _tempLeftWeaponPrefabs = new List<ItemStoreDesc_Weapon>();
+    protected List<ItemStoreDesc_Weapon> _tempRightWeaponPrefabs = new List<ItemStoreDesc_Weapon>();
     public ItemAsset_Weapon GetCurrentWeaponInfo(AnimatorLayerTypes layerType)
     {
-        if (layerType == AnimatorLayerTypes.RightHand)
-        {
-            return _tempRightWeaponPrefabs[_currRightWeaponIndex];
-        }
-        else if (layerType == AnimatorLayerTypes.LeftHand)
-        {
-            return _tempLeftWeaponPrefabs[_currLeftWeaponIndex];
-        }
-        else
+        List<ItemStoreDesc_Weapon> target = (layerType == AnimatorLayerTypes.RightHand)
+            ? _tempRightWeaponPrefabs
+            : _tempLeftWeaponPrefabs;
+
+        int targetIndex = (layerType == AnimatorLayerTypes.RightHand)
+            ? _currRightWeaponIndex
+            : _currLeftWeaponIndex;
+
+        if (target.Count <= targetIndex)
         {
             return null;
         }
+
+        ItemStoreDescBase storeDesc = target[targetIndex];
+
+        if (storeDesc == null)
+        {
+            return null;
+        }
+
+        return target[targetIndex]._itemAsset as ItemAsset_Weapon;
     }
     public ItemAsset_Weapon GetNextWeaponInfo(AnimatorLayerTypes layerType)
     {
-        if (layerType != AnimatorLayerTypes.LeftHand &&
-            layerType != AnimatorLayerTypes.RightHand)
+        List<ItemStoreDesc_Weapon> target = (layerType == AnimatorLayerTypes.RightHand)
+            ? _tempRightWeaponPrefabs
+            : _tempLeftWeaponPrefabs;
+
+        int targetIndex = (layerType == AnimatorLayerTypes.RightHand)
+            ? _currRightWeaponIndex
+            : _currLeftWeaponIndex;
+
+        targetIndex++;
+
+        if (targetIndex >= _tempMaxWeaponSlot)
+        {
+            targetIndex = targetIndex % _tempMaxWeaponSlot;
+        }
+
+        if (target.Count <= targetIndex)
         {
             return null;
         }
 
-        int nextWeaponIndex = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _currLeftWeaponIndex + 1
-            : _currRightWeaponIndex + 1;
+        ItemStoreDescBase storeDesc = target[targetIndex];
 
-        if (nextWeaponIndex >= _tempMaxWeaponSlot)
+        if (storeDesc == null)
         {
-            nextWeaponIndex = nextWeaponIndex % _tempMaxWeaponSlot;
+            return null;
         }
 
-        ItemAsset_Weapon weaponPrefab = (layerType == AnimatorLayerTypes.LeftHand)
-            ? _tempLeftWeaponPrefabs[nextWeaponIndex]
-            : _tempRightWeaponPrefabs[nextWeaponIndex];
+        return target[targetIndex]._itemAsset as ItemAsset_Weapon;
+    }
+    public ItemStoreDesc_Weapon GetNextWeaponStoreDesc(AnimatorLayerTypes layerType)
+    {
+        List<ItemStoreDesc_Weapon> target = (layerType == AnimatorLayerTypes.RightHand)
+            ? _tempRightWeaponPrefabs
+            : _tempLeftWeaponPrefabs;
 
-        return weaponPrefab;
+        int targetIndex = (layerType == AnimatorLayerTypes.RightHand)
+            ? _currRightWeaponIndex
+            : _currLeftWeaponIndex;
+
+        targetIndex++;
+
+        if (targetIndex >= _tempMaxWeaponSlot)
+        {
+            targetIndex = targetIndex % _tempMaxWeaponSlot;
+        }
+
+        if (target.Count <= targetIndex)
+        {
+            return null;
+        }
+
+        return target[targetIndex];
+    }
+    public ItemStoreDesc_Weapon GetCurrentWeaponStoreDesc(AnimatorLayerTypes layerType)
+    {
+        List<ItemStoreDesc_Weapon> target = (layerType == AnimatorLayerTypes.RightHand)
+            ? _tempRightWeaponPrefabs
+            : _tempLeftWeaponPrefabs;
+
+        int targetIndex = (layerType == AnimatorLayerTypes.RightHand)
+            ? _currRightWeaponIndex
+            : _currLeftWeaponIndex;
+
+        if (target.Count <= targetIndex)
+        {
+            return null;
+        }
+
+        return target[targetIndex];
+
     }
 
 
@@ -414,7 +479,7 @@ public class CharacterScript : GameActorScript, IHitable
 
     #endregion WeaponSection
 
-    public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemAsset_Weapon nextItemInfo)
+    public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemStoreDesc_Weapon nextItemStoreDesc)
     {
         if (layerType != AnimatorLayerTypes.RightHand &&layerType != AnimatorLayerTypes.LeftHand) {return;}
 
@@ -424,6 +489,9 @@ public class CharacterScript : GameActorScript, IHitable
             : WeaponSocketScript.SideType.Left;
 
         //소켓 찾기
+
+        ItemAsset_Weapon weaponItemAsset = (ItemAsset_Weapon)nextItemStoreDesc._itemAsset;
+
         Transform correctSocket = null;
         {
             Debug.Assert(GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
@@ -432,7 +500,8 @@ public class CharacterScript : GameActorScript, IHitable
 
             Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
 
-            WeaponType targetType = nextItemInfo._WeaponType;
+
+            WeaponType targetType = weaponItemAsset._WeaponType;
 
             foreach (var socketComponent in weaponSockets)
             {
@@ -461,11 +530,11 @@ public class CharacterScript : GameActorScript, IHitable
         }
 
         //아이템 프리팹 생성, 장착
-        GameObject weaponModel = Instantiate(nextItemInfo._ItemModel, transform);
+        GameObject weaponModel = Instantiate(weaponItemAsset._ItemModel, transform);
 
         WeaponScript weaponScript = null;
 
-        if (nextItemInfo._WeaponType >= WeaponType.SmallGun && nextItemInfo._WeaponType <= WeaponType.LargeGun)
+        if (weaponItemAsset._WeaponType >= WeaponType.SmallGun && weaponItemAsset._WeaponType <= WeaponType.LargeGun)
         {
             weaponScript = weaponModel.AddComponent<Gunscript2>();
         }
@@ -475,7 +544,7 @@ public class CharacterScript : GameActorScript, IHitable
         }
 
         {
-            weaponScript.Init(nextItemInfo);
+            weaponScript.Init(nextItemStoreDesc);
             weaponScript.Equip(this, correctSocket);
 
             if (layerType == AnimatorLayerTypes.RightHand)
@@ -487,7 +556,7 @@ public class CharacterScript : GameActorScript, IHitable
                 _tempCurrLeftWeapon = weaponModel;
             }
 
-            StateGraphAsset stateGraphAsset = nextItemInfo._WeaponStateGraph;
+            StateGraphAsset stateGraphAsset = weaponItemAsset._WeaponStateGraph;
 
             StateGraphType stateGraphType = (layerType == AnimatorLayerTypes.RightHand == true)
                 ? StateGraphType.WeaponState_RightGraph
@@ -684,9 +753,9 @@ public class CharacterScript : GameActorScript, IHitable
     }
 
 
-    public void SetWeapon(bool isRightWeapon, int index, ItemAsset_Weapon weaponInfo)
+    public void SetWeapon(bool isRightWeapon, int index, ItemStoreDesc_Weapon weaponInfo)
     {
-        List<ItemAsset_Weapon> targetWeaponPrefabs = (isRightWeapon == true)
+        List<ItemStoreDesc_Weapon> targetWeaponPrefabs = (isRightWeapon == true)
             ? _tempRightWeaponPrefabs
             : _tempLeftWeaponPrefabs;
 
@@ -1094,7 +1163,7 @@ public class CharacterScript : GameActorScript, IHitable
         WeaponScript otherWeaponScript = other.GetComponentInParent<WeaponScript>();
         if (otherWeaponScript != null)
         {
-            DamageDesc weaponDamageDest = otherWeaponScript._ItemInfo._WeaponDamageDesc;
+            DamageDesc weaponDamageDest = otherWeaponScript.GetItemAsset()._WeaponDamageDesc;
             damageDesc._damage += weaponDamageDest._damage;
             damageDesc._damagingStamina += weaponDamageDest._damagingStamina;
             damageDesc._damagePower += weaponDamageDest._damagePower;

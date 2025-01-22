@@ -172,7 +172,7 @@ public class EquipmentBoard : BoardUIBaseScript
 
         UIComponent myUIComponent = GetComponentInParent<UIComponent>();
 
-        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, storeDesc._itemAsset as ItemAsset_Weapon);
+        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, storeDesc as ItemStoreDesc_Weapon);
     }
 
     public void UnEquipItem_Weapon(ItemStoreDescBase storeDesc)
