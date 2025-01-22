@@ -71,32 +71,6 @@ public class Gunscript2 : WeaponScript
 
 
 
-    public override bool isUsingMe()
-    {
-        //격발하면 AimShake가 다 끝날떄까지 안놔줄거임
-        return false;
-    }
-
-
-
-    public override bool isWeaponUseReady()
-    {
-        if (_coolTime >= float.Epsilon)
-        {
-            return false;
-        }
-
-        return base.isWeaponUseReady();
-    }
-
-
-
-    public override void UseWeapon()
-    {
-        //Fire();
-
-        //RayCheck();
-    }
 
     protected override void LateUpdate()
     {
@@ -178,10 +152,10 @@ public class Gunscript2 : WeaponScript
         }
     }
 
+
     public bool ReloadCheck()
     {
-        /*이미 재장전중이다*/
-        if (_reloadingCoroutine != null)
+        if (_reloadingCoroutine != null) /*이미 재장전중이다*/
         {
             return false;
         }
