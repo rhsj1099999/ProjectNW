@@ -22,20 +22,6 @@ public class Gunscript2 : WeaponScript
     private Coroutine _aimShakeCoroutine = null;
     private Coroutine _reloadingCoroutine = null;
 
-
-    //[SerializeField] UnityEvent _whenShootEvent = null;
-    //[SerializeField] private AnimationClip _shootAnimationClip = null;
-    //[SerializeField] private AnimationClip _reloadingClip = null;
-    // private GameObject _bullet = null;
-    //[SerializeField] private Transform _followingTransformStartPoint = null;
-
-
-    /*------------------------------------------
-    Spec Section.
-    ------------------------------------------*/
-    //[SerializeField] private bool _isAutomatic = false;
-    //[SerializeField] private float _dampingTime = 0.01f;
-
     [SerializeField] private float _coolTimeOriginal = 0.1f;
     [SerializeField] private float _reloadingTimeOriginal = 0.1f;
     [SerializeField] private float _aimShakeDurationOriginal = 0.1f;
@@ -46,14 +32,9 @@ public class Gunscript2 : WeaponScript
     private Vector3 _followPositionRef = Vector3.zero;
 
 
-
-
-
-
     /*------------------------------------------
     런타임중 정보저장용 변수들
     ------------------------------------------*/
-    //private bool _isAimShaking = false;
     private bool _isAimed = false;
     private bool _isIK = false;
 
@@ -68,9 +49,6 @@ public class Gunscript2 : WeaponScript
     private List<int> _firingEffectedLayer = new List<int>();
 
     private ItemStoreDesc_Magazine _myMagazine = null;
-
-
-
 
     protected override void LateUpdate()
     {
@@ -369,7 +347,6 @@ public class Gunscript2 : WeaponScript
     private void FireAnimation()
     {
         _firingEffectedLayer.Clear();
-        _owner.CalculateAffectingLayer(this, ref _firingEffectedLayer);
         CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
 
         AvatarMask myAvatarMask = null;

@@ -19,9 +19,6 @@ public class StateContollerComponentDesc
     public EnemyAIScript _ownerEnemyAIScript = null;
     public AimScript2 _ownerAimScript = null;
     public CharacterColliderScript _ownerCharacterColliderScript = null;
-
-
-    //public CharacterController _ownerCharacterComponent = null;
 }
 
 
@@ -89,9 +86,6 @@ public class DamageDesc
 
 public class CharacterScript : GameActorScript, IHitable
 {
-    //private bool _objectWillDestroy = false;
-    //private bool _fakeDead = false;
-
     private bool _dead = false;
     public bool GetDead() { return _dead; }
 
@@ -117,17 +111,13 @@ public class CharacterScript : GameActorScript, IHitable
             _inventoryBoardCached.Add(item);
         }
     }
-    public void ChangeInventoryInfo()
-    {
-        //인벤토리 개수가 추가됐다면 이 함수를 통해 캐싱된 컴포넌트를 변경할 것
-    }
+
+    //인벤토리 개수가 추가됐다면 이 함수를 통해 캐싱된 컴포넌트를 변경할 것
+    public void ChangeInventoryInfo() {}
 
 
     StatScript _myStat = new StatScript();
     protected GameObject _characterHeart = null;
-
-
-    public void CalculateAffectingLayer(WeaponScript caller, ref List<int> layerList) {}
 
 
     public T GetCharacterSubcomponent<T>(bool isNullable = false) where T : Component
@@ -175,12 +165,6 @@ public class CharacterScript : GameActorScript, IHitable
 
         _mySubScripts.Add(componentRealType, subScript);
     }
-
-
-
-
-
-
 
 
     protected virtual void Awake()
@@ -276,10 +260,6 @@ public class CharacterScript : GameActorScript, IHitable
     protected KeyCode _useItemKeyCode3 = KeyCode.Comma;
     protected KeyCode _useItemKeyCode4 = KeyCode.Period;
 
-    /*---------------------------------------------------
-    |TODO| Weapon과 관련된 스크립트를 만들어서 밖으로 빼세요
-    //Weapon Section -> 이거 다른 컴포넌트로 빼세요(현재 만들어져있는건 EquipmentBoard 혹은 Inventory)
-    ---------------------------------------------------*/
     #region WeaponSection
 
     protected KeyCode _changeRightHandWeaponHandlingKey = KeyCode.B;

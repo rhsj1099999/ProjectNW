@@ -298,10 +298,6 @@ public class InventoryBoard : BoardUIBaseScript
             return false;
         }
 
-        /*----------------------------------------------------
-        Dictionary<int, Dictionary<int, ItemStoreDescBase>> _items;
-        ----------------------------------------------------*/
-
         SortedDictionary<int, ItemStoreDescBase> currSameKeyItems = null;
         _items.TryGetValue(itemInfo._ItemKey, out currSameKeyItems);
 
@@ -585,7 +581,6 @@ public class InventoryBoard : BoardUIBaseScript
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Hammer"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("M16"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("AK47"), 1);
-            //AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("D_Eagle"), 1);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha4) == true)
@@ -595,30 +590,6 @@ public class InventoryBoard : BoardUIBaseScript
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÃÑ¾Ë_5Åº_·¹º§1"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÃÑ¾Ë_7Åº_·¹º§1"), 1);
         }
-
-        //if (Input.GetKeyDown(KeyCode.Alpha1) == true)
-        //{
-        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(35), 1);
-        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(36), 1);
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.Alpha2) == true)
-        //{
-        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(37), 1);
-        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(38), 1);
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.Alpha3) == true)
-        //{
-        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(39), 1);
-        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(40), 1);
-        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(41), 1);
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.Alpha4) == true)
-        //{
-        //    AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(34), 1);
-        //}
     }
 
 

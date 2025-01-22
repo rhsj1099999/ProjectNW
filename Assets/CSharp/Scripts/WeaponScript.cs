@@ -47,34 +47,41 @@ public class WeaponComboEntry
 
 public class WeaponScript : MonoBehaviour
 {
-    private ItemAsset_Weapon _itemInfo = null;
-    public ItemAsset_Weapon _ItemInfo => _itemInfo;
+    /*-----------------------------------------------
+    |NOTI| Object Need.
+    'WeaponScriot'를 가지고있는 gameObject가 필요한것
+    -----------------------------------------------*/
+    protected IKScript _ownerIKSkript = null;
+    protected Dictionary<AvatarIKGoal, IKTargetDesc> _createdIKTargets = new Dictionary<AvatarIKGoal, IKTargetDesc>();
 
-    public CharacterScript _owner = null;
-    protected bool _isRightHandWeapon = false;
-
-    /*------------------------------------------
-    Pivot Section.
-    ------------------------------------------*/
     public Transform _socketTranform = null;
     private Quaternion _addRotation = quaternion.identity;
     private Vector3 _addPosition = Vector3.zero;
 
     /*------------------------------------------
-    IK Section.
+    StoreInfo Need.
     ------------------------------------------*/
-    protected IKScript _ownerIKSkript = null;
-    protected Dictionary<AvatarIKGoal, IKTargetDesc> _createdIKTargets = new Dictionary<AvatarIKGoal, IKTargetDesc>();
+    private ItemAsset_Weapon _itemInfo = null;
+    public ItemAsset_Weapon _ItemInfo => _itemInfo;
+    private ItemStoreDesc_Weapon _itemStoreInfo = null;
+    public ItemStoreDesc_Weapon _ItemStoreInfo => _itemStoreInfo;
+
+    public CharacterScript _owner = null;
+    protected bool _isRightHandWeapon = false;
+
+
+
 
 
     public virtual bool isWeaponUseReady() {return false;}
     public virtual void UseWeapon() {}
     public virtual bool isUsingMe() {return false;}
 
-    public virtual void Init(ItemAsset_Weapon info)
-    {
-        _itemInfo = info;
-    }
+    virtual public void TurnOnAim() { }
+    virtual public void TurnOffAim() { }
+    virtual public void UnEquip() { }
+
+    public virtual void Init(ItemAsset_Weapon info) {_itemInfo = info;}
 
     public virtual void InitIK()
     {
@@ -117,24 +124,17 @@ public class WeaponScript : MonoBehaviour
             _ownerIKSkript.RegistIK(this, goal, newIKDesc);
         }
     }
-    
-
-
 
     protected virtual void LateUpdate()
     {
         FollowSocketTransform();
     }
 
-
-
     virtual public void FollowSocketTransform()
     {
         transform.rotation = _socketTranform.rotation * Quaternion.Inverse(_addRotation);
         transform.position = _socketTranform.position + (transform.rotation * (-_addPosition));
     }
-
-
 
     virtual public void Equip(CharacterScript itemOwner, Transform followTransform)
     {
@@ -172,8 +172,4 @@ public class WeaponScript : MonoBehaviour
                 break;
         }
     }
-
-    virtual public void TurnOnAim() { }
-    virtual public void TurnOffAim() { }
-    virtual public void UnEquip() { }
 }
