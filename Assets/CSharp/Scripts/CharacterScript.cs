@@ -962,7 +962,7 @@ public class CharacterScript : GameActorScript, IHitable
 
                     KeyCode fireKeyCode = KeyCode.R;
 
-                    if (Input.GetKey(fireKeyCode) == false)
+                    if (Input.GetKeyDown(fireKeyCode) == false)
                     {
                         //Debug.Log("키가 안눌렸다");
                         return;
@@ -992,7 +992,7 @@ public class CharacterScript : GameActorScript, IHitable
 
                     //Debug.Log("재장전시작");
 
-                    gunScript.Reload();
+                    gunScript.StartReloadingProcess();
                     //발사
                 }
                 break;

@@ -203,13 +203,6 @@ public class Gunscript2 : WeaponScript
         transform.rotation = MyUtil.LootAtPercentageRotation(transform, _aimScript.GetAimSatellite().transform.position, stateChangingWeight);
     }
 
-    private void StartReloading(AnimationClip reloadingAnimation)
-    {
-        _reloadingTimeOriginal = reloadingAnimation.length;
-        _reloadingTime = _reloadingTimeOriginal;
-    }
-
-
 
     private void CalculateAimIK(bool isAimed)
     {
@@ -293,62 +286,6 @@ public class Gunscript2 : WeaponScript
     }
 
     #region Fire
-    public void Reload()
-    {
-        CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
-        ownerCharacterAnimatorScript.CalculateBodyWorkType_WeaponReload(true);
-        //왼손에 무언가를 들고있었다
-        {
-            //'왼손에 들고있던걸 집어넣는다'의 코루틴 실행.
-            //대기
-        }
-
-
-        //// Task
-        //{
-        //    AnimationClip reloadingAnimation = ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation;
-        //    StartReloading(reloadingAnimation);
-        //    if (_reloadingCoroutine == null)
-        //    {
-        //        _reloadingCoroutine = StartCoroutine(ReloadCoroutine());
-        //    }
-        //}
-        ////-----------------------로직분기점--------------------
-        //ReloadAnimation();//                                  |
-        ////-----------------------로직분기점--------------------
-
-
-        //뭔가를 들고있었다
-        {
-            //다시 꺼낸다.
-        }
-
-
-        {
-            //인벤토리랑 탄창 교체(혹은 그와 관련된 작업들);
-        }
-    }
-
-
-
-    private IEnumerator ReloadCoroutine()
-    {
-        while (true)
-        {
-            _reloadingTime -= Time.deltaTime;
-
-            if (_reloadingTime <= 0.0f)
-            {
-                _reloadingTime = 0.0f;
-                _reloadingCoroutine = null;
-                break;
-            }
-
-            yield return null;
-        }
-    }
-
-
 
     public void Fire()
     {
@@ -393,21 +330,6 @@ public class Gunscript2 : WeaponScript
 
         return true;
     }
-
-
-
-    private void ReloadAnimation()
-    {
-        //레이어 무시하고 재장전은 그냥 다써라
-        //한손으로 재장전할수는 없다
-
-        AvatarMask myAvatarMask = ResourceDataManager.Instance.GetAvatarMask("UpperBody");
-        float GunRecoilPower = 1.0f;
-        CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
-        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation, false, GunRecoilPower);
-    }
-
-
 
     private void FireAnimation()
     {
@@ -489,9 +411,62 @@ public class Gunscript2 : WeaponScript
     }
     #endregion Fire
 
+    #region Reload
+    public void StartReloadingProcess()
+    {
+        _reloadingCoroutine = StartCoroutine(ReloadCoroutine());
+    }
+
+    private IEnumerator ReloadCoroutine()
+    {
+        CoroutineLock lastCoroutineLock = null;
+        CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
+        lastCoroutineLock = ownerCharacterAnimatorScript.CalculateBodyWorkType_WeaponReload(true);
+
+        if (lastCoroutineLock != null)
+        {
+            while (lastCoroutineLock._isEnd == false)
+            {
+                yield return null;
+            }
+        }
 
 
+        ////-----------------------로직분기점--------------------
+        ReloadAnimation();//                                  |
+        ////-----------------------로직분기점--------------------
 
+
+        AnimationClip reloadingAnimation = ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation;
+        _reloadingTimeOriginal = reloadingAnimation.length;
+        _reloadingTime = _reloadingTimeOriginal;
+
+        while (true)
+        {
+            _reloadingTime -= Time.deltaTime;
+
+            if (_reloadingTime <= 0.0f)
+            {
+                _reloadingTime = 0.0f;
+                _reloadingCoroutine = null;
+                break;
+            }
+
+            yield return null;
+        }
+    }
+
+    private void ReloadAnimation()
+    {
+        //레이어 무시하고 재장전은 그냥 다써라
+        //한손으로 재장전할수는 없다
+
+        AvatarMask myAvatarMask = ResourceDataManager.Instance.GetAvatarMask("UpperBody");
+        float GunRecoilPower = 1.0f;
+        CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
+        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation, false, GunRecoilPower);
+    }
+    #endregion Reload
 
     #region AimShake
 

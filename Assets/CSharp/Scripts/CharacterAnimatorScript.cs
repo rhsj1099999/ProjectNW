@@ -110,10 +110,11 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     private int _currAnimIndex = -1;
 
 
-    protected List<bool> _bodyCoroutineStarted = new List<bool>();
     protected List<bool> _currentBusyAnimatorLayer = new List<bool>();
-    protected List<Coroutine> _currentBodyCoroutine = new List<Coroutine>();
     protected List<Action_LayerType> _bodyPartDelegates = new List<Action_LayerType>();
+
+    protected List<bool> _bodyCoroutineStarted = new List<bool>();
+    protected List<Coroutine> _currentBodyCoroutine = new List<Coroutine>();
 
 
     [SerializeField] protected int _currentBusyAnimatorLayer_BitShift = 0;
@@ -655,19 +656,15 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
                         _animator.SetLayerWeight(usingHandLayer, 0.0f); //왼손은 반드시 따라가야해서 0.0f
 
-                        ItemAsset_Weapon oppositeWeaponInfo = _owner.GetCurrentWeaponInfo(oppositeType);
+                        GameObject currOppositeWeapon = _owner.GetCurrentWeapon(oppositeType);
+                        
 
-                        if (oppositeWeaponInfo == null) //왼손무기를 쥐고있지 않다면
+                        if (currOppositeWeapon == null) //왼손무기를 쥐고있지 않다면
                         {
                             _animator.SetLayerWeight(oppositeHandLayer, 0.0f); //왼손 무기를 쥐고있지 않다면 모션을 따라가야해서 레이어를 꺼버린다.
                         }
                         else
                         {
-
-                            if (ResourceDataManager.Instance.GetHandlingAnimationInfo(oppositeWeaponInfo._WeaponType)._HandlingIdleAnimation_OneHand == null)
-                            {
-                                //_overrideController[MyUtil._motionChangingAnimationNames[oppositeHandLayer]] = _tempWeaponHandling_NoPlay;
-                            }
                             _animator.SetLayerWeight(oppositeHandLayer, 1.0f);
                         }
 
@@ -676,17 +673,20 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                     //공격 애니메이션이 아니다
                     else
                     {
+                        GameObject currLeftWeapon = _owner.GetCurrentWeapon(AnimatorLayerTypes.LeftHand);
+                        GameObject currRightWeapon = _owner.GetCurrentWeapon(AnimatorLayerTypes.RightHand);
+
                         ItemAsset_Weapon leftHandWeaponScript = _owner.GetCurrentWeaponInfo(AnimatorLayerTypes.LeftHand);
                         ItemAsset_Weapon rightHandWeaponScript = _owner.GetCurrentWeaponInfo(AnimatorLayerTypes.RightHand);
 
                         //왼손 무기를 쥐고있지 않거나 왼손 무기의 파지 애니메이션이 없다
-                        float leftHandLayerWeight = (leftHandWeaponScript == null || ResourceDataManager.Instance.GetHandlingAnimationInfo(leftHandWeaponScript._WeaponType)._HandlingIdleAnimation_OneHand == null) //
+                        float leftHandLayerWeight = (currLeftWeapon == null || ResourceDataManager.Instance.GetHandlingAnimationInfo(leftHandWeaponScript._WeaponType)._HandlingIdleAnimation_OneHand == null) //
                             ? 0.0f
                             : 1.0f;
                         _animator.SetLayerWeight(leftHandMainLayer, leftHandLayerWeight);
 
                         //오른손 무기를 쥐고있지 않거나 오른손 무기의 파지 애니메이션이 없다
-                        float rightHandLayerWeight = (rightHandWeaponScript == null || ResourceDataManager.Instance.GetHandlingAnimationInfo(rightHandWeaponScript._WeaponType)._HandlingIdleAnimation_OneHand == null)
+                        float rightHandLayerWeight = (currRightWeapon == null || ResourceDataManager.Instance.GetHandlingAnimationInfo(rightHandWeaponScript._WeaponType)._HandlingIdleAnimation_OneHand == null)
                             ? 0.0f
                             : 1.0f;
                         _animator.SetLayerWeight(rightHandMainLayer, rightHandLayerWeight);
@@ -735,7 +735,9 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
-    public void CalculateBodyWorkType_WeaponReload(bool isRightWeaponTrigger)
+
+
+    public CoroutineLock CalculateBodyWorkType_WeaponReload(bool isRightWeaponTrigger)
     {
         HashSet<int> lockCompares = new HashSet<int>();
 
@@ -750,6 +752,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         int targetPartIndex = (int)targetPartType;
 
         GameObject currOppositeWeapon = _owner.GetCurrentWeapon(oppositePartType);
+
+        CoroutineLock ret = null;
 
         if (currOppositeWeapon != null) //반대손에 무언가를 들고있다.
         {
@@ -768,14 +772,23 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyWeapon));
             //레이어 웨이트 내리기
             _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+            //코루틴 락 해제
+
+            ret = new CoroutineLock();
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.UnLockCoroutine));
+            {
+                _bodyPartWorks[(int)oppositePartType].Last.Value._coroutineLock = ret;
+            }
 
             lockCompares.Add(oppositePartIndex);
+
+            foreach (int index in lockCompares)
+            {
+                StartProceduralWork((AnimatorLayerTypes)index, _bodyPartWorks[index].First.Value);
+            }
         }
 
-        foreach (int index in lockCompares)
-        {
-            StartProceduralWork((AnimatorLayerTypes)index, _bodyPartWorks[index].First.Value);
-        }
+        return ret;
     }
 
     public void CalculateBodyWorkType_ChangeWeapon(WeaponGrabFocus ownerWeaponGrabFocusType, bool isRightWeaponTrigger, int layerLockResult, bool forcedGo = false)
@@ -1525,14 +1538,10 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         while (true)
         {
-            float mainLayerBlendDelta = 0.0f;
-            float subLayerBlendDelta = 0.0f;
-
-            mainLayerBlendDelta = targetBlendingDesc._transitionSpeed * Time.deltaTime * -1.0f;
-            subLayerBlendDelta = mainLayerBlendDelta;
+            float mainLayerBlendDelta = targetBlendingDesc._transitionSpeed * Time.deltaTime * -1.0f;
 
             targetBlendingDesc._blendTarget += mainLayerBlendDelta;
-            targetBlendingDesc._blendTarget_Sub += subLayerBlendDelta;
+            targetBlendingDesc._blendTarget_Sub += mainLayerBlendDelta;
 
             targetBlendingDesc._blendTarget = Mathf.Clamp(targetBlendingDesc._blendTarget, 0.0f, 1.0f);
             targetBlendingDesc._blendTarget_Sub = Mathf.Clamp(targetBlendingDesc._blendTarget_Sub, 0.0f, 1.0f);
@@ -1575,7 +1584,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     protected void StartNextCoroutine(AnimatorLayerTypes layerType)
     {
         LinkedList<BodyPartBlendingWork> target = _bodyPartWorks[(int)layerType];
-        Debug.Log("CoroutineDone" + layerType + "//" + target.First.Value._workType);
         target.RemoveFirst();
 
         if (target.Count <= 0)
@@ -1583,7 +1591,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             UpdateBusyAnimatorLayers(1 << (int)layerType, false);
             return;
         }
-        Debug.Log("Coroutine Start" + layerType + "//" + target.First.Value._workType);
+
         StartProceduralWork(layerType, target.First.Value);
     }
 
@@ -1613,7 +1621,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
     #endregion Start CoroutineFunc
 
-    protected Coroutine StartProceduralWork(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    protected void StartProceduralWork(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
     {
         Coroutine startedCoroutine = null;
 
@@ -1795,15 +1803,13 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         {
             Debug.Assert(false, "코루틴 시작에 실패했습니다.");
             Debug.Break();
-            return null;
+            return;
         }
 
         int layerTypeIndex = (int)layerType;
 
         _bodyCoroutineStarted[layerTypeIndex] = true;
         _currentBodyCoroutine[layerTypeIndex] = startedCoroutine;
-
-        return startedCoroutine;
     }
 
 
