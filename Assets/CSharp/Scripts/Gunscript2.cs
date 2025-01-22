@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEditor.Rendering;
@@ -14,7 +15,6 @@ public class Gunscript2 : WeaponScript
     ------------------------------------------*/
     private AimScript2 _aimScript = null;
 
-    [SerializeField] UnityEvent _whenShootEvent = null;
     [SerializeField] private GameObject _firePosition = null;
     [SerializeField] private GameObject _stockPosition = null;
 
@@ -23,6 +23,7 @@ public class Gunscript2 : WeaponScript
     private Coroutine _reloadingCoroutine = null;
 
 
+    //[SerializeField] UnityEvent _whenShootEvent = null;
     //[SerializeField] private AnimationClip _shootAnimationClip = null;
     //[SerializeField] private AnimationClip _reloadingClip = null;
     // private GameObject _bullet = null;
@@ -65,6 +66,8 @@ public class Gunscript2 : WeaponScript
     protected Transform _shoulderStock_Unity = null;
     protected Transform _elbowPosition_Unity = null;
     private List<int> _firingEffectedLayer = new List<int>();
+
+    private ItemStoreDesc_Magazine _myMagazine = null;
 
 
 
@@ -183,12 +186,55 @@ public class Gunscript2 : WeaponScript
             return false;
         }
 
-        if (false/*탄창이 없어요*/)
+        return true;
+    }
+
+
+    public ItemStoreDescBase FindMagazine()
+    {
+        ItemStoreDescBase ret = null;
+
+        List<InventoryBoard> ownerInventoryBoards = _owner.GetMyInventoryBoards();
+
+        //캐릭터에 인벤토리가 하나도 없다 = 갈아끼울 수 있는 탄창이 존재할리 없다
+        if (ownerInventoryBoards.Count <= 0) 
         {
-            return false;
+            return ret;
         }
 
-        return true;
+        foreach (InventoryBoard inventoryBoard in ownerInventoryBoards)
+        {
+            Dictionary<int, SortedDictionary<int, ItemStoreDescBase>> ownerItems = inventoryBoard._Items;
+
+            foreach (KeyValuePair<int, SortedDictionary<int, ItemStoreDescBase>> pair in ownerItems)
+            {
+                ItemAsset itemAsset = ItemInfoManager.Instance.GetItemInfo(pair.Key);
+
+                if (itemAsset._ItemType != ItemAsset.ItemType.Magazine)
+                {
+                    continue;
+                }
+
+                ItemAsset_Bullet.BulletType magazineBulletType = ((ItemAsset_Magazine)itemAsset)._MagazineType;
+
+                if (_ItemInfo._UsingBulletType != magazineBulletType)
+                {
+                    continue;
+                }
+
+                SortedDictionary<int, ItemStoreDescBase> sameKeyItems = pair.Value;
+
+                if (sameKeyItems.Count <= 0) 
+                {
+                    continue;
+                }
+
+                ret = sameKeyItems.First().Value;
+                break;
+            }
+        }
+
+        return ret;
     }
 
     private void DelicateRotationControl()
@@ -289,6 +335,15 @@ public class Gunscript2 : WeaponScript
 
     public void Fire()
     {
+        _myMagazine._bullets.RemoveAt(_myMagazine._bullets.Count - 1);
+
+        //데미지는 총알에 의해 결정된다
+        {
+
+        }
+
+        //RayCheck();
+
         StartAimShake();
         if (_aimShakeCoroutine == null)
         {
@@ -306,17 +361,23 @@ public class Gunscript2 : WeaponScript
         //-----------------------로직분기점--------------------
         FireAnimation();//                                    |
         //-----------------------로직분기점--------------------
-
-
-        {
-            //탄창에 탄알 하나 감소
-        }
-
-        //RayCheck();
     }
 
     public bool FireCheck()
     {
+        if (_myMagazine == null)
+        {
+            //탄창이 없는데요
+            return false;
+        }
+
+        if (_myMagazine._bullets.Count <= 0)
+        {
+            //탄창은 있는데 탄이 없는데요
+            return false;
+        }
+        
+
         if (_coolTime > 0.0f) 
         {
             return false;
@@ -412,12 +473,68 @@ public class Gunscript2 : WeaponScript
     #endregion Fire
 
     #region Reload
-    public void StartReloadingProcess()
+
+    public void StartReloadingProcess(ItemStoreDescBase ownerFirstMagazine)
     {
-        _reloadingCoroutine = StartCoroutine(ReloadCoroutine());
+        if (ownerFirstMagazine == null)
+        {
+            Debug.Assert(false, "탄창을 찾을 수 없는데 장전프로세스가 시작이 됐습니까?");
+            Debug.Break();
+        }
+
+
+        int targetX = -1;
+        int targetY = -1;
+        bool isRotated = false;
+        InventoryBoard targetBoard = null;
+        if (_myMagazine != null)
+        {
+            List<InventoryBoard> ownerInventoryBoards = _owner.GetMyInventoryBoards();
+            foreach (InventoryBoard inventoryBoard in ownerInventoryBoards)
+            {
+                if (inventoryBoard.CheckInventorySpace_MustOpt(_myMagazine._itemAsset, ref targetX, ref targetY, ref isRotated) == false)
+                {
+                    continue;
+                }
+
+                targetBoard = inventoryBoard;
+                break;
+            }
+        }
+
+
+        /*-----------------------------------------------------------------
+        |TODO| 재장전시 일단 여기서 아이템정보를 세팅하고 갑니다.
+        후에 디테일을 수정할때는 이곳을 삭제하세요
+        -----------------------------------------------------------------*/
+        if (_myMagazine != null)
+        {//총에 기존 탄창이 장착이 돼 있을때
+
+            if (targetBoard != null)
+            {//기존 탄창을 넣을 수 있는 공간이 있다면
+
+                _myMagazine._isRotated = isRotated;
+                targetBoard.AddItemUsingForcedIndex(_myMagazine, targetX, targetY, null);
+            }
+            else
+            {//없으면 버려라
+                ItemInfoManager.Instance.DropItemToField(transform, _myMagazine);
+            }
+        }
+
+        _myMagazine = ownerFirstMagazine as ItemStoreDesc_Magazine;
+        List<GameObject> itemUIs = ownerFirstMagazine._owner.GetItemUIs(ownerFirstMagazine);
+        foreach (GameObject itemUI in itemUIs)
+        {
+            StartCoroutine(itemUI.GetComponent<ItemUI>().DestroyCoroutine());
+        }
+        ownerFirstMagazine._owner.DeleteOnMe(ownerFirstMagazine);
+
+
+        _reloadingCoroutine = StartCoroutine(ReloadCoroutine(ownerFirstMagazine));
     }
 
-    private IEnumerator ReloadCoroutine()
+    private IEnumerator ReloadCoroutine(ItemStoreDescBase ownerFirstMagazine)
     {
         CoroutineLock lastCoroutineLock = null;
         CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
@@ -432,10 +549,7 @@ public class Gunscript2 : WeaponScript
         }
 
 
-        ////-----------------------로직분기점--------------------
-        ReloadAnimation();//                                  |
-        ////-----------------------로직분기점--------------------
-
+        ReloadAnimation();
 
         AnimationClip reloadingAnimation = ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation;
         _reloadingTimeOriginal = reloadingAnimation.length;
@@ -462,9 +576,8 @@ public class Gunscript2 : WeaponScript
         //한손으로 재장전할수는 없다
 
         AvatarMask myAvatarMask = ResourceDataManager.Instance.GetAvatarMask("UpperBody");
-        float GunRecoilPower = 1.0f;
         CharacterAnimatorScript ownerCharacterAnimatorScript = _owner.GCST<CharacterAnimatorScript>();
-        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation, false, GunRecoilPower);
+        ownerCharacterAnimatorScript.RunAdditivaAnimationClip(myAvatarMask, ResourceDataManager.Instance.GetGunAnimation(_ItemInfo)._ReloadAnimation, false, 1.0f/*Weight*/);
     }
     #endregion Reload
 

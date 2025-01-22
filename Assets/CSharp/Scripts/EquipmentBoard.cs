@@ -26,6 +26,11 @@ public class EquipmentBoard : BoardUIBaseScript
 
     private Dictionary<ItemStoreDescBase, List<GameObject>> _currEquippedItemUIObject = new Dictionary<ItemStoreDescBase, List<GameObject>>();
     private Dictionary<ItemStoreDescBase, List<GameObject>> _currEqippedItemMeshObject = new Dictionary<ItemStoreDescBase, List<GameObject>>();
+    
+    public override List<GameObject> GetItemUIs(ItemStoreDescBase storeDesc)
+    {
+        return _currEquippedItemUIObject[storeDesc];
+    }
 
     public override void Init(UIComponent owner)
     {

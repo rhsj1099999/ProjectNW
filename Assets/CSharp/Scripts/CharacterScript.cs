@@ -7,8 +7,7 @@ using static AnimationAttackFrameAsset;
 using static StateGraphAsset;
 using static StatScript;
 using static ItemAsset_Weapon;
-
-
+using Unity.VisualScripting;
 
 public class StateContollerComponentDesc
 {
@@ -108,7 +107,20 @@ public class CharacterScript : GameActorScript, IHitable
     private Dictionary<Type, Component> _mySubScripts = new Dictionary<Type, Component>();
 
     [SerializeField] protected GameObject _inventoryUIPrefab = null;
-    public GameObject GetInventory() { return _inventoryUIPrefab; }
+    protected List<InventoryBoard> _inventoryBoardCached = new List<InventoryBoard>();
+    public List<InventoryBoard> GetMyInventoryBoards() {return _inventoryBoardCached;}
+    private void InitInventory()
+    {
+        InventoryBoard[] inventories = _inventoryUIPrefab.GetComponentsInChildren<InventoryBoard>();
+        foreach (var item in inventories)
+        {
+            _inventoryBoardCached.Add(item);
+        }
+    }
+    public void ChangeInventoryInfo()
+    {
+        //인벤토리 개수가 추가됐다면 이 함수를 통해 캐싱된 컴포넌트를 변경할 것
+    }
 
 
     StatScript _myStat = new StatScript();
@@ -204,6 +216,11 @@ public class CharacterScript : GameActorScript, IHitable
         foreach (var component in _components)
         {
             component.SubScriptStart();
+        }
+
+        if (_inventoryUIPrefab != null)
+        {
+            InitInventory();
         }
     }
 
@@ -982,6 +999,16 @@ public class CharacterScript : GameActorScript, IHitable
                         return;
                     }
 
+
+                    ItemStoreDescBase ownerInventoryFirstMagazine = gunScript.FindMagazine();
+
+                    if (ownerInventoryFirstMagazine == null)
+                    {
+                        //탄창이 없어요
+                        return;
+                    }
+                    
+
                     bool reloadCheck = gunScript.ReloadCheck();
 
                     if (reloadCheck == false)
@@ -990,9 +1017,7 @@ public class CharacterScript : GameActorScript, IHitable
                         return;
                     }
 
-                    //Debug.Log("재장전시작");
-
-                    gunScript.StartReloadingProcess();
+                    gunScript.StartReloadingProcess(ownerInventoryFirstMagazine);
                     //발사
                 }
                 break;

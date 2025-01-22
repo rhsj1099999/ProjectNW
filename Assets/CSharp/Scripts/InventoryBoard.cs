@@ -23,7 +23,8 @@ public class InventoryBoard : BoardUIBaseScript
     private List<GameObject> _cells = new List<GameObject>();
 
     //아이템이 있는지 없는지 확인용
-    private Dictionary<int/*키*/, Dictionary<int/*저장된 칸*/, ItemStoreDescBase>> _items = new Dictionary<int, Dictionary<int, ItemStoreDescBase>>();
+    private Dictionary<int/*키*/, SortedDictionary<int/*저장된 칸*/, ItemStoreDescBase>> _items = new Dictionary<int, SortedDictionary<int, ItemStoreDescBase>>();
+    public Dictionary<int, SortedDictionary<int, ItemStoreDescBase>> _Items => _items;
 
     //아이템 저장 UI 저장용
     private Dictionary<ItemStoreDescBase/*저장정보*/, GameObject/*조작용 UI*/> _itemUIs = new Dictionary<ItemStoreDescBase, GameObject>();
@@ -96,7 +97,12 @@ public class InventoryBoard : BoardUIBaseScript
         DebugCells();
     }
 
-
+    public override List<GameObject> GetItemUIs(ItemStoreDescBase storeDesc)
+    {
+        List<GameObject> ret = new List<GameObject>();
+        ret.Add(_itemUIs[storeDesc]);
+        return ret;
+    }
 
 
     public GameObject getCell(int index)
@@ -242,12 +248,12 @@ public class InventoryBoard : BoardUIBaseScript
         GameObject itemUI = CreateInventoryItem(storedDesc._itemAsset, targetX, targetY, inventoryIndex, storedDesc._count, storedDesc._isRotated);
         itemUI.GetComponent<ItemUI>().Initialize(storedDesc);
 
-        Dictionary<int, ItemStoreDescBase> sameKeyItems = null;
+        SortedDictionary<int, ItemStoreDescBase> sameKeyItems = null;
         _items.TryGetValue(storedDesc._itemAsset._ItemKey, out sameKeyItems);
         if (sameKeyItems == null) 
         {
             //해당 Key의 Item이 최초추가 됐다.
-            _items.Add(storedDesc._itemAsset._ItemKey, new Dictionary<int, ItemStoreDescBase>());
+            _items.Add(storedDesc._itemAsset._ItemKey, new SortedDictionary<int, ItemStoreDescBase>());
         }
 
         sameKeyItems = _items[storedDesc._itemAsset._ItemKey];
@@ -296,7 +302,7 @@ public class InventoryBoard : BoardUIBaseScript
         Dictionary<int, Dictionary<int, ItemStoreDescBase>> _items;
         ----------------------------------------------------*/
 
-        Dictionary<int, ItemStoreDescBase> currSameKeyItems = null;
+        SortedDictionary<int, ItemStoreDescBase> currSameKeyItems = null;
         _items.TryGetValue(itemInfo._ItemKey, out currSameKeyItems);
 
         if (currSameKeyItems == null) 
@@ -373,10 +379,10 @@ public class InventoryBoard : BoardUIBaseScript
         
         if (_items.ContainsKey(info._ItemKey) == false) //추가된적이 없다.
         {
-            _items.Add(info._ItemKey, new Dictionary<int, ItemStoreDescBase>());
+            _items.Add(info._ItemKey, new SortedDictionary<int, ItemStoreDescBase>());
         }
 
-        Dictionary<int, ItemStoreDescBase> itemKeyCategory = _items[info._ItemKey];
+        SortedDictionary<int, ItemStoreDescBase> itemKeyCategory = _items[info._ItemKey];
 
         ItemStoreDescBase storeDesc = null;
         {
@@ -446,7 +452,7 @@ public class InventoryBoard : BoardUIBaseScript
             return;
         }
 
-        Dictionary<int, ItemStoreDescBase> sameItemsByItemKey = _items[storedDesc._itemAsset._ItemKey];
+        SortedDictionary<int, ItemStoreDescBase> sameItemsByItemKey = _items[storedDesc._itemAsset._ItemKey];
 
         if (sameItemsByItemKey.ContainsKey(storedDesc._storedIndex) == false)
         {

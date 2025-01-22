@@ -22,8 +22,7 @@ public class ItemStoreDesc_Magazine : ItemStoreDescBase
         }
     }
 
-    private List<ItemStoreDescBase> _bullets = new List<ItemStoreDescBase>();
-    private bool _canFire = false;
+    public List<ItemStoreDescBase> _bullets = new List<ItemStoreDescBase>();
 
     public override void OverlapItem(ItemStoreDescBase storeDesc, ref bool delete)
     {
@@ -58,8 +57,6 @@ public class ItemStoreDesc_Magazine : ItemStoreDescBase
         {
             _bullets.Add(storeDesc);
         }
-
-        _canFire = (_bullets.Count >= 1);
 
         Debug.Log("»ðÅºÇß´Ù");
 

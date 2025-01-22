@@ -100,6 +100,131 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
         return _itemAssets[itemKey];
     }
 
+    public ItemAsset.ItemType GetItemType(int itemKey)
+    {
+        Debug.Assert(_itemAssets.ContainsKey(itemKey) == true, "없는 아이템 인포를 요청했습니다 key : " + itemKey);
+        return _itemAssets[itemKey]._ItemType;
+    }
+
+
+    private void GetActivatedRenderers(GameObject targetObject, ref Bounds ret, GameObject fromOwner)
+    {
+        Renderer[] renderers = targetObject.GetComponentsInChildren<Renderer>();
+
+        if (renderers.Length <= 0)
+        {
+            //기본 사이즈 설정
+            return;
+        }
+
+        Bounds firstBound = renderers[0].bounds;
+        ret = firstBound;
+
+        foreach (var renderer in renderers)
+        {
+            if (renderer.enabled == false)
+            {
+                continue;
+            }
+
+            Bounds diffBound = renderer.bounds;
+            ret.Encapsulate(diffBound);
+        }
+    }
+
+
+
+    public void DropItemToField(Transform callerTransform, ItemStoreDescBase itemStoreDesc)
+    {
+        //아이템 생성
+        GameObject dropItemGameObject = new GameObject(itemStoreDesc._itemAsset._ItemName);
+        dropItemGameObject.transform.position = Vector3.zero;
+        dropItemGameObject.transform.rotation = Quaternion.identity;
+
+        GameObject dropItemModel = Instantiate(itemStoreDesc._itemAsset._ItemModel, dropItemGameObject.transform);
+        dropItemModel.transform.localPosition = Vector3.zero;
+        dropItemModel.transform.localRotation = Quaternion.identity;
+
+        Bounds itemBounds = new Bounds();
+        GetActivatedRenderers(dropItemModel, ref itemBounds, callerTransform.gameObject);
+
+        Rigidbody addRigidBody = dropItemGameObject.AddComponent<Rigidbody>();
+        {
+            addRigidBody.drag = 0.5f;
+            addRigidBody.angularDrag = 0.5f;
+            addRigidBody.interpolation = RigidbodyInterpolation.Interpolate;
+            addRigidBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            addRigidBody.includeLayers = 0;
+            addRigidBody.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("Player"));
+        }
+
+        CapsuleCollider addCapsuleCollider = dropItemGameObject.AddComponent<CapsuleCollider>();
+        {
+            Vector3 lengths = new Vector3(itemBounds.size.x, itemBounds.size.y, itemBounds.size.z);
+            int heightIndex = 0;
+            float maxVal = 0.0f;
+            for (int i = 0; i < 3; i++)
+            {
+                if (maxVal <= lengths[i])
+                {
+                    maxVal = lengths[i];
+                    heightIndex = i;
+                }
+            }
+
+            addCapsuleCollider.direction = heightIndex;
+            addCapsuleCollider.includeLayers = 0;
+            addCapsuleCollider.excludeLayers = ~LayerMask.GetMask("StaticNavMeshLayer");
+            addCapsuleCollider.center = itemBounds.center;
+            addCapsuleCollider.height = lengths[heightIndex];
+            lengths[heightIndex] = 0.0f;
+            addCapsuleCollider.radius = lengths.magnitude / 2.0f;
+        }
+
+
+
+        GameObject dropItemInteraction = new GameObject("Interaction");
+        dropItemInteraction.SetActive(false);
+        dropItemInteraction.layer = LayerMask.NameToLayer("InteractionableCollider");
+        dropItemInteraction.transform.SetParent(dropItemGameObject.transform);
+        dropItemInteraction.transform.position = Vector3.zero;
+        dropItemInteraction.transform.rotation = Quaternion.identity;
+
+        CapsuleCollider interactionCollider = dropItemInteraction.AddComponent<CapsuleCollider>();
+        {
+            interactionCollider.direction = addCapsuleCollider.direction;
+            interactionCollider.includeLayers = addCapsuleCollider.includeLayers;
+            interactionCollider.excludeLayers = ~LayerMask.GetMask("Player");
+            interactionCollider.center = addCapsuleCollider.center;
+            interactionCollider.height = addCapsuleCollider.height;
+            interactionCollider.radius = addCapsuleCollider.radius;
+            interactionCollider.isTrigger = true;
+        }
+
+        UICall_AcquireItem interactionUIComponent = dropItemInteraction.AddComponent<UICall_AcquireItem>();
+        UICall_AcquireItem.UICall_AcquireItemDesc newDesc = new UICall_AcquireItem.UICall_AcquireItemDesc();
+        newDesc._itemStoreDesc = itemStoreDesc;
+        newDesc._itemTarget = dropItemGameObject;
+        newDesc._offCollider = interactionCollider;
+        interactionUIComponent.Init(newDesc);
+        dropItemInteraction.SetActive(true);
+
+
+
+        dropItemGameObject.transform.position = callerTransform.gameObject.transform.position + Vector3.up * 1.5f;
+        dropItemGameObject.transform.rotation = callerTransform.gameObject.transform.rotation;
+
+        {
+            float itemThrowForce = 1.0f;
+
+            addRigidBody.position = callerTransform.gameObject.transform.position + Vector3.up * 1.5f;
+            Vector3 initialForceVector = Quaternion.AngleAxis(-30.0f, callerTransform.gameObject.transform.right) * callerTransform.gameObject.transform.forward * itemThrowForce;
+            addRigidBody.AddForce(initialForceVector, ForceMode.Impulse);
+        }
+    }
+
+
+
     //public ItemAsset_Weapon GetItemSubInfo_Weapon(ItemAsset itemAsset)
     //{
     //    ItemAsset_Weapon asset = null;

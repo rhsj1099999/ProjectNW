@@ -34,22 +34,15 @@ public class UICall_AcquireItem : UICallScript
                 return;
             }
             
-            GameObject inventoryObject = characterScript.GetInventory();
+            List<InventoryBoard> ownerInventoryBoards = characterScript.GetMyInventoryBoards();
 
-            if (inventoryObject == null) 
-            {
-                return;
-            }
-
-            InventoryBoard[] inventories = inventoryObject.GetComponentsInChildren<InventoryBoard>();
-
-            if (inventories.Length <= 0)
+            if (ownerInventoryBoards.Count <= 0)
             {
                 return;
             }
 
             bool isSuccess = false;
-            foreach (InventoryBoard inventoryBoard in inventories)
+            foreach (InventoryBoard inventoryBoard in ownerInventoryBoards)
             {
                 int targetX = -1;
                 int targetY = -1;
