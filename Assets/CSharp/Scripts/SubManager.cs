@@ -31,6 +31,15 @@ public abstract class SubManager<T> : MonoBehaviour, ISubManager where T : SubMa
         }
     }
 
+    //private virtual void Awake()
+    //{
+    //    if (_instance != null && _instance != this)
+    //    {
+    //        Destroy(this.gameObject);
+    //        return;
+    //    }
+    //}
+
     public void SingletonAwake()
     {
         if (_instance != null && _instance != this)

@@ -50,6 +50,11 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
 
     private void Start()
     {
+        if (_isInitted == false)
+        {
+            Debug.Assert(false, "Init이 호출되지 않았습니다");
+            Debug.Break();
+        }
     }
 
     void Update()
