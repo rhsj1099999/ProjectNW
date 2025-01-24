@@ -155,6 +155,13 @@ namespace KinematicCharacterController
     [RequireComponent(typeof(CapsuleCollider))]
     public class KinematicCharacterMotor : MonoBehaviour
     {
+        [SerializeField] private List<Collider> _exceptColiiders_Init = new List<Collider>();
+        private HashSet<Collider> _exceptColliders = new HashSet<Collider>();
+
+
+        [SerializeField] private Collider _penatrationOverrideCollider = null;
+        public Collider _PenetrationCollider => _penatrationOverrideCollider;
+
 #pragma warning disable 0414
         [Header("Components")]
         /// <summary>
@@ -418,6 +425,7 @@ namespace KinematicCharacterController
         /// </summary>
         public OverlapResult[] Overlaps { get { return _overlaps; } }
         private OverlapResult[] _overlaps = new OverlapResult[MaxRigidbodyOverlapsCount];
+        private bool _isRotationSensitive = false;
 
         /// <summary>
         /// The motor's assigned controller
@@ -593,20 +601,8 @@ namespace KinematicCharacterController
         }
 
         /// <summary>
-        /// Sets whether or not the motor will solve collisions when moving (or moved onto)
-        /// </summary>
-        public void SetMovementCollisionsSolvingActivation(bool movementCollisionsSolvingActive)
-        {
-            _solveMovementCollisions = movementCollisionsSolvingActive;
-        }
-
-        /// <summary>
         /// Sets whether or not grounding will be evaluated for all hits
         /// </summary>
-        public void SetGroundSolvingActivation(bool stabilitySolvingActive)
-        {
-            _solveGrounding = stabilitySolvingActive;
-        }
 
         /// <summary>
         /// Sets the character's position directly
@@ -659,20 +655,20 @@ namespace KinematicCharacterController
         /// <summary>
         /// Moves the character position, taking all movement collision solving int account. The actual move is done the next time the motor updates are called
         /// </summary>
-        public void MoveCharacter(Vector3 toPosition)
-        {
-            _movePositionDirty = true;
-            _movePositionTarget = toPosition;
-        }
+        //public void MoveCharacter(Vector3 toPosition)
+        //{
+        //    _movePositionDirty = true;
+        //    _movePositionTarget = toPosition;
+        //}
 
         /// <summary>
         /// Moves the character rotation. The actual move is done the next time the motor updates are called
         /// </summary>
-        public void RotateCharacter(Quaternion toRotation)
-        {
-            _moveRotationDirty = true;
-            _moveRotationTarget = toRotation;
-        }
+        //public void RotateCharacter(Quaternion toRotation)
+        //{
+        //    _moveRotationDirty = true;
+        //    _moveRotationTarget = toRotation;
+        //}
 
         /// <summary>
         /// Returns all the state information of the motor that is pertinent for simulation
@@ -743,16 +739,6 @@ namespace KinematicCharacterController
             _transientPosition = _transform.position;
             TransientRotation = _transform.rotation;
 
-            // Build CollidableLayers mask
-            CollidableLayers = 0;
-            for (int i = 0; i < 32; i++)
-            {
-                if (!Physics.GetIgnoreLayerCollision(this.gameObject.layer, i))
-                {
-                    CollidableLayers |= (1 << i);
-                }
-            }
-
             SetCapsuleDimensions(CapsuleRadius, CapsuleHeight, CapsuleYOffset);
         }
 
@@ -768,134 +754,60 @@ namespace KinematicCharacterController
         public void UpdatePhase1(float deltaTime)
         {
             // NaN propagation safety stop
-            if (float.IsNaN(BaseVelocity.x) || float.IsNaN(BaseVelocity.y) || float.IsNaN(BaseVelocity.z))
             {
-                BaseVelocity = Vector3.zero;
-            }
-            if (float.IsNaN(_attachedRigidbodyVelocity.x) || float.IsNaN(_attachedRigidbodyVelocity.y) || float.IsNaN(_attachedRigidbodyVelocity.z))
-            {
-                _attachedRigidbodyVelocity = Vector3.zero;
+                if (float.IsNaN(BaseVelocity.x) || float.IsNaN(BaseVelocity.y) || float.IsNaN(BaseVelocity.z))
+                {
+                    BaseVelocity = Vector3.zero;
+                }
+                if (float.IsNaN(_attachedRigidbodyVelocity.x) || float.IsNaN(_attachedRigidbodyVelocity.y) || float.IsNaN(_attachedRigidbodyVelocity.z))
+                {
+                    _attachedRigidbodyVelocity = Vector3.zero;
+                }
+
             }
 
+            //에디터일떄, 스케일 값 에러 방지
+            {
 #if UNITY_EDITOR
-            if (!Mathf.Approximately(_transform.lossyScale.x, 1f) || !Mathf.Approximately(_transform.lossyScale.y, 1f) || !Mathf.Approximately(_transform.lossyScale.z, 1f))
-            {
-                Debug.LogError("Character's lossy scale is not (1,1,1). This is not allowed. Make sure the character's transform and all of its parents have a (1,1,1) scale.", this.gameObject);
-            }
+                if (!Mathf.Approximately(_transform.lossyScale.x, 1f) || !Mathf.Approximately(_transform.lossyScale.y, 1f) || !Mathf.Approximately(_transform.lossyScale.z, 1f))
+                {
+                    Debug.LogError("Character's lossy scale is not (1,1,1). This is not allowed. Make sure the character's transform and all of its parents have a (1,1,1) scale.", this.gameObject);
+                }
 #endif
-
+            }
+            
             _rigidbodiesPushedThisMove.Clear();
 
             // Before update
             CharacterController.BeforeCharacterUpdate(deltaTime);
 
-            _transientPosition = _transform.position;
-            TransientRotation = _transform.rotation;
-            _initialSimulationPosition = _transientPosition;
-            _initialSimulationRotation = _transientRotation;
-            _rigidbodyProjectionHitCount = 0;
-            _overlapsCount = 0;
-            _lastSolvedOverlapNormalDirty = false;
-
-            #region Handle Move Position
-            if (_movePositionDirty)
+            //초기 변수 세팅
             {
-                if (_solveMovementCollisions)
-                {
-                    Vector3 tmpVelocity = GetVelocityFromMovement(_movePositionTarget - _transientPosition, deltaTime);
-                    if (InternalCharacterMove(ref tmpVelocity, deltaTime))
-                    {
-                        if (InteractiveRigidbodyHandling)
-                        {
-                            ProcessVelocityForRigidbodyHits(ref tmpVelocity, deltaTime);
-                        }
-                    }
-                }
-                else
-                {
-                    _transientPosition = _movePositionTarget;
-                }
+                _transientPosition = _transform.position;
+                _transientRotation = _transform.rotation;
 
-                _movePositionDirty = false;
-            }
-            #endregion
+                _initialSimulationPosition = _transientPosition;
+                _initialSimulationRotation = _transientRotation;
 
-            LastGroundingStatus.CopyFrom(GroundingStatus);
-            GroundingStatus = new CharacterGroundingReport();
-            GroundingStatus.GroundNormal = _characterUp;
+                _rigidbodyProjectionHitCount = 0;
+                _overlapsCount = 0;
+                _lastSolvedOverlapNormalDirty = false;
 
-            if (_solveMovementCollisions)
-            {
-                #region Resolve initial overlaps
-                Vector3 resolutionDirection = _cachedWorldUp;
-                float resolutionDistance = 0f;
-                int iterationsMade = 0;
-                bool overlapSolved = false;
-                while (iterationsMade < MaxDecollisionIterations && !overlapSolved)
-                {
-                    int nbOverlaps = CharacterCollisionsOverlap(_transientPosition, _transientRotation, _internalProbedColliders);
-
-                    if (nbOverlaps > 0)
-                    {
-                        // Solve overlaps that aren't against dynamic rigidbodies or physics movers
-                        for (int i = 0; i < nbOverlaps; i++)
-                        {
-                            if (GetInteractiveRigidbody(_internalProbedColliders[i]) == null)
-                            {
-                                // Process overlap
-                                Transform overlappedTransform = _internalProbedColliders[i].GetComponent<Transform>();
-                                if (Physics.ComputePenetration(
-                                        Capsule,
-                                        _transientPosition,
-                                        _transientRotation,
-                                        _internalProbedColliders[i],
-                                        overlappedTransform.position,
-                                        overlappedTransform.rotation,
-                                        out resolutionDirection,
-                                        out resolutionDistance))
-                                {
-                                    // Resolve along obstruction direction
-                                    HitStabilityReport mockReport = new HitStabilityReport();
-                                    mockReport.IsStable = IsStableOnNormal(resolutionDirection);
-                                    resolutionDirection = GetObstructionNormal(resolutionDirection, mockReport.IsStable);
-
-                                    // Solve overlap
-                                    Vector3 resolutionMovement = resolutionDirection * (resolutionDistance + CollisionOffset);
-                                    _transientPosition += resolutionMovement;
-
-                                    // Remember overlaps
-                                    if (_overlapsCount < _overlaps.Length)
-                                    {
-                                        _overlaps[_overlapsCount] = new OverlapResult(resolutionDirection, _internalProbedColliders[i]);
-                                        _overlapsCount++;
-                                    }
-
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        overlapSolved = true;
-                    }
-
-                    iterationsMade++;
-                }
-                #endregion
+                LastGroundingStatus.CopyFrom(GroundingStatus);
+                GroundingStatus = new CharacterGroundingReport();
+                GroundingStatus.GroundNormal = _characterUp;
             }
 
             #region Ground Probing and Snapping
             // Handle ungrounding
             if (_solveGrounding)
             {
-                if (MustUnground())
+                if (MustUnground() == true)
                 {
                     _transientPosition += _characterUp * (MinimumGroundProbingDistance * 1.5f);
                 }
                 else
                 {
-                    // Choose the appropriate ground probing distance
                     float selectedGroundProbingDistance = MinimumGroundProbingDistance;
                     if (!LastGroundingStatus.SnappingPrevented && (LastGroundingStatus.IsStableOnGround || LastMovementIterationFoundAnyGround))
                     {
@@ -935,86 +847,6 @@ namespace KinematicCharacterController
             {
                 CharacterController.PostGroundingUpdate(deltaTime);
             }
-
-            if (InteractiveRigidbodyHandling)
-            {
-                #region Interactive Rigidbody Handling 
-                _lastAttachedRigidbody = _attachedRigidbody;
-                if (AttachedRigidbodyOverride)
-                {
-                    _attachedRigidbody = AttachedRigidbodyOverride;
-                }
-                else
-                {
-                    // Detect interactive rigidbodies from grounding
-                    if (GroundingStatus.IsStableOnGround && GroundingStatus.GroundCollider.attachedRigidbody)
-                    {
-                        Rigidbody interactiveRigidbody = GetInteractiveRigidbody(GroundingStatus.GroundCollider);
-                        if (interactiveRigidbody)
-                        {
-                            _attachedRigidbody = interactiveRigidbody;
-                        }
-                    }
-                    else
-                    {
-                        _attachedRigidbody = null;
-                    }
-                }
-
-                Vector3 tmpVelocityFromCurrentAttachedRigidbody = Vector3.zero;
-                Vector3 tmpAngularVelocityFromCurrentAttachedRigidbody = Vector3.zero;
-                if (_attachedRigidbody)
-                {
-                    GetVelocityFromRigidbodyMovement(_attachedRigidbody, _transientPosition, deltaTime, out tmpVelocityFromCurrentAttachedRigidbody, out tmpAngularVelocityFromCurrentAttachedRigidbody);
-                }
-
-                // Conserve momentum when de-stabilized from an attached rigidbody
-                if (PreserveAttachedRigidbodyMomentum && _lastAttachedRigidbody != null && _attachedRigidbody != _lastAttachedRigidbody)
-                {
-                    BaseVelocity += _attachedRigidbodyVelocity;
-                    BaseVelocity -= tmpVelocityFromCurrentAttachedRigidbody;
-                }
-
-                // Process additionnal Velocity from attached rigidbody
-                _attachedRigidbodyVelocity = _cachedZeroVector;
-                if (_attachedRigidbody)
-                {
-                    _attachedRigidbodyVelocity = tmpVelocityFromCurrentAttachedRigidbody;
-
-                    // Rotation from attached rigidbody
-                    Vector3 newForward = Vector3.ProjectOnPlane(Quaternion.Euler(Mathf.Rad2Deg * tmpAngularVelocityFromCurrentAttachedRigidbody * deltaTime) * _characterForward, _characterUp).normalized;
-                    TransientRotation = Quaternion.LookRotation(newForward, _characterUp);
-                }
-
-                // Cancel out horizontal velocity upon landing on an attached rigidbody
-                if (GroundingStatus.GroundCollider &&
-                    GroundingStatus.GroundCollider.attachedRigidbody &&
-                    GroundingStatus.GroundCollider.attachedRigidbody == _attachedRigidbody &&
-                    _attachedRigidbody != null &&
-                    _lastAttachedRigidbody == null)
-                {
-                    BaseVelocity -= Vector3.ProjectOnPlane(_attachedRigidbodyVelocity, _characterUp);
-                }
-
-                // Movement from Attached Rigidbody
-                if (_attachedRigidbodyVelocity.sqrMagnitude > 0f)
-                {
-                    _isMovingFromAttachedRigidbody = true;
-
-                    if (_solveMovementCollisions)
-                    {
-                        // Perform the move from rgdbdy velocity
-                        InternalCharacterMove(ref _attachedRigidbodyVelocity, deltaTime);
-                    }
-                    else
-                    {
-                        _transientPosition += _attachedRigidbodyVelocity * deltaTime;
-                    }
-
-                    _isMovingFromAttachedRigidbody = false;
-                }
-                #endregion
-            }
         }
 
         /// <summary>
@@ -1030,43 +862,18 @@ namespace KinematicCharacterController
         public void UpdatePhase2(float deltaTime)
         {
             // Handle rotation
+            Quaternion prevRotation = transform.rotation;
             CharacterController.UpdateRotation(ref _transientRotation, deltaTime);
             TransientRotation = _transientRotation;
-
-            // Handle move rotation
-            if (_moveRotationDirty)
+            if (_isRotationSensitive == true) //회전 검사
             {
-                TransientRotation = _moveRotationTarget;
-                _moveRotationDirty = false;
+                //여기서 막바로 회전하지말고, 회전에 의해서 충돌이 발생할수도 있다.
+                //난 이제 캡슐이 아닐수도 있으니까
             }
+            
 
             if (_solveMovementCollisions && InteractiveRigidbodyHandling)
             {
-                if (InteractiveRigidbodyHandling)
-                {
-                    #region Solve potential attached rigidbody overlap
-                    if (_attachedRigidbody)
-                    {
-                        float upwardsOffset = Capsule.radius;
-
-                        RaycastHit closestHit;
-                        if (CharacterGroundSweep(
-                            _transientPosition + (_characterUp * upwardsOffset),
-                            _transientRotation,
-                            -_characterUp,
-                            upwardsOffset,
-                            out closestHit))
-                        {
-                            if (closestHit.collider.attachedRigidbody == _attachedRigidbody && IsStableOnNormal(closestHit.normal))
-                            {
-                                float distanceMovedUp = (upwardsOffset - closestHit.distance);
-                                _transientPosition = _transientPosition + (_characterUp * distanceMovedUp) + (_characterUp * CollisionOffset);
-                            }
-                        }
-                    }
-                    #endregion
-                }
-
                 if (InteractiveRigidbodyHandling)
                 {
                     #region Resolve overlaps that could've been caused by rotation or physics movers simulation pushing the character
@@ -1083,8 +890,13 @@ namespace KinematicCharacterController
                             {
                                 // Process overlap
                                 Transform overlappedTransform = _internalProbedColliders[i].GetComponent<Transform>();
+
+                                Collider penatrationTarget = (_penatrationOverrideCollider == null)
+                                    ? Capsule
+                                    : _penatrationOverrideCollider;
+
                                 if (Physics.ComputePenetration(
-                                        Capsule,
+                                        penatrationTarget,
                                         _transientPosition,
                                         _transientRotation,
                                         _internalProbedColliders[i],
@@ -1337,15 +1149,14 @@ namespace KinematicCharacterController
         /// <summary>
         /// Forces the character to unground itself on its next grounding update
         /// </summary>
-        public void ForceUnground(float time = 0.1f)
+        public void ForceUnground(float time)
         {
-            _mustUnground = true;
             _mustUngroundTimeCounter = time;
         }
 
         public bool MustUnground()
         {
-            return _mustUnground || _mustUngroundTimeCounter > 0f;
+            return _mustUngroundTimeCounter > 0f;
         }
 
         /// <summary>
@@ -1444,8 +1255,12 @@ namespace KinematicCharacterController
                         {
                             Collider tmpCollider = _internalProbedColliders[i];
 
+                            Collider penatrationTarget = (_penatrationOverrideCollider == null)
+                                ? Capsule
+                                : _penatrationOverrideCollider;
+
                             if (Physics.ComputePenetration(
-                                Capsule,
+                                penatrationTarget,
                                 tmpMovedPosition,
                                 _transientRotation,
                                 tmpCollider,
@@ -2390,25 +2205,51 @@ namespace KinematicCharacterController
 
             Vector3 bottom = position + (rotation * _characterTransformToCapsuleBottomHemi);
             Vector3 top = position + (rotation * _characterTransformToCapsuleTopHemi);
+
             if (inflate != 0f)
             {
                 bottom += (rotation * Vector3.down * inflate);
                 top += (rotation * Vector3.up * inflate);
             }
 
-            int nbHits = 0;
-            int nbUnfilteredHits = Physics.OverlapCapsuleNonAlloc(
-                        bottom,
-                        top,
-                        Capsule.radius + inflate,
-                        overlappedColliders,
-                        queryLayers,
-                        QueryTriggerInteraction.Ignore);
+            int nbUnfilteredHits = 0;
+
+            if (_penatrationOverrideCollider != null)
+            {
+                BoxCollider collider = _penatrationOverrideCollider as BoxCollider;
+                nbUnfilteredHits = Physics.OverlapBoxNonAlloc(
+                    position + collider.center,
+                    collider.size / 2.0f,
+                    overlappedColliders,
+                    rotation,
+                    queryLayers,
+                    QueryTriggerInteraction.Ignore);
+            }
+            else
+            {
+                nbUnfilteredHits = Physics.OverlapCapsuleNonAlloc(
+                    bottom,
+                    top,
+                    Capsule.radius + inflate,
+                    overlappedColliders,
+                    queryLayers,
+                    QueryTriggerInteraction.Ignore);
+            }
+
+
+
+
+
 
             // Filter out invalid colliders
-            nbHits = nbUnfilteredHits;
+            int nbHits = nbUnfilteredHits;
             for (int i = nbUnfilteredHits - 1; i >= 0; i--)
             {
+                if (overlappedColliders[i] == null)
+                {
+                    continue;
+                }
+
                 if (!CheckIfColliderValidForCollisions(overlappedColliders[i]))
                 {
                     nbHits--;
@@ -2426,41 +2267,41 @@ namespace KinematicCharacterController
         /// Detect if the character capsule is overlapping with anything
         /// </summary>
         /// <returns> Returns number of overlaps </returns>
-        public int CharacterOverlap(Vector3 position, Quaternion rotation, Collider[] overlappedColliders, LayerMask layers, QueryTriggerInteraction triggerInteraction, float inflate = 0f)
-        {
-            Vector3 bottom = position + (rotation * _characterTransformToCapsuleBottomHemi);
-            Vector3 top = position + (rotation * _characterTransformToCapsuleTopHemi);
-            if (inflate != 0f)
-            {
-                bottom += (rotation * Vector3.down * inflate);
-                top += (rotation * Vector3.up * inflate);
-            }
+        //public int CharacterOverlap(Vector3 position, Quaternion rotation, Collider[] overlappedColliders, LayerMask layers, QueryTriggerInteraction triggerInteraction, float inflate = 0f)
+        //{
+        //    Vector3 bottom = position + (rotation * _characterTransformToCapsuleBottomHemi);
+        //    Vector3 top = position + (rotation * _characterTransformToCapsuleTopHemi);
+        //    if (inflate != 0f)
+        //    {
+        //        bottom += (rotation * Vector3.down * inflate);
+        //        top += (rotation * Vector3.up * inflate);
+        //    }
 
-            int nbHits = 0;
-            int nbUnfilteredHits = Physics.OverlapCapsuleNonAlloc(
-                        bottom,
-                        top,
-                        Capsule.radius + inflate,
-                        overlappedColliders,
-                        layers,
-                        triggerInteraction);
+        //    int nbHits = 0;
+        //    int nbUnfilteredHits = Physics.OverlapCapsuleNonAlloc(
+        //                bottom,
+        //                top,
+        //                Capsule.radius + inflate,
+        //                overlappedColliders,
+        //                layers,
+        //                triggerInteraction);
 
-            // Filter out the character capsule itself
-            nbHits = nbUnfilteredHits;
-            for (int i = nbUnfilteredHits - 1; i >= 0; i--)
-            {
-                if (overlappedColliders[i] == Capsule)
-                {
-                    nbHits--;
-                    if (i < nbHits)
-                    {
-                        overlappedColliders[i] = overlappedColliders[nbHits];
-                    }
-                }
-            }
+        //    // Filter out the character capsule itself
+        //    nbHits = nbUnfilteredHits;
+        //    for (int i = nbUnfilteredHits - 1; i >= 0; i--)
+        //    {
+        //        if (overlappedColliders[i] == Capsule)
+        //        {
+        //            nbHits--;
+        //            if (i < nbHits)
+        //            {
+        //                overlappedColliders[i] = overlappedColliders[nbHits];
+        //            }
+        //        }
+        //    }
 
-            return nbHits;
-        }
+        //    return nbHits;
+        //}
 
         /// <summary>
         /// Sweeps the capsule's volume to detect collision hits
@@ -2484,7 +2325,34 @@ namespace KinematicCharacterController
 
             // Capsule cast
             int nbHits = 0;
-            int nbUnfilteredHits = Physics.CapsuleCastNonAlloc(
+            int nbUnfilteredHits = 0;
+            //int nbUnfilteredHits = Physics.CapsuleCastNonAlloc(
+            //        bottom,
+            //        top,
+            //        Capsule.radius + inflate,
+            //        direction,
+            //        hits,
+            //        distance + SweepProbingBackstepDistance,
+            //        queryLayers,
+            //        QueryTriggerInteraction.Ignore);
+
+
+            if (_penatrationOverrideCollider != null)
+            {
+                BoxCollider collider = _penatrationOverrideCollider as BoxCollider;
+                nbUnfilteredHits = Physics.BoxCastNonAlloc(
+                    position + collider.center,
+                    collider.size / 2.0f,
+                    direction,
+                    hits,
+                    rotation,
+                    distance + SweepProbingBackstepDistance,
+                    queryLayers,
+                    QueryTriggerInteraction.Ignore);
+            }
+            else
+            {
+                nbUnfilteredHits = Physics.CapsuleCastNonAlloc(
                     bottom,
                     top,
                     Capsule.radius + inflate,
@@ -2493,6 +2361,7 @@ namespace KinematicCharacterController
                     distance + SweepProbingBackstepDistance,
                     queryLayers,
                     QueryTriggerInteraction.Ignore);
+            }
 
             // Hits filter
             closestHit = new RaycastHit();
@@ -2532,60 +2401,60 @@ namespace KinematicCharacterController
         /// Sweeps the capsule's volume to detect hits
         /// </summary>
         /// <returns> Returns the number of hits </returns>
-        public int CharacterSweep(Vector3 position, Quaternion rotation, Vector3 direction, float distance, out RaycastHit closestHit, RaycastHit[] hits, LayerMask layers, QueryTriggerInteraction triggerInteraction, float inflate = 0f)
-        {
-            closestHit = new RaycastHit();
+        //public int CharacterSweep(Vector3 position, Quaternion rotation, Vector3 direction, float distance, out RaycastHit closestHit, RaycastHit[] hits, LayerMask layers, QueryTriggerInteraction triggerInteraction, float inflate = 0f)
+        //{
+        //    closestHit = new RaycastHit();
 
-            Vector3 bottom = position + (rotation * _characterTransformToCapsuleBottomHemi);
-            Vector3 top = position + (rotation * _characterTransformToCapsuleTopHemi);
-            if (inflate != 0f)
-            {
-                bottom += (rotation * Vector3.down * inflate);
-                top += (rotation * Vector3.up * inflate);
-            }
+        //    Vector3 bottom = position + (rotation * _characterTransformToCapsuleBottomHemi);
+        //    Vector3 top = position + (rotation * _characterTransformToCapsuleTopHemi);
+        //    if (inflate != 0f)
+        //    {
+        //        bottom += (rotation * Vector3.down * inflate);
+        //        top += (rotation * Vector3.up * inflate);
+        //    }
 
-            // Capsule cast
-            int nbHits = 0;
-            int nbUnfilteredHits = Physics.CapsuleCastNonAlloc(
-                bottom,
-                top,
-                Capsule.radius + inflate,
-                direction,
-                hits,
-                distance,
-                layers,
-                triggerInteraction);
+        //    // Capsule cast
+        //    int nbHits = 0;
+        //    int nbUnfilteredHits = Physics.CapsuleCastNonAlloc(
+        //        bottom,
+        //        top,
+        //        Capsule.radius + inflate,
+        //        direction,
+        //        hits,
+        //        distance,
+        //        layers,
+        //        triggerInteraction);
 
-            // Hits filter
-            float closestDistance = Mathf.Infinity;
-            nbHits = nbUnfilteredHits;
-            for (int i = nbUnfilteredHits - 1; i >= 0; i--)
-            {
-                RaycastHit hit = hits[i];
+        //    // Hits filter
+        //    float closestDistance = Mathf.Infinity;
+        //    nbHits = nbUnfilteredHits;
+        //    for (int i = nbUnfilteredHits - 1; i >= 0; i--)
+        //    {
+        //        RaycastHit hit = hits[i];
 
-                // Filter out the character capsule
-                if (hit.distance <= 0f || hit.collider == Capsule)
-                {
-                    nbHits--;
-                    if (i < nbHits)
-                    {
-                        hits[i] = hits[nbHits];
-                    }
-                }
-                else
-                {
-                    // Remember closest valid hit
-                    float hitDistance = hit.distance;
-                    if (hitDistance < closestDistance)
-                    {
-                        closestHit = hit;
-                        closestDistance = hitDistance;
-                    }
-                }
-            }
+        //        // Filter out the character capsule
+        //        if (hit.distance <= 0f || hit.collider == Capsule)
+        //        {
+        //            nbHits--;
+        //            if (i < nbHits)
+        //            {
+        //                hits[i] = hits[nbHits];
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // Remember closest valid hit
+        //            float hitDistance = hit.distance;
+        //            if (hitDistance < closestDistance)
+        //            {
+        //                closestHit = hit;
+        //                closestDistance = hitDistance;
+        //            }
+        //        }
+        //    }
 
-            return nbHits;
-        }
+        //    return nbHits;
+        //}
 
         /// <summary>
         /// Casts the character volume in the character's downward direction to detect ground
@@ -2596,7 +2465,34 @@ namespace KinematicCharacterController
             closestHit = new RaycastHit();
 
             // Capsule cast
-            int nbUnfilteredHits = Physics.CapsuleCastNonAlloc(
+            //int nbUnfilteredHits = Physics.CapsuleCastNonAlloc(
+            //    position + (rotation * _characterTransformToCapsuleBottomHemi) - (direction * GroundProbingBackstepDistance),
+            //    position + (rotation * _characterTransformToCapsuleTopHemi) - (direction * GroundProbingBackstepDistance),
+            //    Capsule.radius,
+            //    direction,
+            //    _internalCharacterHits,
+            //    distance + GroundProbingBackstepDistance,
+            //    CollidableLayers & StableGroundLayers,
+            //    QueryTriggerInteraction.Ignore);
+
+            int nbUnfilteredHits = 0;
+            
+            if (_penatrationOverrideCollider != null)
+            {
+                BoxCollider collider = _penatrationOverrideCollider as BoxCollider;
+                nbUnfilteredHits = Physics.BoxCastNonAlloc(
+                    position + collider.center,
+                    collider.size / 2.0f,
+                    direction,
+                    _internalCharacterHits,
+                    rotation,
+                    distance + SweepProbingBackstepDistance,
+                    CollidableLayers & StableGroundLayers,
+                    QueryTriggerInteraction.Ignore);
+            }
+            else
+            {
+                nbUnfilteredHits = Physics.CapsuleCastNonAlloc(
                 position + (rotation * _characterTransformToCapsuleBottomHemi) - (direction * GroundProbingBackstepDistance),
                 position + (rotation * _characterTransformToCapsuleTopHemi) - (direction * GroundProbingBackstepDistance),
                 Capsule.radius,
@@ -2605,6 +2501,7 @@ namespace KinematicCharacterController
                 distance + GroundProbingBackstepDistance,
                 CollidableLayers & StableGroundLayers,
                 QueryTriggerInteraction.Ignore);
+            }
 
             // Hits filter
             bool foundValidHit = false;

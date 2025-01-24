@@ -45,9 +45,11 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         _motor = GetComponent<KinematicCharacterMotor>();
         _motor.CharacterController = this;
 
-        _motor.Capsule.includeLayers = ~0;
-        _motor.Capsule.excludeLayers = ~LayerMask.GetMask("StaticNavMeshLayer");
+        _motor.Capsule.includeLayers = 0;
+        _motor.Capsule.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("Monster") | LayerMask.GetMask("Player"));
     }
+
+    
 
     public override void CharacterRotate(Quaternion rotation)
     {
@@ -58,9 +60,16 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     {
         _capsuleCheckLocal_High = _motor.Capsule.center + Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
         _capsuleCheckLocal_Low = _motor.Capsule.center - Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
+        _motor.CollidableLayers = ~_motor.Capsule.excludeLayers;
     }
 
     public override void SubScriptStart() {}
+
+
+    
+
+
+
 
     public override bool GetIsInAir()
     {
@@ -75,34 +84,61 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         }
 
         return _inAir;
-
-        //return InAircheck();
-        //return !_motor.GroundingStatus.IsStableOnGround;
     }
 
-    //private void Update()
-    //{
-    //    Debug.Log(_motor.GroundingStatus.IsStableOnGround);
-    //}
 
-    private bool InAircheck()
+    private void InAirCheck_Capsule(CapsuleCollider collider, ref Vector3 currentCharacterPosition)
+    {
+
+    }
+
+    private void InAirCheck_Sphere(SphereCollider collider, ref Vector3 currentCharacterPosition)
+    {
+
+    }
+
+    private void InAirCheck_Box(BoxCollider collider, ref Vector3 currentCharacterPosition)
+    {
+        _inAir = !Physics.BoxCast
+            (
+            currentCharacterPosition + collider.center,
+            collider.size / 2.0f * 0.98f,
+            Vector3.down,
+            transform.rotation,
+            0.2f,
+            LayerMask.GetMask("StaticNavMeshLayer")
+            );
+    }
+
+    private void InAircheck()
     {
         Vector3 currentPosition = transform.position;
 
-        /*------------------------------------------------
-        |NOTI| 캡슐사이즈 변경되면 High, Low 바꿔야합니다
-        그게 싫다면 동적으로 계산하기
-        ------------------------------------------------*/
+        Collider finalCollider = _motor._PenetrationCollider;
 
-        Vector3 point1 = currentPosition + _capsuleCheckLocal_High;
-        Vector3 point2 = currentPosition + _capsuleCheckLocal_Low;
+        if (finalCollider == null)
+        {
+            //뭔가를 탑승하고있지 않아요
+            float checkDistance = 0.2f;
+            float checkRadius = _motor.Capsule.radius - 0.005f;
+            _inAir = !Physics.CapsuleCast(currentPosition + _motor.CharacterTransformToCapsuleTopHemi, currentPosition + _motor.CharacterTransformToCapsuleBottomHemi, checkRadius, Vector3.down, out _hit, checkDistance, LayerMask.GetMask("StaticNavMeshLayer"));
+            return;
+        }
 
-        float checkDistance = 0.2f;
-        float checkRadius = _motor.Capsule.radius - 0.005f;
+        System.Type colliderType = finalCollider.GetType();
 
-        _inAir = !Physics.CapsuleCast(point1, point2, checkRadius, Vector3.down, out _hit, checkDistance, LayerMask.GetMask("StaticNavMeshLayer"));
-
-        return _inAir;
+        if (colliderType == typeof(CapsuleCollider))
+        {
+            InAirCheck_Capsule(finalCollider as CapsuleCollider, ref currentPosition);
+        }
+        else if (colliderType == typeof(BoxCollider))
+        {
+            InAirCheck_Box(finalCollider as BoxCollider, ref currentPosition);
+        }
+        else if (colliderType == typeof(SphereCollider))
+        {
+            InAirCheck_Sphere(finalCollider as SphereCollider, ref currentPosition);
+        }
     }
 
 
@@ -201,7 +237,6 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         if (_motor.GroundingStatus.IsStableOnGround == true)
         {
             _gravitySpeed = Vector3.zero;
-            return; //더블 점프 컨텐츠, 스킬 생기면 어떻게할꺼야
         }
     }
 

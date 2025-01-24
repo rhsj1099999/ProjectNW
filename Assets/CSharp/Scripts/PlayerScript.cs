@@ -8,6 +8,14 @@ public class PlayerScript : CharacterScript
 {
     [SerializeField] protected GameObject _interactionUIPrefab = null;
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        TriggerSender triggerSender = GetComponentInChildren<TriggerSender>();
+        triggerSender.SubscribeMe(TriggerSender.TriggerType.Enter, WhenTriggerEnterWithInteraction);
+        triggerSender.SubscribeMe(TriggerSender.TriggerType.Exit, WhenTriggerExitWithInteraction);
+    }
 
     protected override void Update()
     {
@@ -98,11 +106,8 @@ public class PlayerScript : CharacterScript
     }
 
 
-
-    protected override void OnTriggerEnter(Collider other)
+    private void WhenTriggerEnterWithInteraction(Collider other)
     {
-        base.OnTriggerEnter(other);
-
         if (_interactionUIPrefab != null &&
             other.gameObject.layer == LayerMask.NameToLayer("InteractionableCollider"))
         {
@@ -114,12 +119,10 @@ public class PlayerScript : CharacterScript
         }
     }
 
-    protected override void OnTriggerExit(Collider other)
+    private void WhenTriggerExitWithInteraction(Collider other)
     {
-        base.OnTriggerExit(other);
-
         if (_interactionUIPrefab != null &&
-            other.gameObject.layer == LayerMask.NameToLayer("InteractionableCollider"))
+             other.gameObject.layer == LayerMask.NameToLayer("InteractionableCollider"))
         {
             Debug.Log("상호작용 제거!");
 

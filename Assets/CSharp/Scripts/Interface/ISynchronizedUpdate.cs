@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MMonoBehaviour : MonoBehaviour
 {
-    protected void SynchronizedUpdate(Action<float> work, bool isSkipZeroTime)
+    protected void SynchronizedUpdate(Action<float> work)
     {
         if (Time.inFixedTimeStep == true)
         {
@@ -20,11 +20,24 @@ public class MMonoBehaviour : MonoBehaviour
             work(Time.fixedDeltaTime);
         }
 
-        if (isSkipZeroTime == true && count == 1)
+        work(Time.deltaTime - (count * Time.fixedDeltaTime));
+    }
+
+    protected void SynchronizedUpdate(Action work)
+    {
+        if (Time.inFixedTimeStep == true)
         {
-            return;
+            Debug.Assert(false, "Fixed Update 단계에서 호출하면 안된다");
+            Debug.Break();
         }
 
-        work(Time.deltaTime - (count * Time.fixedDeltaTime));
+        int count = Mathf.FloorToInt(Time.deltaTime / Time.fixedDeltaTime);
+
+        for (int i = 0; i < count; i++)
+        {
+            work();
+        }
+
+        work();
     }
 }
