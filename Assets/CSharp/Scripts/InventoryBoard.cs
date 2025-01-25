@@ -613,6 +613,12 @@ public class InventoryBoard : BoardUIBaseScript
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÃÑ¾Ë_5Åº_·¹º§1"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÃÑ¾Ë_7Åº_·¹º§1"), 1);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha5) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("PaladinArmor_2"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("VanguardArmor_2"), 1);
+        }
     }
 
 

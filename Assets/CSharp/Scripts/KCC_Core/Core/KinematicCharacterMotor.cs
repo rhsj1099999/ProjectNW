@@ -425,7 +425,6 @@ namespace KinematicCharacterController
         /// </summary>
         public OverlapResult[] Overlaps { get { return _overlaps; } }
         private OverlapResult[] _overlaps = new OverlapResult[MaxRigidbodyOverlapsCount];
-        private bool _isRotationSensitive = false;
 
         /// <summary>
         /// The motor's assigned controller
@@ -601,8 +600,20 @@ namespace KinematicCharacterController
         }
 
         /// <summary>
+        /// Sets whether or not the motor will solve collisions when moving (or moved onto)
+        /// </summary>
+        public void SetMovementCollisionsSolvingActivation(bool movementCollisionsSolvingActive)
+        {
+            _solveMovementCollisions = movementCollisionsSolvingActive;
+        }
+
+        /// <summary>
         /// Sets whether or not grounding will be evaluated for all hits
         /// </summary>
+        public void SetGroundSolvingActivation(bool stabilitySolvingActive)
+        {
+            _solveGrounding = stabilitySolvingActive;
+        }
 
         /// <summary>
         /// Sets the character's position directly
@@ -655,20 +666,20 @@ namespace KinematicCharacterController
         /// <summary>
         /// Moves the character position, taking all movement collision solving int account. The actual move is done the next time the motor updates are called
         /// </summary>
-        //public void MoveCharacter(Vector3 toPosition)
-        //{
-        //    _movePositionDirty = true;
-        //    _movePositionTarget = toPosition;
-        //}
+        public void MoveCharacter(Vector3 toPosition)
+        {
+            _movePositionDirty = true;
+            _movePositionTarget = toPosition;
+        }
 
         /// <summary>
         /// Moves the character rotation. The actual move is done the next time the motor updates are called
         /// </summary>
-        //public void RotateCharacter(Quaternion toRotation)
-        //{
-        //    _moveRotationDirty = true;
-        //    _moveRotationTarget = toRotation;
-        //}
+        public void RotateCharacter(Quaternion toRotation)
+        {
+            _moveRotationDirty = true;
+            _moveRotationTarget = toRotation;
+        }
 
         /// <summary>
         /// Returns all the state information of the motor that is pertinent for simulation
@@ -754,66 +765,152 @@ namespace KinematicCharacterController
         public void UpdatePhase1(float deltaTime)
         {
             // NaN propagation safety stop
+            if (float.IsNaN(BaseVelocity.x) || float.IsNaN(BaseVelocity.y) || float.IsNaN(BaseVelocity.z))
             {
-                if (float.IsNaN(BaseVelocity.x) || float.IsNaN(BaseVelocity.y) || float.IsNaN(BaseVelocity.z))
-                {
-                    BaseVelocity = Vector3.zero;
-                }
-                if (float.IsNaN(_attachedRigidbodyVelocity.x) || float.IsNaN(_attachedRigidbodyVelocity.y) || float.IsNaN(_attachedRigidbodyVelocity.z))
-                {
-                    _attachedRigidbodyVelocity = Vector3.zero;
-                }
-
+                BaseVelocity = Vector3.zero;
+            }
+            if (float.IsNaN(_attachedRigidbodyVelocity.x) || float.IsNaN(_attachedRigidbodyVelocity.y) || float.IsNaN(_attachedRigidbodyVelocity.z))
+            {
+                _attachedRigidbodyVelocity = Vector3.zero;
             }
 
-            //에디터일떄, 스케일 값 에러 방지
-            {
 #if UNITY_EDITOR
-                if (!Mathf.Approximately(_transform.lossyScale.x, 1f) || !Mathf.Approximately(_transform.lossyScale.y, 1f) || !Mathf.Approximately(_transform.lossyScale.z, 1f))
-                {
-                    Debug.LogError("Character's lossy scale is not (1,1,1). This is not allowed. Make sure the character's transform and all of its parents have a (1,1,1) scale.", this.gameObject);
-                }
-#endif
+            if (!Mathf.Approximately(_transform.lossyScale.x, 1f) || !Mathf.Approximately(_transform.lossyScale.y, 1f) || !Mathf.Approximately(_transform.lossyScale.z, 1f))
+            {
+                Debug.LogError("Character's lossy scale is not (1,1,1). This is not allowed. Make sure the character's transform and all of its parents have a (1,1,1) scale.", this.gameObject);
             }
-            
+#endif
+
             _rigidbodiesPushedThisMove.Clear();
 
             // Before update
             CharacterController.BeforeCharacterUpdate(deltaTime);
 
-            //초기 변수 세팅
+            _transientPosition = _transform.position;
+            TransientRotation = _transform.rotation;
+            _initialSimulationPosition = _transientPosition;
+            _initialSimulationRotation = _transientRotation;
+            _rigidbodyProjectionHitCount = 0;
+            _overlapsCount = 0;
+            _lastSolvedOverlapNormalDirty = false;
+
+            #region Handle Move Position
+            if (_movePositionDirty)
             {
-                _transientPosition = _transform.position;
-                _transientRotation = _transform.rotation;
+                if (_solveMovementCollisions)
+                {
+                    Vector3 tmpVelocity = GetVelocityFromMovement(_movePositionTarget - _transientPosition, deltaTime);
+                    if (InternalCharacterMove(ref tmpVelocity, deltaTime))
+                    {
+                        if (InteractiveRigidbodyHandling)
+                        {
+                            ProcessVelocityForRigidbodyHits(ref tmpVelocity, deltaTime);
+                        }
+                    }
+                }
+                else
+                {
+                    _transientPosition = _movePositionTarget;
+                }
 
-                _initialSimulationPosition = _transientPosition;
-                _initialSimulationRotation = _transientRotation;
+                _movePositionDirty = false;
+            }
+            #endregion
 
-                _rigidbodyProjectionHitCount = 0;
-                _overlapsCount = 0;
-                _lastSolvedOverlapNormalDirty = false;
+            LastGroundingStatus.CopyFrom(GroundingStatus);
+            GroundingStatus = new CharacterGroundingReport();
+            GroundingStatus.GroundNormal = _characterUp;
 
-                LastGroundingStatus.CopyFrom(GroundingStatus);
-                GroundingStatus = new CharacterGroundingReport();
-                GroundingStatus.GroundNormal = _characterUp;
+            if (_solveMovementCollisions)
+            {
+                #region Resolve initial overlaps
+                Vector3 resolutionDirection = _cachedWorldUp;
+                float resolutionDistance = 0f;
+                int iterationsMade = 0;
+                bool overlapSolved = false;
+                while (iterationsMade < MaxDecollisionIterations && !overlapSolved)
+                {
+                    int nbOverlaps = CharacterCollisionsOverlap(_transientPosition, _transientRotation, _internalProbedColliders);
+
+                    if (nbOverlaps > 0)
+                    {
+                        // Solve overlaps that aren't against dynamic rigidbodies or physics movers
+                        for (int i = 0; i < nbOverlaps; i++)
+                        {
+                            if (GetInteractiveRigidbody(_internalProbedColliders[i]) == null)
+                            {
+                                // Process overlap
+                                Transform overlappedTransform = _internalProbedColliders[i].GetComponent<Transform>();
+
+                                Collider penatrationTarget = (_penatrationOverrideCollider == null)
+                                    ? Capsule
+                                    : _penatrationOverrideCollider;
+
+                                if (Physics.ComputePenetration(
+                                        penatrationTarget,
+                                        _transientPosition,
+                                        _transientRotation,
+                                        _internalProbedColliders[i],
+                                        overlappedTransform.position,
+                                        overlappedTransform.rotation,
+                                        out resolutionDirection,
+                                        out resolutionDistance))
+                                {
+                                    // Resolve along obstruction direction
+                                    HitStabilityReport mockReport = new HitStabilityReport();
+                                    mockReport.IsStable = IsStableOnNormal(resolutionDirection);
+                                    resolutionDirection = GetObstructionNormal(resolutionDirection, mockReport.IsStable);
+
+                                    // Solve overlap
+                                    Vector3 resolutionMovement = resolutionDirection * (resolutionDistance + CollisionOffset);
+                                    _transientPosition += resolutionMovement;
+
+                                    // Remember overlaps
+                                    if (_overlapsCount < _overlaps.Length)
+                                    {
+                                        _overlaps[_overlapsCount] = new OverlapResult(resolutionDirection, _internalProbedColliders[i]);
+                                        _overlapsCount++;
+                                    }
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        overlapSolved = true;
+                    }
+
+                    iterationsMade++;
+                }
+                #endregion
             }
 
             #region Ground Probing and Snapping
             // Handle ungrounding
             if (_solveGrounding)
             {
-                if (MustUnground() == true)
+                if (MustUnground())
                 {
                     _transientPosition += _characterUp * (MinimumGroundProbingDistance * 1.5f);
                 }
                 else
                 {
+                    // Choose the appropriate ground probing distance
                     float selectedGroundProbingDistance = MinimumGroundProbingDistance;
                     if (!LastGroundingStatus.SnappingPrevented && (LastGroundingStatus.IsStableOnGround || LastMovementIterationFoundAnyGround))
                     {
                         if (StepHandling != StepHandlingMethod.None)
                         {
-                            selectedGroundProbingDistance = Mathf.Max(CapsuleRadius, MaxStepHeight);
+                            if (_penatrationOverrideCollider == null)
+                            {
+                                selectedGroundProbingDistance = Mathf.Max(CapsuleRadius, MaxStepHeight);
+                            }
+                            else
+                            {
+                                selectedGroundProbingDistance = 0.0f;
+                            }
                         }
                         else
                         {
@@ -847,6 +944,86 @@ namespace KinematicCharacterController
             {
                 CharacterController.PostGroundingUpdate(deltaTime);
             }
+
+            if (InteractiveRigidbodyHandling)
+            {
+                #region Interactive Rigidbody Handling 
+                _lastAttachedRigidbody = _attachedRigidbody;
+                if (AttachedRigidbodyOverride)
+                {
+                    _attachedRigidbody = AttachedRigidbodyOverride;
+                }
+                else
+                {
+                    // Detect interactive rigidbodies from grounding
+                    if (GroundingStatus.IsStableOnGround && GroundingStatus.GroundCollider.attachedRigidbody)
+                    {
+                        Rigidbody interactiveRigidbody = GetInteractiveRigidbody(GroundingStatus.GroundCollider);
+                        if (interactiveRigidbody)
+                        {
+                            _attachedRigidbody = interactiveRigidbody;
+                        }
+                    }
+                    else
+                    {
+                        _attachedRigidbody = null;
+                    }
+                }
+
+                Vector3 tmpVelocityFromCurrentAttachedRigidbody = Vector3.zero;
+                Vector3 tmpAngularVelocityFromCurrentAttachedRigidbody = Vector3.zero;
+                if (_attachedRigidbody)
+                {
+                    GetVelocityFromRigidbodyMovement(_attachedRigidbody, _transientPosition, deltaTime, out tmpVelocityFromCurrentAttachedRigidbody, out tmpAngularVelocityFromCurrentAttachedRigidbody);
+                }
+
+                // Conserve momentum when de-stabilized from an attached rigidbody
+                if (PreserveAttachedRigidbodyMomentum && _lastAttachedRigidbody != null && _attachedRigidbody != _lastAttachedRigidbody)
+                {
+                    BaseVelocity += _attachedRigidbodyVelocity;
+                    BaseVelocity -= tmpVelocityFromCurrentAttachedRigidbody;
+                }
+
+                // Process additionnal Velocity from attached rigidbody
+                _attachedRigidbodyVelocity = _cachedZeroVector;
+                if (_attachedRigidbody)
+                {
+                    _attachedRigidbodyVelocity = tmpVelocityFromCurrentAttachedRigidbody;
+
+                    // Rotation from attached rigidbody
+                    Vector3 newForward = Vector3.ProjectOnPlane(Quaternion.Euler(Mathf.Rad2Deg * tmpAngularVelocityFromCurrentAttachedRigidbody * deltaTime) * _characterForward, _characterUp).normalized;
+                    TransientRotation = Quaternion.LookRotation(newForward, _characterUp);
+                }
+
+                // Cancel out horizontal velocity upon landing on an attached rigidbody
+                if (GroundingStatus.GroundCollider &&
+                    GroundingStatus.GroundCollider.attachedRigidbody &&
+                    GroundingStatus.GroundCollider.attachedRigidbody == _attachedRigidbody &&
+                    _attachedRigidbody != null &&
+                    _lastAttachedRigidbody == null)
+                {
+                    BaseVelocity -= Vector3.ProjectOnPlane(_attachedRigidbodyVelocity, _characterUp);
+                }
+
+                // Movement from Attached Rigidbody
+                if (_attachedRigidbodyVelocity.sqrMagnitude > 0f)
+                {
+                    _isMovingFromAttachedRigidbody = true;
+
+                    if (_solveMovementCollisions)
+                    {
+                        // Perform the move from rgdbdy velocity
+                        InternalCharacterMove(ref _attachedRigidbodyVelocity, deltaTime);
+                    }
+                    else
+                    {
+                        _transientPosition += _attachedRigidbodyVelocity * deltaTime;
+                    }
+
+                    _isMovingFromAttachedRigidbody = false;
+                }
+                #endregion
+            }
         }
 
         /// <summary>
@@ -862,18 +1039,43 @@ namespace KinematicCharacterController
         public void UpdatePhase2(float deltaTime)
         {
             // Handle rotation
-            Quaternion prevRotation = transform.rotation;
             CharacterController.UpdateRotation(ref _transientRotation, deltaTime);
             TransientRotation = _transientRotation;
-            if (_isRotationSensitive == true) //회전 검사
+
+            // Handle move rotation
+            if (_moveRotationDirty)
             {
-                //여기서 막바로 회전하지말고, 회전에 의해서 충돌이 발생할수도 있다.
-                //난 이제 캡슐이 아닐수도 있으니까
+                TransientRotation = _moveRotationTarget;
+                _moveRotationDirty = false;
             }
-            
 
             if (_solveMovementCollisions && InteractiveRigidbodyHandling)
             {
+                if (InteractiveRigidbodyHandling)
+                {
+                    #region Solve potential attached rigidbody overlap
+                    if (_attachedRigidbody)
+                    {
+                        float upwardsOffset = Capsule.radius;
+
+                        RaycastHit closestHit;
+                        if (CharacterGroundSweep(
+                            _transientPosition + (_characterUp * upwardsOffset),
+                            _transientRotation,
+                            -_characterUp,
+                            upwardsOffset,
+                            out closestHit))
+                        {
+                            if (closestHit.collider.attachedRigidbody == _attachedRigidbody && IsStableOnNormal(closestHit.normal))
+                            {
+                                float distanceMovedUp = (upwardsOffset - closestHit.distance);
+                                _transientPosition = _transientPosition + (_characterUp * distanceMovedUp) + (_characterUp * CollisionOffset);
+                            }
+                        }
+                    }
+                    #endregion
+                }
+
                 if (InteractiveRigidbodyHandling)
                 {
                     #region Resolve overlaps that could've been caused by rotation or physics movers simulation pushing the character
@@ -1149,14 +1351,15 @@ namespace KinematicCharacterController
         /// <summary>
         /// Forces the character to unground itself on its next grounding update
         /// </summary>
-        public void ForceUnground(float time)
+        public void ForceUnground(float time = 0.1f)
         {
+            _mustUnground = true;
             _mustUngroundTimeCounter = time;
         }
 
         public bool MustUnground()
         {
-            return _mustUngroundTimeCounter > 0f;
+            return _mustUnground || _mustUngroundTimeCounter > 0f;
         }
 
         /// <summary>
@@ -2205,12 +2408,13 @@ namespace KinematicCharacterController
 
             Vector3 bottom = position + (rotation * _characterTransformToCapsuleBottomHemi);
             Vector3 top = position + (rotation * _characterTransformToCapsuleTopHemi);
-
             if (inflate != 0f)
             {
                 bottom += (rotation * Vector3.down * inflate);
                 top += (rotation * Vector3.up * inflate);
             }
+
+            int nbHits = 0;
 
             int nbUnfilteredHits = 0;
 
@@ -2242,7 +2446,7 @@ namespace KinematicCharacterController
 
 
             // Filter out invalid colliders
-            int nbHits = nbUnfilteredHits;
+            nbHits = nbUnfilteredHits;
             for (int i = nbUnfilteredHits - 1; i >= 0; i--)
             {
                 if (overlappedColliders[i] == null)

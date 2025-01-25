@@ -157,10 +157,12 @@ namespace KinematicCharacterController
         private void OnEnable()
         {
             KinematicCharacterSystem.EnsureCreation();
+            KinematicCharacterSystem.RegisterPhysicsMover(this);
         }
 
         private void OnDisable()
         {
+            KinematicCharacterSystem.UnregisterPhysicsMover(this);
         }
 
         private void Awake()

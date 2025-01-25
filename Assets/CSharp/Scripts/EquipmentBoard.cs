@@ -275,7 +275,7 @@ public class EquipmentBoard : BoardUIBaseScript
             foreach (var item in equipMeshes) //보통 하나임
             {
                 GameObject equippedMesh = Instantiate(item, originalAnimatorGameObject.transform);
-                SkinnedMeshRenderer skinnedMeshRenderer = equippedMesh.GetComponent<SkinnedMeshRenderer>();
+                SkinnedMeshRenderer skinnedMeshRenderer = equippedMesh.GetComponentInChildren<SkinnedMeshRenderer>();
                 skinnedMeshRenderer.bones = originalAnimatorGameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones;
                 skinnedMeshRenderer.updateWhenOffscreen = true;
 
