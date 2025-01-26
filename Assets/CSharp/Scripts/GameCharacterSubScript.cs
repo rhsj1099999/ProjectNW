@@ -28,4 +28,6 @@ public abstract class GameCharacterSubScript : MonoBehaviour
     }
 
 
+    public CharacterScript GetOwner() { return _owner; }
+
 }

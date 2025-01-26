@@ -5,13 +5,15 @@ using UnityEngine;
 
 
 [Serializable]
-public struct CapsuleColliderDesc
+public class CapsuleColliderDesc
 {
-    public Transform _startTransform;
-    public Transform _endTransform;
-    public float _radiusX;
-    public float _radiusZ;
-    public float _heightRatio;
+    public string _colliderName = "";
+    public GameObject _capsulePrefab = null;
+    public Transform _startTransform = null;
+    public Transform _endTransform = null;
+    public bool _transfomrBetweenIsHemi = false;
+    public float _radius = 1.0f;
+    public float _heightRatio = 1.0f;
 }
 
 
@@ -20,65 +22,81 @@ public class ColliderGenerator : MonoBehaviour
 {
     //게임이 시작되면 Humanoid 등 사지 컴포넌트를 생성해주는 객체
     //메쉬에다가 Ray Casting을 하기에는 삼각형이 너무 세밀해 연산에 부하가 있다.
-    [SerializeField] private List<CapsuleColliderDesc> _colliderDesc = new List<CapsuleColliderDesc>();
-    private List<GameObject> _createdColliders = new List<GameObject>();
+    //[SerializeField] private List<CapsuleColliderDesc> _colliderDesc = new List<CapsuleColliderDesc>();
+    //private List<GameObject> _createdColliders = new List<GameObject>();
 
-    public void GenerateCapsulecollider(CapsuleColliderDesc desc, string name, GameObject capsulePrefab)
+    [SerializeField] private CapsuleColliderDesc _desc = new CapsuleColliderDesc();
+
+    public void GenerateCapsulecollider()
     {
-        GameObject createdCapsule = Instantiate(capsulePrefab);
-        createdCapsule.transform.SetParent(desc._startTransform);
+        if (_desc._colliderName == "")
+        {
+            Debug.Log("이름을 설정해주세요");
+            return;
+        }
 
-        createdCapsule.transform.position = desc._startTransform.position;
-        createdCapsule.transform.rotation = desc._startTransform.rotation;
+        if (_desc._startTransform == null || _desc._endTransform == null)
+        {
+            Debug.Log("Start, end Transform을 설정해주세요");
+            return;
+        }
 
-        Vector3 between = (desc._endTransform != null)
-            ? (desc._startTransform.position + desc._endTransform.position) / 2.0f
-            : (desc._startTransform.position);
+        if (_desc._capsulePrefab.GetComponent<CapsuleCollider>() == null)
+        {
+            Debug.Log("해당 프리팹은 캡슐컴포넌트를 가지고있찌 않습니다");
+            return;
+        }
 
-        createdCapsule.transform.position = between;
+        float betweenLength = Vector3.Distance(_desc._startTransform.position, _desc._endTransform.position);
 
-        //스케일 조정
-        Vector3 scaleVector = createdCapsule.transform.localScale;
-        scaleVector.y = (desc._endTransform != null)
-            ? (Vector2.Distance(desc._startTransform.position, desc._endTransform.position) / 2.0f) * desc._heightRatio
-            : desc._heightRatio;
-        scaleVector.x = desc._radiusX / 2.0f;
-        scaleVector.z = desc._radiusZ / 2.0f;
-        createdCapsule.transform.localScale = scaleVector;
+        if (_desc._transfomrBetweenIsHemi == true)
+        {
+            //양끝점을 구의 시작점으로 만듭니다 = 더 길어질겁니다.
+            betweenLength += _desc._radius * 2.0f;
+        }
+        
 
-        _createdColliders.Add(createdCapsule);
+        GameObject createdCapsule = Instantiate(_desc._capsulePrefab);
+        createdCapsule.transform.SetParent(_desc._startTransform);
+
+        createdCapsule.transform.localScale = Vector3.one;
+        createdCapsule.transform.localRotation = Quaternion.identity;
+        createdCapsule.transform.localPosition = Vector3.zero;
+
+        Vector3 toSecondDir = (_desc._endTransform.position - _desc._startTransform.position).normalized;
+        createdCapsule.transform.position += toSecondDir * betweenLength / 2.0f;
+
+        CapsuleCollider collider = createdCapsule.GetComponent<CapsuleCollider>();
+
+        collider.radius = _desc._radius;
+        collider.height = betweenLength;
+        collider.center = Vector3.zero;
+
+        float[] dotRets = new float[3]
+        {
+            Vector3.Dot(_desc._startTransform.right, toSecondDir),
+            Vector3.Dot(_desc._startTransform.up, toSecondDir),
+            Vector3.Dot(_desc._startTransform.forward, toSecondDir)
+        };
+
+        int correctIndex = 0;
+        float minDot = -1.0f;
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (minDot < dotRets[i])
+            {
+                minDot = dotRets[i];
+                correctIndex = i;
+            }
+        }
+
+        collider.direction = correctIndex;
     }
 
 
     private void Awake()
     {
-        //_animator = GetComponentInChildren<Animator>();
-        //_skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
-
-        //Debug.Assert(_animator != null, "이 컴포넌트를 사용할려면 Animator가 있어야 합니다");
-        //Debug.Assert(_skinnedMeshRenderer != null, "이 컴포넌트를 사용할려면 Animator가 있어야 합니다");
-
-        
-
-        //for (int i = 0; i < (int)HumanBodyBones.LastBone; i++) 
-        //{
-        //    Transform target = _animator.GetBoneTransform((HumanBodyBones)i);
-        //    if (target == null)
-        //    {
-        //        continue;
-        //    }
-
-        //    Vector3 bonePosition = target.position;
-
-        //    GameObject newGameObject = Instantiate(_dubuggingSphere);
-
-        //    newGameObject.name = ((HumanBodyBones)i).ToString();
-
-
-        //    newGameObject.transform.position = bonePosition;
-
-        //    newGameObject.transform.SetParent(transform);
-        //}
     }
 
     private void Update()

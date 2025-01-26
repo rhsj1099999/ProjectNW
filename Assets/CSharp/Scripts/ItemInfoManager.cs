@@ -27,11 +27,6 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
         SingletonAwake();
 
         {
-            //InitItemSubInfo(_itemSubInfo_WeaponInfo_Init, _itemSubInfo_WeaponInfo);
-        }
-
-        //아이템 인포를 형성한다
-        {
             InitItem();
         }
     }

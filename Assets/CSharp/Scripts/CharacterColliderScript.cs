@@ -38,12 +38,7 @@ public class CharacterColliderScript : GameCharacterSubScript
     }
 
 
-    public override void SubScriptStart()
-    {
-        
-    }
-
-
+    public override void SubScriptStart() {}
 
 
     public void InitModelCollider(GameObject targetModel)
@@ -112,7 +107,7 @@ public class CharacterColliderScript : GameCharacterSubScript
         -------------------------------------------------------------*/
 
         /*-------------------------------------------------------------
-        |NOTI| 프레임 드랍에 의해 부정확학 충돌이 예상되는 경우.
+        |NOTI| 프레임 드랍에 의해 부정확한 충돌이 예상되는 경우.
         충돌 로직을 바꿔야합니다.
         -------------------------------------------------------------*/
 
@@ -122,8 +117,7 @@ public class CharacterColliderScript : GameCharacterSubScript
 
         if (collider != null)
         {
-            int layerMask = _owner.CalculateWeaponColliderExcludeLayerMask(type, targetObject);
-            collider.excludeLayers = ~layerMask;
+            collider.includeLayers = _owner.CalculateWeaponColliderExcludeLayerMask(type, targetObject);
         }
 
         targetObject.SetActive(false);

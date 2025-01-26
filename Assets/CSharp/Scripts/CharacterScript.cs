@@ -94,14 +94,50 @@ public class CharacterScript : GameActorScript, IHitable
     public delegate void Action_Int(int param0);
     public delegate void Action_LayerType(AnimatorLayerTypes layerType);
 
-
+    //캐릭터 중심
+    protected GameObject _characterHeart = null;
 
     //대표 컴포넌트들
     public List<GameCharacterSubScript> _components = new List<GameCharacterSubScript>();
     private Dictionary<Type, Component> _mySubScripts = new Dictionary<Type, Component>();
 
+
+
+    //인벤토리
     [SerializeField] protected GameObject _inventoryUIPrefab = null;
     protected List<InventoryBoard> _inventoryBoardCached = new List<InventoryBoard>();
+
+    //무기 관련
+    //현재 손에 쥐고있다 = 객체화가 됐다 = GameObject 로 들고있는데 맞음---------------------------
+    protected GameObject _tempCurrLeftWeapon = null;
+    protected GameObject _tempCurrRightWeapon = null;
+    //----------------------------------------------------------------------------------------
+
+    protected KeyCode _useItemKeyCode1 = KeyCode.N;
+    protected KeyCode _useItemKeyCode2 = KeyCode.M;
+    protected KeyCode _useItemKeyCode3 = KeyCode.Comma;
+    protected KeyCode _useItemKeyCode4 = KeyCode.Period;
+
+    protected KeyCode _changeRightHandWeaponHandlingKey = KeyCode.B;
+    protected KeyCode _changeLeftHandWeaponHandlingKey = KeyCode.V;
+    protected KeyCode _changeRightWeaponKey = KeyCode.T;
+    protected KeyCode _changeLeftWeaponKey = KeyCode.R;
+
+    [SerializeField] protected int _currLeftWeaponIndex = 0;
+    [SerializeField] protected int _currRightWeaponIndex = 0;
+    protected int _tempMaxWeaponSlot = 3;
+
+    protected bool _tempUsingRightHandWeapon = false; //최근에 사용한 무기가 오른손입니까?
+    public bool _isRightWeaponAimed = false;
+    public bool _isLeftWeaponAimed = false;
+
+
+
+
+
+
+
+
     public List<InventoryBoard> GetMyInventoryBoards() {return _inventoryBoardCached;}
     private void InitInventory()
     {
@@ -115,9 +151,6 @@ public class CharacterScript : GameActorScript, IHitable
     //인벤토리 개수가 추가됐다면 이 함수를 통해 캐싱된 컴포넌트를 변경할 것
     public void ChangeInventoryInfo() {}
 
-
-    StatScript _myStat = new StatScript();
-    protected GameObject _characterHeart = null;
 
 
     public T GetCharacterSubcomponent<T>(bool isNullable = false) where T : Component
@@ -261,21 +294,13 @@ public class CharacterScript : GameActorScript, IHitable
         //GetCharacterSubcomponent<CharacterController>().excludeLayers = );
     }
 
-    protected KeyCode _useItemKeyCode1 = KeyCode.N;
-    protected KeyCode _useItemKeyCode2 = KeyCode.M;
-    protected KeyCode _useItemKeyCode3 = KeyCode.Comma;
-    protected KeyCode _useItemKeyCode4 = KeyCode.Period;
+
 
     #region WeaponSection
 
-    protected KeyCode _changeRightHandWeaponHandlingKey = KeyCode.B;
-    protected KeyCode _changeLeftHandWeaponHandlingKey = KeyCode.V;
-    protected KeyCode _changeRightWeaponKey = KeyCode.T;
-    protected KeyCode _changeLeftWeaponKey = KeyCode.R;
 
-    //현재 손에 쥐고있다 = 객체화가 됐다 = GameObject 로 들고있는데 맞음---------------------------
-    protected GameObject _tempCurrLeftWeapon = null;
-    protected GameObject _tempCurrRightWeapon = null;
+
+
     public GameObject GetCurrentWeapon(AnimatorLayerTypes layerType)
     {
         if (layerType == AnimatorLayerTypes.RightHand)
@@ -291,7 +316,6 @@ public class CharacterScript : GameActorScript, IHitable
             return null;
         }
     }
-    //----------------------------------------------------------------------------------------
 
     protected List<ItemStoreDesc_Weapon> _tempLeftWeaponPrefabs = new List<ItemStoreDesc_Weapon>();
     protected List<ItemStoreDesc_Weapon> _tempRightWeaponPrefabs = new List<ItemStoreDesc_Weapon>();
@@ -394,16 +418,6 @@ public class CharacterScript : GameActorScript, IHitable
     }
 
 
-    [SerializeField] protected int _currLeftWeaponIndex = 0;
-    [SerializeField] protected int _currRightWeaponIndex = 0;
-    protected int _tempMaxWeaponSlot = 3;
-
-
-
-    protected bool _tempUsingRightHandWeapon = false; //최근에 사용한 무기가 오른손입니까?
-    public bool _isRightWeaponAimed = false;
-    public bool _isLeftWeaponAimed = false;
-
     protected WeaponGrabFocus _tempGrabFocusType = WeaponGrabFocus.Normal;
     public WeaponGrabFocus GetGrabFocusType() { return _tempGrabFocusType; }
     public void ChangeGrabFocusType(WeaponGrabFocus targetType)
@@ -475,7 +489,6 @@ public class CharacterScript : GameActorScript, IHitable
 
         GetCharacterSubcomponent<StateContoller>().EquipStateGraph(basicAsset, targetType);
     }
-
 
     #endregion WeaponSection
 
@@ -693,33 +706,6 @@ public class CharacterScript : GameActorScript, IHitable
     {
         return 0;
     }
-
-    private void OnTriggerStay(Collider other)
-    {
-    }
-
-    protected virtual void OnTriggerEnter(Collider other)
-    {
-        string tag = other.tag;
-
-        //나를 적대시하는 캐릭터가 들고있는 무기와 부딪혔습니다.
-        if (_dead == false &&
-            tag == "WeaponAttachedCollider")
-        {
-            //연쇄 충돌이 아닌 최초충돌입니다.
-            if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == true)
-            {
-                TriggerEnterWithWeapon(other);
-            }
-            return;
-        }
-    }
-
-    protected virtual void OnTriggerExit(Collider other)
-    {
-    }
-
-
 
 
     public float GetStateChangingPercentage()
@@ -1139,6 +1125,8 @@ public class CharacterScript : GameActorScript, IHitable
 
     public virtual void CalculateMyCurrentWeaponDamage(ref DamageDesc damageDesc, Collider other)
     {
+        StatScript myStat = GCST<StatScript>();
+
         if (damageDesc == null)
         {
             Debug.Assert(false, "damageDesc가 null이여선 안된다");
@@ -1151,9 +1139,9 @@ public class CharacterScript : GameActorScript, IHitable
         기본 스텟에 의한 데미지, 스테미나 계산
         -------------------------------------------------------*/
         {
-            damageDesc._damage = _myStat.CalculateStatDamage();
-            damageDesc._damagingStamina = _myStat.CalculateStatDamagingStamina();
-            damageDesc._damagePower = _myStat.CalculatePower();
+            damageDesc._damage = myStat.CalculateStatDamage();
+            damageDesc._damagingStamina = myStat.CalculateStatDamagingStamina();
+            damageDesc._damagePower = myStat.CalculatePower();
         }
 
 
@@ -1220,6 +1208,9 @@ public class CharacterScript : GameActorScript, IHitable
 
     public virtual void DealMe_Final(DamageDesc damage, GameObject caller)
     {
+        StatScript statScript = GCST<StatScript>();
+
+
         /*------------------------------------------------
         |NOTO| 이곳에서는 데미지 피격 감쇄, 상태변경만 계산합니다.
         ------------------------------------------------*/
@@ -1241,24 +1232,24 @@ public class CharacterScript : GameActorScript, IHitable
             if (currStateDesc._isBlockState == true)
             {
                 //스테미나도 충분하고 강인도도 충분합니다
-                if (_myStat._runtimeDesc._stamina >= damage._damagingStamina &&
-                    _myStat._runtimeDesc._roughness >= damage._damagePower)
+                if (statScript._stamina >= damage._damagingStamina &&
+                    statScript._roughness >= damage._damagePower)
                 {
                     nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
                     representType = RepresentStateType.Blocked_Reaction;
                 }
 
                 //스테미나는 충분한데 강인도가 부족합니다.
-                else if (_myStat._runtimeDesc._stamina >= damage._damagingStamina &&
-                    _myStat._runtimeDesc._roughness < damage._damagePower)
+                else if (statScript._stamina >= damage._damagingStamina &&
+                    statScript._roughness < damage._damagePower)
                 {
                     nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
                     representType = RepresentStateType.Blocked_Sliding;
                 }
 
                 //강인도는 충분한데 스테미나가 부족합니다.
-                else if (_myStat._runtimeDesc._stamina < damage._damagingStamina &&
-                    _myStat._runtimeDesc._roughness >= damage._damagePower)
+                else if (statScript._stamina < damage._damagingStamina &&
+                    statScript._roughness >= damage._damagePower)
                 {
                     nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
                     representType = RepresentStateType.Blocked_Crash;
@@ -1277,13 +1268,13 @@ public class CharacterScript : GameActorScript, IHitable
                 }
 
                 //스테미나가 부족하고 강인도도 부족합니다. 혹은 연결상태가 존재하지 않습니다
-                if ((_myStat._runtimeDesc._stamina < damage._damagingStamina && _myStat._runtimeDesc._roughness < damage._damagePower) ||
+                if ((statScript._stamina < damage._damagingStamina && statScript._roughness < damage._damagePower) ||
                     nextStateAsseet == null)
                 {
                     //맞는 상태로 가긴 할건데
                     nextGraphType = StateGraphType.HitStateGraph;
 
-                    float deltaRoughness = damage._damagePower - _myStat._runtimeDesc._roughness;
+                    float deltaRoughness = damage._damagePower - statScript._roughness;
 
                     if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
                     {
@@ -1304,7 +1295,7 @@ public class CharacterScript : GameActorScript, IHitable
                 //맞는 상태로 가긴 할건데
                 nextGraphType = StateGraphType.HitStateGraph;
 
-                float deltaRoughness = damage._damagePower - _myStat._runtimeDesc._roughness;
+                float deltaRoughness = damage._damagePower - statScript._roughness;
 
                 if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
                 {
@@ -1328,9 +1319,8 @@ public class CharacterScript : GameActorScript, IHitable
 
         int finalDamage = (int)damage._damage;
 
-        StatScriptDesc runtimeStatDesc = _myStat.GetRuntimeStatDesc();
-        runtimeStatDesc._hp -= finalDamage;
-        if (runtimeStatDesc._hp <= 0)
+        statScript._hp -= finalDamage;
+        if (statScript._hp <= 0)
         {
             Debug.Log("죽었다");
 
@@ -1354,11 +1344,36 @@ public class CharacterScript : GameActorScript, IHitable
             return;
         }
 
-
-
         gameObject.transform.LookAt(caller.transform.position);
 
         GCST<StateContoller>().TryChangeState(nextGraphType, representType);
     }
+
+    public void WhenTriggerEnterWithWeaponCollider(Collider other)
+    {
+        if (_dead == true) {return;}
+
+        
+        if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == false)
+        {
+            return;
+        }
+
+        //연쇄 충돌이 아닌 최초충돌입니다.
+        TriggerEnterWithWeapon(other);
+
+        //string tag = other.tag;
+
+        //if (tag == "WeaponAttachedCollider")
+        //{
+        //    //연쇄 충돌이 아닌 최초충돌입니다.
+        //    if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == true)
+        //    {
+        //        TriggerEnterWithWeapon(other);
+        //    }
+        //    return;
+        //}
+    }
+
 
 }

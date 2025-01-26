@@ -39,17 +39,17 @@ public class TriggerSender : MonoBehaviour
     public System.Action<Collider> OnTriggerStaySender;
     public System.Action<Collider> OnTriggerExitSender;
 
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         OnTriggerEnterSender?.Invoke(other);
     }
 
-    private void OnTriggerExit(Collider other)
+    protected virtual void OnTriggerExit(Collider other)
     {
         OnTriggerExitSender?.Invoke(other);
     }
 
-    private void OnTriggerStay(Collider other)
+    protected virtual void OnTriggerStay(Collider other)
     {
         OnTriggerStaySender?.Invoke(other);
     }

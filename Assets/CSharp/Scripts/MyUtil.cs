@@ -48,6 +48,7 @@ public static class MyUtil
         NoneFirst = 0,
         CreateItemAsset = 1,
         CreateItemSubInfo = 2,
+        CreateBuffs = 3,
     };
 
 

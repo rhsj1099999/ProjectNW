@@ -8,13 +8,16 @@ public class PlayerScript : CharacterScript
 {
     [SerializeField] protected GameObject _interactionUIPrefab = null;
 
+
+
+
     protected override void Awake()
     {
         base.Awake();
 
-        TriggerSender triggerSender = GetComponentInChildren<TriggerSender>();
-        triggerSender.SubscribeMe(TriggerSender.TriggerType.Enter, WhenTriggerEnterWithInteraction);
-        triggerSender.SubscribeMe(TriggerSender.TriggerType.Exit, WhenTriggerExitWithInteraction);
+        TriggerSender_UIInteraction triggerSender = GetComponentInChildren<TriggerSender_UIInteraction>();
+        triggerSender.SubscribeMe(TriggerSender_UIInteraction.TriggerType.Enter, WhenTriggerEnterWithInteraction);
+        triggerSender.SubscribeMe(TriggerSender_UIInteraction.TriggerType.Exit, WhenTriggerExitWithInteraction);
     }
 
     protected override void Update()

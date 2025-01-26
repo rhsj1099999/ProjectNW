@@ -246,6 +246,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         Debug.Assert(_animator != null, "Animator°¡ ¾ø´Ù");
         _characterModelObject = _animator.gameObject;
+
         _gameBasicCharacter = Instantiate(_characterModelObject, transform);
         _gameBasicCharacter.SetActive(false);
 
@@ -303,6 +304,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         _playableGraph.Play();
 
         TimeScaler.Instance.AddTimeChangeDelegate(TimeChanged);
+
+        GetComponentInChildren<CharacterModelDataInitializer>().Init(_owner);
     }
 
 
@@ -404,6 +407,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     public GameObject ModelChange(GameObject modelObject)
     {
         GameObject newModel = Instantiate(modelObject);
+        newModel.GetComponentInChildren<CharacterModelDataInitializer>().Init(_owner);
         newModel.SetActive(true);
         SkinnedMeshRenderer[] meshRenderers = newModel.GetComponents<SkinnedMeshRenderer>();
         foreach (var meshRenderer in meshRenderers)
@@ -417,6 +421,9 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         Animator newAnimator = newModel.GetComponentInChildren<Animator>();
         newAnimator.runtimeAnimatorController = new AnimatorOverrideController(newAnimator.runtimeAnimatorController);
+
+        
+        
 
         SyncAnimatorState(_animator, newAnimator);
 
@@ -542,11 +549,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         CharacterColliderScript ownerCharacterColliderScript = GetComponentInParent<CharacterColliderScript>();
         ownerCharacterColliderScript.InitModelCollider(newModel);
 
-
-
         Destroy(destroyThis);
-
-
     }
 
 
