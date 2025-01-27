@@ -19,6 +19,10 @@ MonoBehaviour:
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
     _isAttackState: 1
+    _attackDamageMultiply:
+      _damage: 1
+      _damagePower: 1
+      _damagingStamina: 1
     _isLocoMotionToAttackAction: 0
     _isLoopState: 0
     _canUseItem: 0
@@ -33,7 +37,7 @@ MonoBehaviour:
     _aiAttackStateDesc:
       _coolTime: -1
       _range: -1
-    _EnterStateActionTypes: 0d00000010000000110000002200000021000000
+    _EnterStateActionTypes: 0d00000022000000
     _inStateActionTypes: 1900000006000000
     _ExitStateActionTypes: 0e000000
     _checkingBehaves: 

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static AnimationAttackFrameAsset;
+using static AnimationFrameDataAsset;
 using static StateGraphAsset;
 
 

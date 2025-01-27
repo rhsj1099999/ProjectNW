@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using static AnimationAttackFrameAsset;
+using static AnimationFrameDataAsset;
 using UnityEngine;
 
 public class WeaponColliderScript : ColliderScript

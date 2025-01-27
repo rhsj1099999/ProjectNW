@@ -150,7 +150,7 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
             addRigidBody.interpolation = RigidbodyInterpolation.Interpolate;
             addRigidBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
             addRigidBody.includeLayers = 0;
-            addRigidBody.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("Player"));
+            addRigidBody.excludeLayers = 0;
         }
 
         CapsuleCollider addCapsuleCollider = dropItemGameObject.AddComponent<CapsuleCollider>();
@@ -168,8 +168,8 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
             }
 
             addCapsuleCollider.direction = heightIndex;
-            addCapsuleCollider.includeLayers = 0;
-            addCapsuleCollider.excludeLayers = ~LayerMask.GetMask("StaticNavMeshLayer");
+            addCapsuleCollider.includeLayers = LayerMask.GetMask("StaticNavMeshLayer");
+            addCapsuleCollider.excludeLayers = 0;
             addCapsuleCollider.center = itemBounds.center;
             addCapsuleCollider.height = lengths[heightIndex];
             lengths[heightIndex] = 0.0f;
@@ -188,8 +188,6 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
         CapsuleCollider interactionCollider = dropItemInteraction.AddComponent<CapsuleCollider>();
         {
             interactionCollider.direction = addCapsuleCollider.direction;
-            interactionCollider.includeLayers = addCapsuleCollider.includeLayers;
-            interactionCollider.excludeLayers = ~LayerMask.GetMask("Player");
             interactionCollider.center = addCapsuleCollider.center;
             interactionCollider.height = addCapsuleCollider.height;
             interactionCollider.radius = addCapsuleCollider.radius;

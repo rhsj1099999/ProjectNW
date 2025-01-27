@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using static AnimationAttackFrameAsset;
+using static AnimationFrameDataAsset;
 using static StateGraphAsset;
 using static StatScript;
 using static ItemAsset_Weapon;

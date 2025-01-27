@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ad2de68ba504b24e84273b222c9f9c9, type: 3}
+  m_Name: Zombie_TrippleAttack
+  m_EditorClassIdentifier: 
+  _animationClip: {fileID: 7400000, guid: e70c5d62302b3e24bb30af1091537c54, type: 2}
+  _frameDataList:
+  - _frameWorkType: 3
+    _frameDatas:
+    - _frameCheckType: 2
+      _colliderAttachType: 1
+      _frameUp: 24
+      _frameUnder: 33
+      _buffKey: 0
+    - _frameCheckType: 2
+      _colliderAttachType: 1
+      _frameUp: 35
+      _frameUnder: 43
+      _buffKey: 0
+    - _frameCheckType: 2
+      _colliderAttachType: 1
+      _frameUp: 54
+      _frameUnder: 61
+      _buffKey: 0
+  - _frameWorkType: 0
+    _frameDatas:
+    - _frameCheckType: 2
+      _colliderAttachType: 1
+      _frameUp: 24
+      _frameUnder: 33
+      _buffKey: 0
+    - _frameCheckType: 2
+      _colliderAttachType: 1
+      _frameUp: 35
+      _frameUnder: 43
+      _buffKey: 0
+    - _frameCheckType: 2
+      _colliderAttachType: 1
+      _frameUp: 54
+      _frameUnder: 61
+      _buffKey: 0

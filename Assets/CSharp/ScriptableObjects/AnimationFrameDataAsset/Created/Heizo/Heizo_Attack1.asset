@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ad2de68ba504b24e84273b222c9f9c9, type: 3}
+  m_Name: Heizo_Attack1
+  m_EditorClassIdentifier: 
+  _animationClip: {fileID: 7400000, guid: 781aadc931a7b774d82d5a30977496e7, type: 2}
+  _frameDataList:
+  - _frameWorkType: 2
+    _frameDatas:
+    - _frameCheckType: 2
+      _colliderAttachType: 0
+      _frameUp: 30
+      _frameUnder: 65
+      _buffKey: 0
+  - _frameWorkType: 1
+    _frameDatas:
+    - _frameCheckType: 0
+      _colliderAttachType: 0
+      _frameUp: 80
+      _frameUnder: 0
+      _buffKey: 0
+  - _frameWorkType: 3
+    _frameDatas:
+    - _frameCheckType: 2
+      _colliderAttachType: 1
+      _frameUp: 10
+      _frameUnder: 13
+      _buffKey: 0
+  - _frameWorkType: 0
+    _frameDatas:
+    - _frameCheckType: 2
+      _colliderAttachType: 1
+      _frameUp: 10
+      _frameUnder: 13
+      _buffKey: 0

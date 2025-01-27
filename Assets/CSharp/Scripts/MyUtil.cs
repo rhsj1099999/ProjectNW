@@ -49,6 +49,7 @@ public static class MyUtil
         CreateItemAsset = 1,
         CreateItemSubInfo = 2,
         CreateBuffs = 3,
+        AnimationFrameDataAsset = 4,
     };
 
 

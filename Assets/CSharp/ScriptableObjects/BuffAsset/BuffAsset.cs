@@ -7,15 +7,31 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "BuffAsset", menuName = "Scriptable Object/Create_BuffAsset", order = (int)MyUtil.CustomToolOrder.CreateBuffs)]
 public class BuffAsset : ScriptableObject
 {
+    /*------------------------------------------------------------
+    |NOTI| 동일 이름의 버프린데 레벨만 다르다 => 그래도 다른 버프키다
+    ------------------------------------------------------------*/
+
+
     [Serializable]
     public class BuffApplyWork
     {
         public enum BuffApplyType
         {
+            //1. 상수값 증가
             Plus,
+            Minus,
+
+            //2. 퍼센테이지 증가
+            PercentagePlus,
+            PercentageMinus,
+
+            //3. 곱증가
             Multiply,
-            Percentage,
+            Devide,
+
+            //최종 Set (강제로 고정시킨다)
             Set,
+
             None,
         }
 
@@ -33,8 +49,6 @@ public class BuffAsset : ScriptableObject
 
         public float _amount = 0.0f;
         public float _duration = 0.0f;
-
-
     }
 
 
@@ -50,5 +64,4 @@ public class BuffAsset : ScriptableObject
 
     [SerializeField] private List<BuffApplyWork> _buffWorks = new List<BuffApplyWork>();
     public List<BuffApplyWork> _BuffWorks => _buffWorks;
-
 }

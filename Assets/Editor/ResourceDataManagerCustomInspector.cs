@@ -12,6 +12,11 @@ public class ResourceDataManagerCustomInspector : Editor
 
         ResourceDataManager manager = (ResourceDataManager)target;
 
+        if (GUILayout.Button("Load AnimationFrameData"))
+        {
+            LoadAllAnimationFrameData(manager);
+        }
+
         if (GUILayout.Button("Load StateGraphes"))
         {
             LoadAllScriptableObjects(manager);
@@ -21,6 +26,9 @@ public class ResourceDataManagerCustomInspector : Editor
         {
             LoadAllAnimationHipCurveAsset(manager);
         }
+
+
+        
     }
 
     private void LoadAllScriptableObjects(ResourceDataManager manager)
@@ -60,5 +68,27 @@ public class ResourceDataManagerCustomInspector : Editor
             }
         }
 
+    }
+
+
+
+    private void LoadAllAnimationFrameData(ResourceDataManager manager)
+    {
+        // 프로젝트에서 모든 A ScriptableObject 검색
+        string[] guids = AssetDatabase.FindAssets("t:AnimationFrameDataAsset");
+        List<AnimationFrameDataAsset> foundObjects = new List<AnimationFrameDataAsset>();
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            AnimationFrameDataAsset asset = AssetDatabase.LoadAssetAtPath<AnimationFrameDataAsset>(path);
+            if (asset != null)
+            {
+                foundObjects.Add(asset);
+            }
+        }
+
+        // Manager의 리스트에 등록
+        manager.SetAnimationFrameDataAsset(foundObjects);
     }
 }

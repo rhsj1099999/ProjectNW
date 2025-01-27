@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static AnimationAttackFrameAsset;
+using static AnimationFrameDataAsset;
 
 public class ColliderScript : MonoBehaviour
 {

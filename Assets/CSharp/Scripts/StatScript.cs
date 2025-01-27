@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static BuffAsset;
+using static BuffAsset.BuffApplyWork;
 
 public class StatScript : GameCharacterSubScript
 {
@@ -26,6 +28,9 @@ public class StatScript : GameCharacterSubScript
 
         Invincible,
 
+        //스텟 이외에도 적용시킬 수 있습니다. 다만 이곳에 해당 타입을 명시해야합니다.
+        //EX_갑옷 레벨, 갑옷 방어도 등등...
+
         End,
     }
 
@@ -35,15 +40,6 @@ public class StatScript : GameCharacterSubScript
         public BuffAsset _buffAsset = null;
         public float _timeACC = 0.0f;
     }
-
-
-    private Dictionary<Stats, object> _statVars = new Dictionary<Stats, object>();
-    private Dictionary<Stats, System.Type> _statTypes = new Dictionary<Stats, System.Type>();
-
-    private Dictionary<Stats, List<RunningBuff>> _currApplyingBuffs = new Dictionary<Stats, List<RunningBuff>>();
-    private Dictionary<Stats, List<RunningBuff>> _currNotApplyingBuffs = new Dictionary<Stats, List<RunningBuff>>();
-
-    List<object> _stats = new List<object>();
 
     
     //체력
@@ -69,10 +65,16 @@ public class StatScript : GameCharacterSubScript
 
     public bool _invincible = false; //무적입니까
 
+    private Dictionary<Stats, Dictionary<BuffApplyType, List<BuffAsset>>> _allBuffs = new Dictionary<Stats, Dictionary<BuffApplyType, List<BuffAsset>>>();
+    private List<BuffAsset> _stateBuffs = new List<BuffAsset>();
 
+    private Dictionary<Stats, object> _statVars = new Dictionary<Stats, object>();
+    private Dictionary<Stats, System.Type> _statTypes = new Dictionary<Stats, System.Type>();
 
+    private Dictionary<Stats, List<RunningBuff>> _currApplyingBuffs = new Dictionary<Stats, List<RunningBuff>>();
+    private Dictionary<Stats, List<RunningBuff>> _currNotApplyingBuffs = new Dictionary<Stats, List<RunningBuff>>();
 
-
+    List<object> _stats = new List<object>();
 
     public void StateChanged(StateAsset nextState)
     {
@@ -91,7 +93,19 @@ public class StatScript : GameCharacterSubScript
 
     public void ApplyBuff(BuffAsset buff)
     {
-        List<BuffAsset.BuffApplyWork> buffWorks = buff._BuffWorks;
+        List<BuffApplyWork> buffWorks = buff._BuffWorks;
+
+        foreach (var buffWork in buffWorks)
+        {
+            ReadAndApply(buffWork);
+        }
+    }
+
+
+
+    public void ApplyStateBuff(BuffAsset buff)
+    {
+        List<BuffApplyWork> buffWorks = buff._BuffWorks;
 
         foreach (var buffWork in buffWorks)
         {
@@ -102,30 +116,22 @@ public class StatScript : GameCharacterSubScript
 
 
 
-    public void TryStateBuff()
-    {
-
-    }
-
-
-
-
 
     private void ReadAndApply(BuffAsset.BuffApplyWork buffWork)
     {
-        BuffAsset.BuffApplyWork.BuffApplyType applyType = buffWork._buffApplyType;
+        BuffApplyType applyType = buffWork._buffApplyType;
 
         
 
         switch (applyType)
         {
-            case BuffAsset.BuffApplyWork.BuffApplyType.Plus:
+            case BuffApplyType.Plus:
                 break;
-            case BuffAsset.BuffApplyWork.BuffApplyType.Multiply:
+            case BuffApplyType.Multiply:
                 break;
-            case BuffAsset.BuffApplyWork.BuffApplyType.Percentage:
+            case BuffApplyType.Percentage:
                 break;
-            case BuffAsset.BuffApplyWork.BuffApplyType.Set:
+            case BuffApplyType.Set:
                 break;
             default:
                 Debug.Assert(false, "버프 적용타입이 대응되지 않습니다" + applyType);

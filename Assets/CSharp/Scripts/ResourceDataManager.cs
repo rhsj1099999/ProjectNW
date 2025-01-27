@@ -2,68 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
-public enum FrameCheckType
-{
-    Up, Under, Between,
-    End,
-}
-
-public enum FrameDataType
-{
-    NextAttackMotion,
-    StateChangeReadyLikeIdle, //Act Like IdleState
-    AddBuff,                  //버프를 걸어준다
-    RemoveBuff,               //버프를 해제한다
-    End,
-}
-
-[Serializable]
-public class FrameData
-{
-    public int _frameUp = -1;
-    public int _frameUnder = -1;
-
-    public int _buffKey = -1; //적용/해제 할 버프 키
-
-    public FrameCheckType _frameCheckType = FrameCheckType.Up;
-    public FrameDataType _frameDataType = FrameDataType.NextAttackMotion;
-
-    public bool FrameCheck(int currAnimationFrame)
-    {
-        switch(_frameCheckType)
-        {
-            case FrameCheckType.Up:
-                {
-                    if (currAnimationFrame > _frameUp)
-                    {
-                        return true;
-                    }
-                    return false;
-                }
-
-            case FrameCheckType.Under:
-                {
-                    if (currAnimationFrame < _frameUnder)
-                    {
-                        return true;
-                    }
-                    return false;
-                }
-
-            case FrameCheckType.Between:
-                if (currAnimationFrame > _frameUp && currAnimationFrame < _frameUnder)
-                {
-                    return true;
-                }
-                return false;
-
-            default:
-                return false;
-        }
-    }
-}
-
+using UnityEngine.Playables;
+using static AnimationFrameDataAsset;
 
 public class ResourceDataManager : SubManager<ResourceDataManager>
 {
@@ -240,46 +180,67 @@ public class ResourceDataManager : SubManager<ResourceDataManager>
     /*-----------------------------------
     Data Section _ Frame Data
     -----------------------------------*/
-    [SerializeField] private List<AnimationClipWrapperAsset> _animationFrameDataAssetSettings = new List<AnimationClipWrapperAsset>();
-    private Dictionary<AnimationClip, Dictionary<FrameDataType, FrameData>> _animationFrameDatas = new Dictionary<AnimationClip, Dictionary<FrameDataType, FrameData>>();
+    [SerializeField] private List<AnimationFrameDataAsset> _animationFrameDataAssetSettings = new List<AnimationFrameDataAsset>();
+    private Dictionary<AnimationClip, Dictionary<FrameDataWorkType, List<AEachFrameData>>> _animationFrameDatas = new Dictionary<AnimationClip, Dictionary<FrameDataWorkType, List<AEachFrameData>>>();
+    public void SetAnimationFrameDataAsset(List<AnimationFrameDataAsset> datas)
+    {
+        _animationFrameDataAssetSettings = datas;
+    }
+
 
     private void ReadyAnimationFrameData()
     {
-        foreach (var dataWrappers in _animationFrameDataAssetSettings)
+        foreach (AnimationFrameDataAsset frameDataAsset in _animationFrameDataAssetSettings)
         {
-            foreach (var wrappedData in dataWrappers._list)
+            AnimationClip animationClip = frameDataAsset._AnimationClip;
+
+            foreach (AFrameData frameData in frameDataAsset._FrameDataList)
             {
-                AnimationClip animationClip = wrappedData._animationClip;
+                FrameDataWorkType type = frameData._frameWorkType;
 
-                foreach (var data in wrappedData._dataAssetWrapper)
+                if (_animationFrameDatas.ContainsKey(animationClip) == false)
                 {
-                    FrameData frameData = data._dataAsset;
-                    FrameDataType frameDataType = data._frameDataType;
-
-                    if (_animationFrameDatas.ContainsKey(animationClip) == false)
-                    {
-                        _animationFrameDatas.Add(animationClip, new Dictionary<FrameDataType, FrameData>());
-                    }
-
-                    Dictionary<FrameDataType, FrameData> dataByClip = _animationFrameDatas[animationClip];
-
-                    Debug.Assert(dataByClip.ContainsKey(frameDataType) == false, "데이터가 겹칩니다. anim : " + animationClip.name + "type : " + frameDataType.ToString());
-
-                    dataByClip.Add(frameDataType, frameData);
+                    _animationFrameDatas.Add(animationClip, new Dictionary<FrameDataWorkType, List<AEachFrameData>>());
                 }
+
+                Dictionary<FrameDataWorkType, List<AEachFrameData>> dataByClip = _animationFrameDatas[animationClip];
+
+                if (dataByClip.ContainsKey(type) == true)
+                {
+                    Debug.Assert(false, "데이터가 겹칩니다" + animationClip.name + type);
+                    Debug.Break();
+                }
+
+                dataByClip.Add(type, frameData._frameDatas);
             }
         }
     }
 
-    public FrameData GetAnimationFrameData(AnimationClip clip, FrameDataType type)
+
+    public Dictionary<FrameDataWorkType, List<AEachFrameData>> GetAnimationAllFrameData(AnimationClip clip)
+    {
+        Dictionary<FrameDataWorkType, List<AEachFrameData>> ret = null;
+
+        _animationFrameDatas.TryGetValue(clip, out ret);
+
+        return ret;
+    }
+
+
+    public List<AEachFrameData> GetAnimationFrameData(AnimationClip clip, FrameDataWorkType workType)
     {
         Debug.Assert(_animationFrameDatas.ContainsKey(clip) != false, "clip에 대한 정보가 하나도 없다" + clip.name);
 
-        Dictionary<FrameDataType, FrameData> dataByClip = _animationFrameDatas[clip];
+        Dictionary<FrameDataWorkType, List<AEachFrameData>> dataByClip = _animationFrameDatas[clip];
 
-        Debug.Assert(dataByClip.ContainsKey(type) != false, "clip 내에 해당 type에 대한 정보가 없다" + clip.name + type.ToString());
+        if (dataByClip.ContainsKey(workType) == false)
+        {
+            Debug.Assert(false, "해당 애니메이션에 워크타입이 없다" + clip.name + workType);
+            Debug.Break();
+            return null;
+        }
 
-        return dataByClip[type];
+        return dataByClip[workType];
     }
 
 

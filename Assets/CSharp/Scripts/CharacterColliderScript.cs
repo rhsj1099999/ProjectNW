@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static AnimationAttackFrameAsset;
+using static AnimationFrameDataAsset;
 
 public class CharacterColliderScript : GameCharacterSubScript
 {
@@ -128,16 +128,16 @@ public class CharacterColliderScript : GameCharacterSubScript
         return _colliders[type];
     }
 
-    public void ColliderWork(List<AttackFrameDesc> frameDataAssetList, StateAsset currStateAsset)
+    public void ColliderWork(List<AEachFrameData> frameDataAssetList, StateAsset currStateAsset)
     {
         if (frameDataAssetList == null)
         {
             return;
         }
 
-        foreach (AttackFrameDesc desc in frameDataAssetList)
+        foreach (AEachFrameData desc in frameDataAssetList)
         {
-            ColliderAttachType type = desc._attachType;
+            ColliderAttachType type = desc._colliderAttachType;
 
             if (_owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBool("IsMirroring") == true)
             {
@@ -178,9 +178,9 @@ public class CharacterColliderScript : GameCharacterSubScript
 
             AnimationClip currAnimationClip = currStateAsset._myState._stateAnimationClip;
 
-            if (desc._upFrame >= 0.0f)
+            if (desc._frameUp >= 0.0f)
             {
-                float targetFrame = (float)desc._upFrame;
+                float targetFrame = (float)desc._frameUp;
                 float animationFPS = currAnimationClip.frameRate;
 
                 //------------------------------------------------------------------
@@ -195,9 +195,9 @@ public class CharacterColliderScript : GameCharacterSubScript
             }
 
 
-            if (desc._underFrame >= 0.0f)
+            if (desc._frameUnder >= 0.0f)
             {
-                float targetFrame = (float)desc._underFrame;
+                float targetFrame = (float)desc._frameUnder;
                 float animationFPS = currAnimationClip.frameRate;
 
                 //------------------------------------------------------------------

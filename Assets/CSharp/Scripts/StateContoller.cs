@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using static StateGraphAsset;
 using static MyUtil;
+using static AnimationFrameDataAsset;
+using UnityEngine.Playables;
+using MagicaCloth2;
 
 public enum StateActionType
 {
@@ -47,8 +50,6 @@ public enum StateActionType
 
     AddCoroutine_DeadCall,
     AddCoroutine_BuffCheck,
-
-
 }
 
 public enum ConditionType
@@ -122,15 +123,6 @@ public enum RepresentStateType
     End,
 }
 
-public enum StateActionCoroutineType
-{
-    ChangeToIdle,
-    StateChangeReady,
-    DeadCall,
-    Buff,
-    End,
-}
-
 [Serializable]
 public class ComboKeyCommandDesc
 {
@@ -157,7 +149,7 @@ public class ConditionDesc
     public ItemAsset_Weapon.WeaponType _weaponTypeGoal;
     public List<KeyInputConditionDesc> _keyInputConditionTarget;
     public List<ComboKeyCommandDesc> _commandInputConditionTarget;
-    public FrameDataType _animationFrameDataType = FrameDataType.End;
+    //public FrameDataType _animationFrameDataType = FrameDataType.End;
     public float _comboStrainedTime = -1.0f; //n초 내에 완성시켜야 하는 콤보
     public List<AnimatorLayerTypes> _mustNotBusyLayers;
     public int _mustNotBusyLayers_BitShift = 1;
@@ -257,8 +249,8 @@ public class StateContoller : GameCharacterSubScript
 {
     public class StateActionCoroutineWrapper
     {
-        public Coroutine _runningCoroutine = null;
-        public FrameData _frameData = null;
+        //public Coroutine _runningCoroutine = null;
+        public AEachFrameData _frameData = null;
         public float _timeACC = 0.0f;
         public float _timeTarget = 0.0f;
     }
@@ -333,17 +325,15 @@ public class StateContoller : GameCharacterSubScript
             //_stateGraphes[(int)type].SettingOwnerComponent(_ownerStateControllingComponent, _owner);
         }
 
-        for (int i = 0; i < (int)StateActionCoroutineType.End; i++)
-        {
-            _stateActionCoroutines.Add(null);
-        }
+        //for (int i = 0; i < (int)StateActionCoroutineType.End; i++)
+        //{
+        //    _stateActionCoroutines.Add(null);
+        //}
     }
-
     public override void SubScriptStart() {}
 
 
     private StateAsset _currState = null;
-    //private StateAsset _prevState = null;
     public StateAsset GetCurrState() { return _currState; }
 
 
@@ -358,13 +348,13 @@ public class StateContoller : GameCharacterSubScript
     public List<StateGraphAsset> GetStateGraphes() { return _stateGraphes; }
     public StateGraphAsset GetBasicStateGraphes(StateGraphType type) {return _initialStateGraphesDict[type];}
 
-    private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
-
     private float _currStateTime = 0.0f;
     private float _prevStateTime = 0.0f;
+    
+
     List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
 
-
+    private List<Coroutine> _stateActionCoroutines = new List<Coroutine>();
     private int _randomStateInstructIndex = -1;
     private int _randomStateTryCount = 0;
     private HashSet<StateAsset> _failedRandomChanceState = new HashSet<StateAsset>();
@@ -382,10 +372,16 @@ public class StateContoller : GameCharacterSubScript
     }
 
 
-    //---CoroutineTimer ...
-    /*---------------------------------------
-    |TODO| 없애는 구조를 한번 생각해볼것
-    ---------------------------------------*/
+
+
+    /*----------------------------------------------------------
+    |NOTI| 공격애니메이션이 아닐땐 무조건 true에서 시작합니다.
+    ----------------------------------------------------------*/
+    private bool _nextComboReady = true;
+
+
+
+
 
     public StateAsset GetMyIdleStateAsset()
     {
@@ -435,7 +431,6 @@ public class StateContoller : GameCharacterSubScript
     {
         _currStateTime = 0.0f;
         _prevStateTime = 0.0f;
-        StopAllCoroutines();
         _failedRandomChanceState.Clear();
     }
 
@@ -443,17 +438,13 @@ public class StateContoller : GameCharacterSubScript
     {
         StatedWillBeChanged();
 
-        //if (gameObject.name != "Zombie")
-        //{
-        //    Debug.Log("State Changed : " + nextState.name);
-        //}
-
         if (_currState != null)
         {
             DoActions(_currState._myState._ExitStateActionTypes);
         }
 
-        //_prevState = _currState;
+        _nextComboReady = true;
+
         _previousGraphType = _currentGraphType;
 
         _currentGraphType = nextGraphType;
@@ -462,9 +453,9 @@ public class StateContoller : GameCharacterSubScript
         _randomStateInstructIndex = -1;
         _randomStateTryCount = 0;
         _failedRandomChanceState.Clear();
-
+        
         _owner.StateChanged(_currState);
-
+        
         AllStopCoroutine();
 
         if (_currentGraphType == StateGraphType.WeaponState_RightGraph)
@@ -477,6 +468,8 @@ public class StateContoller : GameCharacterSubScript
         }
 
         DoActions(_currState._myState._EnterStateActionTypes);
+
+        AddStateActionCoroutine();
     }
 
 
@@ -516,8 +509,6 @@ public class StateContoller : GameCharacterSubScript
                     }
                 }
                 
-
-
                 break;
 
             default:
@@ -858,15 +849,18 @@ public class StateContoller : GameCharacterSubScript
                     }
                     break;
 
-                case StateActionType.AddCoroutine_ChangeToIdleState:
+                case StateActionType.AddCoroutine_ChangeToIdleState: 
                     {
-                        AddStateActionCoroutine(StateActionCoroutineType.ChangeToIdle);
+                        Debug.Assert(false, "이제 안씁니다" + StateActionType.AddCoroutine_ChangeToIdleState);
+                        Debug.Break();
+                        /*AddStateActionCoroutine(StateActionCoroutineType.ChangeToIdle);*/
                     }
                     break;
-
-                case StateActionType.AddCoroutine_StateChangeReady:
+                case StateActionType.AddCoroutine_StateChangeReady: 
                     {
-                        AddStateActionCoroutine(StateActionCoroutineType.StateChangeReady);
+                        Debug.Assert(false, "이제 안씁니다" + StateActionType.AddCoroutine_StateChangeReady);
+                        Debug.Break();
+                        /*AddStateActionCoroutine(StateActionCoroutineType.StateChangeReady);*/
                     }
                     break;
 
@@ -1056,18 +1050,8 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.AnimationAttack:
                     {
-                        List<AnimationAttackFrameAsset.AttackFrameDesc> frameDesc = 
-                        AnimationAttackManager.Instance.GetAttackFrameDesc(_currState._myState._stateAnimationClip);
-
-                        if (frameDesc == null)
-                        {
-                            Debug.Assert(false, "FrameData가 없습니다.");
-                            Debug.Break();
-                        }   
-                        else
-                        {
-                            _owner.GCST<CharacterColliderScript>().ColliderWork(frameDesc, _currState);
-                        }
+                        Debug.Assert(false, "이제 쓰지 않습니다");
+                        Debug.Break();
                     }
                     break;
 
@@ -1097,15 +1081,19 @@ public class StateContoller : GameCharacterSubScript
                     }
                     break;
 
-                case StateActionType.AddCoroutine_DeadCall:
+                case StateActionType.AddCoroutine_DeadCall: 
                     {
-                        AddStateActionCoroutine(StateActionCoroutineType.DeadCall);
+                        Debug.Assert(false, "이제 안씁니다" + StateActionType.AddCoroutine_DeadCall);
+                        Debug.Break();
+                        /*AddStateActionCoroutine(StateActionCoroutineType.DeadCall);*/
                     }
                     break;
 
-                case StateActionType.AddCoroutine_BuffCheck:
+                case StateActionType.AddCoroutine_BuffCheck: 
                     {
-                        AddStateActionCoroutine(StateActionCoroutineType.Buff);
+                        Debug.Assert(false, "이제 안씁니다" + StateActionType.AddCoroutine_BuffCheck);
+                        Debug.Break();
+                        /*AddStateActionCoroutine(StateActionCoroutineType.Buff);*/
                     }
                     break;
 
@@ -1119,167 +1107,87 @@ public class StateContoller : GameCharacterSubScript
 
     private void AllStopCoroutine()
     {
-        for (int i = 0; i < (int)StateActionCoroutineType.End; i++)
+        foreach (Coroutine coroutine in _stateActionCoroutines)
         {
-            if (_stateActionCoroutines[i] != null)
-            {
-                StopCoroutine(_stateActionCoroutines[i]._runningCoroutine);
-                _stateActionCoroutines[i] = null;
-            }
+            StopCoroutine(coroutine);
         }
+
+        _stateActionCoroutines.Clear();
     }
 
 
-    private void AddStateActionCoroutine(StateActionCoroutineType type)
+    private void AddStateActionCoroutine()
     {
-        if (_stateActionCoroutines[(int)type] != null)
+        Dictionary<FrameDataWorkType, List<AEachFrameData>> allFrameDatas = ResourceDataManager.Instance.GetAnimationAllFrameData(_currState._myState._stateAnimationClip);
+
+        if (allFrameDatas == null)
         {
-            StopCoroutine(_stateActionCoroutines[(int)type]._runningCoroutine);
-            _stateActionCoroutines[(int)type] = null;
+            return;
         }
 
-        StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper();
-
-        switch (type)
+        foreach (KeyValuePair<FrameDataWorkType, List<AEachFrameData>> pair in allFrameDatas)
         {
-            case StateActionCoroutineType.ChangeToIdle:
-                {
-                    newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
-                    newCoroutineWrapper._runningCoroutine = StartCoroutine(ChangeToIdleCoroutine(newCoroutineWrapper));
-                }
-                break;
+            FrameDataWorkType type = pair.Key;
 
-            case StateActionCoroutineType.StateChangeReady:
-                {
-                    FrameData animationFrameData = ResourceDataManager.Instance.GetAnimationFrameData(_currState._myState._stateAnimationClip, FrameDataType.StateChangeReadyLikeIdle);
-
-                    if (animationFrameData == null)
-                    {
-                        Debug.Assert(false, "FrameData가 설정돼있지 않습니다");
-                        Debug.Break();
-                        return;
-                    }
-                    newCoroutineWrapper._frameData = animationFrameData;
-                    newCoroutineWrapper._timeTarget = (float)animationFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
-                    newCoroutineWrapper._runningCoroutine = StartCoroutine(StateChangeReadyCoroutine(newCoroutineWrapper));
-                }
-                break;
-
-            case StateActionCoroutineType.DeadCall:
-                {
-                    newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
-                    newCoroutineWrapper._runningCoroutine = StartCoroutine(DeadCallCoroutine(newCoroutineWrapper));
-                }
-                break;
-
-            case StateActionCoroutineType.Buff:
-                {
-                    {
-                        /*---------------------------------------------------------------------
-                        |NOTI| 각 경우가 반드시 성공, 해제 해야하는지에 대해서 결정되진 않았습니다만,
-                        지금은 반드시 성공해야합니다
-                        ---------------------------------------------------------------------*/
-                        //적용, 해제의 쌍이 맞다
-                        //적용만 있다,
-                        //해제만 있다
-                    }
-
-                    FrameData animationFrameData = ResourceDataManager.Instance.GetAnimationFrameData(_currState._myState._stateAnimationClip, FrameDataType.AddBuff);
-
-                    if (animationFrameData == null)
-                    {
-                        Debug.Assert(false, "FrameData가 설정돼있지 않습니다");
-                        Debug.Break();
-                        return;
-                    }
-
-                    newCoroutineWrapper._frameData = animationFrameData;
-                    newCoroutineWrapper._timeTarget = (float)animationFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
-                    newCoroutineWrapper._runningCoroutine = StartCoroutine(StateChangeReadyCoroutine(newCoroutineWrapper));
-                }
-                break;
-
-            default:
-                {
-                    Debug.Assert(false, "type이 제대로 지정되지 않았습니다");
-                    Debug.Break();
-                }
-                break;
-        }
-        
-        _stateActionCoroutines[(int)type] = newCoroutineWrapper;
-    }
-
-
-
-
-    private IEnumerator StateAddBuffCoroutine(StateActionCoroutineWrapper target)
-    {
-        while (true)
-        {
-            target._timeACC += Time.deltaTime;
-
-            if (target._timeACC >= target._timeTarget)
+            foreach (AEachFrameData eachFrameData in pair.Value)
             {
-                
-                //AddBuff
-                break;
+                StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper();
+                switch (type)
+                {
+                    case FrameDataWorkType.ChangeToIdle:
+                        {
+                            newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
+                            _stateActionCoroutines.Add(StartCoroutine(ChangeToIdleCoroutine(newCoroutineWrapper)));
+                        }
+                        break;
+
+                    case FrameDataWorkType.StateChangeReady:
+                        {
+                            newCoroutineWrapper._frameData = eachFrameData;
+                            newCoroutineWrapper._timeTarget = (float)eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
+                            _stateActionCoroutines.Add(StartCoroutine(StateChangeReadyCoroutine(newCoroutineWrapper)));
+                        }
+                        break;
+
+                    case FrameDataWorkType.NextAttackMotion:
+                        {
+                            newCoroutineWrapper._frameData = eachFrameData;
+                            _stateActionCoroutines.Add(StartCoroutine(NextAttackComboCoroutine(newCoroutineWrapper)));
+                        }
+                        break;
+
+                    case FrameDataWorkType.Attack:
+                        {
+                            CharacterColliderScript colliderScript = _owner.GCST<CharacterColliderScript>();
+                            colliderScript.ColliderWork(pair.Value, _currState);
+                        }
+                        break;
+
+                    case FrameDataWorkType.DeadCall:
+                        {
+                            newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
+                            _stateActionCoroutines.Add(StartCoroutine(DeadCallCoroutine(newCoroutineWrapper)));
+                        }
+                        break;
+
+                    case FrameDataWorkType.AddBuff:
+                        {
+                        }
+                        break;
+
+                    case FrameDataWorkType.RemoveBuff:
+                        {
+                        }
+                        break;
+
+                    default:
+                        {
+                            Debug.Assert(false, "type이 제대로 지정되지 않았습니다");
+                            Debug.Break();
+                        }
+                        break;
+                }
             }
-            yield return null;
-        }
-    }
-
-
-
-    private IEnumerator StateRemoveBuffCoroutine(StateActionCoroutineWrapper target)
-    {
-        while (true)
-        {
-            target._timeACC += Time.deltaTime;
-
-            if (target._timeACC >= target._timeTarget)
-            {
-                int buffKey = target._frameData._buffKey;
-                //RemoveBuff
-                break;
-            }
-            yield return null;
-        }
-    }
-
-
-
-
-
-    private IEnumerator StateChangeReadyCoroutine(StateActionCoroutineWrapper target)
-    {
-        while (true)
-        {
-            target._timeACC += Time.deltaTime;
-
-            if (target._timeACC >= target._timeTarget)
-            {
-                ReadyLinkedStates(StateGraphType.LocoStateGraph, GetMyIdleStateAsset(), false);
-                break;
-            }
-            yield return null;
-        }
-    }
-
-
-
-    private IEnumerator DeadCallCoroutine(StateActionCoroutineWrapper target)
-    {
-        while (true) 
-        {
-            target._timeACC += Time.deltaTime;
-
-            if (target._timeACC >= target._timeTarget)
-            {
-                _owner.DeadCall();
-                break;
-            }
-            yield return null;
         }
     }
 
@@ -1299,11 +1207,95 @@ public class StateContoller : GameCharacterSubScript
         }
     }
 
+    private IEnumerator StateChangeReadyCoroutine(StateActionCoroutineWrapper target)
+    {
+        while (true)
+        {
+            target._timeACC += Time.deltaTime;
 
+            if (target._timeACC >= target._timeTarget)
+            {
+                ReadyLinkedStates(StateGraphType.LocoStateGraph, GetMyIdleStateAsset(), false);
+                break;
+            }
+            yield return null;
+        }
+    }
 
+    private IEnumerator NextAttackComboCoroutine(StateActionCoroutineWrapper target)
+    {
+        if (target._frameData == null)
+        {
+            Debug.Assert(false, "NextAttackComboCoroutine은 frameData가 없어선 안된다");
+            Debug.Break();
+        }
 
+        _nextComboReady = false;
 
+        float underSec = target._frameData._frameUnder / _currState._myState._stateAnimationClip.frameRate;
+        float upSec = target._frameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
 
+        while (true)
+        {
+            target._timeACC += Time.deltaTime;
+
+            if (target._timeACC < underSec && target._timeACC > upSec)
+            {
+                _nextComboReady = true;
+            }
+
+            if (target._timeACC >= underSec)
+            {
+                _nextComboReady = false;
+                break;
+            }
+
+            yield return null;
+        }
+    }
+
+    private IEnumerator DeadCallCoroutine(StateActionCoroutineWrapper target)
+    {
+        while (true)
+        {
+            target._timeACC += Time.deltaTime;
+
+            if (target._timeACC >= target._timeTarget)
+            {
+                _owner.DeadCall();
+                break;
+            }
+            yield return null;
+        }
+    }
+
+    private IEnumerator StateAddBuffCoroutine(StateActionCoroutineWrapper target)
+    {
+        while (true)
+        {
+            target._timeACC += Time.deltaTime;
+
+            if (target._timeACC >= target._timeTarget)
+            {
+                break;
+            }
+            yield return null;
+        }
+    }
+
+    private IEnumerator StateRemoveBuffCoroutine(StateActionCoroutineWrapper target)
+    {
+        while (true)
+        {
+            target._timeACC += Time.deltaTime;
+
+            if (target._timeACC >= target._timeTarget)
+            {
+                break;
+            }
+            yield return null;
+        }
+    }
 
 
     public bool CheckCondition(StateAsset currstateAsset, LinkedStateAssetWrapper nextStateAsset, ConditionAssetWrapper conditionAssetWrapper, bool isRightSided)
@@ -1342,11 +1334,6 @@ public class StateContoller : GameCharacterSubScript
                     {
                         ret = true;
                     }
-
-                    //if (_owner.GCST<InAirCheckColliderScript>().GetInAir() == true)
-                    //{
-                    //    ret = true;
-                    //}
                 }
                 break;
 
@@ -1374,26 +1361,14 @@ public class StateContoller : GameCharacterSubScript
 
             case ConditionType.EquipWeaponByType:
                 {
-                    //ItemInfo ownerCurrWeapon = _owner.GetWeaponItem();
-
-                    //if (ownerCurrWeapon == null)
-                    //{ return false; } //무기를 끼고있지 않습니다.
-
-                    //if (ownerCurrWeapon._weaponType == conditionDesc._weaponTypeGoal)
-                    //{ return false; } //끼고있는 무기가 목표값과 다릅니다.
-
-                    return true;
+                    Debug.Assert(false, "이제 이 조건은 사용하지 않습니다" + ConditionType.EquipWeaponByType);
+                    Debug.Break();
                 }
+                break;
 
             case ConditionType.AnimationFrame:
                 {
-                    StateDesc currStateDesc = currstateAsset._myState;
-
-                    FrameData stateAnimFrameData = ResourceDataManager.Instance.GetAnimationFrameData(currStateDesc._stateAnimationClip, conditionDesc._animationFrameDataType);
-
-                    int currOnwerAnimationFrame = (int)(_currStateTime * currStateDesc._stateAnimationClip.frameRate);
-
-                    ret = stateAnimFrameData.FrameCheck(currOnwerAnimationFrame);
+                    ret = _nextComboReady;
                 }
                 break;
 
@@ -1418,6 +1393,7 @@ public class StateContoller : GameCharacterSubScript
             case ConditionType.ComboKeyCommand:
                 {
                     forcedValue = true;
+                    
                     ret = PartailFunc_ComboCommandCheck(conditionDesc, isRightSided);
                 }
                 break;
@@ -1427,25 +1403,6 @@ public class StateContoller : GameCharacterSubScript
 
             case ConditionType.AnimatorLayerNotBusy:
                 {
-                    //if (conditionDesc._mustNotBusyLayers.Count <= 0)
-                    //{
-                    //    return true;
-                    //}
-
-                    //if (conditionDesc._mustNotBusyLayers_BitShift == -1)
-                    //{
-                    //    foreach (AnimatorLayerTypes item in conditionDesc._mustNotBusyLayers)
-                    //    {
-                    //        conditionDesc._mustNotBusyLayers_BitShift = (conditionDesc._mustNotBusyLayers_BitShift | (1 << (int)item));
-                    //    }
-                    //}
-
-                    //int ownerBusyLayer_Bitshift = _owner.GetCurrentBusyAnimatorLayer_BitShift();
-
-                    //if ((ownerBusyLayer_Bitshift & conditionDesc._mustNotBusyLayers_BitShift) == 0)
-                    //{
-                    //    return true;
-                    //}
                 }
                 break;
 
@@ -1786,9 +1743,6 @@ public class StateContoller : GameCharacterSubScript
         return (ret == stateGoal);
     }
 
-
-
-
     private bool PartailFunc_ComboCommandCheck(ConditionDesc conditionDesc, bool isRightSided)
     {
         /*-----------------------------------------------------------
@@ -1797,6 +1751,11 @@ public class StateContoller : GameCharacterSubScript
         /*-----------------------------------------------------------
         if (false) return false;
         -----------------------------------------------------------*/
+
+        if (_nextComboReady == false)
+        {
+            return false;
+        }
 
         bool ret = false;
 
@@ -1810,18 +1769,7 @@ public class StateContoller : GameCharacterSubScript
             return false;
         }
 
-
-        //if (_owner.GetCurrentWeaponScript(isRightSided) == null)
-        //{
-        //    return false;
-        //}
-
         ret = CommandCheck(conditionDesc, isRightSided);
-
-        //if (ret == true)
-        //{
-        //    _owner.SetLatestWeaponUse(isRightSided);
-        //}
 
         return ret;
     }
@@ -1897,8 +1845,7 @@ public class StateContoller : GameCharacterSubScript
         CustomKeyManager.Instance.ClearKeyRecord();
         return true;
     }
-
-
+    
     private ComboCommandKeyType KeyConvert(WeaponUseType target, WeaponGrabFocus ownerGrabType, bool isRightHandWeapon)
     {
         ComboCommandKeyType convertedRet = ComboCommandKeyType.TargetingFront;

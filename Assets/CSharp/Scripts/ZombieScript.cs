@@ -1,5 +1,6 @@
 using UnityEngine;
-using static AnimationAttackFrameAsset;
+using static AnimationFrameDataAsset;
+
 
 public class ZombieScript : CharacterScript, IHitable
 {
