@@ -736,6 +736,7 @@ public class CharacterScript : GameActorScript, IHitable
         GCST<CharacterAnimatorScript>().StateChanged(nextState);
         GCST<CharacterColliderScript>().StateChanged();
         GCST<CharacterContollerable>().StateChanged();
+        GCST<StatScript>().StateChanged(nextState);
     }
 
 
@@ -1352,6 +1353,21 @@ public class CharacterScript : GameActorScript, IHitable
     public void WhenTriggerEnterWithWeaponCollider(Collider other)
     {
         if (_dead == true) {return;}
+
+        StatScript statScript = GCST<StatScript>();
+
+        if (statScript == null)
+        {
+            Debug.Assert(false, "전투와 관련된 기능인데 StatScript가 없으면 안됩ㄴ다");
+            Debug.Break();
+            return;
+        }
+
+        if (statScript._invincible == true) 
+        {
+            Debug.Log("무적이라서 씹었다");
+            return;
+        }
 
         
         if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == false)

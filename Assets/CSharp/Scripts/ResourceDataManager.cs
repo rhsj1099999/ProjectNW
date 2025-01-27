@@ -13,6 +13,8 @@ public enum FrameDataType
 {
     NextAttackMotion,
     StateChangeReadyLikeIdle, //Act Like IdleState
+    AddBuff,                  //버프를 걸어준다
+    RemoveBuff,               //버프를 해제한다
     End,
 }
 
@@ -21,7 +23,11 @@ public class FrameData
 {
     public int _frameUp = -1;
     public int _frameUnder = -1;
+
+    public int _buffKey = -1; //적용/해제 할 버프 키
+
     public FrameCheckType _frameCheckType = FrameCheckType.Up;
+    public FrameDataType _frameDataType = FrameDataType.NextAttackMotion;
 
     public bool FrameCheck(int currAnimationFrame)
     {

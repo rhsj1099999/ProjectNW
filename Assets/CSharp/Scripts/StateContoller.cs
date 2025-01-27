@@ -46,6 +46,7 @@ public enum StateActionType
     AttackLookAtLockOnTarget,
 
     AddCoroutine_DeadCall,
+    AddCoroutine_BuffCheck,
 
 
 }
@@ -126,6 +127,7 @@ public enum StateActionCoroutineType
     ChangeToIdle,
     StateChangeReady,
     DeadCall,
+    Buff,
     End,
 }
 
@@ -256,6 +258,7 @@ public class StateContoller : GameCharacterSubScript
     public class StateActionCoroutineWrapper
     {
         public Coroutine _runningCoroutine = null;
+        public FrameData _frameData = null;
         public float _timeACC = 0.0f;
         public float _timeTarget = 0.0f;
     }
@@ -1100,6 +1103,12 @@ public class StateContoller : GameCharacterSubScript
                     }
                     break;
 
+                case StateActionType.AddCoroutine_BuffCheck:
+                    {
+                        AddStateActionCoroutine(StateActionCoroutineType.Buff);
+                    }
+                    break;
+
                 default:
                     //Debug.Assert(false, "데이터가 추가됐습니까?" + action);
                     break;
@@ -1150,7 +1159,7 @@ public class StateContoller : GameCharacterSubScript
                         Debug.Break();
                         return;
                     }
-
+                    newCoroutineWrapper._frameData = animationFrameData;
                     newCoroutineWrapper._timeTarget = (float)animationFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
                     newCoroutineWrapper._runningCoroutine = StartCoroutine(StateChangeReadyCoroutine(newCoroutineWrapper));
                 }
@@ -1163,6 +1172,33 @@ public class StateContoller : GameCharacterSubScript
                 }
                 break;
 
+            case StateActionCoroutineType.Buff:
+                {
+                    {
+                        /*---------------------------------------------------------------------
+                        |NOTI| 각 경우가 반드시 성공, 해제 해야하는지에 대해서 결정되진 않았습니다만,
+                        지금은 반드시 성공해야합니다
+                        ---------------------------------------------------------------------*/
+                        //적용, 해제의 쌍이 맞다
+                        //적용만 있다,
+                        //해제만 있다
+                    }
+
+                    FrameData animationFrameData = ResourceDataManager.Instance.GetAnimationFrameData(_currState._myState._stateAnimationClip, FrameDataType.AddBuff);
+
+                    if (animationFrameData == null)
+                    {
+                        Debug.Assert(false, "FrameData가 설정돼있지 않습니다");
+                        Debug.Break();
+                        return;
+                    }
+
+                    newCoroutineWrapper._frameData = animationFrameData;
+                    newCoroutineWrapper._timeTarget = (float)animationFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
+                    newCoroutineWrapper._runningCoroutine = StartCoroutine(StateChangeReadyCoroutine(newCoroutineWrapper));
+                }
+                break;
+
             default:
                 {
                     Debug.Assert(false, "type이 제대로 지정되지 않았습니다");
@@ -1172,6 +1208,43 @@ public class StateContoller : GameCharacterSubScript
         }
         
         _stateActionCoroutines[(int)type] = newCoroutineWrapper;
+    }
+
+
+
+
+    private IEnumerator StateAddBuffCoroutine(StateActionCoroutineWrapper target)
+    {
+        while (true)
+        {
+            target._timeACC += Time.deltaTime;
+
+            if (target._timeACC >= target._timeTarget)
+            {
+                
+                //AddBuff
+                break;
+            }
+            yield return null;
+        }
+    }
+
+
+
+    private IEnumerator StateRemoveBuffCoroutine(StateActionCoroutineWrapper target)
+    {
+        while (true)
+        {
+            target._timeACC += Time.deltaTime;
+
+            if (target._timeACC >= target._timeTarget)
+            {
+                int buffKey = target._frameData._buffKey;
+                //RemoveBuff
+                break;
+            }
+            yield return null;
+        }
     }
 
 

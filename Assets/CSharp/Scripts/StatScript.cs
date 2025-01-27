@@ -74,6 +74,21 @@ public class StatScript : GameCharacterSubScript
 
 
 
+    public void StateChanged(StateAsset nextState)
+    {
+        /*-------------------------------------------------------------------
+        상태에 의해 걸렸던 버프들을 모두 취소한다.
+        그럼에도 불구하고 현재 걸린 버프에 의해서 해당 이로운/해로운 효과가 남아있다면
+        받을 수 있어야 한다
+        -------------------------------------------------------------------*/
+
+    }
+
+
+
+
+
+
     public void ApplyBuff(BuffAsset buff)
     {
         List<BuffAsset.BuffApplyWork> buffWorks = buff._BuffWorks;
@@ -83,6 +98,17 @@ public class StatScript : GameCharacterSubScript
             ReadAndApply(buffWork);
         }
     }
+
+
+
+
+    public void TryStateBuff()
+    {
+
+    }
+
+
+
 
 
     private void ReadAndApply(BuffAsset.BuffApplyWork buffWork)
@@ -106,6 +132,14 @@ public class StatScript : GameCharacterSubScript
                 break;
         }
     }
+
+
+
+
+
+
+
+
 
 
 
