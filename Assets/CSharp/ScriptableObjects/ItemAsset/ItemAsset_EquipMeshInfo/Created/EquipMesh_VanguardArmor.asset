@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a85df13d390c6e439f9b53c26e264ee, type: 3}
   m_Name: EquipMesh_VanguardArmor
   m_EditorClassIdentifier: 
+  _itemType: 0
   _equipType: 2147483647
   _ItemKey: 5
   _itemName: VanguardArmor
@@ -21,7 +22,7 @@ MonoBehaviour:
   _itemModel: {fileID: 7836199337402979831, guid: cd70876d9612e634680ac5fb22126ae1,
     type: 3}
   _fieldExistAble: 1
-  _itemImage: {fileID: 0}
+  _itemImage: {fileID: 21300000, guid: 15a6f2f7e200a3041af90a00a446f6bf, type: 3}
   _equipmentPrefab: {fileID: 2296666141149735760, guid: bbe646a4416397146b1a6e01aecb45ac,
     type: 3}
   _equipmentAvatar: {fileID: 9000000, guid: f121985dc23276b48bb038d8fe4fbfc4, type: 3}

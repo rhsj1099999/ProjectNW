@@ -35,13 +35,15 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
     {
         {
             //이미지 컴포넌트 세팅
+            if (storeDesc._itemAsset._ItemImage == null)
+            {
+                Debug.Assert(false, "표시될 UI를 반드시 세팅해주세요");
+                Debug.Break();
+                
+            }
 
-            //Debug.Assert(false, "이곳은 수정해야합니다");
-            //Debug.Break();
-            //if (info._sprite != null)
-            //{
-            //    itemUI.GetComponent<Image>().sprite = info._sprite;
-            //}
+            ItemImageScript itemImageScript = GetComponent<ItemImageScript>();
+            itemImageScript.Init(storeDesc._itemAsset._ItemImage);
         }
         _myRectTransform = GetComponent<RectTransform>();
         _itemStoreDesc = storeDesc;

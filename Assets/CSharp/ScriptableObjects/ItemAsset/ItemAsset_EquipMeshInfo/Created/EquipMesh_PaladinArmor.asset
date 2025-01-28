@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a85df13d390c6e439f9b53c26e264ee, type: 3}
   m_Name: EquipMesh_PaladinArmor
   m_EditorClassIdentifier: 
+  _itemType: 0
   _equipType: 2147483647
   _ItemKey: 2
   _itemName: PaladinArmor
@@ -21,7 +22,7 @@ MonoBehaviour:
   _itemModel: {fileID: 7200478851520927282, guid: 47cc6c6472d8a414cb66b7e9f521391d,
     type: 3}
   _fieldExistAble: 1
-  _itemImage: {fileID: 0}
+  _itemImage: {fileID: 21300000, guid: 14c3b252a0859e04f9d3ace1c11ef383, type: 3}
   _equipmentPrefab: {fileID: 2296666141149735760, guid: baae371e80789ff4fbc3bedde4a334a1,
     type: 3}
   _equipmentAvatar: {fileID: 9000000, guid: 3904558c6786e264198eece67c789c9f, type: 3}

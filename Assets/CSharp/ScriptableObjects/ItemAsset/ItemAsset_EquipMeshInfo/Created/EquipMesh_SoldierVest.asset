@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a85df13d390c6e439f9b53c26e264ee, type: 3}
   m_Name: EquipMesh_SoldierVest
   m_EditorClassIdentifier: 
+  _itemType: 0
   _equipType: 8
   _ItemKey: 4
   _itemName: SoldierVest
@@ -21,7 +22,7 @@ MonoBehaviour:
   _itemModel: {fileID: 5291055068834283805, guid: 651f09b11f5716649b7896f8ff97dd81,
     type: 3}
   _fieldExistAble: 1
-  _itemImage: {fileID: 0}
+  _itemImage: {fileID: 21300000, guid: 7a293aeeefffc3a4da9729e7568e4248, type: 3}
   _equipmentPrefab: {fileID: 3858723854949757569, guid: ee1a18fedcb756b47bc7f91a77e6c6dd,
     type: 3}
   _equipmentAvatar: {fileID: 9000000, guid: 0e55d5c42cc96404f872b45455603f8b, type: 3}

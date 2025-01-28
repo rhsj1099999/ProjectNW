@@ -62,6 +62,6 @@ public class ItemAsset : ScriptableObject
     [SerializeField] private bool _fieldExistAble = true;
     public bool _FieldExistAble => _fieldExistAble;
 
-    [SerializeField] private Image _itemImage = null;
-    public Image _ItemImage => _itemImage;
+    [SerializeField] private Sprite _itemImage = null;
+    public Sprite _ItemImage => _itemImage;
 }

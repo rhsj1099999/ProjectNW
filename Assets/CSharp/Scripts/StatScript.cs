@@ -125,17 +125,17 @@ public class StatScript : GameCharacterSubScript
 
         switch (applyType)
         {
-            case BuffApplyType.Plus:
-                break;
-            case BuffApplyType.Multiply:
-                break;
-            case BuffApplyType.Percentage:
-                break;
-            case BuffApplyType.Set:
-                break;
-            default:
-                Debug.Assert(false, "버프 적용타입이 대응되지 않습니다" + applyType);
-                break;
+            //case BuffApplyType.Plus:
+            //    break;
+            //case BuffApplyType.Multiply:
+            //    break;
+            //case BuffApplyType.Percentage:
+            //    break;
+            //case BuffApplyType.Set:
+            //    break;
+            //default:
+            //    Debug.Assert(false, "버프 적용타입이 대응되지 않습니다" + applyType);
+            //    break;
         }
     }
 

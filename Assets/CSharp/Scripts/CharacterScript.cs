@@ -488,9 +488,29 @@ public class CharacterScript : GameActorScript, IHitable
         }
 
         GetCharacterSubcomponent<StateContoller>().EquipStateGraph(basicAsset, targetType);
+
+
+        //충돌체 업데이트
+        {
+            //장착한 후, 콜라이더를 업데이트 한다.
+
+            CharacterModelDataInitializer myModelDataInitlaizer = GCST<CharacterAnimatorScript>()._CurrModelDataInitializer;
+
+            ColliderAttachType colliderType = (layerType == AnimatorLayerTypes.RightHand)
+                ? ColliderAttachType.HumanoidRightHand
+                : ColliderAttachType.HumanoidLeftHand;
+
+            WeaponColliderScript basicColliderScript = null;
+            myModelDataInitlaizer._BasicColliders.TryGetValue(colliderType, out basicColliderScript);
+
+            if (basicColliderScript != null) 
+            {
+                GCST<CharacterColliderScript>().ChangeCollider(colliderType, basicColliderScript.gameObject);
+                basicColliderScript.gameObject.SetActive(false);
+            }
+        }
     }
 
-    #endregion WeaponSection
 
     public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemStoreDesc_Weapon nextItemStoreDesc)
     {
@@ -593,6 +613,9 @@ public class CharacterScript : GameActorScript, IHitable
             }
         }
     }
+
+    #endregion WeaponSection
+
 
     public void WeaponSwitchHand(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
     {

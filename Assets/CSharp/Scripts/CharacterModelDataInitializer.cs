@@ -2,10 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static CharacterColliderScript;
-    
+using static AnimationFrameDataAsset;
+
+
 public class CharacterModelDataInitializer : MonoBehaviour
 {
     [SerializeField] private List<WeaponColliderScript> _basicModelColliders = new List<WeaponColliderScript>();
+    private Dictionary<ColliderAttachType, WeaponColliderScript> _basicColliders = new Dictionary<ColliderAttachType, WeaponColliderScript>();
+    public Dictionary<ColliderAttachType, WeaponColliderScript> _BasicColliders => _basicColliders;
+
 
     private CharacterScript _owner = null;
 
@@ -24,16 +29,25 @@ public class CharacterModelDataInitializer : MonoBehaviour
     상태가 바뀔경우, 이 코드로 걸린 버프들은 해제되야합니다.
     ---------------------------------------------------*/
 
+    private void Awake()
+    {
+        foreach (var collider in _basicModelColliders)
+        {
+            if (_basicColliders.ContainsKey(collider.GetAttachType()) == true)
+            {
+                Debug.Assert(false, "기본 충돌체의 부착타입이 중복됩니다.");
+                Debug.Break();
+            }
+
+            _basicColliders.Add(collider.GetAttachType(), collider);
+        }
+    }
+
     public void AnimationEvent_InvincibleOn()
     {
         StatScript ownerStatScript = _owner.GCST<StatScript>();
 
         StateContoller ownerStateController = _owner.GCST<StateContoller>();
-
-        //ownerStatScript.TryStateBuff
-        
-
-        //ownerStatScript._invincible = true;
     }
 
     public void AnimationEvent_InvincibleOff()
@@ -41,8 +55,6 @@ public class CharacterModelDataInitializer : MonoBehaviour
         StatScript ownerStatScript = _owner.GCST<StatScript>();
 
         StateContoller ownerStateController = _owner.GCST<StateContoller>();
-
-        //ownerStatScript._invincible = false;
     }
 
 

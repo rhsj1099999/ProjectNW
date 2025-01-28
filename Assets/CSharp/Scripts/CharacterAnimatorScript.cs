@@ -109,6 +109,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     private StateAsset _currStateAsset = null;
     private int _currAnimIndex = -1;
 
+    private CharacterModelDataInitializer _currModelDataInitializer = null;
+    public CharacterModelDataInitializer _CurrModelDataInitializer => _currModelDataInitializer;
 
     protected List<bool> _currentBusyAnimatorLayer = new List<bool>();
     protected List<Action_LayerType> _bodyPartDelegates = new List<Action_LayerType>();
@@ -305,7 +307,15 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         TimeScaler.Instance.AddTimeChangeDelegate(TimeChanged);
 
-        GetComponentInChildren<CharacterModelDataInitializer>().Init(_owner);
+        _currModelDataInitializer = _characterModelObject.GetComponent<CharacterModelDataInitializer>();
+
+        if (_currModelDataInitializer == null)
+        {
+            Debug.Assert(false, "모델로 쓸 오브젝트는 반드시 이 컴포넌트를 필요로 한다");
+            Debug.Break();
+        }
+
+        _currModelDataInitializer.Init(_owner);
     }
 
 
@@ -421,9 +431,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         Animator newAnimator = newModel.GetComponentInChildren<Animator>();
         newAnimator.runtimeAnimatorController = new AnimatorOverrideController(newAnimator.runtimeAnimatorController);
-
-        
-        
 
         SyncAnimatorState(_animator, newAnimator);
 
@@ -545,6 +552,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         _owner.GetComponentInChildren<AimScript2>().SetRigging(_characterRigBuilder, _characterRig);
         _owner.MoveWeapons();
+
+        _currModelDataInitializer = _characterModelObject.GetComponent<CharacterModelDataInitializer>();
 
         CharacterColliderScript ownerCharacterColliderScript = GetComponentInParent<CharacterColliderScript>();
         ownerCharacterColliderScript.InitModelCollider(newModel);

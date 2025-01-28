@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a85df13d390c6e439f9b53c26e264ee, type: 3}
   m_Name: EquipMesh_BeidouArmor
   m_EditorClassIdentifier: 
+  _itemType: 0
   _equipType: 2147483647
   _ItemKey: 0
   _itemName: BeidouArmor
@@ -21,7 +22,7 @@ MonoBehaviour:
   _itemModel: {fileID: 3560426502765192466, guid: 8c51e39028672c242911521f028686a7,
     type: 3}
   _fieldExistAble: 1
-  _itemImage: {fileID: 0}
+  _itemImage: {fileID: 21300000, guid: 7dc1ad1375c82c3449c5059d5bc09c29, type: 3}
   _equipmentPrefab: {fileID: 3388562473423810892, guid: b2bbc98945d89fe45963a3790e6b7103,
     type: 3}
   _equipmentAvatar: {fileID: 9000000, guid: 4869779a6af149b409cdd6eb1a857b45, type: 3}
