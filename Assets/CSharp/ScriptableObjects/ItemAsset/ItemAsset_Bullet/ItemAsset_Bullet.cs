@@ -19,5 +19,9 @@ public class ItemAsset_Bullet : ItemAsset
     public BulletType _BulletType => _bulletType;
 
 
+    [SerializeField] private float _bulletDamage = 5.0f;
+    public float _BulletDamage => _bulletDamage;
+
+
 
 }

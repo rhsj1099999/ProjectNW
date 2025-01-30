@@ -62,15 +62,12 @@ public class WeaponScript : MonoBehaviour
     /*------------------------------------------
     StoreInfo Need.
     ------------------------------------------*/
-    //private ItemAsset_Weapon _itemInfo = null;
-    //public ItemAsset_Weapon _ItemInfo => _itemInfo;
-    private ItemStoreDesc_Weapon _itemStoreInfo = null;
+    protected ItemStoreDesc_Weapon _itemStoreInfo = null;
     public ItemStoreDesc_Weapon _ItemStoreInfo => _itemStoreInfo;
+
     public ItemAsset_Weapon GetItemAsset() { return (ItemAsset_Weapon)_itemStoreInfo._itemAsset; }
     public CharacterScript _owner = null;
     protected bool _isRightHandWeapon = false;
-
-
 
 
 

@@ -15,6 +15,7 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
     -------------------------------------------------------*/
     private RectTransform _myRectTransform = null;
     private ItemStoreDescBase _itemStoreDesc;
+    [SerializeField] private ItemCountUI _itemCountUIObject = null;
 
     /*-----------------
     기능 실행마다 바뀔 변수들
@@ -28,7 +29,6 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
     private bool _isDragging = false;
     private bool _isInitted = false;
 
-
     public virtual void OverlapItemWork(ItemUI itemUI) {}
 
     public void Initialize(ItemStoreDescBase storeDesc)
@@ -39,12 +39,21 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
             {
                 Debug.Assert(false, "표시될 UI를 반드시 세팅해주세요");
                 Debug.Break();
-                
             }
 
             ItemImageScript itemImageScript = GetComponent<ItemImageScript>();
             itemImageScript.Init(storeDesc._itemAsset._ItemImage);
         }
+
+        if (_itemCountUIObject == null)
+        {
+            Debug.Assert(false, "반드시 CountUI Object를 선택하세여");
+            Debug.Break();
+        }
+
+        storeDesc.AddCountDeleAction(_itemCountUIObject.SetCount);
+        _itemCountUIObject.SetCount(storeDesc._Count);
+
         _myRectTransform = GetComponent<RectTransform>();
         _itemStoreDesc = storeDesc;
         _isInitted = true;
@@ -249,9 +258,11 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
         float angle = (_additionalRotating_Dynamic == true) ? 90.0f : -90.0f;
 
         _myRectTransform.RotateAround(_myRectTransform.position, axis, angle);
+
+
+        //회전상태라면. 
+        {
+
+        }
     }
-
-
-    
-
 }

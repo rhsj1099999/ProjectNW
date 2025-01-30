@@ -50,6 +50,7 @@ public abstract class CharacterContollerable : GameCharacterSubScript
         return (Quaternion.LookRotation(cameraLook) * inputDirection);
     }
 
+    public abstract void CharacterDie();
     public abstract void StateChanged();
     public abstract void LookAt_Plane(Vector3 dir);
     public abstract bool GetIsInAir();
@@ -61,4 +62,5 @@ public abstract class CharacterContollerable : GameCharacterSubScript
     public abstract void CharacterRootMove(Vector3 delta, float similarities, float ratio);
     public abstract void CharacterRotate(Vector3 inputDirection, float ratio);
     public abstract void CharacterRotate(Quaternion rotation);
+    public abstract void CharacterRotateDirectly(Quaternion rotation);
 }

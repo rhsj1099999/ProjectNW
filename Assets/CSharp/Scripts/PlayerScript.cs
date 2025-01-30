@@ -8,9 +8,6 @@ public class PlayerScript : CharacterScript
 {
     [SerializeField] protected GameObject _interactionUIPrefab = null;
 
-
-
-
     protected override void Awake()
     {
         base.Awake();
@@ -32,7 +29,7 @@ public class PlayerScript : CharacterScript
                 DamageDesc tempTestDamage = new DamageDesc();
                 tempTestDamage._damage = 0;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl0;
-                DealMe_Final(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, false, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.J) == true)
@@ -40,7 +37,7 @@ public class PlayerScript : CharacterScript
                 DamageDesc tempTestDamage = new DamageDesc();
                 tempTestDamage._damage = 0;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1;
-                DealMe_Final(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, false, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.K) == true)
@@ -48,7 +45,7 @@ public class PlayerScript : CharacterScript
                 DamageDesc tempTestDamage = new DamageDesc();
                 tempTestDamage._damage = 0;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl2;
-                DealMe_Final(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, false, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.M) == true)
@@ -57,7 +54,7 @@ public class PlayerScript : CharacterScript
                 tempTestDamage._damage = 0;
                 tempTestDamage._damagingStamina = 200;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl0;
-                DealMe_Final(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, false, this.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.Period) == true)
@@ -66,7 +63,7 @@ public class PlayerScript : CharacterScript
                 tempTestDamage._damage = 100;
                 tempTestDamage._damagingStamina = 0;
                 tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl3;
-                DealMe_Final(tempTestDamage, this.gameObject);
+                DealMe_Final(tempTestDamage, false, this.gameObject);
             }
         }
 
@@ -102,10 +99,9 @@ public class PlayerScript : CharacterScript
 
 
 
-    public override LayerMask CalculateWeaponColliderExcludeLayerMask(ColliderAttachType type, GameObject targetObject)
+    public override LayerMask CalculateWeaponColliderIncludeLayerMask()
     {
-        int ret = LayerMask.GetMask("Monster");
-        return ret;
+        return LayerMask.GetMask("Monster");
     }
 
 

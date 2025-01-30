@@ -24,8 +24,6 @@ public class ItemAsset_Weapon : ItemAsset
     /*------------------------------------------
     Item Spec Section.
     ------------------------------------------*/
-    [SerializeField] private ItemAsset_Bullet.BulletType _usingBulletType = ItemAsset_Bullet.BulletType.None;
-    public ItemAsset_Bullet.BulletType _UsingBulletType => _usingBulletType;
 
     [SerializeField] private WeaponType _weaponType;
     public WeaponType _WeaponType => _weaponType;
@@ -38,4 +36,17 @@ public class ItemAsset_Weapon : ItemAsset
     ------------------------------------------*/
     [SerializeField] private StateGraphAsset _weaponStateGraph = null;
     public StateGraphAsset _WeaponStateGraph => _weaponStateGraph;
+
+
+
+
+    /*---------------------------------------------------
+    |TODO| 총한테만 필요한 정보입니다. 클래스 파생시켜서 뺄것
+    ---------------------------------------------------*/
+    [SerializeField] private ItemAsset_Bullet.BulletType _usingBulletType = ItemAsset_Bullet.BulletType.None;
+    public ItemAsset_Bullet.BulletType _UsingBulletType => _usingBulletType;
+
+
+    [SerializeField] private bool _isAutomaticGun = true;
+    public bool _IsAutomaticGun => _isAutomaticGun;
 }

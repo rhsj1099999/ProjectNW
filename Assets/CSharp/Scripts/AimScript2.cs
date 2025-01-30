@@ -188,7 +188,7 @@ public class AimScript2 : GameCharacterSubScript
     }
 
 
-    void Update()
+    void LateUpdate()
     {
         if (_isRiggingOn == true)
         {
@@ -253,8 +253,6 @@ public class AimScript2 : GameCharacterSubScript
 
     public void OnAimState(AimState targetAimState)
     {
-
-
         bool isSuccrss = false;
 
         switch (targetAimState)
@@ -276,11 +274,13 @@ public class AimScript2 : GameCharacterSubScript
                 break;
         }
 
-        if (isSuccrss == false) 
-        {
-            return;
-        }
+        if (isSuccrss == false)  {return;}
 
+
+        Vector3 prevFreeRunCameraLook = Camera.main.transform.forward;
+        prevFreeRunCameraLook.y = 0.0f;
+        prevFreeRunCameraLook = prevFreeRunCameraLook.normalized;
+        
         _aimState = targetAimState;
 
         TurnOffAllCamera();
@@ -288,10 +288,15 @@ public class AimScript2 : GameCharacterSubScript
         switch (targetAimState)
         {
             case AimState.eSightAim:
+                Debug.Assert(false, "정조준 구현이 시작됐습니까?");
+                Debug.Break();
                 TurnOnAim_SightAim();
                 break;
 
             case AimState.eTPSAim:
+                float deg = Vector3.SignedAngle(Vector3.forward, prevFreeRunCameraLook, Vector3.up);
+                _calaculatedVal.y = deg;
+                currentAimRotation.y = deg;
                 TurnOnAim_TPSAim();
                 break;
 
@@ -499,9 +504,14 @@ public class AimScript2 : GameCharacterSubScript
         {
             case AimState.eTPSAim:
                 {
-                    _freeRunCamera.m_XAxis.Value = _lockOnCamera.m_XAxis.Value;
+                    Transform ownerTransform = _owner.transform;
+                    Vector3 ownerLook = ownerTransform.forward;
+                    ownerLook.y = 0.0f;
+                    ownerLook = ownerLook.normalized;
+                    float deg = Vector3.SignedAngle(Vector3.forward, ownerTransform.forward, Vector3.up);
+
                     _freeRunCamera.m_YAxis.Value = _lockOnCamera.m_YAxis.Value;
-                    _aimOribit.transform.localRotation = Quaternion.identity;
+                    _freeRunCamera.m_XAxis.Value = deg;
                 }
                 break;
 
@@ -527,9 +537,7 @@ public class AimScript2 : GameCharacterSubScript
         }
 
         _aimState = AimState.ENEND;
-
         _freeRunCamera.enabled = true;
-        _freeRunCamera.LookAt = _ownerGameObject.transform;
         _lockedOnObject = null;
     }
 
@@ -563,5 +571,24 @@ public class AimScript2 : GameCharacterSubScript
             currentAimRotation.x = Mathf.SmoothDamp(currentAimRotation.x, _calaculatedVal.x, ref currentVelocity.x, smoothTime.y);
             _aimOribit.transform.localRotation = Quaternion.Euler(-currentAimRotation.x, _aimOribit.transform.rotation.y, 0f);
         }
+
+
+
+        ////캐릭터 y축 회전 (수평회전 = 트랜스폼 회전)
+        //{
+        //    _calaculatedVal.y += rotatedValue.x;
+        //    //타겟값이 갱신됐다. 따라서 적용할 값을 댐핑한다
+        //    currentAimRotation.y = _calaculatedVal.y;
+
+        //    _owner.GCST<CharacterContollerable>().CharacterRotate(Quaternion.Euler(transform.rotation.x, currentAimRotation.y, 0f));
+        //}
+
+        ////캐릭터 x축 회전 (수직회전 = 리깅회전)
+        //{
+        //    _calaculatedVal.x += rotatedValue.y;
+        //    //타겟값이 갱신됐다. 따라서 적용할 값을 댐핑한다
+        //    currentAimRotation.x = _calaculatedVal.x;
+        //    _aimOribit.transform.localRotation = Quaternion.Euler(-currentAimRotation.x, _aimOribit.transform.rotation.y, 0f);
+        //}
     }
 }

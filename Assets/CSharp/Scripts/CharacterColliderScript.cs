@@ -117,7 +117,7 @@ public class CharacterColliderScript : GameCharacterSubScript
 
         if (collider != null)
         {
-            collider.includeLayers = _owner.CalculateWeaponColliderExcludeLayerMask(type, targetObject);
+            collider.includeLayers = _owner.CalculateWeaponColliderIncludeLayerMask();
         }
 
         targetObject.SetActive(false);

@@ -245,7 +245,7 @@ public class InventoryBoard : BoardUIBaseScript
         storedDesc._owner = this;
         UpdateBlank(true, storedDesc);
 
-        GameObject itemUI = CreateInventoryItem(storedDesc._itemAsset, targetX, targetY, inventoryIndex, storedDesc._count, storedDesc._isRotated);
+        GameObject itemUI = CreateInventoryItem(storedDesc._itemAsset, targetX, targetY, inventoryIndex, storedDesc._Count, storedDesc._isRotated);
         itemUI.GetComponent<ItemUI>().Initialize(storedDesc);
 
         SortedDictionary<int, ItemStoreDescBase> sameKeyItems = null;
@@ -311,7 +311,7 @@ public class InventoryBoard : BoardUIBaseScript
         {
             ItemStoreDescBase storeDesc = indexStoreDescPair.Value;
 
-            int currItemCount = storeDesc._count;
+            int currItemCount = storeDesc._Count;
 
             if (currItemCount + itemCount <= itemMaxStack) 
             {
@@ -334,7 +334,7 @@ public class InventoryBoard : BoardUIBaseScript
             ItemStoreDescBase targetStoreDesc = null;
             if (CheckItemStackAble(info, out targetStoreDesc, itemCount) == true)
             {
-                targetStoreDesc._count += itemCount;
+                targetStoreDesc.PlusItemCount(itemCount);
                 return;
             }
         }
@@ -593,31 +593,34 @@ public class InventoryBoard : BoardUIBaseScript
         if (Input.GetKeyDown(KeyCode.Alpha2) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SimpleSword"), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("HeizoKnuckle"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Hammer"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SimpleShield"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("HeizoKnuckle"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SimpleKnuckle"), 1);
         }
+        
 
         if (Input.GetKeyDown(KeyCode.Alpha3) == true)
         {
-            
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Hammer"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("M16"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("AK47"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("D_Eagle"), 1);
         }
+
+
 
         if (Input.GetKeyDown(KeyCode.Alpha4) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÅºÃ¢_5Åº_10¹ß"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÅºÃ¢_7Åº_45¹ß"), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÃÑ¾Ë_5Åº_·¹º§1"), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÃÑ¾Ë_7Åº_·¹º§1"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÅºÃ¢_9Åº_15¹ß"), 1);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha5) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("PaladinArmor_2"), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("VanguardArmor_2"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÃÑ¾Ë_5Åº_·¹º§0"), 7);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÃÑ¾Ë_7Åº_·¹º§0"), 7);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("ÃÑ¾Ë_9Åº_·¹º§0"), 7);
         }
     }
 

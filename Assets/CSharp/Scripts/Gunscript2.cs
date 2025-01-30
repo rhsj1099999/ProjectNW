@@ -6,7 +6,6 @@ using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Events;
-using static UnityEngine.Rendering.PostProcessing.HistogramMonitor;
 
 public class Gunscript2 : WeaponScript
 {
@@ -30,7 +29,7 @@ public class Gunscript2 : WeaponScript
 
     [SerializeField] private float _dampingSpeed = 0.1f;
     private Vector3 _followPositionRef = Vector3.zero;
-
+    RaycastHit[] _gunRayHit = new RaycastHit[2]; 
 
     /*------------------------------------------
     런타임중 정보저장용 변수들
@@ -286,15 +285,16 @@ public class Gunscript2 : WeaponScript
 
     public void Fire()
     {
-        
-        ((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine._bullets.RemoveAt(((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine._bullets.Count - 1);
+        ItemStoreDesc_Weapon_Gun gunStoredDesc = (ItemStoreDesc_Weapon_Gun)_ItemStoreInfo;
+        ItemAsset_Bullet firstBullet = (ItemAsset_Bullet)gunStoredDesc._myMagazine._bullets.First()._itemAsset;
+        gunStoredDesc._myMagazine._bullets.RemoveAt(gunStoredDesc._myMagazine._bullets.Count - 1);
 
         //데미지는 총알에 의해 결정된다
         {
 
         }
 
-        //RayCheck();
+        RayCheck(firstBullet);
 
         StartAimShake();
         if (_aimShakeCoroutine == null)
@@ -317,6 +317,23 @@ public class Gunscript2 : WeaponScript
 
     public bool FireCheck()
     {
+        KeyCode fireKeyCode = (_isRightHandWeapon == true)
+            ? KeyCode.Mouse0
+            : KeyCode.Mouse1;
+
+        bool fireKeyCheck = false;
+        
+        ItemAsset_Weapon weaponAsset = _itemStoreInfo._itemAsset as ItemAsset_Weapon;
+
+        fireKeyCheck = (weaponAsset._IsAutomaticGun == true)
+            ? Input.GetKey(fireKeyCode)
+            : Input.GetKeyDown(fireKeyCode);
+
+        if (fireKeyCheck == false)
+        {
+            return false;
+        }
+
         if (((ItemStoreDesc_Weapon_Gun)_ItemStoreInfo)._myMagazine == null)
         {
             //탄창이 없는데요
@@ -384,23 +401,49 @@ public class Gunscript2 : WeaponScript
     }
 
 
-    private void RayCheck()
+    private void RayCheck(ItemAsset_Bullet firedBullet)
     {
         RaycastHit hit;
 
-        int targetLayer =
-            (1 << LayerMask.NameToLayer("StaticNavMeshLayer")) |
-            (1 << LayerMask.NameToLayer("HitCollider"));
+        int targetLayer = LayerMask.GetMask("StaticNavMeshLayer") | _owner.CalculateWeaponColliderIncludeLayerMask();
 
-        if (Physics.Raycast(_firePosition.transform.position, _firePosition.transform.forward, out hit, Mathf.Infinity, targetLayer) == false)
+        /*--------------------------------------------------------------
+        |TODO| TPS 게임에서 에임 비틀림을 어떻게 해결할까요?
+        --------------------------------------------------------------*/
+        Vector3 rayStartPosition = Camera.main.transform.position;
+        Vector3 rayDir = Camera.main.transform.forward;
+        //Vector3 rayStartPosition = _firePosition.transform.position;
+        //Vector3 rayDir = _firePosition.transform.forward;
+
+        int retCount = Physics.RaycastNonAlloc(rayStartPosition, rayDir, _gunRayHit, 1000.0f, targetLayer, QueryTriggerInteraction.Collide);
+
+        //아무것도 충돌하지 않았어요
+        if (retCount == 0)
         {
             return;
         }
 
-        IHitable hitable = hit.collider.gameObject.GetComponentInParent<IHitable>();
-
-        if (hitable == null)
+        for (int i = 0; i < retCount; i++)
         {
+            HitColliderScript hitColliderScript = _gunRayHit[i].collider.GetComponent<HitColliderScript>();
+
+            if (hitColliderScript == null)
+            {
+                continue;
+            }
+
+            //if (false/*아군이면 종료합니다. 아군이 총알을 막을 수 있습니다*/)
+            //{
+            //    return
+            //}
+
+            DamageDesc tempTestDamage = new DamageDesc();
+            tempTestDamage._damageReason = DamageDesc.DamageReason.Ray;
+            tempTestDamage._damage = firedBullet._BulletDamage;
+            tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1;
+
+            hitColliderScript.CollisionDirectly(tempTestDamage, this.gameObject);
+
             return;
         }
     }

@@ -39,6 +39,11 @@ public class CharacterMoveScript2 : CharacterContollerable
         transform.rotation = rotation;
     }
 
+    public override void CharacterDie()
+    {
+        _characterController.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer"));
+    }
+
     public override void GravityUpdate() //매 프레임마다 호출될 함수니까
     {
         _gravitySpeed += new Vector3(0.0f, Time.deltaTime * Physics.gravity.y * _mass, 0.0f);
@@ -138,5 +143,10 @@ public class CharacterMoveScript2 : CharacterContollerable
             transform.Rotate(transform.up, nextDeltaDEG);
             return;
         }
+    }
+
+    public override void CharacterRotateDirectly(Quaternion rotation)
+    {
+        CharacterRotate(rotation);
     }
 }

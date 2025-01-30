@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class InputController : GameCharacterSubScript
@@ -14,7 +15,6 @@ public class InputController : GameCharacterSubScript
 
     public Vector3 _pr_directionByInput { get; private set; }
     public Vector2 _pr_mouseMove { get; private set; }
-    public float _pr_aimDegree { get; set; }
 
     private bool _inventoryOpen = false;
     public bool GetInventoryOpen() { return _inventoryOpen; }
@@ -26,32 +26,18 @@ public class InputController : GameCharacterSubScript
         _owner = owner;
     }
 
-
-    public override void SubScriptStart()
-    {
-
-    }
+    public override void SubScriptStart() {}
 
     void Update()
     {
         //상자열기 체크
         {
-            if (Input.GetKeyDown(KeyCode.I) == true)
-            {
-                _inventoryOpen = true;
-            }
-            else
-            {
-                _inventoryOpen = false;
-            }
+            _inventoryOpen = Input.GetKeyDown(KeyCode.I) == true;
         }
 
-    }
-
-    private void FixedUpdate()
-    {
         CalculateDirByInput();
     }
+
 
     private void CalculateDirByInput()
     {

@@ -766,6 +766,7 @@ public class StateContoller : GameCharacterSubScript
         worldDelta.y = 0.0f;
 
         _owner.GCST<CharacterContollerable>().CharacterRootMove(worldDelta, 1.0f, 1.0f);
+
     }
 
     private void SwitchFunc_SimpleMove()
@@ -1011,40 +1012,15 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.Move_WithOutRotate_Gun:
                     {
-                        AimScript2 ownerAimScript = _owner.GCST<AimScript2>();
-                        GameObject lockOnTarget = ownerAimScript.GetLockOnObject();
-
-                        if (lockOnTarget == null)
-                        {
-                            SwitchFunc_RootMove();
-                        }
-                        else 
-                        {
-                            SwitchFunc_SimpleMove();
-                        }
+                        SwitchFunc_RootMove();
                     }
                     break;
 
                 case StateActionType.LookAtLockOnTarget_Gun:
                     {
-                        AimScript2 ownerAimScript = _owner.GCST<AimScript2>();
-                        GameObject lockOnTarget = ownerAimScript.GetLockOnObject();
-
-                        if (lockOnTarget == null)
-                        {
-                            Vector3 cameraLook = Camera.main.transform.forward;
-                            cameraLook.y = 0.0f;
-                            _owner.GCST<CharacterContollerable>().CharacterRotate(cameraLook.normalized, 1.0f);
-                        }
-                        else
-                        {
-                            Vector3 targetPosition = ownerAimScript.GetLockOnObject().transform.position;
-                            Vector3 ownerPosition = gameObject.transform.position;
-                            Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
-                            ownerToTargetPlaneVector.y = 0.0f;
-                            ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
-                            _owner.GCST<CharacterContollerable>().LookAt_Plane(ownerToTargetPlaneVector);
-                        }
+                        Vector3 cameraLook = Camera.main.transform.forward;
+                        cameraLook.y = 0.0f;
+                        _owner.GCST<CharacterContollerable>().CharacterRotate(cameraLook.normalized, 1.0f);
                     }
                     break;
 
@@ -1200,6 +1176,7 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timeACC >= target._timeTarget)
             {
+                ReadyLinkedStates(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState, true);
                 ChangeState(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState);
                 break;
             }

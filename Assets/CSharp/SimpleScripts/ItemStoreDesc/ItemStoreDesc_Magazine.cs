@@ -45,11 +45,11 @@ public class ItemStoreDesc_Magazine : ItemStoreDescBase
         }
 
         Debug.Log("ÃÑ¾ËÀÌ ÅºÃ¢¿¡ °ãÃÄÁ³´Ù");
-        Debug.Log("ÇöÀç °³¼ö = " + storeDesc._count);
-        Debug.Log("»ðÅºÇÏ·Á´Â °³¼ö = " + storeDesc._count);
+        Debug.Log("ÇöÀç °³¼ö = " + storeDesc._Count);
+        Debug.Log("»ðÅºÇÏ·Á´Â °³¼ö = " + storeDesc._Count);
 
         int loadableCount = Math.Clamp(myItemAsset._MaxBulletCount - _bullets.Count, 0, myItemAsset._MaxBulletCount);
-        loadableCount = Math.Clamp(loadableCount, 0, storeDesc._count);
+        loadableCount = Math.Clamp(loadableCount, 0, storeDesc._Count);
 
         Debug.Log("»ðÅº°¡´É = " + loadableCount);
 
@@ -60,7 +60,7 @@ public class ItemStoreDesc_Magazine : ItemStoreDescBase
 
         Debug.Log("»ðÅºÇß´Ù");
 
-        int remain = storeDesc._count - loadableCount;
+        int remain = storeDesc._Count - loadableCount;
 
         if (remain < 0)
         {
@@ -75,6 +75,6 @@ public class ItemStoreDesc_Magazine : ItemStoreDescBase
             return;
         }
 
-        storeDesc._count = remain;
+        storeDesc.SetItemCount(remain);
     }
 }

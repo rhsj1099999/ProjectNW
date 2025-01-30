@@ -2,6 +2,7 @@ using KinematicCharacterController;
 using MagicaCloth2;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Xml.Xsl;
 using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
@@ -40,33 +41,44 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         _currentRotation = Quaternion.LookRotation(dir);
     }
 
-    private void Awake()
+
+
+    public override void CharacterDie()
     {
-        _motor = GetComponent<KinematicCharacterMotor>();
-        _motor.CharacterController = this;
-
-        _motor.Capsule.includeLayers = 0;
-        _motor.Capsule.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("Monster") | LayerMask.GetMask("Player"));
+        _motor.Capsule.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer"));
+        _motor.CollidableLayers = _motor.Capsule.includeLayers;
     }
-
-    
 
     public override void CharacterRotate(Quaternion rotation)
     {
         _currentRotation = rotation;
     }
 
+
+    private void Awake()
+    {
+        _motor = GetComponent<KinematicCharacterMotor>();
+        _motor.CharacterController = this;
+
+        _motor.Capsule.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("Monster") | LayerMask.GetMask("Player"));
+    }
+
     private void Start()
     {
         _capsuleCheckLocal_High = _motor.Capsule.center + Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
         _capsuleCheckLocal_Low = _motor.Capsule.center - Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
-        _motor.CollidableLayers = ~_motor.Capsule.excludeLayers;
+        
+        _motor.CollidableLayers = _motor.Capsule.includeLayers;
     }
 
     public override void SubScriptStart() {}
 
 
-    
+    public override void CharacterRotateDirectly(Quaternion rotation)
+    {
+        _currentRotation = rotation;
+        _motor.SetRotation(rotation);
+    }
 
 
 

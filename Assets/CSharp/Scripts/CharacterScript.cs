@@ -64,6 +64,12 @@ public class CoroutineLock
 [Serializable]
 public class DamageDesc
 {
+    public enum DamageReason
+    {
+        Ray,
+        Collision,
+    }
+
     public class DamageDescToApply
     {
         public int _damage = 1;
@@ -76,6 +82,7 @@ public class DamageDesc
         return MemberwiseClone() as DamageDesc;
     }
 
+    public DamageReason _damageReason = DamageReason.Collision;
     public float _damage = 1;
     public float _damagePower = 1;
     public float _damagingStamina = 1;
@@ -86,6 +93,7 @@ public class DamageDesc
 
 public class CharacterScript : GameActorScript, IHitable
 {
+
     private bool _dead = false;
     public bool GetDead() { return _dead; }
 
@@ -283,15 +291,9 @@ public class CharacterScript : GameActorScript, IHitable
     {
         // State Controller를 비활성화 한다.
         GetCharacterSubcomponent<StateContoller>().enabled = false;
+        gameObject.layer = LayerMask.NameToLayer("DeadObject");
 
-        CharacterController ownerCharacterController = GetComponent<CharacterController>();
-        if (ownerCharacterController != null)
-        {
-            ownerCharacterController.excludeLayers = ~(LayerMask.GetMask("StaticNavMeshLayer"));
-        }
-
-        // 모든 충돌처리를 비활성화한다 (지면 빼고)
-        //GetCharacterSubcomponent<CharacterController>().excludeLayers = );
+        GCST<CharacterContollerable>().CharacterDie();
     }
 
 
@@ -659,24 +661,25 @@ public class CharacterScript : GameActorScript, IHitable
         return type;
     }
 
-    private void TriggerEnterWithWeapon(Collider other)
+    private void TriggerEnterWithWeapon(Collider other, bool isWeakPointCollider)
     {
         /*-------------------------------------------------------
         OnTirggerEnter -> TriggerEnterWithWeapon -> DealMe(상태 변경될거임)
         -------------------------------------------------------*/
 
-        /*-------------------------------------------------------
-        other = 나와 부딪힌 객체가 무기(장판, 독뎀 등이 아닌)
-        임이 확정인 상태
-        -------------------------------------------------------*/
-
+        /*----------------------------------------------------------------
+        other = 나와 부딪힌 객체가 무기(장판, 독뎀 등이 아닌) 임이 확정인 상태
+        ----------------------------------------------------------------*/
 
         CharacterScript otherCharacterScript = other.gameObject.GetComponentInParent<CharacterScript>();
         DamageDesc currentDamage = new DamageDesc();
         otherCharacterScript.CalculateMyCurrentWeaponDamage(ref currentDamage, other);
 
-        
-        DealMe_Final(currentDamage, otherCharacterScript.gameObject);
+        /*---------------------------------------------------
+        |NOTI| isWeakPointCollider 가 True 라면 치명타입니다
+        ---------------------------------------------------*/
+
+        DealMe_Final(currentDamage, isWeakPointCollider, otherCharacterScript.gameObject);
     }
 
     public void MoveWeapons()
@@ -725,7 +728,7 @@ public class CharacterScript : GameActorScript, IHitable
         }
     }
 
-    public virtual LayerMask CalculateWeaponColliderExcludeLayerMask(ColliderAttachType type, GameObject targetObject)
+    public virtual LayerMask CalculateWeaponColliderIncludeLayerMask()
     {
         return 0;
     }
@@ -1089,16 +1092,6 @@ public class CharacterScript : GameActorScript, IHitable
                         ? _tempCurrRightWeapon
                         : _tempCurrLeftWeapon;
 
-                    KeyCode fireKeyCode = (_tempUsingRightHandWeapon == true)
-                        ? KeyCode.Mouse0
-                        : KeyCode.Mouse1;
-
-                    if (Input.GetKey(fireKeyCode) == false)
-                    {
-                        ////Debug.Log("키가 안눌렸다");
-                        return;
-                    }
-
                     if (currWeapon == null)
                     {
                         Debug.Log("무기가 없다?");
@@ -1230,7 +1223,7 @@ public class CharacterScript : GameActorScript, IHitable
         }
     }
 
-    public virtual void DealMe_Final(DamageDesc damage, GameObject caller)
+    public virtual void DealMe_Final(DamageDesc damage, bool isWeakPoint, GameObject caller)
     {
         StatScript statScript = GCST<StatScript>();
 
@@ -1238,6 +1231,12 @@ public class CharacterScript : GameActorScript, IHitable
         /*------------------------------------------------
         |NOTO| 이곳에서는 데미지 피격 감쇄, 상태변경만 계산합니다.
         ------------------------------------------------*/
+
+        if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+        {
+            Debug.Log("---격발 치명타---");
+            damage._damage *= 10.0f;
+        }
 
         Debug.Log("들어온 데미지" + damage._damage);
         Debug.Log("들어온 스테미나데미지" + damage._damagingStamina);
@@ -1368,12 +1367,14 @@ public class CharacterScript : GameActorScript, IHitable
             return;
         }
 
-        gameObject.transform.LookAt(caller.transform.position);
+        Vector3 toAttackerDir = (caller.transform.position - transform.position).normalized;
+
+        GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
 
         GCST<StateContoller>().TryChangeState(nextGraphType, representType);
     }
 
-    public void WhenTriggerEnterWithWeaponCollider(Collider other)
+    public void WhenTriggerEnterWithWeaponCollider(Collider other, bool isWeakCollider)
     {
         if (_dead == true) {return;}
 
@@ -1392,26 +1393,18 @@ public class CharacterScript : GameActorScript, IHitable
             return;
         }
 
-        
+        //연쇄 충돌이라면 무시합니다. 한번만 계산할겁니다.
         if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == false)
         {
             return;
         }
 
-        //연쇄 충돌이 아닌 최초충돌입니다.
-        TriggerEnterWithWeapon(other);
+        /*----------------------------------------------------
+        |NOTI| isWeakCollider 변수가 함께 들어옵니다.
+        피격시 이 충돌체가 WeakPoint였다면 true 입니다.
+        ----------------------------------------------------*/
 
-        //string tag = other.tag;
-
-        //if (tag == "WeaponAttachedCollider")
-        //{
-        //    //연쇄 충돌이 아닌 최초충돌입니다.
-        //    if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == true)
-        //    {
-        //        TriggerEnterWithWeapon(other);
-        //    }
-        //    return;
-        //}
+        TriggerEnterWithWeapon(other, isWeakCollider);
     }
 
 
