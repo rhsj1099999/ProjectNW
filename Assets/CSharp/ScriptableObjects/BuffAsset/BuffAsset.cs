@@ -43,7 +43,7 @@ public class BuffAsset : ScriptableObject
             OnlyMe,                 //뭐가 들어왔든 이것만 적용한다 (기존에 있던것들도 다 무시한다)
         }
 
-        public StatScript.Stats _targetVar = StatScript.Stats.Hp;
+        //public LevelStatAsset.Stats _targetVar = LevelStatAsset.Stats.Hp;
         public BuffApplyType _buffApplyType = BuffApplyType.Plus;
         public BuffNestType buffNestType = BuffNestType.IgnoreNothing;
 
@@ -64,4 +64,7 @@ public class BuffAsset : ScriptableObject
 
     [SerializeField] private List<BuffApplyWork> _buffWorks = new List<BuffApplyWork>();
     public List<BuffApplyWork> _BuffWorks => _buffWorks;
+
+    [SerializeField] private bool _isDebuff = false;
+    public bool _IsDebuff => _isDebuff;
 }

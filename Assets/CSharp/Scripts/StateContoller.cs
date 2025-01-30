@@ -1148,11 +1148,17 @@ public class StateContoller : GameCharacterSubScript
 
                     case FrameDataWorkType.AddBuff:
                         {
+                            newCoroutineWrapper._timeTarget = eachFrameData._frameUp;
+                            newCoroutineWrapper._frameData = eachFrameData;
+                            _stateActionCoroutines.Add(StartCoroutine(StateAddBuffCoroutine(newCoroutineWrapper)));
                         }
                         break;
 
                     case FrameDataWorkType.RemoveBuff:
                         {
+                            newCoroutineWrapper._timeTarget = eachFrameData._frameUp;
+                            newCoroutineWrapper._frameData = eachFrameData;
+                            _stateActionCoroutines.Add(StartCoroutine(StateRemoveBuffCoroutine(newCoroutineWrapper)));
                         }
                         break;
 
@@ -1254,6 +1260,7 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timeACC >= target._timeTarget)
             {
+                //_owner.GCST<StatScript>().ApplyStateBuff(BuffInfoManager.Instance.GetBuff(target._frameData._buffKey));
                 break;
             }
             yield return null;
@@ -1268,6 +1275,7 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timeACC >= target._timeTarget)
             {
+                //_owner.GCST<StatScript>().RemoveStateBuff(BuffInfoManager.Instance.GetBuff(target._frameData._buffKey));
                 break;
             }
             yield return null;

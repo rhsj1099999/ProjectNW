@@ -6,6 +6,7 @@ using System.Linq;
 using static AnimationFrameDataAsset;
 using static StateGraphAsset;
 using static StatScript;
+using static LevelStatAsset;
 using static ItemAsset_Weapon;
 using Unity.VisualScripting;
 
@@ -671,7 +672,20 @@ public class CharacterScript : GameActorScript, IHitable
         other = 나와 부딪힌 객체가 무기(장판, 독뎀 등이 아닌) 임이 확정인 상태
         ----------------------------------------------------------------*/
 
+        if (other == null)
+        {
+            Debug.Assert(false, "other 이 널입니다?");
+            Debug.Break();
+        }
+
         CharacterScript otherCharacterScript = other.gameObject.GetComponentInParent<CharacterScript>();
+
+        if (otherCharacterScript == null)
+        {
+            Debug.Assert(false, "otherCharacterScript 이 널입니다?");
+            Debug.Break();
+        }
+
         DamageDesc currentDamage = new DamageDesc();
         otherCharacterScript.CalculateMyCurrentWeaponDamage(ref currentDamage, other);
 
@@ -1254,24 +1268,24 @@ public class CharacterScript : GameActorScript, IHitable
             if (currStateDesc._isBlockState == true)
             {
                 //스테미나도 충분하고 강인도도 충분합니다
-                if (statScript._stamina >= damage._damagingStamina &&
-                    statScript._roughness >= damage._damagePower)
+                if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
+                    statScript.GetPassiveStat(PassiveStat.Roughness) >= damage._damagePower)
                 {
                     nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
                     representType = RepresentStateType.Blocked_Reaction;
                 }
 
                 //스테미나는 충분한데 강인도가 부족합니다.
-                else if (statScript._stamina >= damage._damagingStamina &&
-                    statScript._roughness < damage._damagePower)
+                else if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
+                    statScript.GetPassiveStat(PassiveStat.Roughness) < damage._damagePower)
                 {
                     nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
                     representType = RepresentStateType.Blocked_Sliding;
                 }
 
                 //강인도는 충분한데 스테미나가 부족합니다.
-                else if (statScript._stamina < damage._damagingStamina &&
-                    statScript._roughness >= damage._damagePower)
+                else if (statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina &&
+                    statScript.GetPassiveStat(PassiveStat.Roughness) >= damage._damagePower)
                 {
                     nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
                     representType = RepresentStateType.Blocked_Crash;
@@ -1290,13 +1304,13 @@ public class CharacterScript : GameActorScript, IHitable
                 }
 
                 //스테미나가 부족하고 강인도도 부족합니다. 혹은 연결상태가 존재하지 않습니다
-                if ((statScript._stamina < damage._damagingStamina && statScript._roughness < damage._damagePower) ||
+                if ((statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina && statScript.GetPassiveStat(PassiveStat.Roughness) < damage._damagePower) ||
                     nextStateAsseet == null)
                 {
                     //맞는 상태로 가긴 할건데
                     nextGraphType = StateGraphType.HitStateGraph;
 
-                    float deltaRoughness = damage._damagePower - statScript._roughness;
+                    float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
 
                     if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
                     {
@@ -1317,7 +1331,7 @@ public class CharacterScript : GameActorScript, IHitable
                 //맞는 상태로 가긴 할건데
                 nextGraphType = StateGraphType.HitStateGraph;
 
-                float deltaRoughness = damage._damagePower - statScript._roughness;
+                float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
 
                 if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
                 {
@@ -1336,13 +1350,12 @@ public class CharacterScript : GameActorScript, IHitable
 
 
         /*--------------------------------------------------------------------------------------------------------------
-        --------------------------------------모든 데미지는 계산돼있어야 한다-------------------------------------------------------
+        --------------------------------------모든 데미지는 계산돼있어야 한다---------------------------------------------
         --------------------------------------------------------------------------------------------------------------*/
 
         int finalDamage = (int)damage._damage;
-
-        statScript._hp -= finalDamage;
-        if (statScript._hp <= 0)
+        statScript.ChangeActiveStat(ActiveStat.Hp, -finalDamage);
+        if (statScript.GetActiveStat(ActiveStat.Hp) <= 0)
         {
             Debug.Log("죽었다");
 
@@ -1388,7 +1401,7 @@ public class CharacterScript : GameActorScript, IHitable
             return;
         }
 
-        if (statScript._invincible == true) 
+        if (statScript.GetPassiveStat(PassiveStat.Invincible) > 0) 
         {
             Debug.Log("무적이라서 씹었다");
             return;
