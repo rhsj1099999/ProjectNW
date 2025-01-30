@@ -51,6 +51,7 @@ public abstract class CharacterContollerable : GameCharacterSubScript
     }
 
     public abstract void CharacterDie();
+    public abstract void MoverUpdate();
     public abstract void StateChanged();
     public abstract void LookAt_Plane(Vector3 dir);
     public abstract bool GetIsInAir();

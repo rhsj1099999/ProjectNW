@@ -774,12 +774,19 @@ namespace KinematicCharacterController
                 _attachedRigidbodyVelocity = Vector3.zero;
             }
 
-#if UNITY_EDITOR
-            if (!Mathf.Approximately(_transform.lossyScale.x, 1f) || !Mathf.Approximately(_transform.lossyScale.y, 1f) || !Mathf.Approximately(_transform.lossyScale.z, 1f))
-            {
-                Debug.LogError("Character's lossy scale is not (1,1,1). This is not allowed. Make sure the character's transform and all of its parents have a (1,1,1) scale.", this.gameObject);
-            }
-#endif
+
+
+
+            /*-------------------------------------------------------------
+            |NOTI| scale의 오차가 0.00001f 까지여도 경고가 들어온다! 그래서 주석
+            -------------------------------------------------------------*/
+//#if UNITY_EDITOR
+//            if (!Mathf.Approximately(_transform.lossyScale.x, 1f) || !Mathf.Approximately(_transform.lossyScale.y, 1f) || !Mathf.Approximately(_transform.lossyScale.z, 1f))
+//            {
+//                Debug.Break();
+//                Debug.LogError("Character's lossy scale is not (1,1,1). This is not allowed. Make sure the character's transform and all of its parents have a (1,1,1) scale.", this.gameObject);
+//            }
+//#endif
 
             _rigidbodiesPushedThisMove.Clear();
 

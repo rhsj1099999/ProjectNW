@@ -751,8 +751,7 @@ public class CharacterScript : GameActorScript, IHitable
 
         //기본적으로 중력은 계속 업데이트 한다
         {
-            GCST<CharacterContollerable>().GravityUpdate();
-            GCST<CharacterContollerable>().ClearLatestVelocity();
+            GCST<CharacterContollerable>().MoverUpdate();
         }
     }
 
@@ -1367,7 +1366,9 @@ public class CharacterScript : GameActorScript, IHitable
             return;
         }
 
-        Vector3 toAttackerDir = (caller.transform.position - transform.position).normalized;
+        Vector3 toAttackerDir = (caller.transform.position - transform.position);
+        toAttackerDir.y = 0.0f;
+        toAttackerDir = toAttackerDir.normalized;
 
         GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
 

@@ -13,6 +13,11 @@ public class CharacterMoveScript2 : CharacterContollerable
         _characterController = GetComponent<CharacterController>();
     }
 
+    public override void MoverUpdate()
+    {
+        //throw new System.NotImplementedException();
+    }
+
     public override void LookAt_Plane(Vector3 dir)
     {
         dir.y = 0;

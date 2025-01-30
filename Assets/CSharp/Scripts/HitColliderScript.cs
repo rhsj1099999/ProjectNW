@@ -41,6 +41,11 @@ public class HitColliderScript : MonoBehaviour
 
     public void CollisionDirectly(DamageDesc damage, GameObject caller)
     {
+        if (_firstInitializeSubScript.GetOwner().GetDead() == true) 
+        {
+            return;
+        }
+
         IHitable hitable = _firstInitializeSubScript.GetOwner() as IHitable;
 
         hitable.DealMe_Final(damage, _isWeakPoint, caller);

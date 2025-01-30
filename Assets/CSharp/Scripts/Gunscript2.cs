@@ -29,7 +29,7 @@ public class Gunscript2 : WeaponScript
 
     [SerializeField] private float _dampingSpeed = 0.1f;
     private Vector3 _followPositionRef = Vector3.zero;
-    RaycastHit[] _gunRayHit = new RaycastHit[2]; 
+
 
     /*------------------------------------------
     런타임중 정보저장용 변수들
@@ -289,11 +289,6 @@ public class Gunscript2 : WeaponScript
         ItemAsset_Bullet firstBullet = (ItemAsset_Bullet)gunStoredDesc._myMagazine._bullets.First()._itemAsset;
         gunStoredDesc._myMagazine._bullets.RemoveAt(gunStoredDesc._myMagazine._bullets.Count - 1);
 
-        //데미지는 총알에 의해 결정된다
-        {
-
-        }
-
         RayCheck(firstBullet);
 
         StartAimShake();
@@ -415,37 +410,39 @@ public class Gunscript2 : WeaponScript
         //Vector3 rayStartPosition = _firePosition.transform.position;
         //Vector3 rayDir = _firePosition.transform.forward;
 
-        int retCount = Physics.RaycastNonAlloc(rayStartPosition, rayDir, _gunRayHit, 1000.0f, targetLayer, QueryTriggerInteraction.Collide);
+        if (Physics.Raycast(rayStartPosition, rayDir, out hit, 1000.0f, targetLayer, QueryTriggerInteraction.Collide) == false)
+        {
+            return;
+        }
+        
 
-        //아무것도 충돌하지 않았어요
-        if (retCount == 0)
+        HitColliderScript hitColliderScript = hit.collider.GetComponent<HitColliderScript>();
+
+        //피격 처리가 없는 콜라이더 입니다.
+        if (hitColliderScript == null)
         {
             return;
         }
 
-        for (int i = 0; i < retCount; i++)
+        //시체면 종료합니다. 시체가 총알을 막을 수 있습니다
         {
-            HitColliderScript hitColliderScript = _gunRayHit[i].collider.GetComponent<HitColliderScript>();
 
-            if (hitColliderScript == null)
-            {
-                continue;
-            }
-
-            //if (false/*아군이면 종료합니다. 아군이 총알을 막을 수 있습니다*/)
-            //{
-            //    return
-            //}
-
-            DamageDesc tempTestDamage = new DamageDesc();
-            tempTestDamage._damageReason = DamageDesc.DamageReason.Ray;
-            tempTestDamage._damage = firedBullet._BulletDamage;
-            tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1;
-
-            hitColliderScript.CollisionDirectly(tempTestDamage, this.gameObject);
-
-            return;
         }
+
+        //아군이면 종료합니다. 아군이 총알을 막을 수 있습니다
+        {
+
+        }
+
+
+
+
+        DamageDesc tempTestDamage = new DamageDesc();
+        tempTestDamage._damageReason = DamageDesc.DamageReason.Ray;
+        tempTestDamage._damage = firedBullet._BulletDamage;
+        tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1;
+
+        hitColliderScript.CollisionDirectly(tempTestDamage, this.gameObject);
     }
 
     public IEnumerator CooltimeCoroutine()
