@@ -16,6 +16,11 @@ public class LevelStatInfoManagerCustomInspector : Editor
         {
             LoadAllLevelStatAsset(manager);
         }
+
+        if (GUILayout.Button("Load_All_Buff_Asset"))
+        {
+            LoadAllBuffAsset(manager);
+        }
     }
 
     private void LoadAllLevelStatAsset(LevelStatInfoManager manager)
@@ -35,5 +40,27 @@ public class LevelStatInfoManagerCustomInspector : Editor
         }
 
         manager._levelStats_Init = foundObjects;
+    }
+
+
+
+
+    private void LoadAllBuffAsset(LevelStatInfoManager manager)
+    {
+        // 프로젝트에서 모든 A ScriptableObject 검색
+        string[] guids = AssetDatabase.FindAssets("t:BuffAsset");
+        List<BuffAsset> foundObjects = new List<BuffAsset>();
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            BuffAsset asset = AssetDatabase.LoadAssetAtPath<BuffAsset>(path);
+            if (asset != null)
+            {
+                foundObjects.Add(asset);
+            }
+        }
+
+        manager._buffs_Init = foundObjects;
     }
 }

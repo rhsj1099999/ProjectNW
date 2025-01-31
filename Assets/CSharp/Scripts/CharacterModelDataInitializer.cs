@@ -42,26 +42,4 @@ public class CharacterModelDataInitializer : MonoBehaviour
             _basicColliders.Add(collider.GetAttachType(), collider);
         }
     }
-
-    public void AnimationEvent_InvincibleOn()
-    {
-        StatScript ownerStatScript = _owner.GCST<StatScript>();
-
-        StateContoller ownerStateController = _owner.GCST<StateContoller>();
-    }
-
-    public void AnimationEvent_InvincibleOff()
-    {
-        StatScript ownerStatScript = _owner.GCST<StatScript>();
-
-        StateContoller ownerStateController = _owner.GCST<StateContoller>();
-    }
-
-
-
-
-
-
-
-
 }

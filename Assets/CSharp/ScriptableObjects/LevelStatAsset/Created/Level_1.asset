@@ -12,18 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26c8f44e45258194e920e3ebe4998eec, type: 3}
   m_Name: Level_1
   m_EditorClassIdentifier: 
+  _level: 1
   _activeStatDesc:
-    _level: 1
-    _hp: 100
-    _stamina: 100
-    _mp: 100
-    _sp: 100
+    _hp: 50
+    _stamina: 50
+    _mp: 50
+    _sp: 50
   _passiveStatDesc:
-    _level: 0
-    _maxHP: 100
-    _maxStamina: 100
-    _maxMp: 100
-    _maxSp: 100
+    _maxHP: 50
+    _maxStamina: 50
+    _maxMp: 50
+    _maxSp: 50
     _roughness: 1
     _strength: 1
     _invincible: 0

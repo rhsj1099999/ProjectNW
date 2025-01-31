@@ -80,6 +80,16 @@ public static class MyUtil
         return dictionary[key];
     }
 
+
+    public static U GetOrAdd<T, U>(this SortedDictionary<T, U> dictionary, T key) where U : new()
+    {
+        if (dictionary.ContainsKey(key) == false)
+        {
+            dictionary.Add(key, new U());
+        }
+        return dictionary[key];
+    }
+
     public static int CalculateConditionWeight(List<ConditionAssetWrapper> conditions)
     {
         int retWeight = 0;

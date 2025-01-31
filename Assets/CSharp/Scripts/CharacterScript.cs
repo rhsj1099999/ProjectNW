@@ -9,6 +9,7 @@ using static StatScript;
 using static LevelStatAsset;
 using static ItemAsset_Weapon;
 using Unity.VisualScripting;
+using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class StateContollerComponentDesc
 {
@@ -775,7 +776,6 @@ public class CharacterScript : GameActorScript, IHitable
         GCST<CharacterAnimatorScript>().StateChanged(nextState);
         GCST<CharacterColliderScript>().StateChanged();
         GCST<CharacterContollerable>().StateChanged();
-        GCST<StatScript>().StateChanged(nextState);
     }
 
 
@@ -1236,156 +1236,158 @@ public class CharacterScript : GameActorScript, IHitable
         }
     }
 
+    private void CalculateDamage_Guard(ref StateGraphType nextGraphType, ref RepresentStateType representType, DamageDesc damage, StatScript statScript, StateAsset currState)
+    {
+        //스테미나도 충분하고 강인도도 충분합니다
+        if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
+            statScript.GetPassiveStat(PassiveStat.Roughness) >= damage._damagePower)
+        {
+            nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
+            representType = RepresentStateType.Blocked_Reaction;
+        }
+
+        //스테미나는 충분한데 강인도가 부족합니다.
+        else if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
+            statScript.GetPassiveStat(PassiveStat.Roughness) < damage._damagePower)
+        {
+            nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
+            representType = RepresentStateType.Blocked_Sliding;
+        }
+
+        //강인도는 충분한데 스테미나가 부족합니다.
+        else if (statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina &&
+            statScript.GetPassiveStat(PassiveStat.Roughness) >= damage._damagePower)
+        {
+            nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
+            representType = RepresentStateType.Blocked_Crash;
+        }
+
+        //연결된 상태들을 가져와봄
+        StateAsset nextStateAsseet = null;
+        List<LinkedStateAsset> linkedStates = GCST<StateContoller>().GetCurrStateGraph().GetGraphStates()[currState];
+        foreach (LinkedStateAsset linkedState in linkedStates)
+        {
+            if (linkedState._linkedState._myState._stateType == representType)
+            {
+                nextStateAsseet = linkedState._linkedState;
+                break;
+            }
+        }
+
+        //스테미나가 부족하고 강인도도 부족합니다. 혹은 연결상태가 존재하지 않습니다
+        if ((statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina && statScript.GetPassiveStat(PassiveStat.Roughness) < damage._damagePower) ||
+            nextStateAsseet == null)
+        {
+            //맞는 상태로 가긴 할건데
+            nextGraphType = StateGraphType.HitStateGraph;
+
+            float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
+
+            if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
+            {
+                representType = RepresentStateType.Hit_Lvl_0;
+            }
+            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
+            {
+                representType = RepresentStateType.Hit_Lvl_1;
+            }
+            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
+            {
+                representType = RepresentStateType.Hit_Lvl_2;
+            }
+        }
+    }
+
     public virtual void DealMe_Final(DamageDesc damage, bool isWeakPoint, GameObject caller)
     {
         StatScript statScript = GCST<StatScript>();
 
-
-        /*------------------------------------------------
-        |NOTO| 이곳에서는 데미지 피격 감쇄, 상태변경만 계산합니다.
-        ------------------------------------------------*/
-
-        if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_InvincibleCheck, damage, isWeakPoint, caller);
+        // Step0. 무적체크
         {
-            Debug.Log("---격발 치명타---");
-            damage._damage *= 10.0f;
+            if (statScript.GetPassiveStat(PassiveStat.IsInvincible) > 0)
+            {
+                Debug.Log("무적이라서 씹었다");
+                damage._damage = 0;
+                damage._damagingStamina = 0;
+
+                statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, caller);
+                return;
+            }
         }
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, caller);
+
 
         Debug.Log("들어온 데미지" + damage._damage);
         Debug.Log("들어온 스테미나데미지" + damage._damagingStamina);
         Debug.Log("들어온 파워" + damage._damagePower);
 
+
+        bool isStateChanging = true;
         StateGraphType nextGraphType = StateGraphType.HitStateGraph;
         RepresentStateType representType = RepresentStateType.Hit_Lvl_0;
 
-        StateAsset currState = GCST<StateContoller>().GetCurrState();
-        StateDesc currStateDesc = GCST<StateContoller>().GetCurrState()._myState;
 
 
 
-        //가드중이였을때의 상태 계산 로직
+
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_GuardCheck, damage, isWeakPoint, caller);
+        if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
         {
-            if (currStateDesc._isBlockState == true)
+            CalculateDamage_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
+        }
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_GuardCheck, damage, isWeakPoint, caller);
+
+
+
+
+
+
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_BuffCheck, damage, isWeakPoint, caller);
+        if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+        {
+            damage._damage *= 10.0f;
+            Debug.Log("---격발 치명타--- || 치명타데미지 : " + damage._damage);
+        }
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_BuffCheck, damage, isWeakPoint, caller);
+
+
+
+
+
+
+
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_ApplyDamage, damage, isWeakPoint, caller);
+        //Step3. 데미지 적용
+        {
+            statScript.ChangeActiveStat(ActiveStat.Hp, -(int)damage._damage);
+
+            if (statScript.GetActiveStat(ActiveStat.Hp) <= 0)
             {
-                //스테미나도 충분하고 강인도도 충분합니다
-                if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
-                    statScript.GetPassiveStat(PassiveStat.Roughness) >= damage._damagePower)
+                ZeroHPCall(caller.GetComponent<CharacterScript>());
+
+                nextGraphType = StateGraphType.DieGraph;
+
+                if (representType == RepresentStateType.Hit_Lvl_2)
                 {
-                    nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
-                    representType = RepresentStateType.Blocked_Reaction;
-                }
-
-                //스테미나는 충분한데 강인도가 부족합니다.
-                else if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
-                    statScript.GetPassiveStat(PassiveStat.Roughness) < damage._damagePower)
-                {
-                    nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
-                    representType = RepresentStateType.Blocked_Sliding;
-                }
-
-                //강인도는 충분한데 스테미나가 부족합니다.
-                else if (statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina &&
-                    statScript.GetPassiveStat(PassiveStat.Roughness) >= damage._damagePower)
-                {
-                    nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
-                    representType = RepresentStateType.Blocked_Crash;
-                }
-
-                //연결된 상태들을 가져와봄
-                StateAsset nextStateAsseet = null;
-                List<LinkedStateAsset> linkedStates = GCST<StateContoller>().GetCurrStateGraph().GetGraphStates()[currState];
-                foreach (LinkedStateAsset linkedState in linkedStates)
-                {
-                    if (linkedState._linkedState._myState._stateType == representType)
-                    {
-                        nextStateAsseet = linkedState._linkedState;
-                        break;
-                    }
-                }
-
-                //스테미나가 부족하고 강인도도 부족합니다. 혹은 연결상태가 존재하지 않습니다
-                if ((statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina && statScript.GetPassiveStat(PassiveStat.Roughness) < damage._damagePower) ||
-                    nextStateAsseet == null)
-                {
-                    //맞는 상태로 가긴 할건데
-                    nextGraphType = StateGraphType.HitStateGraph;
-
-                    float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
-
-                    if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
-                    {
-                        representType = RepresentStateType.Hit_Lvl_0;
-                    }
-                    else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
-                    {
-                        representType = RepresentStateType.Hit_Lvl_1;
-                    }
-                    else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
-                    {
-                        representType = RepresentStateType.Hit_Lvl_2;
-                    }
-                }
-            }
-            else
-            {
-                //맞는 상태로 가긴 할건데
-                nextGraphType = StateGraphType.HitStateGraph;
-
-                float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
-
-                if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
-                {
-                    representType = RepresentStateType.Hit_Lvl_0;
-                }
-                else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
-                {
-                    representType = RepresentStateType.Hit_Lvl_1;
+                    representType = RepresentStateType.DieThrow;
                 }
                 else
                 {
-                    representType = RepresentStateType.Hit_Lvl_2;
+                    representType = RepresentStateType.DieNormal;
                 }
             }
-        }
 
-
-        /*--------------------------------------------------------------------------------------------------------------
-        --------------------------------------모든 데미지는 계산돼있어야 한다---------------------------------------------
-        --------------------------------------------------------------------------------------------------------------*/
-
-        int finalDamage = (int)damage._damage;
-        statScript.ChangeActiveStat(ActiveStat.Hp, -finalDamage);
-        if (statScript.GetActiveStat(ActiveStat.Hp) <= 0)
-        {
-            Debug.Log("죽었다");
-
-            //caller.
-            ZeroHPCall(caller.GetComponent<CharacterScript>());
-
-
-            //날라갈만큼의 데미지를 받고 죽는다
-            if (representType == RepresentStateType.Hit_Lvl_2)
+            if (isStateChanging == true)
             {
-                representType = RepresentStateType.DieThrow;
+                Vector3 toAttackerDir = (caller.transform.position - transform.position);
+                toAttackerDir.y = 0.0f;
+                toAttackerDir = toAttackerDir.normalized;
+                GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
+                GCST<StateContoller>().TryChangeState(nextGraphType, representType);
             }
-            else
-            {
-                representType = RepresentStateType.DieNormal;
-            }
-            nextGraphType = StateGraphType.DieGraph;
-
-            GCST<StateContoller>().TryChangeState(nextGraphType, representType);
-
-            return;
         }
-
-        Vector3 toAttackerDir = (caller.transform.position - transform.position);
-        toAttackerDir.y = 0.0f;
-        toAttackerDir = toAttackerDir.normalized;
-
-        GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
-
-        GCST<StateContoller>().TryChangeState(nextGraphType, representType);
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_ApplyDamage, damage, isWeakPoint, caller);
     }
 
     public void WhenTriggerEnterWithWeaponCollider(Collider other, bool isWeakCollider)
@@ -1398,12 +1400,6 @@ public class CharacterScript : GameActorScript, IHitable
         {
             Debug.Assert(false, "전투와 관련된 기능인데 StatScript가 없으면 안됩ㄴ다");
             Debug.Break();
-            return;
-        }
-
-        if (statScript.GetPassiveStat(PassiveStat.Invincible) > 0) 
-        {
-            Debug.Log("무적이라서 씹었다");
             return;
         }
 

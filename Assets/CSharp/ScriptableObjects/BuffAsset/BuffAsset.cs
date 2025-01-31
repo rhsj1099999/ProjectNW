@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static LevelStatAsset;
 
 [CreateAssetMenu(fileName = "BuffAsset", menuName = "Scriptable Object/Create_BuffAsset", order = (int)MyUtil.CustomToolOrder.CreateBuffs)]
 public class BuffAsset : ScriptableObject
@@ -17,6 +18,9 @@ public class BuffAsset : ScriptableObject
     {
         public enum BuffApplyType
         {
+            //0. Set (강제로 고정시킨다)
+            Set, //이 값이 있으면 이후 값들이 무시된다
+
             //1. 상수값 증가
             Plus,
             Minus,
@@ -29,26 +33,12 @@ public class BuffAsset : ScriptableObject
             Multiply,
             Devide,
 
-            //최종 Set (강제로 고정시킨다)
-            Set,
-
             None,
         }
 
-
-        public enum BuffNestType
-        {
-            IgnoreNothing,          //아무것도 안한다. 중첩가능하다.
-            CompareAndSelectHigh,   //앞전의 버프들과 비교하고 높다면 적용한다.
-            OnlyMe,                 //뭐가 들어왔든 이것만 적용한다 (기존에 있던것들도 다 무시한다)
-        }
-
-        //public LevelStatAsset.Stats _targetVar = LevelStatAsset.Stats.Hp;
+        public PassiveStat _targetType = PassiveStat.MaxHP;
         public BuffApplyType _buffApplyType = BuffApplyType.Plus;
-        public BuffNestType buffNestType = BuffNestType.IgnoreNothing;
-
         public float _amount = 0.0f;
-        public float _duration = 0.0f;
     }
 
 
@@ -67,4 +57,10 @@ public class BuffAsset : ScriptableObject
 
     [SerializeField] private bool _isDebuff = false;
     public bool _IsDebuff => _isDebuff;
+
+    [SerializeField] private float _duration = 100.0f;
+    public float _Duration => _duration;
+
+    [SerializeField] private Image _buffUIImage = null;
+    public Image _BuffUIImage => _buffUIImage;
 }

@@ -7,6 +7,7 @@ using static MyUtil;
 using static AnimationFrameDataAsset;
 using UnityEngine.Playables;
 using MagicaCloth2;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public enum StateActionType
 {
@@ -455,6 +456,11 @@ public class StateContoller : GameCharacterSubScript
         _failedRandomChanceState.Clear();
         
         _owner.StateChanged(_currState);
+
+        if (gameObject.name == "Zombie (7)")
+        {
+            int a = 10;
+        }
         
         AllStopCoroutine();
 
@@ -1112,6 +1118,7 @@ public class StateContoller : GameCharacterSubScript
                 {
                     case FrameDataWorkType.ChangeToIdle:
                         {
+                            newCoroutineWrapper._frameData = eachFrameData;
                             newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
                             _stateActionCoroutines.Add(StartCoroutine(ChangeToIdleCoroutine(newCoroutineWrapper)));
                         }
@@ -1142,6 +1149,7 @@ public class StateContoller : GameCharacterSubScript
                     case FrameDataWorkType.DeadCall:
                         {
                             newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
+                            newCoroutineWrapper._frameData = eachFrameData;
                             _stateActionCoroutines.Add(StartCoroutine(DeadCallCoroutine(newCoroutineWrapper)));
                         }
                         break;
@@ -1239,11 +1247,14 @@ public class StateContoller : GameCharacterSubScript
 
     private IEnumerator DeadCallCoroutine(StateActionCoroutineWrapper target)
     {
+        float underSec = target._frameData._frameUnder / _currState._myState._stateAnimationClip.frameRate;
+        float upSec = target._frameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
+
         while (true)
         {
             target._timeACC += Time.deltaTime;
 
-            if (target._timeACC >= target._timeTarget)
+            if (target._timeACC >= upSec)
             {
                 _owner.DeadCall();
                 break;
@@ -1254,13 +1265,16 @@ public class StateContoller : GameCharacterSubScript
 
     private IEnumerator StateAddBuffCoroutine(StateActionCoroutineWrapper target)
     {
+        float underSec = target._frameData._frameUnder / _currState._myState._stateAnimationClip.frameRate;
+        float upSec = target._frameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
+
         while (true)
         {
             target._timeACC += Time.deltaTime;
 
-            if (target._timeACC >= target._timeTarget)
+            if (target._timeACC >= upSec)
             {
-                //_owner.GCST<StatScript>().ApplyStateBuff(BuffInfoManager.Instance.GetBuff(target._frameData._buffKey));
+                _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(target._frameData._buffKey));
                 break;
             }
             yield return null;
@@ -1269,13 +1283,16 @@ public class StateContoller : GameCharacterSubScript
 
     private IEnumerator StateRemoveBuffCoroutine(StateActionCoroutineWrapper target)
     {
+        float underSec = target._frameData._frameUnder / _currState._myState._stateAnimationClip.frameRate;
+        float upSec = target._frameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
+
         while (true)
         {
             target._timeACC += Time.deltaTime;
 
-            if (target._timeACC >= target._timeTarget)
+            if (target._timeACC >= upSec)
             {
-                //_owner.GCST<StatScript>().RemoveStateBuff(BuffInfoManager.Instance.GetBuff(target._frameData._buffKey));
+                _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(target._frameData._buffKey));
                 break;
             }
             yield return null;
