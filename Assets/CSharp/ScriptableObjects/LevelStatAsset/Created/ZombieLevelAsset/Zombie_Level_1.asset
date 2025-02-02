@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26c8f44e45258194e920e3ebe4998eec, type: 3}
-  m_Name: Level_1
+  m_Name: Zombie_Level_1
   m_EditorClassIdentifier: 
+  _characterType: 1
   _level: 1
   _activeStatDesc:
     _hp: 50
@@ -23,6 +24,10 @@ MonoBehaviour:
     _maxStamina: 50
     _maxMp: 50
     _maxSp: 50
-    _roughness: 1
+    _roughness: 10
     _strength: 1
-    _invincible: 0
+    _isInvincible: 0
+    _isParry: 0
+    _isGuard: 0
+    _isInvincible_HP: 0
+    _isInvincible_Stance: 0

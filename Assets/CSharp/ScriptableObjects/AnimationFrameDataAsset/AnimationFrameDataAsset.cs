@@ -43,7 +43,7 @@ public class AnimationFrameDataAsset : ScriptableObject
 
         public int _frameUp = -1;
         public int _frameUnder = -1;
-        public int _buffKey = -1; //적용/해제 할 버프 키
+        public List<string> _buffNames = new List<string>();
     }
 
 

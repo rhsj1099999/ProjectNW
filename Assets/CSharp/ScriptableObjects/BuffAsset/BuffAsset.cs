@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static LevelStatAsset;
+using static LevelStatInfoManager;
+using static StatScript;
 
 [CreateAssetMenu(fileName = "BuffAsset", menuName = "Scriptable Object/Create_BuffAsset", order = (int)MyUtil.CustomToolOrder.CreateBuffs)]
 public class BuffAsset : ScriptableObject
@@ -11,7 +13,12 @@ public class BuffAsset : ScriptableObject
     /*------------------------------------------------------------
     |NOTI| 동일 이름의 버프린데 레벨만 다르다 => 그래도 다른 버프키다
     ------------------------------------------------------------*/
-
+    [Serializable]
+    public class BuffActionWrapper
+    {
+        public DamagingProcessDelegateType _delegateTiming = DamagingProcessDelegateType.End;
+        public BuffAction _buffActionType = BuffAction.None;
+    }
 
     [Serializable]
     public class BuffApplyWork
@@ -33,9 +40,10 @@ public class BuffAsset : ScriptableObject
             Multiply,
             Devide,
 
-            None,
+            End,
         }
 
+        public BuffActionWrapper _buffAction = new BuffActionWrapper();
         public PassiveStat _targetType = PassiveStat.MaxHP;
         public BuffApplyType _buffApplyType = BuffApplyType.Plus;
         public float _amount = 0.0f;

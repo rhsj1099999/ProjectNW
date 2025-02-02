@@ -24,6 +24,7 @@ public class LevelStatAsset : ScriptableObject
     //-> '계산에 사용' 되는 것들
     public enum PassiveStat
     {
+        None,
         MaxHP,
         MaxStamina,
         MaxMp,
@@ -33,6 +34,8 @@ public class LevelStatAsset : ScriptableObject
         IsInvincible,
         IsParry,
         IsGuard,
+        IsInvincible_HP,        //피가 깎이진 않지만, 자세가 무너질 수 있다.
+        IsInvincible_Stance,    //자세가 무너지진 않지만, 피가 깎인다.
     }
 
 
@@ -86,6 +89,8 @@ public class LevelStatAsset : ScriptableObject
             _isInvincible = other._isInvincible;
             _isParry = other._isParry;
             _isGuard = other._isGuard;
+            _isInvincible_HP = other._isInvincible_HP;
+            _isInvincible_Stance = other._isInvincible_Stance;
 
             InitDict();
         }
@@ -103,6 +108,8 @@ public class LevelStatAsset : ScriptableObject
             _PassiveStats.Add(PassiveStat.IsInvincible, _isInvincible);
             _PassiveStats.Add(PassiveStat.IsParry, _isParry);
             _PassiveStats.Add(PassiveStat.IsGuard, _isGuard);
+            _PassiveStats.Add(PassiveStat.IsInvincible_HP, _isInvincible_HP);
+            _PassiveStats.Add(PassiveStat.IsInvincible_Stance, _isInvincible_Stance);
         }
 
         private Dictionary<PassiveStat, int> _passiveStats = new Dictionary<PassiveStat, int>();
@@ -119,8 +126,13 @@ public class LevelStatAsset : ScriptableObject
         [SerializeField] private int _isInvincible = 0;
         [SerializeField] private int _isParry = 0;
         [SerializeField] private int _isGuard = 0;
+        [SerializeField] private int _isInvincible_HP = 0;
+        [SerializeField] private int _isInvincible_Stance = 0;
     }
 
+
+    [SerializeField] private CharacterType _characterType = CharacterType.Player;
+    public CharacterType _CharacterType => _characterType;
 
     [SerializeField] private int _level = 0;
     public int _Level => _level;

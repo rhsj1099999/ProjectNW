@@ -39,7 +39,7 @@ public class HitColliderScript : MonoBehaviour
     |TODO| IHitable는 이제 필요 없을수도 있습니다.
     ----------------------------------------------------------*/
 
-    public void CollisionDirectly(DamageDesc damage, GameObject caller)
+    public void CollisionDirectly(DamageDesc damage, CharacterScript attacker)
     {
         if (_firstInitializeSubScript.GetOwner().GetDead() == true) 
         {
@@ -48,6 +48,6 @@ public class HitColliderScript : MonoBehaviour
 
         IHitable hitable = _firstInitializeSubScript.GetOwner() as IHitable;
 
-        hitable.DealMe_Final(damage, _isWeakPoint, caller);
+        hitable.DealMe_Final(damage, _isWeakPoint, attacker, _firstInitializeSubScript.GetOwner());
     }
 }

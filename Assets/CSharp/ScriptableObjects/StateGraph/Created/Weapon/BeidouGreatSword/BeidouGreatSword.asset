@@ -1,0 +1,118 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9967d1ee22a1d6946bac0890bae4d073, type: 3}
+  m_Name: BeidouGreatSword
+  m_EditorClassIdentifier: 
+  _graphType: 1
+  _usingStates:
+  - _isEntryState: 1
+    _stateAsset: {fileID: 11400000, guid: f923e62d221855940be8afbb1694c9d5, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+        type: 2}
+      _goal: 1
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: ffef36518d5924d489fd2c0e50c22278, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 201494cd7f7fd344bb1449a7ca606369, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 09ab5bd5459951e48a49c46aba3780f0,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: ffef36518d5924d489fd2c0e50c22278, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+        type: 2}
+      _goal: 1
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 4b8e46e17fd182942959b9da48c8064b, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 201494cd7f7fd344bb1449a7ca606369, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 09ab5bd5459951e48a49c46aba3780f0,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 4b8e46e17fd182942959b9da48c8064b, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+        type: 2}
+      _goal: 1
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 3cf2df561d9d2ec408a332a966554f6f, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 3cf2df561d9d2ec408a332a966554f6f, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+        type: 2}
+      _goal: 1
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: caf6ee08af2ccb4419503dbec32f18bd, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: caf6ee08af2ccb4419503dbec32f18bd, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+        type: 2}
+      _goal: 1
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: f923e62d221855940be8afbb1694c9d5, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 1
+    _stateAsset: {fileID: 11400000, guid: 201494cd7f7fd344bb1449a7ca606369, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: 09ab5bd5459951e48a49c46aba3780f0,
+        type: 2}
+      _goal: 1
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: c9043e6c572e12448a83487c806f7fa0, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 3c98f8e6c3df15e4a8c375a33cb4c9ca,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: c9043e6c572e12448a83487c806f7fa0, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  _interactionPointsInitial: []

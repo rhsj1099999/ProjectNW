@@ -22,52 +22,6 @@ public class PlayerScript : CharacterScript
         base.Update();
 
 
-        //임시 Hit 디버깅 코드
-        {
-            if (Input.GetKeyDown(KeyCode.H) == true)
-            {
-                DamageDesc tempTestDamage = new DamageDesc();
-                tempTestDamage._damage = 0;
-                tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl0;
-                DealMe_Final(tempTestDamage, false, this.gameObject);
-            }
-
-            if (Input.GetKeyDown(KeyCode.J) == true)
-            {
-                DamageDesc tempTestDamage = new DamageDesc();
-                tempTestDamage._damage = 0;
-                tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1;
-                DealMe_Final(tempTestDamage, false, this.gameObject);
-            }
-
-            if (Input.GetKeyDown(KeyCode.K) == true)
-            {
-                DamageDesc tempTestDamage = new DamageDesc();
-                tempTestDamage._damage = 0;
-                tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl2;
-                DealMe_Final(tempTestDamage, false, this.gameObject);
-            }
-
-            if (Input.GetKeyDown(KeyCode.M) == true)
-            {
-                DamageDesc tempTestDamage = new DamageDesc();
-                tempTestDamage._damage = 0;
-                tempTestDamage._damagingStamina = 200;
-                tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl0;
-                DealMe_Final(tempTestDamage, false, this.gameObject);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Period) == true)
-            {
-                DamageDesc tempTestDamage = new DamageDesc();
-                tempTestDamage._damage = 100;
-                tempTestDamage._damagingStamina = 0;
-                tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl3;
-                DealMe_Final(tempTestDamage, false, this.gameObject);
-            }
-        }
-
-
         //인벤토리 오픈코드
         {
             if (GCST<InputController>().GetInventoryOpen() == true)

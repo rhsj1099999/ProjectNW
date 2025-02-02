@@ -17,8 +17,10 @@ MonoBehaviour:
     _weaponTypeGoal: 0
     _keyInputConditionTarget: []
     _commandInputConditionTarget:
-    - _targetCommandKeys: 0a000000
-    _animationFrameDataType: 2
+    - _targetCommandKeys: 10000000
     _comboStrainedTime: -1
     _mustNotBusyLayers: 
     _mustNotBusyLayers_BitShift: 1
+    _enterStatetimeThreshould: 0
+    _randomChance: 1
+    _degThreshould: 0

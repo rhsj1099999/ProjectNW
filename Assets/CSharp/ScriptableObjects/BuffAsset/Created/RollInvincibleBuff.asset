@@ -15,8 +15,12 @@ MonoBehaviour:
   _buffName: "\uAD6C\uB974\uAE30\uBB34\uC801\uBC84\uD504"
   _buffKey: 0
   _buffWorks:
-  - _targetType: 6
+  - _buffAction:
+      _delegateTiming: 8
+      _buffActionType: 1
+    _targetType: 7
     _buffApplyType: 1
     _amount: 1
   _isDebuff: 0
   _duration: 100
+  _buffUIImage: {fileID: 0}

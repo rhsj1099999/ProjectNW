@@ -143,6 +143,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     public RigBuilder GetCharacterRigBuilder() { return _characterRigBuilder; }
     public float GetCharacterHeight() { return 2.0f; }
 
+
     public AnimatorStateInfo? GetCurrentStateAnimationInfo()
     {
         int targetLayer = (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody]._isUsingFirstLayer == true)
@@ -585,6 +586,11 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
 
         FullBodyAnimationChange(nextAnimation);
+    }
+
+    public void AnimationOverride(AnimationClip overrideAnimation)
+    {
+        FullBodyAnimationChange(overrideAnimation);
     }
 
     private void FullBodyAnimationChange(AnimationClip nextAnimation)

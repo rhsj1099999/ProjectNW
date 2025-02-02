@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
+  m_Name: BeidouElementBuff_DamageReturn
+  m_EditorClassIdentifier: 
+  _buffName: "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uB370\uBBF8\uC9C0\uBC29\uCD9C\uBC84\uD504"
+  _buffKey: 0
+  _buffWorks:
+  - _buffAction:
+      _delegateTiming: 8
+      _buffActionType: 1
+    _targetType: 0
+    _buffApplyType: 1
+    _amount: 1
+  _isDebuff: 0
+  _duration: 100
+  _buffUIImage: {fileID: 0}

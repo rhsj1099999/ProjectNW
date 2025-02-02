@@ -658,6 +658,12 @@ public class StateGraphAsset : ScriptableObject
                 case StateActionType.AddCoroutine_DeadCall:
                     break;
 
+                case StateActionType.AddBuff:
+                    break;
+
+                case StateActionType.RemoveBuff:
+                    break;
+
                 default:
                     Debug.Assert(false, "데이터가 추가됐습니까?");
                     break;

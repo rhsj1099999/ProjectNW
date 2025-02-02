@@ -91,10 +91,17 @@ public class DamageDesc
 }
 
 
+public enum CharacterType
+{
+    Player,
+    Monster_Zombie,
+}
 
 
 public class CharacterScript : GameActorScript, IHitable
 {
+    [SerializeField] private CharacterType _characterType = CharacterType.Player;
+    public CharacterType _CharacterType => _characterType;
 
     private bool _dead = false;
     public bool GetDead() { return _dead; }
@@ -279,6 +286,7 @@ public class CharacterScript : GameActorScript, IHitable
         AimScript2 aimScript = GetCharacterSubcomponent<AimScript2>(true);
 
         if (aimScript != null &&
+            aimScript.GetAimState() == AimState.eLockOnAim &&
             aimScript.GetLockOnObject() != null &&
             aimScript.GetLockOnObject().transform.parent.gameObject == killObject)
         {
@@ -679,22 +687,21 @@ public class CharacterScript : GameActorScript, IHitable
             Debug.Break();
         }
 
-        CharacterScript otherCharacterScript = other.gameObject.GetComponentInParent<CharacterScript>();
+        CharacterScript attackerCharacterScript = other.gameObject.GetComponentInParent<CharacterScript>();
 
-        if (otherCharacterScript == null)
+        if (attackerCharacterScript == null)
         {
-            Debug.Assert(false, "otherCharacterScript 이 널입니다?");
+            Debug.Assert(false, "attackerCharacterScript 이 널입니다?");
             Debug.Break();
         }
 
-        DamageDesc currentDamage = new DamageDesc();
-        otherCharacterScript.CalculateMyCurrentWeaponDamage(ref currentDamage, other);
+        DamageDesc currentDamage = attackerCharacterScript.CalculateAttackerDamage(other, isWeakPointCollider);
+        
 
         /*---------------------------------------------------
         |NOTI| isWeakPointCollider 가 True 라면 치명타입니다
         ---------------------------------------------------*/
-
-        DealMe_Final(currentDamage, isWeakPointCollider, otherCharacterScript.gameObject);
+        DealMe_Final(currentDamage, isWeakPointCollider, attackerCharacterScript, this);
     }
 
     public void MoveWeapons()
@@ -1153,16 +1160,11 @@ public class CharacterScript : GameActorScript, IHitable
         }
     }
 
-    public virtual void CalculateMyCurrentWeaponDamage(ref DamageDesc damageDesc, Collider other)
+    public virtual DamageDesc CalculateAttackerDamage(Collider other, bool isWeakPoint)
     {
-        StatScript myStat = GCST<StatScript>();
+        DamageDesc damageDesc = new DamageDesc();
 
-        if (damageDesc == null)
-        {
-            Debug.Assert(false, "damageDesc가 null이여선 안된다");
-            Debug.Break();
-            return;
-        }
+        StatScript myStat = GCST<StatScript>();
 
         /*-------------------------------------------------------
         기본->StatComponent(무조건 여기서 출발한다)
@@ -1174,39 +1176,59 @@ public class CharacterScript : GameActorScript, IHitable
             damageDesc._damagePower = myStat.CalculatePower();
         }
 
+        myStat.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_AttackerBuffCheck, damageDesc, isWeakPoint, this, null);
+        /*-------------------------------------------------------
+        버프 배수
+            공격자가 스킬을 쓰고 있었나?
+            공격자에게 버프가 걸려있었나?
+        -------------------------------------------------------*/
+        {
+
+        }
+        myStat.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_AttackerBuffCheck, damageDesc, isWeakPoint, this, null);
+
+
+
+
 
         /*-------------------------------------------------------
         무기 배수(좋은 무기면 더 아플것이다)
         -------------------------------------------------------*/
-        WeaponScript otherWeaponScript = other.GetComponentInParent<WeaponScript>();
-        if (otherWeaponScript != null)
         {
-            DamageDesc weaponDamageDest = otherWeaponScript.GetItemAsset()._WeaponDamageDesc;
-            damageDesc._damage += weaponDamageDest._damage;
-            damageDesc._damagingStamina += weaponDamageDest._damagingStamina;
-            damageDesc._damagePower += weaponDamageDest._damagePower;
+            //WeaponScript otherWeaponScript = other.GetComponentInParent<WeaponScript>();
+            //if (otherWeaponScript != null)
+            //{
+            //    DamageDesc weaponDamageDest = otherWeaponScript.GetItemAsset()._WeaponDamageDesc;
+            //    damageDesc._damage += weaponDamageDest._damage;
+            //    damageDesc._damagingStamina += weaponDamageDest._damagingStamina;
+            //    damageDesc._damagePower += weaponDamageDest._damagePower;
+            //}
         }
+
+
+
 
 
         /*-------------------------------------------------------
         애니메이션 배수(동작이 크면 아플것이다)
         -------------------------------------------------------*/
-        StateContoller myStateController = GCST<StateContoller>();
-        if (myStateController != null &&
-            myStateController.GetCurrState()._myState._isAttackState == true)
         {
-            DamageDesc attackMultiplyDesc = myStateController.GetCurrState()._myState._attackDamageMultiply;
-            if (attackMultiplyDesc == null)
+            StateContoller myStateController = GCST<StateContoller>();
+            if (myStateController != null &&
+                myStateController.GetCurrState()._myState._isAttackState == true)
             {
-                Debug.Log("공격상태지만 값이 설정돼지 않았다");
-                attackMultiplyDesc = new DamageDesc();
+                DamageDesc attackMultiplyDesc = myStateController.GetCurrState()._myState._attackDamageMultiply;
+                if (attackMultiplyDesc == null)
+                {
+                    Debug.Log("공격상태지만 값이 설정돼지 않았다");
+                    attackMultiplyDesc = new DamageDesc();
+                }
+
+                damageDesc._damage *= attackMultiplyDesc._damage;
+                damageDesc._damagingStamina *= attackMultiplyDesc._damagingStamina;
+                damageDesc._damagePower *= attackMultiplyDesc._damagePower;
             }
-
-            damageDesc._damage *= attackMultiplyDesc._damage;
-            damageDesc._damagingStamina *= attackMultiplyDesc._damagingStamina;
-            damageDesc._damagePower *= attackMultiplyDesc._damagePower;
         }
-
 
 
 
@@ -1215,29 +1237,27 @@ public class CharacterScript : GameActorScript, IHitable
         /*-------------------------------------------------------
         파지법 배수(양손으로 잡아서 휘두르면 더 아플것이다)
         -------------------------------------------------------*/
-        if (_tempGrabFocusType != WeaponGrabFocus.Normal)
         {
-            damageDesc._damage *= 1.2f;
-            damageDesc._damagingStamina *= 1.2f;
-            damageDesc._damagePower *= 1.2f;
+            //if (_tempGrabFocusType != WeaponGrabFocus.Normal)
+            //{
+            //    damageDesc._damage *= 1.2f;
+            //    damageDesc._damagingStamina *= 1.2f;
+            //    damageDesc._damagePower *= 1.2f;
+            //}
         }
 
 
 
 
 
-
-
-        /*-------------------------------------------------------
-        버프 배수(미구현)
-        -------------------------------------------------------*/
-        {
-
-        }
+        return damageDesc;
     }
 
-    private void CalculateDamage_Guard(ref StateGraphType nextGraphType, ref RepresentStateType representType, DamageDesc damage, StatScript statScript, StateAsset currState)
+
+    private void CalculateNextState_Guard(ref StateGraphType nextGraphType, ref RepresentStateType representType, DamageDesc damage, StatScript statScript, StateAsset currState)
     {
+        Debug.Log("가드버프 계산을 시작합니다");
+
         //스테미나도 충분하고 강인도도 충분합니다
         if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
             statScript.GetPassiveStat(PassiveStat.Roughness) >= damage._damagePower)
@@ -1278,6 +1298,8 @@ public class CharacterScript : GameActorScript, IHitable
         if ((statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina && statScript.GetPassiveStat(PassiveStat.Roughness) < damage._damagePower) ||
             nextStateAsseet == null)
         {
+            Debug.Log("가드 버프가 걸렸지만 맞는상태로 갈껍니다");
+
             //맞는 상태로 가긴 할건데
             nextGraphType = StateGraphType.HitStateGraph;
 
@@ -1298,11 +1320,11 @@ public class CharacterScript : GameActorScript, IHitable
         }
     }
 
-    public virtual void DealMe_Final(DamageDesc damage, bool isWeakPoint, GameObject caller)
+    public virtual void DealMe_Final(DamageDesc damage, bool isWeakPoint, CharacterScript attacker, CharacterScript victim)
     {
         StatScript statScript = GCST<StatScript>();
 
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_InvincibleCheck, damage, isWeakPoint, caller);
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_InvincibleCheck, damage, isWeakPoint, attacker, victim);
         // Step0. 무적체크
         {
             if (statScript.GetPassiveStat(PassiveStat.IsInvincible) > 0)
@@ -1311,11 +1333,11 @@ public class CharacterScript : GameActorScript, IHitable
                 damage._damage = 0;
                 damage._damagingStamina = 0;
 
-                statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, caller);
+                statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, attacker, victim);
                 return;
             }
         }
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, caller);
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, attacker, victim);
 
 
         Debug.Log("들어온 데미지" + damage._damage);
@@ -1323,48 +1345,42 @@ public class CharacterScript : GameActorScript, IHitable
         Debug.Log("들어온 파워" + damage._damagePower);
 
 
-        bool isStateChanging = true;
         StateGraphType nextGraphType = StateGraphType.HitStateGraph;
-        RepresentStateType representType = RepresentStateType.Hit_Lvl_0;
+        RepresentStateType representType = RepresentStateType.End;
+
+        //statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_GuardCheck, damage, isWeakPoint, caller);
+        //statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_GuardCheck, damage, isWeakPoint, caller);
 
 
-
-
-
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_GuardCheck, damage, isWeakPoint, caller);
-        if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_BuffCheck, damage, isWeakPoint, attacker, victim);
+        //버프 관련 데미지 크기 변경단계
         {
-            CalculateDamage_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
+            if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+            {
+                damage._damage *= 10.0f;
+                Debug.Log("---격발 치명타--- || 치명타데미지 : " + damage._damage);
+            }
         }
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_GuardCheck, damage, isWeakPoint, caller);
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_BuffCheck, damage, isWeakPoint, attacker, victim);
 
 
 
-
-
-
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_BuffCheck, damage, isWeakPoint, caller);
-        if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
-        {
-            damage._damage *= 10.0f;
-            Debug.Log("---격발 치명타--- || 치명타데미지 : " + damage._damage);
-        }
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_BuffCheck, damage, isWeakPoint, caller);
-
-
-
-
-
-
-
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_ApplyDamage, damage, isWeakPoint, caller);
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_ApplyDamage, damage, isWeakPoint, attacker, victim);
         //Step3. 데미지 적용
         {
-            statScript.ChangeActiveStat(ActiveStat.Hp, -(int)damage._damage);
+            bool willDead = false;
+
+            if (statScript.GetPassiveStat(PassiveStat.IsInvincible_HP) <= 0)
+            {
+                statScript.ChangeActiveStat(ActiveStat.Hp, -(int)damage._damage);
+            }
+            
 
             if (statScript.GetActiveStat(ActiveStat.Hp) <= 0)
             {
-                ZeroHPCall(caller.GetComponent<CharacterScript>());
+                willDead = true;
+
+                ZeroHPCall(attacker);
 
                 nextGraphType = StateGraphType.DieGraph;
 
@@ -1378,16 +1394,55 @@ public class CharacterScript : GameActorScript, IHitable
                 }
             }
 
-            if (isStateChanging == true)
+
+
+
+            //데미지 적용하는데, 상태는 어떻게 변경될까요?
+            if (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && //CC면역이 걸려있지 않고,
+                willDead == false) //다음에 죽지 않을 예정이라면 -> 죽을거였으면 죽는모션으로 간다는게 위에 계산돼있다
             {
-                Vector3 toAttackerDir = (caller.transform.position - transform.position);
+                //다음 상태를 계산합니다.
+
+                if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
+                {
+                    //가드중이였다 = 움찔관련 모션을 계산한다
+                    CalculateNextState_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
+                }
+                else
+                {
+                    float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
+
+                    if (deltaRoughness > 0)
+                    {
+                        if (deltaRoughness <= MyUtil.deltaRoughness_lvl0)
+                        {
+                            representType = RepresentStateType.Hit_Lvl_0;
+                        }
+                        else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1)
+                        {
+                            representType = RepresentStateType.Hit_Lvl_1;
+                        }
+                        else
+                        {
+                            representType = RepresentStateType.Hit_Lvl_2;
+                        }
+                    }
+                }
+            }
+
+
+            if (willDead == true || //다음에 죽을 예정이거나
+                (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && representType != RepresentStateType.End)) //CC면역이 걸려있지 않다면
+            {
+                Vector3 toAttackerDir = (attacker.transform.position - transform.position);
                 toAttackerDir.y = 0.0f;
                 toAttackerDir = toAttackerDir.normalized;
+
                 GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
                 GCST<StateContoller>().TryChangeState(nextGraphType, representType);
             }
         }
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_ApplyDamage, damage, isWeakPoint, caller);
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_ApplyDamage, damage, isWeakPoint, attacker, victim);
     }
 
     public void WhenTriggerEnterWithWeaponCollider(Collider other, bool isWeakCollider)
@@ -1411,7 +1466,7 @@ public class CharacterScript : GameActorScript, IHitable
 
         /*----------------------------------------------------
         |NOTI| isWeakCollider 변수가 함께 들어옵니다.
-        피격시 이 충돌체가 WeakPoint였다면 true 입니다.
+        피격시 이 충돌체가 WeakPoint였다면 true 입니다. (머리같은거)
         ----------------------------------------------------*/
 
         TriggerEnterWithWeapon(other, isWeakCollider);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEditor.Build.Content;
@@ -8,6 +9,7 @@ using UnityEngine;
 using static BuffAsset;
 using static BuffAsset.BuffApplyWork;
 using static LevelStatAsset;
+using static LevelStatInfoManager;
 
 public class StatScript : GameCharacterSubScript
 {
@@ -17,6 +19,7 @@ public class StatScript : GameCharacterSubScript
         public float _timeACC = 0.0f;
         public float _duration = 0.0f; //이건 버프에셋에 있지 않습니까?
         public Coroutine _coroutine = null;
+        public BuffTimingType _buffTimingType = BuffTimingType.Normal;
     }
 
 
@@ -31,9 +34,17 @@ public class StatScript : GameCharacterSubScript
     private Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>> _passiveStatDeltaEquation = new Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>>();
 
 
-    private HashSet<BuffAsset> _buffs = new HashSet<BuffAsset>();
-    private HashSet<BuffAsset> _deBuffs = new HashSet<BuffAsset>();
 
+    public enum BuffTimingType
+    {
+        AnimationFrame,
+        State,
+        Normal,
+    }
+
+    private Dictionary<BuffTimingType, HashSet<BuffAsset>> _buffs = new Dictionary<BuffTimingType, HashSet<BuffAsset>>();
+    private Dictionary<BuffTimingType, HashSet<BuffAsset>> _deBuffs = new Dictionary<BuffTimingType, HashSet<BuffAsset>>();
+    
     private Dictionary<BuffAsset, BuffWrapper> _buffCoroutines = new Dictionary<BuffAsset, BuffWrapper>();
 
     public enum DamagingProcessDelegateType
@@ -50,18 +61,26 @@ public class StatScript : GameCharacterSubScript
         Before_ApplyDamage,
         After_ApplyDamage,
 
+        Before_AttackerBuffCheck,
+        After_AttackerBuffCheck,
+
         End,
     }
 
-    private Dictionary<DamagingProcessDelegateType, Action<DamageDesc, bool, GameObject>> _damagingProcessDelegates = new Dictionary<DamagingProcessDelegateType, Action<DamageDesc, bool, GameObject>>();
-    //public Dictionary<DamagingProcessDelegateType, Action<DamageDesc, bool, GameObject>> _DamagingProcessDelegates => _damagingProcessDelegates;
-    public void InvokeDamagingProcessDelegate(DamagingProcessDelegateType type, DamageDesc damage, bool isWeakPoint, GameObject caller)
+    private Dictionary<DamagingProcessDelegateType, Action<DamageDesc, bool, CharacterScript, CharacterScript>> _damagingProcessDelegates = new Dictionary<DamagingProcessDelegateType, Action<DamageDesc, bool, CharacterScript, CharacterScript>>();
+    private Dictionary<int/*buffKey*/, BuffActionClass> _delegateHistory = new Dictionary<int, BuffActionClass>();
+    public Dictionary<int/*buffKey*/, BuffActionClass> _DelegateHistory => _delegateHistory;
+    public void RemoveDelegateHistory(int buffKey) { _delegateHistory.Remove(buffKey); }
+
+
+    public void InvokeDamagingProcessDelegate(DamagingProcessDelegateType type, DamageDesc damage, bool isWeakPoint, CharacterScript attacker, CharacterScript victim)
     {
-        _damagingProcessDelegates[type]?.Invoke(damage, isWeakPoint, caller);
+        if (_damagingProcessDelegates[type] != null)
+        {
+            Debug.Log("뭔가 걸려있다");
+        }
+        _damagingProcessDelegates[type]?.Invoke(damage, isWeakPoint, attacker, victim);
     }
-
-
-
 
 
     private IEnumerator BuffRunningCoroutine(BuffWrapper wrapper)
@@ -72,7 +91,7 @@ public class StatScript : GameCharacterSubScript
             
             if (wrapper._duration <= wrapper._timeACC) //버프시간이 만료됨. 
             {
-                RemoveBuff(wrapper._fromAsset);
+                RemoveBuff(wrapper._fromAsset, wrapper._buffTimingType);
                 break;
             }
 
@@ -113,22 +132,21 @@ public class StatScript : GameCharacterSubScript
         _currActiveStat._ActiveStats[type] = nextVal;
     }
 
-    public void ApplyBuff(BuffAsset buff)
+    public void ApplyBuff(BuffAsset buff, BuffTimingType timingType)
     {
         HashSet<BuffAsset> target = null;
 
         target = (buff._IsDebuff == true)
-        ? _deBuffs
-        : _buffs;
+            ? _buffs.GetOrAdd(timingType)
+            : _deBuffs.GetOrAdd(timingType);
 
 
-        if (target.Contains(buff) == true)
+        if (target.Contains(buff) == true &&
+            true /*중첩을 허용하지 않는 버프라면*/)
         {
-            /*-------------------------------------------
-            |TODO| 잭스 공속버프는 중첩되고 하나씩 사라져요
-            -------------------------------------------*/
             Debug.Log("동일 버프는 중첩이 안돼요");
-            return;
+            RemoveBuff(buff, timingType);
+            //return;
         }
 
         List<BuffApplyWork> buffWorks = buff._BuffWorks;
@@ -137,18 +155,37 @@ public class StatScript : GameCharacterSubScript
 
         foreach (var buffWork in buffWorks)
         {
-            reCachingTargets.Add(buffWork._targetType);
-            ReadAndApply(buffWork, false);
+            //버프 액션 적용
+            DamagingProcessDelegateType delegateTiming = buffWork._buffAction._delegateTiming;
+            if (delegateTiming != DamagingProcessDelegateType.End)
+            {
+                BuffActionClass instance = LevelStatInfoManager.Instance.GetBuffAction(buffWork._buffAction._buffActionType);
+                _damagingProcessDelegates[delegateTiming] += instance.GetAction();
+                _delegateHistory.Add(buff._buffKey, instance);
+            }
+
+            //수치 변화 계산
+            PassiveStat targetType = buffWork._targetType;
+            if (targetType != PassiveStat.None)
+            {
+                reCachingTargets.Add(targetType);
+                ReadAndApply(buffWork, false);
+            }
         }
 
         ReCacheBuffAmoints(reCachingTargets);
 
+
+        if (target.Contains(buff) == false)
+        {
+            target.Add(buff);
+        }
+
         if (buff._Duration > 0.0f)
         {
-            if (target.Contains(buff) == true)
+            if (_buffCoroutines.ContainsKey(buff) == true)
             {
-                BuffWrapper wrapperTarget = _buffCoroutines[buff];
-                wrapperTarget._timeACC = 0.0f;
+                _buffCoroutines[buff]._timeACC = 0.0f;
             }
             else
             {
@@ -157,7 +194,6 @@ public class StatScript : GameCharacterSubScript
                 wrapper._fromAsset = buff;
                 wrapper._coroutine = StartCoroutine(BuffRunningCoroutine(wrapper));
                 _buffCoroutines.Add(buff, wrapper);
-                target.Add(buff);
             }
         }
     }
@@ -165,13 +201,13 @@ public class StatScript : GameCharacterSubScript
 
 
 
-    public void RemoveBuff(BuffAsset buff)
+    public void RemoveBuff(BuffAsset buff, BuffTimingType timingType)
     {
         HashSet<BuffAsset> target = null;
 
         target = (buff._IsDebuff == true)
-        ? _deBuffs
-        : _buffs;
+            ? _buffs.GetOrAdd(timingType)
+            : _deBuffs.GetOrAdd(timingType);
 
         if (target.Contains(buff) == false)
         {
@@ -188,8 +224,20 @@ public class StatScript : GameCharacterSubScript
 
         foreach (var buffWork in buffWorks)
         {
-            reCachingTargets.Add(buffWork._targetType);
-            ReadAndApply(buffWork, true);
+            //버프 액션 적용
+            DamagingProcessDelegateType delegateTiming = buffWork._buffAction._delegateTiming;
+            if (delegateTiming != DamagingProcessDelegateType.End)
+            {
+                _damagingProcessDelegates[delegateTiming] -= _delegateHistory[buff._buffKey].GetAction();
+                _delegateHistory.Remove(buff._buffKey);
+            }
+
+            PassiveStat targetType = buffWork._targetType;
+            if (targetType != PassiveStat.None)
+            {
+                reCachingTargets.Add(targetType);
+                ReadAndApply(buffWork, true);
+            }
         }
 
         ReCacheBuffAmoints(reCachingTargets);
@@ -207,7 +255,7 @@ public class StatScript : GameCharacterSubScript
     {
         foreach (PassiveStat type in types)
         {
-            int baseStat = LevelStatInfoManager.Instance.GetLevelStatAsset(_currLevel)._PassiveStatDesc._PassiveStats[type];
+            int baseStat = LevelStatInfoManager.Instance.GetLevelStatAsset(_currLevel, _owner._CharacterType)._PassiveStatDesc._PassiveStats[type];
             int beforeVar = _currPassiveStat._PassiveStats[type];
             int nextVar = baseStat;
 
@@ -380,8 +428,8 @@ public class StatScript : GameCharacterSubScript
         //----------------------------
         //레벨 세팅
         //---------------------------
-        LevelStatAsset statAsset = LevelStatInfoManager.Instance.GetLevelStatAsset(_currLevel);
-
+        LevelStatAsset statAsset = LevelStatInfoManager.Instance.GetLevelStatAsset(_currLevel, _owner._CharacterType);
+        
         _currActiveStat = new ActiveStatDesc(statAsset._ActiveStatDesc);
         _currPassiveStat = new PassiveStatDesc(statAsset._PassiveStatDesc);
     }

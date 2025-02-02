@@ -15,18 +15,39 @@ public enum WeaponUseType
     TargetingMoveEnd_DontUseThis,
 
     WeaponUseStart_DontUseThis,
+
     MainUse, //클릭
     SubUse,
     SpecialUse,
+
+    UltUse,
+    CtrlUltUse,
+    SubUltUse,
+
+    EleUse,
+    CtrlEleUse,
+    SubEleUse,
+
     MainUseUp, //손떼기
     SubUseUp,
     SpecialUseUp,
+
+    UltUp,
+    CtrlUltUp,
+    SubUltUp,
+
+    EleUp,
+    CtrlEleUp,
+    SubEleUp,
+
     OppositeMainUse, //반대손 클릭
     OppositeSubUse,
     OppositeSpecialUse,
-    OppositeMainUseUp, //반대손 클릭
+
+    OppositeMainUseUp, //반대손 손떼기
     OppositeSubUseUp,
     OppositeSpecialUseUp,
+
     WeaponUseEnd_DontUseThis,
 }
 

@@ -51,6 +51,9 @@ public enum StateActionType
 
     AddCoroutine_DeadCall,
     AddCoroutine_BuffCheck,
+
+    AddBuff,
+    RemoveBuff,
 }
 
 public enum ConditionType
@@ -93,6 +96,8 @@ public enum ConditionType
     IsHoldingWeaponKey, //무기 사용키(왼클, 오른클)을 누르고 있습니다. 무기도 들고 있습니다.
 
     IsWeaponUseReady, //격발할 준비가 됐습니다 -> 무기마다 따로 Override
+
+    StateDeeper, //현재 유지하려는 상태의 레벨이 증가했습니다.
 }
 
 
@@ -157,6 +162,7 @@ public class ConditionDesc
     public float _enterStatetimeThreshould = 0.0f;
     public int _randomChance = 1;
     public float _degThreshould = 0.0f;
+    public int _damageHitThreshould = 1;
 }
 
 
@@ -186,8 +192,9 @@ public class AIAttackStateDesc
 public class StateDesc
 {
     public RepresentStateType _stateType = RepresentStateType.End;
-
     public AnimationClip _stateAnimationClip = null;
+    public List<AnimationClip> _stateAnimationClipOverride = new List<AnimationClip>();
+
     public bool _rightWeaponOverride = true;
     public bool _leftWeaponOverride = true;
 
@@ -209,7 +216,9 @@ public class StateDesc
 
     public AIStateDesc _aiStateDesc = null;
     public AIAttackStateDesc _aiAttackStateDesc = null;
-    
+
+    public List<string> _stateBuffs_Add = new List<string>();
+    public List<string> _stateBuffs_Remove = new List<string>();
 
     public List<StateActionType> _EnterStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _inStateActionTypes = new List<StateActionType>();
@@ -223,10 +232,6 @@ public class StateDesc
 
     public bool _isSubAnimationStateMachineExist = false;
     public SubAnimationStateMachine _subAnimationStateMachine = null;
-
-    //public List<AnimationClip> _bsAnimations = null; //선딜 애니메이션
-    //public List<AnimationClip> _asAnimations = null; //후딜 애니메이션
-    //public AnimationClip _endStateIdleException = null; //상태의 애니메이션이 끝날때 예외 애니메이션
 }
 
 
@@ -348,9 +353,23 @@ public class StateContoller : GameCharacterSubScript
     public StateGraphAsset GetCurrStateGraph() { return _stateGraphes[(int)_currentGraphType]; }
     public List<StateGraphAsset> GetStateGraphes() { return _stateGraphes; }
     public StateGraphAsset GetBasicStateGraphes(StateGraphType type) {return _initialStateGraphesDict[type];}
+    public void OverrideAnimationClip(int index) 
+    {
+        List<AnimationClip> overrides = _currState._myState._stateAnimationClipOverride;
+        if (overrides.Count <= index)
+        {
+            return;
+        }
+
+        _owner.GCST<CharacterAnimatorScript>().AnimationOverride(overrides[index]);
+    }
+
+
 
     private float _currStateTime = 0.0f;
     private float _prevStateTime = 0.0f;
+    private bool _stateDeeper = false;
+    public void StateDeeperCall() { _stateDeeper = true; }
     
 
     List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
@@ -433,45 +452,48 @@ public class StateContoller : GameCharacterSubScript
         _currStateTime = 0.0f;
         _prevStateTime = 0.0f;
         _failedRandomChanceState.Clear();
+        _stateDeeper = false;
     }
 
     private void ChangeState(StateGraphType nextGraphType, StateAsset nextState)
     {
         StatedWillBeChanged();
 
+
+        /*-----------------------------------------------------
+        상태가 바뀌기 전, 이전 상태에 대해 Exit 을 먼저 실행
+        기존에 걸려있던 버프들은 날라가게됨 (상태에 의한것이라면)
+        -----------------------------------------------------*/
         if (_currState != null)
         {
             DoActions(_currState._myState._ExitStateActionTypes);
         }
 
-        _nextComboReady = true;
-
-        _previousGraphType = _currentGraphType;
-
-        _currentGraphType = nextGraphType;
-        _currState = nextState;
-
-        _randomStateInstructIndex = -1;
-        _randomStateTryCount = 0;
-        _failedRandomChanceState.Clear();
-        
-        _owner.StateChanged(_currState);
-
-        if (gameObject.name == "Zombie (7)")
         {
-            int a = 10;
+            //변수 세팅
+            _nextComboReady = true;
+            _previousGraphType = _currentGraphType;
+            _randomStateInstructIndex = -1;
+            _randomStateTryCount = 0;
+            _failedRandomChanceState.Clear();
+
+            //다음상태 세팅
+            _currentGraphType = nextGraphType;
+            _currState = nextState;
+            if (_currentGraphType == StateGraphType.WeaponState_RightGraph)
+            {
+                _owner.SetLatestWeaponUse(true);
+            }
+            else if (_currentGraphType == StateGraphType.WeaponState_LeftGraph)
+            {
+                _owner.SetLatestWeaponUse(false);
+            }
+
+            //owner에게 시그널 -> 다른 컴포넌트들이 상태 변화를 실행함
+            _owner.StateChanged(_currState);
         }
-        
+
         AllStopCoroutine();
-
-        if (_currentGraphType == StateGraphType.WeaponState_RightGraph)
-        {
-            _owner.SetLatestWeaponUse(true);
-        }
-        else if (_currentGraphType == StateGraphType.WeaponState_LeftGraph)
-        {
-            _owner.SetLatestWeaponUse(false);
-        }
 
         DoActions(_currState._myState._EnterStateActionTypes);
 
@@ -1079,6 +1101,28 @@ public class StateContoller : GameCharacterSubScript
                     }
                     break;
 
+                case StateActionType.AddBuff:
+                    {
+                        List<string> addBuffList = _currState._myState._stateBuffs_Add;
+
+                        foreach (string buffName in addBuffList)
+                        {
+                            _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(buffName), StatScript.BuffTimingType.State);
+                        }
+                    }
+                    break;
+
+                case StateActionType.RemoveBuff:
+                    {
+                        List<string> addBuffList = _currState._myState._stateBuffs_Remove;
+
+                        foreach (string buffName in addBuffList)
+                        {
+                            _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(buffName), StatScript.BuffTimingType.State);
+                        }
+                    }
+                    break;
+
                 default:
                     //Debug.Assert(false, "데이터가 추가됐습니까?" + action);
                     break;
@@ -1274,7 +1318,11 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timeACC >= upSec)
             {
-                _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(target._frameData._buffKey));
+                List<string> buffNames = target._frameData._buffNames;
+                foreach (string buffName in buffNames)
+                {
+                    _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(buffName), StatScript.BuffTimingType.AnimationFrame);
+                }
                 break;
             }
             yield return null;
@@ -1292,7 +1340,11 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timeACC >= upSec)
             {
-                _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(target._frameData._buffKey));
+                List<string> buffNames = target._frameData._buffNames;
+                foreach (string buffName in buffNames)
+                {
+                    _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(buffName), StatScript.BuffTimingType.AnimationFrame);
+                }
                 break;
             }
             yield return null;
@@ -1732,6 +1784,15 @@ public class StateContoller : GameCharacterSubScript
                 }
                 break;
 
+            case ConditionType.StateDeeper:
+                {
+                    if (_stateDeeper == true)
+                    {
+                        ret = true;
+                    }
+                }
+                break;
+
             default:
                 Debug.Assert(false, "데이터가 추가됐습니까?");
                 break;
@@ -1749,8 +1810,6 @@ public class StateContoller : GameCharacterSubScript
     {
         /*-----------------------------------------------------------
         |TODO| 뭔가의 현재 공격을 시도하지 않았습니다 로직...구현하자
-        -----------------------------------------------------------*/
-        /*-----------------------------------------------------------
         if (false) return false;
         -----------------------------------------------------------*/
 
@@ -2070,7 +2129,7 @@ public class StateContoller : GameCharacterSubScript
                 }
                 break;
 
-            case WeaponUseType.OppositeMainUse:
+            case WeaponUseType.OppositeMainUse: //무기의 콤보가 반대 사용 클릭이다
                 switch (ownerGrabType)
                 {
                     case WeaponGrabFocus.Normal: //한손, 한손 잡고있었다.
@@ -2104,6 +2163,58 @@ public class StateContoller : GameCharacterSubScript
                         }
                         break;
                 }
+                break;
+
+            /*----------------------------
+            여기서부턴 스킬키
+            ----------------------------*/
+
+            case WeaponUseType.EleUse:
+                convertedRet = ComboCommandKeyType.EleClikc;
+                break;
+
+            case WeaponUseType.CtrlEleUse:
+                convertedRet = ComboCommandKeyType.CtrlEleClick;
+                break;
+
+            case WeaponUseType.SubEleUse:
+                convertedRet = ComboCommandKeyType.SubEleClick;
+                break;
+
+            case WeaponUseType.UltUse:
+                convertedRet = ComboCommandKeyType.UltClikc;
+                break;
+
+            case WeaponUseType.CtrlUltUse:
+                convertedRet = ComboCommandKeyType.CtrlUltClick;
+                break;
+
+            case WeaponUseType.SubUltUse:
+                convertedRet = ComboCommandKeyType.SubUltClick;
+                break;
+
+            case WeaponUseType.EleUp:
+                convertedRet = ComboCommandKeyType.EleUp;
+                break;
+
+            case WeaponUseType.CtrlEleUp:
+                convertedRet = ComboCommandKeyType.CtrlEleUp;
+                break;
+
+            case WeaponUseType.SubEleUp:
+                convertedRet = ComboCommandKeyType.SubEleUp;
+                break;
+
+            case WeaponUseType.UltUp:
+                convertedRet = ComboCommandKeyType.UltUp;
+                break;
+
+            case WeaponUseType.CtrlUltUp:
+                convertedRet = ComboCommandKeyType.CtrlUltUp;
+                break;
+
+            case WeaponUseType.SubUltUp:
+                convertedRet = ComboCommandKeyType.SubUltUp;
                 break;
 
             default:

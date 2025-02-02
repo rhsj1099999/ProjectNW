@@ -442,7 +442,7 @@ public class Gunscript2 : WeaponScript
         tempTestDamage._damage = firedBullet._BulletDamage;
         tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1;
 
-        hitColliderScript.CollisionDirectly(tempTestDamage, this.gameObject);
+        hitColliderScript.CollisionDirectly(tempTestDamage, _owner);
     }
 
     public IEnumerator CooltimeCoroutine()

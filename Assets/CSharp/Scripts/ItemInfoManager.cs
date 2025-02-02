@@ -140,6 +140,12 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
         dropItemModel.transform.localPosition = Vector3.zero;
         dropItemModel.transform.localRotation = Quaternion.identity;
 
+        WeaponModelScript weaponModelScript = dropItemModel.GetComponent<WeaponModelScript>();
+        if (weaponModelScript != null) 
+        {
+            weaponModelScript.OffCollider();
+        }
+
         Bounds itemBounds = new Bounds();
         GetActivatedRenderers(dropItemModel, ref itemBounds, callerTransform.gameObject);
 

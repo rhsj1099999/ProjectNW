@@ -19,6 +19,11 @@ MonoBehaviour:
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
     _isAttackState: 0
+    _attackDamageMultiply:
+      _damageReason: 1
+      _damage: 1
+      _damagePower: 1
+      _damagingStamina: 1
     _isLocoMotionToAttackAction: 0
     _isLoopState: 0
     _canUseItem: 0
@@ -33,9 +38,13 @@ MonoBehaviour:
     _aiAttackStateDesc:
       _coolTime: -1
       _range: -1
-    _EnterStateActionTypes: 0d000000
+    _stateBuffs_Add:
+    - "\uAC00\uB4DC\uBC84\uD504"
+    _stateBuffs_Remove:
+    - "\uAC00\uB4DC\uBC84\uD504"
+    _EnterStateActionTypes: 0d00000025000000
     _inStateActionTypes: 180000001a000000
-    _ExitStateActionTypes: 0e000000
+    _ExitStateActionTypes: 0e00000026000000
     _checkingBehaves: 
     _breakLoopStateCondition: []
     _isSubBlendTreeExist: 0
