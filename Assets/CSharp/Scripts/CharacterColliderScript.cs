@@ -178,14 +178,16 @@ public class CharacterColliderScript : GameCharacterSubScript
 
             AnimationClip currAnimationClip = currStateAsset._myState._stateAnimationClip;
 
+
+            //------------------------------------------------------------------
+            float animationSpeed = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetFloat("Speed");
+            //------------------------------------------------------------------
+
+
             if (desc._frameUp >= 0.0f)
             {
                 float targetFrame = (float)desc._frameUp;
                 float animationFPS = currAnimationClip.frameRate;
-
-                //------------------------------------------------------------------
-                float animationSpeed = 1.0f; //버프에 의해서 바뀔 수 있는 가능성이 있다!
-                //------------------------------------------------------------------
 
                 ColliderWorkDesc colliderWorkDesc = new ColliderWorkDesc();
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;
@@ -199,10 +201,6 @@ public class CharacterColliderScript : GameCharacterSubScript
             {
                 float targetFrame = (float)desc._frameUnder;
                 float animationFPS = currAnimationClip.frameRate;
-
-                //------------------------------------------------------------------
-                float animationSpeed = 1.0f; //버프에 의해서 바뀔 수 있는 가능성이 있다!
-                //------------------------------------------------------------------
 
                 ColliderWorkDesc colliderWorkDesc = new ColliderWorkDesc();
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;

@@ -10,25 +10,45 @@ public class StateAsset : ScriptableObject
 
     private void OnValidate()
     {
-        //루프 상태입니까?
         {
-            if (_myState._isLoopState == true)
-            {
-                if (_myState._breakLoopStateCondition == null)
-                {
-                    _myState._breakLoopStateCondition = new List<ConditionDesc>();
-                }
-            }
-            else
-            {
-                if (_myState._breakLoopStateCondition != null)
-                {
-                    _myState._breakLoopStateCondition = null;
-                }
-            }
+            ////루프 상태입니까?
+            //{
+            //    if (_myState._isLoopState == true)
+            //    {
+            //        if (_myState._breakLoopStateCondition == null)
+            //        {
+            //            _myState._breakLoopStateCondition = new List<ConditionDesc>();
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (_myState._breakLoopStateCondition != null)
+            //        {
+            //            _myState._breakLoopStateCondition = null;
+            //        }
+            //    }
+            //}
+
+            ////AI공격 상태입니까?
+            //{
+            //    if (_myState._isAIAttackState == true)
+            //    {
+            //        if (_myState._aiAttackStateDesc == null)
+            //        {
+            //            _myState._aiAttackStateDesc = new AIAttackStateDesc();
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (_myState._aiAttackStateDesc != null)
+            //        {
+            //            _myState._aiAttackStateDesc = null;
+            //        }
+            //    }
+            //}
         }
 
-        //AI공격 상태입니까?
+        //AI 상태입니까?
         {
             if (_myState._isAttackState == true)
             {
@@ -46,23 +66,6 @@ public class StateAsset : ScriptableObject
             }
         }
 
-        //AI공격 상태입니까?
-        {
-            if (_myState._isAIAttackState == true)
-            {
-                if (_myState._aiAttackStateDesc == null)
-                {
-                    _myState._aiAttackStateDesc = new AIAttackStateDesc();
-                }
-            }
-            else
-            {
-                if (_myState._aiAttackStateDesc != null)
-                {
-                    _myState._aiAttackStateDesc = null;
-                }
-            }
-        }
 
 
         //AI공격 상태입니까?

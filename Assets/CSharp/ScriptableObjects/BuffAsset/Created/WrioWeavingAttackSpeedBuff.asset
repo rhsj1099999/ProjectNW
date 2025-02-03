@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
-  m_Name: BeidouElementBuff_Stance
+  m_Name: WrioWeavingAttackSpeedBuff
   m_EditorClassIdentifier: 
-  _buffName: "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uAC00\uB4DC\uBC84\uD504"
-  _buffKey: 0
+  _buffName: "\uB77C\uC774\uC624\uC704\uBE59\uACF5\uC18D\uBC84\uD504"
+  _buffKey: 5
   _buffWorks:
   - _buffAction:
       _delegateTiming: 10
       _buffActionType: 3
-    _targetType: 11
+    _targetType: 12
     _buffApplyType: 1
-    _amount: 1
+    _amount: 90
   _isDebuff: 0
   _duration: 100
   _buffUIImage: {fileID: 0}

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static StatScript;
 
 public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 {
@@ -199,7 +200,19 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
     public abstract class BuffActionClass
     {
-        public List<IEnumerator> _funcs = new List<IEnumerator>();
+        public BuffActionClass() { }
+        public BuffActionClass(int buffKey, DamagingProcessDelegateType timing)
+        {
+            _myKey = buffKey;
+            _myTiming = timing;
+        }
+
+        protected DamagingProcessDelegateType _myTiming = DamagingProcessDelegateType.End;
+        protected int _myKey = 0;
+
+        protected List<Func<DamageDesc, bool, CharacterScript, CharacterScript, IEnumerator>> _coroutines = new List<Func<DamageDesc, bool, CharacterScript, CharacterScript, IEnumerator>>();
+        public IReadOnlyList<Func<DamageDesc, bool, CharacterScript, CharacterScript, IEnumerator>> _Coroutines => _coroutines.AsReadOnly();
+
         public abstract void BuffAction(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim);
         public abstract BuffActionClass CopyMe();
         public Action<DamageDesc, bool, CharacterScript, CharacterScript> GetAction() { return BuffAction; }
@@ -207,6 +220,9 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
     public class BuffActionClass_BeidouDamageACC : BuffActionClass
     {
+        public BuffActionClass_BeidouDamageACC() { }
+        public BuffActionClass_BeidouDamageACC(int buffKey, DamagingProcessDelegateType timing) : base(buffKey, timing) {}
+
         public int _damageACC = 0;
         public override void BuffAction(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
         {
@@ -228,43 +244,57 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
             int afterACCLvl = _damageACC / hpRisk;
 
+            if (afterACCLvl > 2)
+            {
+                afterACCLvl = 2;
+            }
+
             Debug.Log("북두 뎀 누산 버프 || 누산된 데미지 : " + _damageACC);
 
-            if (afterACCLvl <= 2 &&
-                beforeACCLvl != afterACCLvl)
+            if (beforeACCLvl != afterACCLvl)
             {
                 Debug.Log("북두 뎀 누산 버프 || 레벨 증가 : " + afterACCLvl);
-
                 ownerCharacterScript.GCST<StateContoller>().OverrideAnimationClip(afterACCLvl - 1);
             }
 
         }
         public override BuffActionClass CopyMe()
         {
-            return new BuffActionClass_BeidouDamageACC();
+            return new BuffActionClass_BeidouDamageACC(_myKey, _myTiming);
         }
     }
 
     public class BuffActionClass_BeidouElementalArtReturn : BuffActionClass
     {
+        public BuffActionClass_BeidouElementalArtReturn() { }
+        public BuffActionClass_BeidouElementalArtReturn(int buffKey, DamagingProcessDelegateType timing) : base(buffKey, timing) { }
+
         public override void BuffAction(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
         {
             StatScript callerStatScript = attacker.GetComponent<StatScript>();
-            int beidouDamageAccBuffKey = Instance.GetBuffKey("북두원소스킬데미지누적버프");
-            BuffActionClass_BeidouDamageACC beidouDamageAccBuff = callerStatScript._DelegateHistory[beidouDamageAccBuffKey] as BuffActionClass_BeidouDamageACC;
+            BuffAsset beidouDamageAccBuff = Instance.GetBuff(Instance.GetBuffKey("북두원소스킬데미지누적버프"));
 
-            damage._damage += beidouDamageAccBuff._damageACC;
+            Dictionary<BuffAsset, BuffActionClass> targetDict = callerStatScript._BuffActions[beidouDamageAccBuff._BuffWorks[0]._buffAction._delegateTiming];
+            BuffActionClass_BeidouDamageACC beidouDamageAccBuffAction = targetDict[beidouDamageAccBuff] as BuffActionClass_BeidouDamageACC;
 
-            Debug.Log("데미지 방출 || 누산돼있던 데미지 : " + beidouDamageAccBuff._damageACC + " 데미지 합 : " + damage._damage);
+            damage._damage += beidouDamageAccBuffAction._damageACC;
 
-            callerStatScript.RemoveBuff(Instance.GetBuff("북두원소스킬데미지누적버프"), StatScript.BuffTimingType.State);
+            Debug.Log("데미지 방출 || 누산돼있던 데미지 : " + beidouDamageAccBuffAction._damageACC + " 데미지 합 : " + damage._damage);
+
+            callerStatScript.RemoveBuff(Instance.GetBuff("북두원소스킬데미지누적버프"), BuffTimingType.State);
         }
 
-        public override BuffActionClass CopyMe() {return new BuffActionClass_BeidouElementalArtReturn();}
+        public override BuffActionClass CopyMe() {return new BuffActionClass_BeidouElementalArtReturn(_myKey, _myTiming);}
     }
 
     public class BuffActionClass_WrioWeaving : BuffActionClass
     {
+        public BuffActionClass_WrioWeaving() { }
+        public BuffActionClass_WrioWeaving(int buffKey, DamagingProcessDelegateType timing) : base(buffKey, timing) 
+        {
+            _coroutines.Add(TimeSlowCoroutine);
+        }
+
         bool _isTriggerd = false;
 
         public override void BuffAction(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
@@ -278,21 +308,10 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
             StatScript owner_victimStatScript = victim.GCST<StatScript>();
 
-            Debug.Log("위빙 성공");
-
-
-            //이건 델리게이터다
-            //호출즉시 해야할것들
-
-            //1. 타임 슬립
-            //StartCoroutine(TimeSlowCoroutine());
-
-
-            //2. 공버프 부여, 공속 버프 부여
-            //owner_victimStatScript.ApplyBuff(0, StatScript.BuffTimingType.Normal);
+            owner_victimStatScript.ApplyBuff(Instance.GetBuff("라이오위빙공속버프"), BuffTimingType.Normal);
         }
 
-        private IEnumerator TimeSlowCoroutine()
+        private IEnumerator TimeSlowCoroutine(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
         {
             float target = 0.5f;
             float timeScale = 0.25f;
@@ -314,6 +333,6 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
             }
         }
 
-        public override BuffActionClass CopyMe() {return new BuffActionClass_WrioWeaving();}
+        public override BuffActionClass CopyMe() {return new BuffActionClass_WrioWeaving(_myKey, _myTiming);}
     }
 }

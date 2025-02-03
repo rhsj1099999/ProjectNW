@@ -36,6 +36,8 @@ public class LevelStatAsset : ScriptableObject
         IsGuard,
         IsInvincible_HP,        //피가 깎이진 않지만, 자세가 무너질 수 있다.
         IsInvincible_Stance,    //자세가 무너지진 않지만, 피가 깎인다.
+
+        AttackSpeedPercentage,
     }
 
 
@@ -91,6 +93,7 @@ public class LevelStatAsset : ScriptableObject
             _isGuard = other._isGuard;
             _isInvincible_HP = other._isInvincible_HP;
             _isInvincible_Stance = other._isInvincible_Stance;
+            _attackSpeedPercentage = other._attackSpeedPercentage;
 
             InitDict();
         }
@@ -110,6 +113,8 @@ public class LevelStatAsset : ScriptableObject
             _PassiveStats.Add(PassiveStat.IsGuard, _isGuard);
             _PassiveStats.Add(PassiveStat.IsInvincible_HP, _isInvincible_HP);
             _PassiveStats.Add(PassiveStat.IsInvincible_Stance, _isInvincible_Stance);
+
+            _PassiveStats.Add(PassiveStat.AttackSpeedPercentage, _attackSpeedPercentage);
         }
 
         private Dictionary<PassiveStat, int> _passiveStats = new Dictionary<PassiveStat, int>();
@@ -128,6 +133,11 @@ public class LevelStatAsset : ScriptableObject
         [SerializeField] private int _isGuard = 0;
         [SerializeField] private int _isInvincible_HP = 0;
         [SerializeField] private int _isInvincible_Stance = 0;
+
+        /*-------------------------------------------
+        |NOTI| 문제의 그 스탯
+        -------------------------------------------*/
+        [SerializeField] private int _attackSpeedPercentage = 100;
     }
 
 

@@ -191,27 +191,31 @@ public class AIAttackStateDesc
 [Serializable]
 public class StateDesc
 {
+    //public bool _rightWeaponOverride = true;
+    //public bool _leftWeaponOverride = true;
+    //public bool _isLocoMotionToAttackAction = false;
+    //public bool _isLoopState = false;
+    //public bool _stateLocked = false; //외부에서 상태변경이 들어와도 씹겠다.
+    ///*------------------------------------------------------------------------------
+    //|NOTI| !_isAttackState = _isLocoMotionToAttackAction의 개념일거같지만 지금은 아니다
+    //------------------------------------------------------------------------------*/
+    //public bool _isBlockState = false; //가드상태입니다.
+    //public bool _isAIAttackState = false;
+    //public List<ConditionDesc> _breakLoopStateCondition = null;
+
+
     public RepresentStateType _stateType = RepresentStateType.End;
     public AnimationClip _stateAnimationClip = null;
     public List<AnimationClip> _stateAnimationClipOverride = new List<AnimationClip>();
 
-    public bool _rightWeaponOverride = true;
-    public bool _leftWeaponOverride = true;
 
     public bool _isAttackState = false;
+    public bool _isAttackState_effectedBySpeed = false;
     public DamageDesc _attackDamageMultiply = null;
 
-    public bool _isLocoMotionToAttackAction = false;
-    public bool _isLoopState = false;
+
+
     public bool _canUseItem = false;
-    public bool _stateLocked = false; //외부에서 상태변경이 들어와도 씹겠다.
-    /*------------------------------------------------------------------------------
-    |NOTI| !_isAttackState = _isLocoMotionToAttackAction의 개념일거같지만 지금은 아니다
-    ------------------------------------------------------------------------------*/
-    public bool _isBlockState = false; //가드상태입니다.
-
-
-    public bool _isAIAttackState = false;
     public bool _isAIState = false;
 
     public AIStateDesc _aiStateDesc = null;
@@ -223,10 +227,8 @@ public class StateDesc
     public List<StateActionType> _EnterStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _inStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _ExitStateActionTypes = new List<StateActionType>();
-
     public List<AdditionalBehaveType> _checkingBehaves = new List<AdditionalBehaveType>();
 
-    public List<ConditionDesc> _breakLoopStateCondition = null;
     public bool _isSubBlendTreeExist = false;
     public SubBlendTreeAsset_2D _subBlendTree = null;
 
@@ -255,10 +257,63 @@ public class StateContoller : GameCharacterSubScript
 {
     public class StateActionCoroutineWrapper
     {
-        //public Coroutine _runningCoroutine = null;
+        public StateActionCoroutineWrapper(AEachFrameData frameData, StateActionCoroutineTimerBase timer)
+        {
+            _frameData = frameData;
+            _timer = timer;
+        }
+
         public AEachFrameData _frameData = null;
+        public StateActionCoroutineTimerBase _timer = null;
+    }
+
+    public abstract class StateActionCoroutineTimerBase 
+    {
         public float _timeACC = 0.0f;
-        public float _timeTarget = 0.0f;
+        public void Update(float deltaTime){_timeACC += deltaTime;}
+        public abstract bool Check();
+    }
+    public class StateActionCoroutineTimer_UpTimer : StateActionCoroutineTimerBase
+    {
+        public StateActionCoroutineTimer_UpTimer(float upTimeTarget) {_timeTarget_Up = upTimeTarget;}
+        float _timeTarget_Up = 0.0f;
+        public override bool Check()
+        {
+            if (_timeACC >= _timeTarget_Up)
+            {return true;}
+
+            return false;
+        }
+    }
+    public class StateActionCoroutineTimer_DownTimer : StateActionCoroutineTimerBase
+    {
+        public StateActionCoroutineTimer_DownTimer(float downTimeTarget) { _timeTarget_Down = downTimeTarget; }
+        float _timeTarget_Down = 0.0f;
+        public override bool Check()
+        {
+            if (_timeACC <= _timeTarget_Down)
+            { return true; }
+
+            return false;
+        }
+    }
+    public class StateActionCoroutineTimer_BetweenTimer : StateActionCoroutineTimerBase
+    {
+        public StateActionCoroutineTimer_BetweenTimer(float upTimeTarget, float downTimeTarget) 
+        {
+            _timeTarget_Up = upTimeTarget;
+            _timeTarget_Down = downTimeTarget;
+        }
+
+        float _timeTarget_Up = 0.0f;
+        float _timeTarget_Down = 0.0f;
+        public override bool Check()
+        {
+            if (_timeACC <= _timeTarget_Down && _timeACC >= _timeTarget_Up)
+            { return true; }
+
+            return false;
+        }
     }
 
     public class LinkedStateAssetWrapper
@@ -766,8 +821,9 @@ public class StateContoller : GameCharacterSubScript
 
     public Vector3 CalculateCurrentRootDelta()
     {
-        float currentSecond = FloatMod(_currStateTime, _currState._myState._stateAnimationClip.length);
-        float prevSecond = FloatMod(_prevStateTime, _currState._myState._stateAnimationClip.length);
+        float animationSpeed = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetFloat("Speed");
+        float currentSecond = FloatMod(_currStateTime * animationSpeed, _currState._myState._stateAnimationClip.length);
+        float prevSecond = FloatMod(_prevStateTime * animationSpeed, _currState._myState._stateAnimationClip.length);
 
         Vector3 currentUnityLocalHip = CalculateCurrHipCurve(currentSecond);
         //루프 애니메이션에서 넘어갔을때 처리임
@@ -1155,30 +1211,36 @@ public class StateContoller : GameCharacterSubScript
         {
             FrameDataWorkType type = pair.Key;
 
+            Animator currAnimator = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator();
+            float speed = currAnimator.GetFloat("Speed");
+
             foreach (AEachFrameData eachFrameData in pair.Value)
             {
-                StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper();
                 switch (type)
                 {
                     case FrameDataWorkType.ChangeToIdle:
                         {
-                            newCoroutineWrapper._frameData = eachFrameData;
-                            newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
+                            StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(_currState._myState._stateAnimationClip.length / speed);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
                             _stateActionCoroutines.Add(StartCoroutine(ChangeToIdleCoroutine(newCoroutineWrapper)));
                         }
                         break;
 
                     case FrameDataWorkType.StateChangeReady:
                         {
-                            newCoroutineWrapper._frameData = eachFrameData;
-                            newCoroutineWrapper._timeTarget = (float)eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
+                            StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
                             _stateActionCoroutines.Add(StartCoroutine(StateChangeReadyCoroutine(newCoroutineWrapper)));
                         }
                         break;
 
                     case FrameDataWorkType.NextAttackMotion:
                         {
-                            newCoroutineWrapper._frameData = eachFrameData;
+                            float underSec = eachFrameData._frameUnder / _currState._myState._stateAnimationClip.frameRate / speed;
+                            float upSec = eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed;
+
+                            StateActionCoroutineTimer_BetweenTimer upTimer = new StateActionCoroutineTimer_BetweenTimer(upSec, underSec);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
                             _stateActionCoroutines.Add(StartCoroutine(NextAttackComboCoroutine(newCoroutineWrapper)));
                         }
                         break;
@@ -1192,24 +1254,24 @@ public class StateContoller : GameCharacterSubScript
 
                     case FrameDataWorkType.DeadCall:
                         {
-                            newCoroutineWrapper._timeTarget = _currState._myState._stateAnimationClip.length;
-                            newCoroutineWrapper._frameData = eachFrameData;
+                            StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(_currState._myState._stateAnimationClip.length / speed);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
                             _stateActionCoroutines.Add(StartCoroutine(DeadCallCoroutine(newCoroutineWrapper)));
                         }
                         break;
 
                     case FrameDataWorkType.AddBuff:
                         {
-                            newCoroutineWrapper._timeTarget = eachFrameData._frameUp;
-                            newCoroutineWrapper._frameData = eachFrameData;
+                            StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
                             _stateActionCoroutines.Add(StartCoroutine(StateAddBuffCoroutine(newCoroutineWrapper)));
                         }
                         break;
 
                     case FrameDataWorkType.RemoveBuff:
                         {
-                            newCoroutineWrapper._timeTarget = eachFrameData._frameUp;
-                            newCoroutineWrapper._frameData = eachFrameData;
+                            StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
                             _stateActionCoroutines.Add(StartCoroutine(StateRemoveBuffCoroutine(newCoroutineWrapper)));
                         }
                         break;
@@ -1230,9 +1292,9 @@ public class StateContoller : GameCharacterSubScript
     {
         while (true)
         {
-            target._timeACC += Time.deltaTime;
+            target._timer.Update(Time.deltaTime);
 
-            if (target._timeACC >= target._timeTarget)
+            if (target._timer.Check() == true)
             {
                 ReadyLinkedStates(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState, true);
                 ChangeState(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState);
@@ -1246,9 +1308,9 @@ public class StateContoller : GameCharacterSubScript
     {
         while (true)
         {
-            target._timeACC += Time.deltaTime;
+            target._timer.Update(Time.deltaTime);
 
-            if (target._timeACC >= target._timeTarget)
+            if (target._timer.Check() == true)
             {
                 ReadyLinkedStates(StateGraphType.LocoStateGraph, GetMyIdleStateAsset(), false);
                 break;
@@ -1267,21 +1329,13 @@ public class StateContoller : GameCharacterSubScript
 
         _nextComboReady = false;
 
-        float underSec = target._frameData._frameUnder / _currState._myState._stateAnimationClip.frameRate;
-        float upSec = target._frameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
-
         while (true)
         {
-            target._timeACC += Time.deltaTime;
+            target._timer.Update(Time.deltaTime);
 
-            if (target._timeACC < underSec && target._timeACC > upSec)
+            if (target._timer.Check() == true)
             {
                 _nextComboReady = true;
-            }
-
-            if (target._timeACC >= underSec)
-            {
-                _nextComboReady = false;
                 break;
             }
 
@@ -1291,14 +1345,11 @@ public class StateContoller : GameCharacterSubScript
 
     private IEnumerator DeadCallCoroutine(StateActionCoroutineWrapper target)
     {
-        float underSec = target._frameData._frameUnder / _currState._myState._stateAnimationClip.frameRate;
-        float upSec = target._frameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
-
         while (true)
         {
-            target._timeACC += Time.deltaTime;
+            target._timer.Update(Time.deltaTime);
 
-            if (target._timeACC >= upSec)
+            if (target._timer.Check() == true)
             {
                 _owner.DeadCall();
                 break;
@@ -1309,14 +1360,11 @@ public class StateContoller : GameCharacterSubScript
 
     private IEnumerator StateAddBuffCoroutine(StateActionCoroutineWrapper target)
     {
-        float underSec = target._frameData._frameUnder / _currState._myState._stateAnimationClip.frameRate;
-        float upSec = target._frameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
-
         while (true)
         {
-            target._timeACC += Time.deltaTime;
+            target._timer.Update(Time.deltaTime);
 
-            if (target._timeACC >= upSec)
+            if (target._timer.Check() == true)
             {
                 List<string> buffNames = target._frameData._buffNames;
                 foreach (string buffName in buffNames)
@@ -1331,14 +1379,11 @@ public class StateContoller : GameCharacterSubScript
 
     private IEnumerator StateRemoveBuffCoroutine(StateActionCoroutineWrapper target)
     {
-        float underSec = target._frameData._frameUnder / _currState._myState._stateAnimationClip.frameRate;
-        float upSec = target._frameData._frameUp / _currState._myState._stateAnimationClip.frameRate;
-
         while (true)
         {
-            target._timeACC += Time.deltaTime;
+            target._timer.Update(Time.deltaTime);
 
-            if (target._timeACC >= upSec)
+            if (target._timer.Check() == true)
             {
                 List<string> buffNames = target._frameData._buffNames;
                 foreach (string buffName in buffNames)

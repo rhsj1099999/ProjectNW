@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,15 +49,24 @@ public class BuffAsset : ScriptableObject
     }
 
 
-
-
+    //[SerializeField] private int _buffKey = 0;
+    //public int _BuffKey => _buffKey;
+    public int _buffKey = 0;
 
     [SerializeField] private string _buffName = "";
     public string _BuffName => _buffName;
 
-    //[SerializeField] private int _buffKey = 0;
-    //public int _BuffKey => _buffKey;
-    public int _buffKey = 0;
+    //최대 중첩 가능 개수
+    [SerializeField] private int _maxCount = 1;
+    public int _MaxCount => _maxCount;
+
+    //동일 버프 중첩시 지속시간 초기화 여부(duration이 존재할 때)
+    [SerializeField] private bool _refresh = true;
+    public bool _Refresh => _refresh;
+
+    //지속시간 만료시 한번에 삭제 여부(duration이 존재할 때)
+    [SerializeField] private bool _durationExpireOnce = true;
+    public bool _DurationExpireOnce => _durationExpireOnce;
 
     [SerializeField] private List<BuffApplyWork> _buffWorks = new List<BuffApplyWork>();
     public List<BuffApplyWork> _BuffWorks => _buffWorks;

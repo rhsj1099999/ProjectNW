@@ -780,7 +780,12 @@ public class CharacterScript : GameActorScript, IHitable
 
     public void StateChanged(StateAsset nextState)
     {
+        /*-------------------------------------------------------
+        |NOTI| AnimationSpeed가 엮어있음으로 가장먼저 업데이트합니다
+        -------------------------------------------------------*/
         GCST<CharacterAnimatorScript>().StateChanged(nextState);
+
+
         GCST<CharacterColliderScript>().StateChanged();
         GCST<CharacterContollerable>().StateChanged();
     }

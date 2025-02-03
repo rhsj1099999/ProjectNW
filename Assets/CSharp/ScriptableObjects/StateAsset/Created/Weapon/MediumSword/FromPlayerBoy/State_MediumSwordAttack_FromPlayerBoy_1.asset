@@ -16,10 +16,13 @@ MonoBehaviour:
     _stateType: 0
     _stateAnimationClip: {fileID: 7400000, guid: bca57d8a3cf8a4c48bc92cb5b67cab61,
       type: 2}
+    _stateAnimationClipOverride: []
     _rightWeaponOverride: 0
     _leftWeaponOverride: 0
     _isAttackState: 1
+    _isAttackState_effectedBySpeed: 1
     _attackDamageMultiply:
+      _damageReason: 1
       _damage: 1
       _damagePower: 10
       _damagingStamina: 1
@@ -37,6 +40,8 @@ MonoBehaviour:
     _aiAttackStateDesc:
       _coolTime: -1
       _range: -1
+    _stateBuffs_Add: []
+    _stateBuffs_Remove: []
     _EnterStateActionTypes: 0d00000022000000
     _inStateActionTypes: 1900000006000000
     _ExitStateActionTypes: 0e000000

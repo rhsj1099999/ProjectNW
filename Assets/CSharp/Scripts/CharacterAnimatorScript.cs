@@ -596,6 +596,19 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     private void FullBodyAnimationChange(AnimationClip nextAnimation)
     {
         _currAnimClip = nextAnimation;
+
+        if (_currStateAsset._myState._isAttackState == true &&
+            _currStateAsset._myState._isAttackState_effectedBySpeed == true)
+        {
+            float attackSpeed = (float)_owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.AttackSpeedPercentage) / 100.0f;
+            _animator.SetFloat("Speed", attackSpeed);
+        }
+        else
+        {
+            _animator.SetFloat("Speed", 1.0f);
+        }
+
+
         //FullBody Animation º¯°æ
         {
             /*-------------------------------------------------------------------

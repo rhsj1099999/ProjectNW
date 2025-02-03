@@ -13,13 +13,18 @@ using static LevelStatInfoManager;
 
 public class StatScript : GameCharacterSubScript
 {
-    public class BuffWrapper
+    public class RuntimeBuffAsset
     {
-        public BuffAsset _fromAsset = null; //이게 꼭 있어야합니까?
-        public float _timeACC = 0.0f;
-        public float _duration = 0.0f; //이건 버프에셋에 있지 않습니까?
-        public Coroutine _coroutine = null;
+        public BuffAsset _fromAsset = null;
+        //public float _duration = 0.0f; //이건 버프에셋에 있지 않습니까?
+
+
         public BuffTimingType _buffTimingType = BuffTimingType.Normal;
+        public float _timeACC = 0.0f;
+        public Coroutine _durationCoroutine = null;
+
+        public int _count = 0;
+
     }
 
 
@@ -30,7 +35,6 @@ public class StatScript : GameCharacterSubScript
     ---------------------------------------------------*/
     private ActiveStatDesc _currActiveStat = null; //런타임 스텟입니다.
     private PassiveStatDesc _currPassiveStat = null; //런타임 스텟입니다.
-
     private Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>> _passiveStatDeltaEquation = new Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>>();
 
 
@@ -42,10 +46,11 @@ public class StatScript : GameCharacterSubScript
         Normal,
     }
 
-    private Dictionary<BuffTimingType, HashSet<BuffAsset>> _buffs = new Dictionary<BuffTimingType, HashSet<BuffAsset>>();
-    private Dictionary<BuffTimingType, HashSet<BuffAsset>> _deBuffs = new Dictionary<BuffTimingType, HashSet<BuffAsset>>();
+    private Dictionary<BuffTimingType, Dictionary<BuffAsset, RuntimeBuffAsset>> _buffs = new Dictionary<BuffTimingType, Dictionary<BuffAsset, RuntimeBuffAsset>>();
+    private Dictionary<BuffTimingType, Dictionary<BuffAsset, RuntimeBuffAsset>> _deBuffs = new Dictionary<BuffTimingType, Dictionary<BuffAsset, RuntimeBuffAsset>>();
     
-    private Dictionary<BuffAsset, BuffWrapper> _buffCoroutines = new Dictionary<BuffAsset, BuffWrapper>();
+    private Dictionary<DamagingProcessDelegateType, Dictionary<BuffAsset, BuffActionClass>> _buffActions = new Dictionary<DamagingProcessDelegateType, Dictionary<BuffAsset, BuffActionClass>>();
+    public IReadOnlyDictionary<DamagingProcessDelegateType, Dictionary<BuffAsset, BuffActionClass>> _BuffActions => _buffActions;
 
     public enum DamagingProcessDelegateType
     {
@@ -67,30 +72,53 @@ public class StatScript : GameCharacterSubScript
         End,
     }
 
-    private Dictionary<DamagingProcessDelegateType, Action<DamageDesc, bool, CharacterScript, CharacterScript>> _damagingProcessDelegates = new Dictionary<DamagingProcessDelegateType, Action<DamageDesc, bool, CharacterScript, CharacterScript>>();
-    private Dictionary<int/*buffKey*/, BuffActionClass> _delegateHistory = new Dictionary<int, BuffActionClass>();
-    public Dictionary<int/*buffKey*/, BuffActionClass> _DelegateHistory => _delegateHistory;
-    public void RemoveDelegateHistory(int buffKey) { _delegateHistory.Remove(buffKey); }
 
+
+
+    public override void Init(CharacterScript owner)
+    {
+        _owner = owner;
+        _myType = typeof(StatScript);
+
+        LevelStatAsset statAsset = LevelStatInfoManager.Instance.GetLevelStatAsset(_currLevel, _owner._CharacterType);
+
+        _currActiveStat = new ActiveStatDesc(statAsset._ActiveStatDesc);
+        _currPassiveStat = new PassiveStatDesc(statAsset._PassiveStatDesc);
+    }
+
+    public override void SubScriptStart() { }
 
     public void InvokeDamagingProcessDelegate(DamagingProcessDelegateType type, DamageDesc damage, bool isWeakPoint, CharacterScript attacker, CharacterScript victim)
     {
-        if (_damagingProcessDelegates[type] != null)
+        Dictionary<BuffAsset, BuffActionClass> buffActions = null;
+        _buffActions.TryGetValue(type, out buffActions);
+
+        if (buffActions == null) 
         {
-            Debug.Log("뭔가 걸려있다");
+            return;
         }
-        _damagingProcessDelegates[type]?.Invoke(damage, isWeakPoint, attacker, victim);
+
+        foreach (var action in buffActions) 
+        {
+            action.Value.GetAction().Invoke(damage, isWeakPoint, attacker, victim);
+            IReadOnlyList<Func<DamageDesc, bool, CharacterScript, CharacterScript, IEnumerator >> coroutines = action.Value._Coroutines;
+            foreach (var coroutine in coroutines)
+            {
+                StartCoroutine(coroutine(damage, isWeakPoint, attacker, victim));
+            }
+        }
     }
 
-
-    private IEnumerator BuffRunningCoroutine(BuffWrapper wrapper)
+    private IEnumerator BuffRunningCoroutine(RuntimeBuffAsset wrapper)
     {
         while (true) 
         {
             wrapper._timeACC += Time.deltaTime;
             
-            if (wrapper._duration <= wrapper._timeACC) //버프시간이 만료됨. 
+            if (wrapper._fromAsset._Duration <= wrapper._timeACC) //버프시간이 만료됨. 
             {
+                Debug.Log("버프시간만료 키 : " + wrapper._fromAsset._BuffName);
+
                 RemoveBuff(wrapper._fromAsset, wrapper._buffTimingType);
                 break;
             }
@@ -115,33 +143,18 @@ public class StatScript : GameCharacterSubScript
 
 
 
-    private void AfterCalculateActiveStat(ActiveStat type)
-    {
 
-    }
-
-
-
-
-    public void ChangeActiveStat(ActiveStat type, int amount)
-    {
-        int nextVal = (_currActiveStat._ActiveStats[type] + amount);
-
-        AfterCalculateActiveStat(type);
-
-        _currActiveStat._ActiveStats[type] = nextVal;
-    }
 
     public void ApplyBuff(BuffAsset buff, BuffTimingType timingType)
     {
-        HashSet<BuffAsset> target = null;
+        Dictionary<BuffAsset, RuntimeBuffAsset> target = null;
 
         target = (buff._IsDebuff == true)
             ? _buffs.GetOrAdd(timingType)
             : _deBuffs.GetOrAdd(timingType);
 
 
-        if (target.Contains(buff) == true &&
+        if (target.ContainsKey(buff) == true &&
             true /*중첩을 허용하지 않는 버프라면*/)
         {
             Debug.Log("동일 버프는 중첩이 안돼요");
@@ -160,8 +173,8 @@ public class StatScript : GameCharacterSubScript
             if (delegateTiming != DamagingProcessDelegateType.End)
             {
                 BuffActionClass instance = LevelStatInfoManager.Instance.GetBuffAction(buffWork._buffAction._buffActionType);
-                _damagingProcessDelegates[delegateTiming] += instance.GetAction();
-                _delegateHistory.Add(buff._buffKey, instance);
+                Dictionary<BuffAsset, BuffActionClass> buffAction = _buffActions.GetOrAdd(delegateTiming);
+                buffAction.Add(buff, instance);
             }
 
             //수치 변화 계산
@@ -175,26 +188,22 @@ public class StatScript : GameCharacterSubScript
 
         ReCacheBuffAmoints(reCachingTargets);
 
+        
+        RuntimeBuffAsset runtimeBuffAsset = null;
+        target.TryGetValue(buff, out runtimeBuffAsset);
 
-        if (target.Contains(buff) == false)
+        if (runtimeBuffAsset == null)
         {
-            target.Add(buff);
+            runtimeBuffAsset = new RuntimeBuffAsset();
+            runtimeBuffAsset._buffTimingType = timingType;
+            runtimeBuffAsset._count = 1;
+            runtimeBuffAsset._fromAsset = buff;
+            runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
+            target.Add(buff, runtimeBuffAsset);
         }
-
-        if (buff._Duration > 0.0f)
+        else 
         {
-            if (_buffCoroutines.ContainsKey(buff) == true)
-            {
-                _buffCoroutines[buff]._timeACC = 0.0f;
-            }
-            else
-            {
-                BuffWrapper wrapper = new BuffWrapper();
-                wrapper._duration = buff._Duration;
-                wrapper._fromAsset = buff;
-                wrapper._coroutine = StartCoroutine(BuffRunningCoroutine(wrapper));
-                _buffCoroutines.Add(buff, wrapper);
-            }
+            runtimeBuffAsset._timeACC = 0.0f;
         }
     }
 
@@ -203,35 +212,52 @@ public class StatScript : GameCharacterSubScript
 
     public void RemoveBuff(BuffAsset buff, BuffTimingType timingType)
     {
-        HashSet<BuffAsset> target = null;
+        Dictionary<BuffAsset, RuntimeBuffAsset> target = null;
 
         target = (buff._IsDebuff == true)
             ? _buffs.GetOrAdd(timingType)
             : _deBuffs.GetOrAdd(timingType);
 
-        if (target.Contains(buff) == false)
+        if (target.ContainsKey(buff) == false)
         {
             Debug.Assert(false, "이미 취소됐습니다?");
             Debug.Break();
             return;
         }
 
+        RuntimeBuffAsset existRuntimeBuffAsset = target[buff];
         target.Remove(buff);
 
         List<BuffApplyWork> buffWorks = buff._BuffWorks;
 
         HashSet<PassiveStat> reCachingTargets = new HashSet<PassiveStat>();
 
+        
+
         foreach (var buffWork in buffWorks)
         {
-            //버프 액션 적용
+            //버프 액션 제거
             DamagingProcessDelegateType delegateTiming = buffWork._buffAction._delegateTiming;
             if (delegateTiming != DamagingProcessDelegateType.End)
             {
-                _damagingProcessDelegates[delegateTiming] -= _delegateHistory[buff._buffKey].GetAction();
-                _delegateHistory.Remove(buff._buffKey);
+                Dictionary<BuffAsset, BuffActionClass> targetDict = null;
+                _buffActions.TryGetValue(delegateTiming, out targetDict);
+                if (targetDict == null) 
+                {
+                    Debug.Assert(false, "해당 델리게이터 타이밍이 추가된적이 없다????");
+                    Debug.Break();
+                }
+
+                if (targetDict.ContainsKey(buff) == false)
+                {
+                    Debug.Assert(false, "해당 버프액션이 추가된적이 없다????");
+                    Debug.Break();
+                }
+
+                targetDict.Remove(buff);
             }
 
+            //수치변화 계산
             PassiveStat targetType = buffWork._targetType;
             if (targetType != PassiveStat.None)
             {
@@ -244,9 +270,7 @@ public class StatScript : GameCharacterSubScript
 
         if (buff._Duration > 0.0f)
         {
-            BuffWrapper wrapperTarget = _buffCoroutines[buff];
-            StopCoroutine(wrapperTarget._coroutine);
-            _buffCoroutines.Remove(buff);
+            StopCoroutine(existRuntimeBuffAsset._durationCoroutine);
         }
     }
 
@@ -409,33 +433,17 @@ public class StatScript : GameCharacterSubScript
 
 
 
-
-
-
-    public override void Init(CharacterScript owner)
+    private void AfterCalculateActiveStat(ActiveStat type)
     {
-        _owner = owner;
-        _myType = typeof(StatScript);
 
-        //----------------------------
-        //델리게이터 세팅
-        //---------------------------
-        for (int i = 0; i < (int)DamagingProcessDelegateType.End; i++)
-        {
-            _damagingProcessDelegates.Add((DamagingProcessDelegateType)i, null);
-        }
-
-        //----------------------------
-        //레벨 세팅
-        //---------------------------
-        LevelStatAsset statAsset = LevelStatInfoManager.Instance.GetLevelStatAsset(_currLevel, _owner._CharacterType);
-        
-        _currActiveStat = new ActiveStatDesc(statAsset._ActiveStatDesc);
-        _currPassiveStat = new PassiveStatDesc(statAsset._PassiveStatDesc);
     }
 
-    public override void SubScriptStart() 
+    public void ChangeActiveStat(ActiveStat type, int amount)
     {
+        int nextVal = (_currActiveStat._ActiveStats[type] + amount);
 
+        AfterCalculateActiveStat(type);
+
+        _currActiveStat._ActiveStats[type] = nextVal;
     }
 }
