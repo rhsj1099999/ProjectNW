@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
   m_Name: NormalGuardBuff
   m_EditorClassIdentifier: 
-  _buffName: "\uAC00\uB4DC\uBC84\uD504"
   _buffKey: 1
+  _buffName: "\uAC00\uB4DC\uBC84\uD504"
+  _maxCount: 1
+  _refresh: 0
+  _durationExpireOnce: 0
+  _specialAction_OnlyOne: 0
   _buffWorks:
   - _buffAction:
       _delegateTiming: 8

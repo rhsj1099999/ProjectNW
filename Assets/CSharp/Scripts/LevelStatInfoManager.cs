@@ -127,6 +127,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         BeidouElementalArt,
         BeidouElementalArtDamageReturn,
         WrioWeavingBuff,
+        TempTestReflect,
         None,
     }
 
@@ -166,6 +167,11 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         //라이오 위빙 버프
         {
             AddBuffAction(BuffAction.WrioWeavingBuff, new BuffActionClass_WrioWeaving());
+        }
+
+        //라이오 위빙 버프
+        {
+            AddBuffAction(BuffAction.TempTestReflect, new BuffActionClass_TempTestReflection());
         }
     }
 
@@ -207,8 +213,8 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
             _myTiming = timing;
         }
 
-        protected DamagingProcessDelegateType _myTiming = DamagingProcessDelegateType.End;
         protected int _myKey = 0;
+        protected DamagingProcessDelegateType _myTiming = DamagingProcessDelegateType.End;
 
         protected List<Func<DamageDesc, bool, CharacterScript, CharacterScript, IEnumerator>> _coroutines = new List<Func<DamageDesc, bool, CharacterScript, CharacterScript, IEnumerator>>();
         public IReadOnlyList<Func<DamageDesc, bool, CharacterScript, CharacterScript, IEnumerator>> _Coroutines => _coroutines.AsReadOnly();
@@ -222,7 +228,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
     {
         public BuffActionClass_BeidouDamageACC() { }
         public BuffActionClass_BeidouDamageACC(int buffKey, DamagingProcessDelegateType timing) : base(buffKey, timing) {}
-
+        public int _count = 0;
         public int _damageACC = 0;
         public override void BuffAction(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
         {
@@ -263,7 +269,6 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
             return new BuffActionClass_BeidouDamageACC(_myKey, _myTiming);
         }
     }
-
     public class BuffActionClass_BeidouElementalArtReturn : BuffActionClass
     {
         public BuffActionClass_BeidouElementalArtReturn() { }
@@ -286,7 +291,6 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
         public override BuffActionClass CopyMe() {return new BuffActionClass_BeidouElementalArtReturn(_myKey, _myTiming);}
     }
-
     public class BuffActionClass_WrioWeaving : BuffActionClass
     {
         public BuffActionClass_WrioWeaving() { }
@@ -309,6 +313,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
             StatScript owner_victimStatScript = victim.GCST<StatScript>();
 
             owner_victimStatScript.ApplyBuff(Instance.GetBuff("라이오위빙공속버프"), BuffTimingType.Normal);
+            //owner_victimStatScript.ApplyBuff(Instance.GetBuff("대미지반사버프"), BuffTimingType.Normal);
         }
 
         private IEnumerator TimeSlowCoroutine(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
@@ -334,5 +339,17 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         }
 
         public override BuffActionClass CopyMe() {return new BuffActionClass_WrioWeaving(_myKey, _myTiming);}
+    }
+    public class BuffActionClass_TempTestReflection : BuffActionClass
+    {
+        public BuffActionClass_TempTestReflection() { }
+        public BuffActionClass_TempTestReflection(int buffKey, DamagingProcessDelegateType timing) : base(buffKey, timing) {}
+
+        public override void BuffAction(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
+        {
+            Debug.Log("대미지 반사버프");
+        }
+
+        public override BuffActionClass CopyMe() { return new BuffActionClass_TempTestReflection(_myKey, _myTiming); }
     }
 }

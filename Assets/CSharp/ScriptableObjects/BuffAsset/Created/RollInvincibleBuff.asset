@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
   m_Name: RollInvincibleBuff
   m_EditorClassIdentifier: 
-  _buffName: "\uAD6C\uB974\uAE30\uBB34\uC801\uBC84\uD504"
   _buffKey: 0
+  _buffName: "\uAD6C\uB974\uAE30\uBB34\uC801\uBC84\uD504"
+  _maxCount: 1
+  _refresh: 0
+  _durationExpireOnce: 0
+  _specialAction_OnlyOne: 0
   _buffWorks:
   - _buffAction:
       _delegateTiming: 8

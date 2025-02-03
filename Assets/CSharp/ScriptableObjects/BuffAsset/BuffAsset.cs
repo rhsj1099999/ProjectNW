@@ -56,6 +56,13 @@ public class BuffAsset : ScriptableObject
     [SerializeField] private string _buffName = "";
     public string _BuffName => _buffName;
 
+
+
+
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //
+    //
     //최대 중첩 가능 개수
     [SerializeField] private int _maxCount = 1;
     public int _MaxCount => _maxCount;
@@ -67,6 +74,17 @@ public class BuffAsset : ScriptableObject
     //지속시간 만료시 한번에 삭제 여부(duration이 존재할 때)
     [SerializeField] private bool _durationExpireOnce = true;
     public bool _DurationExpireOnce => _durationExpireOnce;
+
+    //이건 없어져야 하는데...
+    [SerializeField] private bool _specialAction_OnlyOne = false;
+    public bool _SpecialAction_OnlyOne => _specialAction_OnlyOne;
+    //
+    //
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+
+
+
 
     [SerializeField] private List<BuffApplyWork> _buffWorks = new List<BuffApplyWork>();
     public List<BuffApplyWork> _BuffWorks => _buffWorks;

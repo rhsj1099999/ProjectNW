@@ -12,15 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
   m_Name: WrioWeavingAttackSpeedBuff
   m_EditorClassIdentifier: 
-  _buffName: "\uB77C\uC774\uC624\uC704\uBE59\uACF5\uC18D\uBC84\uD504"
   _buffKey: 5
+  _buffName: "\uB77C\uC774\uC624\uC704\uBE59\uACF5\uC18D\uBC84\uD504"
+  _maxCount: 5
+  _refresh: 1
+  _durationExpireOnce: 0
+  _specialAction_OnlyOne: 0
   _buffWorks:
   - _buffAction:
       _delegateTiming: 10
       _buffActionType: 3
     _targetType: 12
     _buffApplyType: 1
-    _amount: 90
+    _amount: 10
   _isDebuff: 0
-  _duration: 100
+  _duration: 10
   _buffUIImage: {fileID: 0}
