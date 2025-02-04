@@ -1163,7 +1163,7 @@ public class StateContoller : GameCharacterSubScript
 
                         foreach (string buffName in addBuffList)
                         {
-                            _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(buffName), StatScript.BuffTimingType.State);
+                            _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(buffName), 1);
                         }
                     }
                     break;
@@ -1174,7 +1174,7 @@ public class StateContoller : GameCharacterSubScript
 
                         foreach (string buffName in addBuffList)
                         {
-                            _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(buffName), StatScript.BuffTimingType.State);
+                            _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(buffName), 1);
                         }
                     }
                     break;
@@ -1369,7 +1369,7 @@ public class StateContoller : GameCharacterSubScript
                 List<string> buffNames = target._frameData._buffNames;
                 foreach (string buffName in buffNames)
                 {
-                    _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(buffName), StatScript.BuffTimingType.AnimationFrame);
+                    _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(buffName), 1);
                 }
                 break;
             }
@@ -1388,7 +1388,7 @@ public class StateContoller : GameCharacterSubScript
                 List<string> buffNames = target._frameData._buffNames;
                 foreach (string buffName in buffNames)
                 {
-                    _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(buffName), StatScript.BuffTimingType.AnimationFrame);
+                    _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(buffName), 1);
                 }
                 break;
             }
