@@ -30,11 +30,9 @@ public class InteractionUIListScript : GameUISubComponent
         RectTransform focusedUIRectTransform = (RectTransform)_focusedUI.transform;
         focusedUIRectTransform.position = _myRectTransform.position;
 
-        RectTransform eachUIRectTransform = (RectTransform)_eachUIPrefab.transform;
-        Rect pixelAdjustedRect = RectTransformUtility.PixelAdjustRect(eachUIRectTransform, eachUIRectTransform.GetComponentInParent<Canvas>());
-        float height = pixelAdjustedRect.height;
-        float width = pixelAdjustedRect.width;
-        focusedUIRectTransform.sizeDelta = new Vector2(width, height);
+        UIScaler listElementScaler = _eachUIPrefab.GetComponent<UIScaler>();
+        
+        focusedUIRectTransform.sizeDelta = listElementScaler.GetAnchoredSize();
     }
 
     public void AddList(UICallScript uiCallScript)

@@ -199,7 +199,9 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
 
     public void OnDrag(PointerEventData eventData)
     {
-        _myRectTransform.anchoredPosition += eventData.delta;
+        Vector3 delta = new Vector3(eventData.delta.x, eventData.delta.y, 0.0f);
+        //_myRectTransform.anchoredPosition += eventData.delta;
+        _myRectTransform.position += delta;
     }
 
     public void OnBeginDrag(PointerEventData eventData)

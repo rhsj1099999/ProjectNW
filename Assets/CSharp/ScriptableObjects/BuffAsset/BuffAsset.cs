@@ -95,6 +95,6 @@ public class BuffAsset : ScriptableObject
     [SerializeField] private float _duration = 100.0f;
     public float _Duration => _duration;
 
-    [SerializeField] private Image _buffUIImage = null;
-    public Image _BuffUIImage => _buffUIImage;
+    [SerializeField] private Sprite _buffUIImage = null;
+    public Sprite _BuffUIImage => _buffUIImage;
 }

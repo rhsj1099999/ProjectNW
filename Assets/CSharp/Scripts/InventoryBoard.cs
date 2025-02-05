@@ -82,6 +82,9 @@ public class InventoryBoard : BoardUIBaseScript
                 Debug.Assert(cellComponent != null, "cellComponent는 널일 수 없다");
                 cellComponent.Initialize(cellDesc);
 
+                int index = (i * _cols) + j;
+
+                cellComponent.SetCellIndex(index);
                 _cells.Add(cellObject);
             }
         }
@@ -132,8 +135,12 @@ public class InventoryBoard : BoardUIBaseScript
         Vector2 boardSize = new Vector2(_myRectTransform.rect.width, _myRectTransform.rect.height);
         Vector2 boardStartPosition = new Vector2(_myRectTransform.position.x + (-boardSize.x / 2), _myRectTransform.position.y + (boardSize.y / 2));
         Vector2 delta = currPosition - boardStartPosition;
-        int IndexX = (int)(delta.x / 20);
-        int IndexY = (int)(-delta.y / 20);
+
+        InventoryCell inventoryCell = (InventoryCell)caller;
+
+
+        int IndexX = inventoryCell._CellIndex % _cols;
+        int IndexY = inventoryCell._CellIndex / _cols;
 
         int itemSizeX = (grabRotation == false) ? storedDesc._itemAsset._SizeX : storedDesc._itemAsset._SizeY;
         int itemSizeY = (grabRotation == false) ? storedDesc._itemAsset._SizeY : storedDesc._itemAsset._SizeX;
@@ -225,7 +232,7 @@ public class InventoryBoard : BoardUIBaseScript
             int index = (targetY * _cols) + targetX;
             RectTransform cellRectTransform = _cells[index].transform as RectTransform;
             itemUIRectTransform.RotateAround(cellRectTransform.position, cellRectTransform.forward, 90.0f);
-            itemUIRectTransform.position -= new Vector3(0.0f, (info._SizeX - 1) * 20, 0.0f);
+            itemUIRectTransform.anchoredPosition -= new Vector2(0.0f, (float)(info._SizeX - 1) * 20.0f);
         }
 
         return itemUI;
@@ -627,6 +634,11 @@ public class InventoryBoard : BoardUIBaseScript
         if (Input.GetKeyDown(KeyCode.Alpha6) == true)
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("WolfMound"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("BeidouArmor"), 1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha7) == true)
+        {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("BeidouArmor"), 1);
         }
     }

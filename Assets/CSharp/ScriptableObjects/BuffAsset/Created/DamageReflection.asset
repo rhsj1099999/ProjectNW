@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
-  m_Name: BeidouElementBuff_DamageAcc
+  m_Name: DamageReflection
   m_EditorClassIdentifier: 
-  _buffKey: 0
-  _buffName: "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uB370\uBBF8\uC9C0\uB204\uC801\uBC84\uD504"
-  _maxCount: 1
-  _refresh: 0
-  _durationExpireOnce: 0
-  _specialAction_OnlyOne: 1
+  _buffKey: 5
+  _buffName: "\uB300\uBBF8\uC9C0\uBC18\uC0AC\uBC84\uD504"
+  _maxCount: 3
+  _refresh: 1
+  _durationExpireOnce: 1
+  _specialAction_OnlyOne: 0
   _buffWorks:
   - _buffAction:
-      _delegateTiming: 4
-      _buffActionType: 0
-    _targetType: 0
-    _buffApplyType: 1
+      _delegateTiming: 0
+      _buffActionType: 3
+    _targetType: 3
+    _buffApplyType: 0
     _amount: 1
   _isDebuff: 0
-  _duration: 100
-  _buffUIImage: {fileID: 21300000, guid: 66ed19725a8d0944998862551e469070, type: 3}
+  _duration: 30
+  _buffUIImage: {fileID: 21300000, guid: 62b65166d76aca941883c1897d524e93, type: 3}

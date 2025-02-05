@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
   m_Name: BeidouElementBuff_Stance
   m_EditorClassIdentifier: 
-  _buffKey: 0
+  _buffKey: 2
   _buffName: "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uAC00\uB4DC\uBC84\uD504"
   _maxCount: 1
   _refresh: 0
@@ -27,4 +27,4 @@ MonoBehaviour:
     _amount: 1
   _isDebuff: 0
   _duration: 100
-  _buffUIImage: {fileID: 0}
+  _buffUIImage: {fileID: 21300000, guid: 66ed19725a8d0944998862551e469070, type: 3}

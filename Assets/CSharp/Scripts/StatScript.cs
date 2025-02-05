@@ -221,6 +221,8 @@ public class StatScript : GameCharacterSubScript
 
         if (runtimeBuffAsset != null)
         {
+            //버프가 이미 있습니다. 시간 갱신, 수량 갱신등을 합니다.
+
             if (buff._SpecialAction_OnlyOne == true)
             {
                 RemoveBuff(buff, runtimeBuffAsset._Count);
@@ -252,6 +254,8 @@ public class StatScript : GameCharacterSubScript
         }
         else
         {
+            //버프가 없습니다. 처음 만들어집니다
+
             runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
             if (buff._Duration >= 0.0f)
             {
@@ -260,6 +264,10 @@ public class StatScript : GameCharacterSubScript
             target.Add(buff, runtimeBuffAsset);
 
             BuffChangeStatCalculate(runtimeBuffAsset, runtimeBuffAsset._Count);
+
+            BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
+
+            script.AddBuff(runtimeBuffAsset);
         }
     }
 
@@ -297,6 +305,10 @@ public class StatScript : GameCharacterSubScript
             }
 
             target.Remove(buff);
+
+            BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
+
+            script.RemoveBuff(existRuntimeBuffAsset);
         }
     }
 

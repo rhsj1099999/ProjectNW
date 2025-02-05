@@ -313,6 +313,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
             StatScript owner_victimStatScript = victim.GCST<StatScript>();
 
             owner_victimStatScript.ApplyBuff(Instance.GetBuff("라이오위빙공속버프"), 1);
+            owner_victimStatScript.ApplyBuff(Instance.GetBuff("대미지반사버프"), 1);
         }
 
         private IEnumerator TimeSlowCoroutine(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
@@ -339,8 +340,6 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
         public override BuffActionClass CopyMe() {return new BuffActionClass_WrioWeaving(_myKey, _myTiming);}
     }
-
-
     public class BuffActionClass_DamageReflectionSpikeArmor : BuffActionClass
     {
         public BuffActionClass_DamageReflectionSpikeArmor() { }

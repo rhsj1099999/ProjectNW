@@ -7,30 +7,15 @@ using UnityEngine.UIElements;
 
 public class DraggableUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
-    private void Awake()
-    {
-    }
-    void Start()
-    {
-        
-    }
-    void Update()
-    {
+    public void OnPointerDown(PointerEventData eventData) {}
+    public void OnPointerUp(PointerEventData eventData) {}
 
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-    }
-    public void OnPointerUp(PointerEventData eventData)
-    {
-
-    }
     public void OnDrag(PointerEventData eventData)
     {
         if (_targetRectTransform != null) 
         {
-            _targetRectTransform.anchoredPosition += eventData.delta;
+            Vector3 delta = new Vector3(eventData.delta.x, eventData.delta.y, 0.0f);
+            _targetRectTransform.position += delta;
         }
     }
 

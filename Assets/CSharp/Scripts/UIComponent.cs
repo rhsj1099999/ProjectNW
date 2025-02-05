@@ -6,10 +6,10 @@ public class UIComponent : MonoBehaviour
 {
     [SerializeField] private bool _isConsumeInputUI = false;
 
-    private Canvas _canvas = null;
 
     [SerializeField] private GameActorScript _uiControllingObject = null;
     public GameActorScript GetUIControllingComponent() { return _uiControllingObject; }
+    private RectTransform _myRectTransform = null;
     
 
     private void Awake()
@@ -21,37 +21,28 @@ public class UIComponent : MonoBehaviour
             return;
         }
 
-        _canvas = GetComponent<Canvas>();
-        
-        if( _canvas != null )
-        {
-            _canvas.enabled = false;
-        }
-
         GameUISubComponent[] subComponents = GetComponentsInChildren<GameUISubComponent>();
 
         foreach (GameUISubComponent subComponent in subComponents)
         {
             subComponent.Init(this);
         }
+
+        _myRectTransform = (RectTransform)transform;
     }
 
     public void HideUI()
     {
-        if (_canvas != null)
-        {
-            _canvas.enabled = false;
-        }
-
         transform.SetParent(_uiControllingObject.transform);
     }
 
     public void ShowUI()
     {
-        if (_canvas != null)
-        {
-            _canvas.enabled = true;
-        }
+        _myRectTransform.anchorMin = Vector2.zero; // (0,0)
+        _myRectTransform.anchorMax = Vector2.one;  // (1,1)
+
+        _myRectTransform.offsetMin = Vector2.zero;
+        _myRectTransform.offsetMax = Vector2.zero;
     }
 
     public bool GetIsConsumeInput()

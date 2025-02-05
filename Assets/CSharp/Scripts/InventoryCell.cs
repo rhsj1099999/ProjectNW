@@ -9,6 +9,9 @@ public class InventoryCell : BoardUICellBase
     private Color _originalColor = Color.white;
     private Image _imageComponent = null;
 
+    [SerializeField] private int _cellIndex = -1;
+    public int _CellIndex => _cellIndex;
+
     private void Awake()
     {
         _imageComponent = GetComponent<Image>();
@@ -33,6 +36,11 @@ public class InventoryCell : BoardUICellBase
     }
 
 
+    public void SetCellIndex(int index)
+    {
+        _cellIndex = index;
+    }
+
 
 
 
@@ -46,37 +54,4 @@ public class InventoryCell : BoardUICellBase
         _imageComponent.color = _originalColor;
     }
 
-
-
-
-
-    public void TryMoveItemDropOnItem(ItemStoreDescBase storedDesc, ItemUI caller)
-    {
-        //Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
-
-        //GameObject itemUI = _owner.getItem(storedDesc._storedIndex);
-
-        //ItemUI itemBaseComponent = itemUI.GetComponent<ItemUI>();
-
-        //if (itemBaseComponent == caller) 
-        //{
-        //    if (false /*회전이 다릅니까? ->회전이 다름*/)
-        //    {
-        //        //회전을 적용하는 작업들
-        //    }
-
-        //    return;
-        //}
-
-        ////동일종류가 아님.
-        //if (itemBaseComponent.getStoredDesc()._itemAsset._ItemKey != storedDesc._itemAsset._ItemKey)
-        //{
-        //    /*---------------------------------------------------------------------------
-        //    |TODO|  나중에 아이템 스왑하거나 룬 끼우기 할거라면 여기를 수정해야한다.
-        //    ---------------------------------------------------------------------------*/
-        //    return;
-        //}
-
-        ////동일 종류다. ->스택 가능한지 체크, 스택 가능한만큼만 수량 옮기기
-    }
 }

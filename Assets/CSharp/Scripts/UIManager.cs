@@ -15,6 +15,33 @@ public class UIManager : SubManager<UIManager>
     [SerializeField] private EventSystem _eventSystem = null;
     [SerializeField] private int _consumeInputUICount = 0;
 
+    private HUDScript _currHUD = null;
+    public HUDScript _CurrHUD => _currHUD;
+
+
+    public void SetHUD(HUDScript component)
+    {
+        if (_currHUD != null)
+        {
+            Debug.Assert(false, "이미 허드가 있는데요?");
+            Debug.Break();
+            Destroy(_currHUD.gameObject);
+        }
+        _currHUD = component;
+    }
+
+    public void DestroyHUD(HUDScript component)
+    {
+        if (_currHUD != component)
+        {
+            Debug.Assert(false, "같지 않은데 함부로 파괴하려한다");
+            Debug.Break();
+        }
+
+        Destroy(_currHUD.gameObject);
+        _currHUD = null;
+    }
+
     public override void SubManagerInit()
     {
         SingletonAwake();
@@ -60,10 +87,11 @@ public class UIManager : SubManager<UIManager>
             }
         }
 
-        uiComponent.ShowUI();
+        
 
         uiInstance.transform.SetParent(_mainCanvas.transform);
         uiInstance.transform.SetAsLastSibling();
+        uiComponent.ShowUI();
 
         uiInstance.transform.rotation = Quaternion.identity;
         uiInstance.transform.position = Vector3.zero;
