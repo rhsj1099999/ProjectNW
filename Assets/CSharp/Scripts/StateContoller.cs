@@ -5,9 +5,11 @@ using UnityEngine;
 using static StateGraphAsset;
 using static MyUtil;
 using static AnimationFrameDataAsset;
+using static LevelStatAsset;
 using UnityEngine.Playables;
 using MagicaCloth2;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
+using JetBrains.Annotations;
 
 public enum StateActionType
 {
@@ -98,6 +100,8 @@ public enum ConditionType
     IsWeaponUseReady, //격발할 준비가 됐습니다 -> 무기마다 따로 Override
 
     StateDeeper, //현재 유지하려는 상태의 레벨이 증가했습니다.
+
+    NeedStat,
 }
 
 
@@ -148,6 +152,30 @@ public class KeyInputConditionDesc
     public float _keyHoldGoal = 0.0f;
 }
 
+
+[Serializable]
+public class ActiveStatNeedTarget
+{
+    public ActiveStat _statType = ActiveStat.End;
+    public int _needAmount = -1;
+    public bool _isConsume = false;
+}
+
+[Serializable]
+public class PassiveStatNeedTarget
+{
+    public PassiveStat _statType = PassiveStat.End;
+    public int _needAmount = -1;
+    public bool _isConsume = false;
+}
+
+[Serializable]
+public class NeedStatDesc
+{
+    public List<PassiveStatNeedTarget> _needPassiveStatList = new List<PassiveStatNeedTarget>();
+    public List<ActiveStatNeedTarget> _needActiveStatList = new List<ActiveStatNeedTarget>();
+}
+
 [Serializable]
 public class ConditionDesc
 {
@@ -163,6 +191,7 @@ public class ConditionDesc
     public int _randomChance = 1;
     public float _degThreshould = 0.0f;
     public int _damageHitThreshould = 1;
+    public NeedStatDesc _needStat = new NeedStatDesc();
 }
 
 
@@ -1835,6 +1864,68 @@ public class StateContoller : GameCharacterSubScript
                     {
                         ret = true;
                     }
+                }
+                break;
+
+            case ConditionType.NeedStat:
+                {
+                    StatScript ownerStatScript = _owner.GCST<StatScript>();
+
+                    bool isSuccess = true;
+
+                    foreach (var item in conditionDesc._needStat._needActiveStatList)
+                    {
+                        int currVar = ownerStatScript.GetActiveStat(item._statType);
+
+                        if (currVar < item._needAmount)
+                        {
+                            isSuccess = false;
+                            break;
+                        }
+                    }
+
+                    if (isSuccess == false)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    foreach (var item in conditionDesc._needStat._needPassiveStatList)
+                    {
+                        int currVar = ownerStatScript.GetPassiveStat(item._statType);
+
+                        if (currVar < item._needAmount)
+                        {
+                            isSuccess = false;
+                            break;
+                        }
+                    }
+
+                    if (isSuccess == false)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+
+                    foreach (var item in conditionDesc._needStat._needActiveStatList)
+                    {
+                        if (item._isConsume == true)
+                        {
+                            ownerStatScript.ChangeActiveStat(item._statType, -item._needAmount);
+                        }
+                    }
+
+                    foreach (var item in conditionDesc._needStat._needPassiveStatList)
+                    {
+                        if (item._isConsume == true)
+                        {
+                            //그만큼 소모할겁니다.
+                            //근데 패시브 스텟에 컨슘이 있다고? 컨텐츠적으로
+                        }
+                    }
+
+                    ret = true;
                 }
                 break;
 

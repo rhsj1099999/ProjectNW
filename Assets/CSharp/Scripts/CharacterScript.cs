@@ -766,6 +766,13 @@ public class CharacterScript : GameActorScript, IHitable
     protected virtual void Update()
     {
         //현재 상태 업데이트
+        if (GCST<StatScript>().enabled == true)
+        {
+            GCST<StatScript>().StatScriptUpdate();
+        }
+
+
+        //현재 상태 업데이트
         if (GCST<StateContoller>().enabled == true)
         {
             GCST<StateContoller>().DoWork();

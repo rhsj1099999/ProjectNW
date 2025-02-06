@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26c8f44e45258194e920e3ebe4998eec, type: 3}
   m_Name: Player_Level_3
   m_EditorClassIdentifier: 
+  _characterType: 0
   _level: 3
   _activeStatDesc:
     _hp: 150
@@ -28,3 +29,10 @@ MonoBehaviour:
     _isInvincible: 0
     _isParry: 0
     _isGuard: 0
+    _isInvincible_HP: 0
+    _isInvincible_Stance: 0
+    _attackSpeedPercentage: 100
+    _hpRegen: 1
+    _staminaRegen: 1
+    _mpRegen: 1
+    _spRegen: 1

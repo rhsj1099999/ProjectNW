@@ -6,7 +6,12 @@ public abstract class CharacterContollerable : GameCharacterSubScript
 {
     [SerializeField] protected float _mass = 2.0f;
     [SerializeField] protected bool _logMe = false;
-    [SerializeField] protected float _speed = 5.0f;
+
+    /*----------------------------------------
+    |NOTI| speed = 이제 Stat 에서 관리합니다
+    ----------------------------------------*/
+    //[SerializeField] protected float _speed = 5.0f;
+
     [SerializeField] protected float _rotatingSpeed_DEG = 720.0f;
     [SerializeField] protected float _jumpForce = 3.0f;
     protected Vector3 _latestPlaneVelocityDontUseY = Vector3.zero;

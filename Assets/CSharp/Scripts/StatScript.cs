@@ -110,6 +110,7 @@ public class StatScript : GameCharacterSubScript
     |NOTI| 기본빵 스텟은 매니저와 레벨을 통해 바로 알 수 있다
     ---------------------------------------------------*/
     private int _currLevel = 1;
+
     private ActiveStatDesc _currActiveStat = null; //런타임 스텟입니다.
     private PassiveStatDesc _currPassiveStat = null; //런타임 스텟입니다.
     private Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>> _passiveStatDeltaEquation = new Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>>();
@@ -118,6 +119,10 @@ public class StatScript : GameCharacterSubScript
 
     private Dictionary<BuffAsset, RuntimeBuffAsset> _buffs = new Dictionary<BuffAsset, RuntimeBuffAsset>();
     private Dictionary<BuffAsset, RuntimeBuffAsset> _deBuffs = new Dictionary<BuffAsset, RuntimeBuffAsset>();
+    private Dictionary<PassiveStat, float> _activeStatRegenCalculator = new Dictionary<PassiveStat, float>();
+
+
+
     public RuntimeBuffAsset GetRuntimeBuffAsset(BuffAsset buff)
     {
         Dictionary<BuffAsset, RuntimeBuffAsset> targetDict = (buff._IsDebuff == true)
@@ -140,6 +145,78 @@ public class StatScript : GameCharacterSubScript
     public IReadOnlyDictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>> _BuffActions => _buffActions;
 
 
+
+
+    public void StatScriptUpdate()
+    {
+        //평상시 뭐해야합니까? -> 리젠 행동을 해야합니다
+        ActiveStatRegen();
+    }
+
+
+    private void ActiveStatRegen()
+    {
+        ActiveStat currActiveStatType = ActiveStat.End;
+
+        PassiveStat currMaxActiveStatType = PassiveStat.End;
+        for (int i = (int)PassiveStat.HPRegen; i <= (int)PassiveStat.SPRegen; i++)
+        {
+            PassiveStat currActiveStatRegenType = (PassiveStat)i;
+
+            switch (currActiveStatRegenType)
+            {
+                case PassiveStat.HPRegen:
+                    currActiveStatType = ActiveStat.Hp;
+                    currMaxActiveStatType = PassiveStat.MaxHP;
+                    break;
+
+                case PassiveStat.StaminaRegen:
+                    currActiveStatType = ActiveStat.Stamina;
+                    currMaxActiveStatType = PassiveStat.MaxStamina;
+                    break;
+
+                case PassiveStat.MPRegen:
+                    currActiveStatType = ActiveStat.Mp;
+                    currMaxActiveStatType = PassiveStat.MaxMp;
+                    break;
+
+                case PassiveStat.SPRegen:
+                    currActiveStatType = ActiveStat.Sp;
+                    currMaxActiveStatType = PassiveStat.MaxSp;
+                    break;
+
+                default:
+                    Debug.Assert(false, "대응이 되지 않습니다");
+                    Debug.Break();
+                    break;
+            }
+
+
+            int currActiveStat = GetActiveStat(currActiveStatType);
+            int currMaxActiveStat = GetPassiveStat(currMaxActiveStatType);
+
+            //if (currActiveStat >= currMaxActiveStat)
+            //{
+            //    _activeStatRegenCalculator[currActiveStatRegenType] = 0.0f;
+            //    continue;
+            //}
+
+            _activeStatRegenCalculator[currActiveStatRegenType] += Time.deltaTime * GetPassiveStat(currActiveStatRegenType);
+
+            int ready = (int)_activeStatRegenCalculator[currActiveStatRegenType];
+
+            if (ready == 0)
+            {
+                continue;
+            }
+
+            _activeStatRegenCalculator[currActiveStatRegenType] -= ready;
+            ChangeActiveStat(currActiveStatType, ready);
+        }
+    }
+
+
+
     public override void Init(CharacterScript owner)
     {
         _owner = owner;
@@ -159,6 +236,12 @@ public class StatScript : GameCharacterSubScript
         {
             _passiveStatChangeDelegates.Add((PassiveStat)i, null);
         }
+
+        for (int i = (int)PassiveStat.HPRegen; i <= (int)PassiveStat.SPRegen; i++)
+        {
+            _activeStatRegenCalculator.Add((PassiveStat)i, 0.0f);
+        }
+
     }
     public override void SubScriptStart() { }
 
@@ -484,7 +567,35 @@ public class StatScript : GameCharacterSubScript
 
         AfterCalculateActiveStat(type);
 
+
+        int maxVar = 0;
+
+        switch (type)
+        {
+            case ActiveStat.Hp:
+                maxVar = GetPassiveStat(PassiveStat.MaxHP);
+                break;
+            case ActiveStat.Stamina:
+                maxVar = GetPassiveStat(PassiveStat.MaxStamina);
+                break;
+            case ActiveStat.Mp:
+                maxVar = GetPassiveStat(PassiveStat.MaxMp);
+                break;
+            case ActiveStat.Sp:
+                maxVar = GetPassiveStat(PassiveStat.MaxSp);
+                break;
+
+            default:
+                Debug.Assert(false, "대응이 되지 않습니다");
+                Debug.Break();
+                break;
+        }
+
+        nextVal = Math.Clamp(nextVal, 0, maxVar);
+
         _currActiveStat._ActiveStats[type] = nextVal;
+
+
         /*--------------------------------------------------
         |NOTI| Active Stat이 변경됐습니다.
         --------------------------------------------------*/

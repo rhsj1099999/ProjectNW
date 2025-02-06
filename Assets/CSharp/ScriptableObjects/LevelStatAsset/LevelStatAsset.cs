@@ -37,7 +37,17 @@ public class LevelStatAsset : ScriptableObject
         IsInvincible_HP,        //피가 깎이진 않지만, 자세가 무너질 수 있다.
         IsInvincible_Stance,    //자세가 무너지진 않지만, 피가 깎인다.
         AttackSpeedPercentage,
-        End,
+
+        HPRegen,
+        StaminaRegen,
+        MPRegen,
+        SPRegen,
+
+        MoveSpeed,
+
+
+
+        End = 2048,
     }
 
 
@@ -95,6 +105,13 @@ public class LevelStatAsset : ScriptableObject
             _isInvincible_Stance = other._isInvincible_Stance;
             _attackSpeedPercentage = other._attackSpeedPercentage;
 
+            _hpRegen = other._hpRegen;
+            _staminaRegen = other._staminaRegen;
+            _mpRegen = other._mpRegen;
+            _spRegen = other._spRegen;
+
+            _moveSpeed = other._moveSpeed;
+
             InitDict();
         }
 
@@ -113,8 +130,14 @@ public class LevelStatAsset : ScriptableObject
             _PassiveStats.Add(PassiveStat.IsGuard, _isGuard);
             _PassiveStats.Add(PassiveStat.IsInvincible_HP, _isInvincible_HP);
             _PassiveStats.Add(PassiveStat.IsInvincible_Stance, _isInvincible_Stance);
-
             _PassiveStats.Add(PassiveStat.AttackSpeedPercentage, _attackSpeedPercentage);
+
+            _PassiveStats.Add(PassiveStat.HPRegen, _hpRegen);
+            _PassiveStats.Add(PassiveStat.StaminaRegen, _staminaRegen);
+            _PassiveStats.Add(PassiveStat.MPRegen, _mpRegen);
+            _PassiveStats.Add(PassiveStat.SPRegen, _spRegen);
+
+            _PassiveStats.Add(PassiveStat.MoveSpeed, _moveSpeed);
         }
 
         private Dictionary<PassiveStat, int> _passiveStats = new Dictionary<PassiveStat, int>();
@@ -134,6 +157,14 @@ public class LevelStatAsset : ScriptableObject
         [SerializeField] private int _isInvincible_HP = 0;
         [SerializeField] private int _isInvincible_Stance = 0;
         [SerializeField] private int _attackSpeedPercentage = 100;
+
+
+        [SerializeField] private int _hpRegen = 1;
+        [SerializeField] private int _staminaRegen = 1;
+        [SerializeField] private int _mpRegen = 1;
+        [SerializeField] private int _spRegen = 1;
+
+        [SerializeField] private int _moveSpeed = 5;
     }
 
 

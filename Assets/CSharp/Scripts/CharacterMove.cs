@@ -114,7 +114,7 @@ public class CharacterMoveScript2 : CharacterContollerable
     {
         _moveTriggerd = true;
 
-        Vector3 desiredMove = inputDirection * _speed * Time.deltaTime * similarities * ratio;
+        Vector3 desiredMove = inputDirection * _owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.MoveSpeed) * Time.deltaTime * similarities * ratio;
 
         _characterController.Move(desiredMove);
 

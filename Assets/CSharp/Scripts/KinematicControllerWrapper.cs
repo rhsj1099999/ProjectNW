@@ -288,7 +288,7 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     {
         _moveTriggerd = true;
 
-        _currentSpeed = inputDirection * _speed * similarities * ratio;
+        _currentSpeed = inputDirection * _owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.MoveSpeed) * similarities * ratio;
     }
 
     public override void CharacterRootMove(Vector3 delta, float similarities, float ratio)
