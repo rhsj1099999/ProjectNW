@@ -176,11 +176,11 @@ public class CharacterScript : GameActorScript, IHitable
 
         _mySubScripts.TryGetValue(typeof(T), out target);
 
-        if (target == null && isNullable == true)
-        {
-            Debug.Assert(false, "없는 컴포넌트를 찾으려 하고있다" + typeof(T));
-            Debug.Break();
-        }
+        //if (target == null && isNullable == true)
+        //{
+        //    Debug.Assert(false, "없는 컴포넌트를 찾으려 하고있다" + typeof(T));
+        //    Debug.Break();
+        //}
 
         return (T)_mySubScripts[typeof(T)];
     }
@@ -1388,6 +1388,12 @@ public class CharacterScript : GameActorScript, IHitable
                 ZeroHPCall(attacker);
 
                 nextGraphType = StateGraphType.DieGraph;
+
+                if (GCST<StateContoller>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
+                {
+                    Debug.Assert(false, "죽을건데 죽는 그래프가 없네요?");
+                    Debug.Break();
+                }
 
                 if (representType == RepresentStateType.Hit_Lvl_2)
                 {

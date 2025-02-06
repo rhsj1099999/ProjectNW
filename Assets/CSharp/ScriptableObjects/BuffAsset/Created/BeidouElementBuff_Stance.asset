@@ -21,8 +21,14 @@ MonoBehaviour:
   _buffWorks:
   - _buffAction:
       _delegateTiming: 10
-      _buffActionType: 3
-    _targetType: 11
+      _buffActionType: 4
+    _targetType: 10
+    _buffApplyType: 1
+    _amount: 1
+  - _buffAction:
+      _delegateTiming: 10
+      _buffActionType: 4
+    _targetType: 9
     _buffApplyType: 1
     _amount: 1
   _isDebuff: 0

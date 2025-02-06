@@ -285,8 +285,6 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
             damage._damage += currDamageAcc._damageACC;
 
             Debug.Log("데미지 방출 || 누산돼있던 데미지 : " + currDamageAcc._damageACC + " 데미지 합 : " + damage._damage);
-
-            callerStatScript.RemoveBuff(beidouDamageAccBuff, 1);
         }
 
         public override BuffActionClass CopyMe() {return new BuffActionClass_BeidouElementalArtReturn(_myKey, _myTiming);}

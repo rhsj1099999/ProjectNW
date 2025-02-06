@@ -12,6 +12,7 @@ public class UIManager : SubManager<UIManager>
 {
     [SerializeField] private GameObject _mainCanvas = null;
     public GameObject GetMainCanvasObject(){return _mainCanvas;}
+
     [SerializeField] private EventSystem _eventSystem = null;
     [SerializeField] private int _consumeInputUICount = 0;
 

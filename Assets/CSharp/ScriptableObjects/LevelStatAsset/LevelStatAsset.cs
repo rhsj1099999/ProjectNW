@@ -19,12 +19,12 @@ public class LevelStatAsset : ScriptableObject
         Stamina,
         Mp,
         Sp,
+        End,
     }
 
     //-> '계산에 사용' 되는 것들
     public enum PassiveStat
     {
-        None,
         MaxHP,
         MaxStamina,
         MaxMp,
@@ -36,8 +36,8 @@ public class LevelStatAsset : ScriptableObject
         IsGuard,
         IsInvincible_HP,        //피가 깎이진 않지만, 자세가 무너질 수 있다.
         IsInvincible_Stance,    //자세가 무너지진 않지만, 피가 깎인다.
-
         AttackSpeedPercentage,
+        End,
     }
 
 
@@ -133,10 +133,6 @@ public class LevelStatAsset : ScriptableObject
         [SerializeField] private int _isGuard = 0;
         [SerializeField] private int _isInvincible_HP = 0;
         [SerializeField] private int _isInvincible_Stance = 0;
-
-        /*-------------------------------------------
-        |NOTI| 문제의 그 스탯
-        -------------------------------------------*/
         [SerializeField] private int _attackSpeedPercentage = 100;
     }
 

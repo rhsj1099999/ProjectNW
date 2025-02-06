@@ -21,7 +21,7 @@ public class BuffDisplayScript : MonoBehaviour
 
     [SerializeField] private GameObject _buffIconPrefab = null;
 
-    private Dictionary<RuntimeBuffAsset, BuffIconWrapper> _cuffBuffs = new Dictionary<RuntimeBuffAsset, BuffIconWrapper>();
+    private Dictionary<BuffAsset, BuffIconWrapper> _cuffBuffs = new Dictionary<BuffAsset, BuffIconWrapper>();
     private List<BuffIconWrapper> _createdUIList = new List<BuffIconWrapper>();
     private RectTransform _myReectTransform = null;
 
@@ -36,10 +36,15 @@ public class BuffDisplayScript : MonoBehaviour
         _myReectTransform = (RectTransform)transform;
     }
 
-
     public void RemoveBuff(RuntimeBuffAsset asset)
     {
-        BuffIconWrapper buffIconWrapper = _cuffBuffs[asset];
+        BuffIconWrapper buffIconWrapper = _cuffBuffs[asset._fromAsset];
+
+        if (buffIconWrapper == null) 
+        {
+            Debug.Assert(false, "해당 버프를 찾을수 없었다 " + asset._fromAsset.name);
+            Debug.Break();
+        }
         //없으면 안됩니다.
 
         int startIndex = buffIconWrapper._myIndex + 1;
@@ -48,7 +53,9 @@ public class BuffDisplayScript : MonoBehaviour
         {
             RectTransform iconRectTransform = (RectTransform)_buffIconPrefab.transform;
             Vector3 delta = new Vector3(iconRectTransform.rect.width, 0.0f, 0.0f);
-            _createdUIList[i]._createdUI.transform.position -= delta;
+            Vector2 delta_Vector2 = new Vector2(iconRectTransform.rect.width, 0.0f);
+
+            ((RectTransform)_createdUIList[i]._createdUI.transform).anchoredPosition -= delta_Vector2;
             _createdUIList[i]._myIndex -= 1;
         }
 
@@ -56,13 +63,13 @@ public class BuffDisplayScript : MonoBehaviour
 
         _createdUIList.RemoveAt(buffIconWrapper._myIndex);
 
-        _cuffBuffs.Remove(asset);
+        _cuffBuffs.Remove(asset._fromAsset);
     }
 
 
     public void AddBuff(RuntimeBuffAsset asset)
     {
-        if (_cuffBuffs.ContainsKey(asset) == true)
+        if (_cuffBuffs.ContainsKey(asset._fromAsset) == true)
         {
             //이미 UI창에서 있는거다
             {
@@ -83,13 +90,14 @@ public class BuffDisplayScript : MonoBehaviour
                 {
                     RectTransform iconRectTransform = (RectTransform)createUIObject.transform;
                     Vector3 delta = new Vector3(iconRectTransform.rect.width * _cuffBuffs.Count, 0.0f, 0.0f);
-                    iconRectTransform.position = _myReectTransform.position + delta;
+                    Vector2 delta_Vector2 = new Vector2(iconRectTransform.rect.width * _cuffBuffs.Count, 0.0f);
+                    iconRectTransform.anchoredPosition = _myReectTransform.anchoredPosition + delta_Vector2;
                 }
             }
 
             BuffIconWrapper newIconWrapper = new BuffIconWrapper(asset, _cuffBuffs.Count, createUIObject);
             _createdUIList.Add(newIconWrapper);
-            _cuffBuffs.Add(asset, newIconWrapper);
+            _cuffBuffs.Add(asset._fromAsset, newIconWrapper);
         }
     }
 }

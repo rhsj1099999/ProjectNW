@@ -113,7 +113,8 @@ public class StatScript : GameCharacterSubScript
     private ActiveStatDesc _currActiveStat = null; //런타임 스텟입니다.
     private PassiveStatDesc _currPassiveStat = null; //런타임 스텟입니다.
     private Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>> _passiveStatDeltaEquation = new Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>>();
-
+    public Dictionary<ActiveStat, Action<int>> _activeStatChangeDelegates = new Dictionary<ActiveStat, Action<int>>();
+    public Dictionary<PassiveStat, Action<int>> _passiveStatChangeDelegates = new Dictionary<PassiveStat, Action<int>>();
 
     private Dictionary<BuffAsset, RuntimeBuffAsset> _buffs = new Dictionary<BuffAsset, RuntimeBuffAsset>();
     private Dictionary<BuffAsset, RuntimeBuffAsset> _deBuffs = new Dictionary<BuffAsset, RuntimeBuffAsset>();
@@ -148,6 +149,16 @@ public class StatScript : GameCharacterSubScript
 
         _currActiveStat = new ActiveStatDesc(statAsset._ActiveStatDesc);
         _currPassiveStat = new PassiveStatDesc(statAsset._PassiveStatDesc);
+
+        for (int i = 0; i < (int)ActiveStat.End; i++)
+        {
+            _activeStatChangeDelegates.Add((ActiveStat)i, null);
+        }
+
+        for (int i = 0; i < (int)PassiveStat.End; i++)
+        {
+            _passiveStatChangeDelegates.Add((PassiveStat)i, null);
+        }
     }
     public override void SubScriptStart() { }
 
@@ -322,7 +333,7 @@ public class StatScript : GameCharacterSubScript
         {
             //수치 변화 계산
             PassiveStat targetType = buffWork._targetType;
-            if (targetType != PassiveStat.None)
+            if (targetType != PassiveStat.End)
             {
                 reCachingTargets.Add(targetType);
                 ReadAndApply(buffWork, deltaCount);
@@ -330,107 +341,6 @@ public class StatScript : GameCharacterSubScript
         }
 
         ReCacheBuffAmoints(reCachingTargets);
-    }
-
-
-    private void ReCacheBuffAmoints(HashSet<PassiveStat> types)
-    {
-        foreach (PassiveStat type in types)
-        {
-            int baseStat = LevelStatInfoManager.Instance.GetLevelStatAsset(_currLevel, _owner._CharacterType)._PassiveStatDesc._PassiveStats[type];
-            int beforeVar = _currPassiveStat._PassiveStats[type];
-            int nextVar = baseStat;
-
-            SortedDictionary<BuffApplyType, int> currBuffs = _passiveStatDeltaEquation.GetOrAdd(type);
-
-            foreach (KeyValuePair<BuffApplyType, int> buffAmoint in currBuffs)
-            {
-                BuffApplyType applyType = buffAmoint.Key;
-                
-
-                bool isSet = false;
-
-                switch (applyType)
-                {
-                    case BuffApplyType.Set:
-                        {
-                            _currPassiveStat._PassiveStats[type] = buffAmoint.Value;
-                            nextVar = buffAmoint.Value;
-                            isSet = true;
-                        }
-                        break;
-
-
-                    case BuffApplyType.Plus:
-                        {
-                            nextVar += buffAmoint.Value;
-                        }
-                        break;
-                    case BuffApplyType.Minus:
-                        {
-                            nextVar -= buffAmoint.Value;
-                        }
-                        break;
-
-                    case BuffApplyType.PercentagePlus:
-                        {
-                            nextVar += (int)((float)baseStat * ((float)buffAmoint.Value / 100.0f));
-                        }
-                        break;
-                    case BuffApplyType.PercentageMinus:
-                        {
-                            nextVar -= (int)((float)baseStat * ((float)buffAmoint.Value / 100.0f));
-                        }
-                        break;
-
-
-                    case BuffApplyType.Multiply:
-                        {
-                            nextVar *= buffAmoint.Value;
-                        }
-                        break;
-                    case BuffApplyType.Devide:
-                        {
-                            nextVar /= buffAmoint.Value;
-                        }
-                        break;
-
-                    default:
-                        Debug.Assert(false, "ApplyType과 일치하지 않습니다");
-                        Debug.Break();
-                        break;
-                }
-
-                if (isSet == true) 
-                {
-                    break;
-                }
-            }
-
-            _currPassiveStat._PassiveStats[type] = nextVar;
-
-            //스탯에 변경되면 뭘 해야합니까?
-            //ex 최대체력이 변경되면 현재체력을 늘려야합니다.
-            switch (type)
-            {
-                case PassiveStat.MaxHP:
-                    break;
-                case PassiveStat.MaxStamina:
-                    break;
-                case PassiveStat.MaxMp:
-                    break;
-                case PassiveStat.MaxSp:
-                    break;
-                case PassiveStat.Roughness:
-                    break;
-                case PassiveStat.Strength:
-                    break;
-                case PassiveStat.IsInvincible:
-                    break;
-                default:
-                    break;
-            }
-        }
     }
     
     private void ReadAndApply(BuffApplyWork buffWork, int deltaCount)
@@ -459,6 +369,129 @@ public class StatScript : GameCharacterSubScript
     }
 
 
+
+    private void ReCacheBuffAmoints(HashSet<PassiveStat> types)
+    {
+        foreach (PassiveStat type in types)
+        {
+            int baseStat = LevelStatInfoManager.Instance.GetLevelStatAsset(_currLevel, _owner._CharacterType)._PassiveStatDesc._PassiveStats[type];
+            int beforeVar = _currPassiveStat._PassiveStats[type];
+            int nextVar = baseStat;
+
+            SortedDictionary<BuffApplyType, int> currBuffs = _passiveStatDeltaEquation.GetOrAdd(type);
+
+            foreach (KeyValuePair<BuffApplyType, int> buffAmoint in currBuffs)
+            {
+                BuffApplyType applyType = buffAmoint.Key;
+
+
+                bool isSet = false;
+
+                switch (applyType)
+                {
+                    case BuffApplyType.Set:
+                        {
+                            _currPassiveStat._PassiveStats[type] = buffAmoint.Value;
+                            nextVar = buffAmoint.Value;
+                            isSet = true;
+                        }
+                        break;
+
+
+                    case BuffApplyType.Plus:
+                        {
+                            nextVar += buffAmoint.Value;
+                        }
+                        break;
+
+                    case BuffApplyType.Minus:
+                        {
+                            nextVar -= buffAmoint.Value;
+                        }
+                        break;
+
+                    case BuffApplyType.PercentagePlus:
+                        {
+                            nextVar += (int)((float)baseStat * ((float)buffAmoint.Value / 100.0f));
+                        }
+                        break;
+                    case BuffApplyType.PercentageMinus:
+                        {
+                            nextVar -= (int)((float)baseStat * ((float)buffAmoint.Value / 100.0f));
+                        }
+                        break;
+
+                    case BuffApplyType.Multiply:
+                        {
+                            nextVar *= buffAmoint.Value;
+                        }
+                        break;
+
+                    case BuffApplyType.Devide:
+                        {
+                            nextVar /= buffAmoint.Value;
+                        }
+                        break;
+
+                    default:
+                        Debug.Assert(false, "ApplyType과 일치하지 않습니다");
+                        Debug.Break();
+                        break;
+                }
+
+                if (isSet == true)
+                {
+                    break;
+                }
+            }
+
+            _currPassiveStat._PassiveStats[type] = nextVar;
+            /*--------------------------------------------------
+            |NOTI| Passive Stat이 변경됐습니다.
+            --------------------------------------------------*/
+            _passiveStatChangeDelegates[type]?.Invoke(nextVar);
+
+            {
+                //스탯에 변경되면 뭘 해야합니까?
+                //ex 최대체력이 변경되면 현재체력을 늘려야합니다.
+                switch (type)
+                {
+                    case PassiveStat.MaxHP:
+                        break;
+                    case PassiveStat.MaxStamina:
+                        break;
+                    case PassiveStat.MaxMp:
+                        break;
+                    case PassiveStat.MaxSp:
+                        break;
+                    case PassiveStat.Roughness:
+                        break;
+                    case PassiveStat.Strength:
+                        break;
+                    case PassiveStat.IsInvincible:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+
+    public void ChangeActiveStat(ActiveStat type, int amount)
+    {
+        int nextVal = (_currActiveStat._ActiveStats[type] + amount);
+
+        AfterCalculateActiveStat(type);
+
+        _currActiveStat._ActiveStats[type] = nextVal;
+        /*--------------------------------------------------
+        |NOTI| Active Stat이 변경됐습니다.
+        --------------------------------------------------*/
+        _activeStatChangeDelegates[type]?.Invoke(nextVal);
+    }
+
+
     public int GetActiveStat(ActiveStat type)
     {
         return _currActiveStat._ActiveStats[type];
@@ -484,13 +517,5 @@ public class StatScript : GameCharacterSubScript
     private void AfterCalculateActiveStat(ActiveStat type)
     {
 
-    }
-    public void ChangeActiveStat(ActiveStat type, int amount)
-    {
-        int nextVal = (_currActiveStat._ActiveStats[type] + amount);
-
-        AfterCalculateActiveStat(type);
-
-        _currActiveStat._ActiveStats[type] = nextVal;
     }
 }

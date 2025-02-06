@@ -6,6 +6,8 @@ using static StateGraphAsset;
 
 public class PlayerScript : CharacterScript
 {
+    [SerializeField] protected GameObject _usingHUDPrefab = null;
+
     [SerializeField] protected GameObject _interactionUIPrefab = null;
 
     protected override void Awake()
@@ -15,6 +17,16 @@ public class PlayerScript : CharacterScript
         TriggerSender_UIInteraction triggerSender = GetComponentInChildren<TriggerSender_UIInteraction>();
         triggerSender.SubscribeMe(TriggerSender_UIInteraction.TriggerType.Enter, WhenTriggerEnterWithInteraction);
         triggerSender.SubscribeMe(TriggerSender_UIInteraction.TriggerType.Exit, WhenTriggerExitWithInteraction);
+
+        //HUD가 필요합니다
+        if (_usingHUDPrefab != null)
+        {
+            GameObject canvasObject = UIManager.Instance.GetMainCanvasObject();
+            GameObject newHUDObject = Instantiate(_usingHUDPrefab, canvasObject.transform);
+            HUDScript newHUDScript = newHUDObject.GetComponent<HUDScript>();
+
+            newHUDScript.HUDLinking(GCST<StatScript>());
+        }
     }
 
     protected override void Update()
