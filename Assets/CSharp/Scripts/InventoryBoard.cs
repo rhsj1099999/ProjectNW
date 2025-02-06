@@ -586,7 +586,6 @@ public class InventoryBoard : BoardUIBaseScript
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("VanguardArmor"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("NoelArmor"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("BeidouArmor"), 1);
-
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1) == true)
