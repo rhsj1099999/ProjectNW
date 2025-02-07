@@ -640,6 +640,16 @@ public class InventoryBoard : BoardUIBaseScript
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("BeidouArmor"), 1);
         }
+
+
+        if (Input.GetKeyDown(KeyCode.Alpha8) == true)
+        {
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("RedPotion"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("BluePotion"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("StaminaPotion"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SPPotion"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("HeistPotion_LV0"), 1);
+        }
     }
 
 

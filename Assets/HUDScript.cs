@@ -5,18 +5,23 @@ using UnityEngine;
 
 public class HUDScript : MonoBehaviour
 {
+    private StatScript _owner = null;
+
     [SerializeField] private BuffDisplayScript _buffDisplay = null;
     public BuffDisplayScript _BuffDisplay => _buffDisplay;
-
-
-
     /*--------------------------------------------------------------------------------------------------
     |NOTI| HUD 가 초기화되는 순간, 동시에 연결해줄 StatBar들을 '미리' 지정해둡니다.
     이것 앞으로 어떤 HUD든, 그 HUD의 스타일이라고 생각합니다
     --------------------------------------------------------------------------------------------------*/
-    [SerializeField] List<StatBarScript> _statBarScriptsForInit = new List<StatBarScript>();
+    [SerializeField] private List<StatBarScript> _statBarScriptsForInit = new List<StatBarScript>();
+    [SerializeField] private List<InventoryHUDScript> _inventoryHUDsForInit = new List<InventoryHUDScript>();
+    private Dictionary<InventoryHUDScript.InventoryHUDType, InventoryHUDScript> _inventoryHUDs = new Dictionary<InventoryHUDScript.InventoryHUDType, InventoryHUDScript>();
 
-    private StatScript _owner = null;
+
+    public InventoryHUDScript GetInventoryHUDScript(InventoryHUDScript.InventoryHUDType type)
+    {
+        return _inventoryHUDs[type];
+    }
 
 
     public void HUDLinking(StatScript caller)
@@ -34,6 +39,11 @@ public class HUDScript : MonoBehaviour
         foreach (StatBarScript statBarScript in _statBarScriptsForInit)
         {
             statBarScript.StatLinking(_owner);
+        }
+
+        foreach (InventoryHUDScript inventoryHUDScript in _inventoryHUDsForInit)
+        {
+            _inventoryHUDs.Add(inventoryHUDScript._InventoryHUDType, inventoryHUDScript);
         }
     }
 

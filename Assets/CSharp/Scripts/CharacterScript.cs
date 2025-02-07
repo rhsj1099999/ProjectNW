@@ -10,6 +10,7 @@ using static LevelStatAsset;
 using static ItemAsset_Weapon;
 using Unity.VisualScripting;
 using static UnityEditor.Rendering.InspectorCurveEditor;
+using UnityEngine.Animations.Rigging;
 
 public class StateContollerComponentDesc
 {
@@ -130,19 +131,23 @@ public class CharacterScript : GameActorScript, IHitable
     protected GameObject _tempCurrRightWeapon = null;
     //----------------------------------------------------------------------------------------
 
-    protected KeyCode _useItemKeyCode1 = KeyCode.N;
-    protected KeyCode _useItemKeyCode2 = KeyCode.M;
-    protected KeyCode _useItemKeyCode3 = KeyCode.Comma;
-    protected KeyCode _useItemKeyCode4 = KeyCode.Period;
+    protected Dictionary<AnimatorLayerTypes, GameObject> _currHandObject = new Dictionary<AnimatorLayerTypes, GameObject>();
+
 
     protected KeyCode _changeRightHandWeaponHandlingKey = KeyCode.B;
     protected KeyCode _changeLeftHandWeaponHandlingKey = KeyCode.V;
+
     protected KeyCode _changeRightWeaponKey = KeyCode.T;
     protected KeyCode _changeLeftWeaponKey = KeyCode.R;
-
     [SerializeField] protected int _currLeftWeaponIndex = 0;
     [SerializeField] protected int _currRightWeaponIndex = 0;
     protected int _tempMaxWeaponSlot = 3;
+
+    protected KeyCode _useUseableItemKey = KeyCode.Z;
+    protected string _changeUseableItemKey = "Mouse ScrollWheel";
+    protected List<ItemStoreDescBase> _tempUseableItemDescs = new List<ItemStoreDescBase>();
+    [SerializeField] protected int _currUseableItemIndex = 0;
+    protected int _tempMaxUseableSlot = 6;
 
     protected bool _tempUsingRightHandWeapon = false; //최근에 사용한 무기가 오른손입니까?
     public bool _isRightWeaponAimed = false;
@@ -261,6 +266,10 @@ public class CharacterScript : GameActorScript, IHitable
         {
             _tempLeftWeaponPrefabs.Add(null);
             _tempRightWeaponPrefabs.Add(null);
+        }
+        for (int i = 0; i < _tempMaxUseableSlot; i++)
+        {
+            _tempUseableItemDescs.Add(null);
         }
     }
 
@@ -446,6 +455,18 @@ public class CharacterScript : GameActorScript, IHitable
     }
 
 
+    public void DestroyHandObject(AnimatorLayerTypes layerType)
+    {
+        if (_currHandObject[layerType] == null)
+        {
+            return;
+        }
+
+        Destroy(_currHandObject[layerType]);
+
+        _currHandObject.Remove(layerType);
+    }
+
     public void IncreaseWeaponIndex(AnimatorLayerTypes layerType)
     {
         if (layerType != AnimatorLayerTypes.LeftHand &&
@@ -521,107 +542,193 @@ public class CharacterScript : GameActorScript, IHitable
                 basicColliderScript.gameObject.SetActive(false);
             }
         }
+
+        //HUD Setting
+        {
+            InventoryHUDScript.InventoryHUDType targetHUDType = (layerType == AnimatorLayerTypes.RightHand)
+                ? InventoryHUDScript.InventoryHUDType.RightWeapon
+                : InventoryHUDScript.InventoryHUDType.LeftWeapon;
+
+            InventoryHUDScript targetHUDScript = UIManager.Instance._CurrHUD.GetInventoryHUDScript(targetHUDType);
+
+            targetHUDScript.SetImage(null);
+        }
     }
 
-
-    public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemStoreDesc_Weapon nextItemStoreDesc)
+    public void ApplyPotionBuff(List<string> buffNames)
     {
-        if (layerType != AnimatorLayerTypes.RightHand &&layerType != AnimatorLayerTypes.LeftHand) {return;}
-
-   
-        WeaponSocketScript.SideType targetSide = (layerType == AnimatorLayerTypes.RightHand)
-            ? WeaponSocketScript.SideType.Right
-            : WeaponSocketScript.SideType.Left;
-
-        //소켓 찾기
-
-        ItemAsset_Weapon weaponItemAsset = (ItemAsset_Weapon)nextItemStoreDesc._itemAsset;
-
-        Transform correctSocket = null;
+        StatScript statScript = GCST<StatScript>();
+        foreach (string name in buffNames) 
         {
-            Debug.Assert(GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+            statScript.ApplyBuff(LevelStatInfoManager.Instance.GetBuff(name), 1);
+        }
+    }
 
-            WeaponSocketScript[] weaponSockets = GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().GetComponentsInChildren<WeaponSocketScript>();
+    public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemStoreDescBase itemStoreDesc)
+    {
+        if (layerType != AnimatorLayerTypes.RightHand && layerType != AnimatorLayerTypes.LeftHand) {return;}
 
-            Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
-
-
-            WeaponType targetType = weaponItemAsset._WeaponType;
-
-            foreach (var socketComponent in weaponSockets)
+        if (itemStoreDesc._itemAsset._EquipType == ItemAsset.EquipType.UseAndComsumeableByCharacter)
+        {
+            Transform correctSocket = null; //무조건 오른손
             {
-                if (socketComponent._sideType != targetSide)
+                Debug.Assert(GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+
+                WeaponSocketScript[] weaponSockets = GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().GetComponentsInChildren<WeaponSocketScript>();
+
+                Debug.Assert(weaponSockets.Length > 0, "뭔가 붙여줄려는데 소켓이 없다");
+
+                foreach (var socketComponent in weaponSockets)
                 {
-                    continue;
+                    if (socketComponent._sideType != WeaponSocketScript.SideType.Right)
+                    {
+                        continue;
+                    }
+
+                    correctSocket = socketComponent.gameObject.transform;
+                    break;
                 }
 
-                foreach (var type in socketComponent._equippableWeaponTypes)
+                if (correctSocket == null)
                 {
-                    if (type == targetType)
+                    Debug.Assert(false, "무기를 붙일 수 있는 소켓이 없습니다");
+                    Debug.Break();
+                    return;
+                }
+
+            }
+
+            //아이템 프리팹 생성, 장착
+            GameObject itemModel = Instantiate(itemStoreDesc._itemAsset._ItemModel, correctSocket);
+
+            _currHandObject.Add(layerType, itemModel);
+
+            //다행이 뭘 건드리진 않아도 된다.
+
+            {
+                //_owner = itemOwner;
+
+                //Equip_OnSocket(followTransform);
+
+                //string targetName = (_isRightHandWeapon == true)
+                //    ? "HandlingAbsolute_Right"
+                //    : "HandlingAbsolute_Left";
+
+                //Transform target = transform.Find(targetName);
+
+                //Transform targetTransform = target.transform;
+
+                //_addRotation = targetTransform.localRotation;
+                //_addPosition = targetTransform.localPosition;
+            }
+        }
+
+        if (itemStoreDesc._itemAsset._EquipType == ItemAsset.EquipType.Weapon)
+        {
+            WeaponSocketScript.SideType targetSide = (layerType == AnimatorLayerTypes.RightHand)
+                ? WeaponSocketScript.SideType.Right
+                : WeaponSocketScript.SideType.Left;
+
+            ItemStoreDesc_Weapon nextItemStoreDesc = (ItemStoreDesc_Weapon)itemStoreDesc;
+            
+            //소켓 찾기
+            ItemAsset_Weapon weaponItemAsset = (ItemAsset_Weapon)nextItemStoreDesc._itemAsset;
+
+            Transform correctSocket = null;
+            {
+                Debug.Assert(GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject() != null, "무기를 붙이려는데 모델이 없어서는 안된다");
+
+                WeaponSocketScript[] weaponSockets = GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().GetComponentsInChildren<WeaponSocketScript>();
+
+                Debug.Assert(weaponSockets.Length > 0, "무기를 붙이려는데 모델에 소켓이 없다");
+
+
+                WeaponType targetType = weaponItemAsset._WeaponType;
+
+                foreach (var socketComponent in weaponSockets)
+                {
+                    if (socketComponent._sideType != targetSide)
                     {
-                        correctSocket = socketComponent.gameObject.transform;
-                        break;
+                        continue;
+                    }
+
+                    foreach (var type in socketComponent._equippableWeaponTypes)
+                    {
+                        if (type == targetType)
+                        {
+                            correctSocket = socketComponent.gameObject.transform;
+                            break;
+                        }
                     }
                 }
+
+                if (correctSocket == null)
+                {
+                    Debug.Assert(false, "무기를 붙일 수 있는 소켓이 없습니다");
+                    Debug.Break();
+                    return;
+                }
+
             }
 
-            if (correctSocket == null)
+            //아이템 프리팹 생성, 장착
+            GameObject weaponModel = Instantiate(weaponItemAsset._ItemModel, transform);
+
+            WeaponScript weaponScript = null;
+
+            if (weaponItemAsset._WeaponType >= WeaponType.SmallGun && weaponItemAsset._WeaponType <= WeaponType.LargeGun)
             {
-                Debug.Assert(false, "무기를 붙일 수 있는 소켓이 없습니다");
-                Debug.Break();
-                return;
-            }
-
-        }
-
-        //아이템 프리팹 생성, 장착
-        GameObject weaponModel = Instantiate(weaponItemAsset._ItemModel, transform);
-
-        WeaponScript weaponScript = null;
-
-        if (weaponItemAsset._WeaponType >= WeaponType.SmallGun && weaponItemAsset._WeaponType <= WeaponType.LargeGun)
-        {
-            weaponScript = weaponModel.AddComponent<Gunscript2>();
-        }
-        else
-        {
-            weaponScript = weaponModel.AddComponent<WeaponScript>();
-        }
-
-        {
-            weaponScript.Init(nextItemStoreDesc);
-            weaponScript.Equip(this, correctSocket);
-
-            if (layerType == AnimatorLayerTypes.RightHand)
-            {
-                _tempCurrRightWeapon = weaponModel;
+                weaponScript = weaponModel.AddComponent<Gunscript2>();
             }
             else
             {
-                _tempCurrLeftWeapon = weaponModel;
+                weaponScript = weaponModel.AddComponent<WeaponScript>();
             }
 
-            StateGraphAsset stateGraphAsset = weaponItemAsset._WeaponStateGraph;
-
-            StateGraphType stateGraphType = (layerType == AnimatorLayerTypes.RightHand == true)
-                ? StateGraphType.WeaponState_RightGraph
-                : StateGraphType.WeaponState_LeftGraph;
-
-            //장착한 후, 상태그래프를 교체한다.
-            GCST<StateContoller>().EquipStateGraph(stateGraphAsset, stateGraphType);
-
-
-            //장착한 후, 콜라이더를 업데이트 한다.
-            ColliderScript weaponColliderScript = weaponModel.GetComponentInChildren<ColliderScript>();
-            if (weaponColliderScript != null)
             {
-                /*---------------------------------------------------------
-                |NOTI| 아직 방패, 총은 충돌체 필요없음
-                ---------------------------------------------------------*/
+                weaponScript.Init(nextItemStoreDesc);
+                weaponScript.Equip(this, correctSocket);
 
-                ColliderAttachType colliderType = CalculateAttachType(weaponColliderScript.GetAttachType(), layerType);
-                GCST<CharacterColliderScript>().ChangeCollider(colliderType, weaponColliderScript.gameObject);
-                weaponColliderScript.gameObject.SetActive(false);
+                if (layerType == AnimatorLayerTypes.RightHand)
+                {
+                    _tempCurrRightWeapon = weaponModel;
+                }
+                else
+                {
+                    _tempCurrLeftWeapon = weaponModel;
+                }
+
+                StateGraphAsset stateGraphAsset = weaponItemAsset._WeaponStateGraph;
+
+                StateGraphType stateGraphType = (layerType == AnimatorLayerTypes.RightHand == true)
+                    ? StateGraphType.WeaponState_RightGraph
+                    : StateGraphType.WeaponState_LeftGraph;
+
+                //장착한 후, 상태그래프를 교체한다.
+                GCST<StateContoller>().EquipStateGraph(stateGraphAsset, stateGraphType);
+
+
+                //장착한 후, 콜라이더를 업데이트 한다.
+                ColliderScript weaponColliderScript = weaponModel.GetComponentInChildren<ColliderScript>();
+                if (weaponColliderScript != null)
+                {
+                    /*---------------------------------------------------------
+                    |NOTI| 아직 방패, 총은 충돌체 필요없음
+                    ---------------------------------------------------------*/
+
+                    ColliderAttachType colliderType = CalculateAttachType(weaponColliderScript.GetAttachType(), layerType);
+                    GCST<CharacterColliderScript>().ChangeCollider(colliderType, weaponColliderScript.gameObject);
+                    weaponColliderScript.gameObject.SetActive(false);
+                }
+
+                //HUD 세팅
+                InventoryHUDScript.InventoryHUDType targetHUDType = (layerType == AnimatorLayerTypes.RightHand)
+                    ? InventoryHUDScript.InventoryHUDType.RightWeapon
+                    : InventoryHUDScript.InventoryHUDType.LeftWeapon;
+
+                InventoryHUDScript targetHUDScript = UIManager.Instance._CurrHUD.GetInventoryHUDScript(targetHUDType);
+
+                targetHUDScript.SetImage(nextItemStoreDesc._itemAsset._ItemImage);
             }
         }
     }
@@ -771,7 +878,6 @@ public class CharacterScript : GameActorScript, IHitable
             GCST<StatScript>().StatScriptUpdate();
         }
 
-
         //현재 상태 업데이트
         if (GCST<StateContoller>().enabled == true)
         {
@@ -782,6 +888,45 @@ public class CharacterScript : GameActorScript, IHitable
         {
             GCST<CharacterContollerable>().MoverUpdate();
         }
+    }
+
+    protected void CheckUseableItemChange()
+    {
+        if (UIManager.Instance.IsConsumeInput() == true)
+        {
+            return;
+        }
+
+        float axisVal = Input.GetAxis(_changeUseableItemKey);
+
+        if (axisVal == 0.0f)
+        {
+            return;
+        }
+
+        int nextVal = (axisVal > 0.0f)
+            ? 1
+            : -1;
+
+        _currUseableItemIndex += nextVal;
+
+        if (_currUseableItemIndex >= _tempMaxUseableSlot)
+        {
+            _currUseableItemIndex %= _tempMaxUseableSlot;
+        }
+
+        if (_currUseableItemIndex < 0)
+        {
+            _currUseableItemIndex = _tempMaxUseableSlot - 1;
+        }
+
+        Sprite itemSprite = (_tempUseableItemDescs[_currUseableItemIndex] == null)
+            ? null
+            : _tempUseableItemDescs[_currUseableItemIndex]._itemAsset._ItemImage;
+
+        InventoryHUDScript targetHUDScript = UIManager.Instance._CurrHUD.GetInventoryHUDScript(InventoryHUDScript.InventoryHUDType.Useable);
+
+        targetHUDScript.SetImage(itemSprite);
     }
 
 
@@ -798,7 +943,7 @@ public class CharacterScript : GameActorScript, IHitable
     }
 
 
-    public void SetWeapon(bool isRightWeapon, int index, ItemStoreDesc_Weapon weaponInfo)
+    public void SetEquipItem_Weapon(bool isRightWeapon, int index, ItemStoreDesc_Weapon weaponInfo)
     {
         List<ItemStoreDesc_Weapon> targetWeaponPrefabs = (isRightWeapon == true)
             ? _tempRightWeaponPrefabs
@@ -832,9 +977,30 @@ public class CharacterScript : GameActorScript, IHitable
                 _currLeftWeaponIndex = _tempMaxWeaponSlot - 1;
             }
         }
-        
+
         GCST<CharacterAnimatorScript>().CalculateBodyWorkType_ChangeWeapon(_tempGrabFocusType, isRightWeapon, -1, true);
+        return;
     }
+
+    public void SetEquipItem_Useable(int index, ItemStoreDescBase useableItemDesc)
+    {
+        if ((index == _currUseableItemIndex) == true)
+        {
+            InventoryHUDScript targetHUDScript = UIManager.Instance._CurrHUD.GetInventoryHUDScript(InventoryHUDScript.InventoryHUDType.Useable);
+
+            Sprite targetSprite = (useableItemDesc == null)
+                ? null
+                :useableItemDesc._itemAsset._ItemImage;
+
+            targetHUDScript.SetImage(targetSprite);
+        }
+
+        _tempUseableItemDescs[index] = useableItemDesc;
+
+        return;
+    }
+
+
 
     public void CheckBehave(AdditionalBehaveType additionalBehaveType)
     {
@@ -850,7 +1016,7 @@ public class CharacterScript : GameActorScript, IHitable
                 {
                     if (UIManager.Instance.IsConsumeInput() == true)
                     {
-                        return;
+                        break;
                     }
 
                     bool weaponChangeTry = false;
@@ -885,7 +1051,7 @@ public class CharacterScript : GameActorScript, IHitable
                     //무기 전환을 시도하지 않았다. 아무일도 일어나지 않을것이다.
                     if (weaponChangeTry == false) 
                     {
-                        return;
+                        break;
                     }
 
                     int willUsingAnimatorLayer = 0;
@@ -941,7 +1107,7 @@ public class CharacterScript : GameActorScript, IHitable
 
                     if (isChangeWeaponHandlingTry == false)
                     {
-                        return; //양손잡기 시도가 이루어지지 않았다. 아무일도 일어나지 않는다
+                        break; //양손잡기 시도가 이루어지지 않았다. 아무일도 일어나지 않는다
                     }
 
                     GameObject targetWeapon = (isRightHandWeapon == true)
@@ -950,7 +1116,7 @@ public class CharacterScript : GameActorScript, IHitable
 
                     if (targetWeapon == null)
                     {
-                        return; //양손잡기를 시도했지만 무기가 없다.
+                        break; //양손잡기를 시도했지만 무기가 없다.
                     }
 
                     bool isRelease = false;
@@ -997,52 +1163,50 @@ public class CharacterScript : GameActorScript, IHitable
 
             case AdditionalBehaveType.UseItem_Drink:
                 {
-                    ItemAsset_Consume newTestingItem = null;
-
-                    if (Input.GetKeyDown(_useItemKeyCode1) == true)
+                    if (UIManager.Instance.IsConsumeInput() == true)
                     {
-                        newTestingItem = ItemInfoManager.Instance.GetItemInfo(60) as ItemAsset_Consume;
+                        break;
                     }
 
-                    if (newTestingItem == null)
+                    if (Input.GetKeyDown(_useUseableItemKey) == false)
                     {
-                        return;
+                        break;
                     }
 
-                    if (GCST<StateContoller>().GetCurrState()._myState._canUseItem == false)
-                    {
-                        return;
-                    }
+                    ItemStoreDescBase useableItemStoreDesc = _tempUseableItemDescs[_currUseableItemIndex];
 
+                    if (useableItemStoreDesc == null)
+                    {
+                        break;
+                    }
 
                     //사용 부위 체크
-                    int willBusyLayer = 0;
-
+                    //int willBusyLayer = 0;
                     {
                         ////순수 아이템만으로 필요한 레이어 체크
-                        //if (newTestingItem._UsingItemMustNotBusyLayers != null || newTestingItem._UsingItemMustNotBusyLayers.Count > 0)
+                        //if (useableItemAsset._UsingItemMustNotBusyLayers != null || useableItemAsset._UsingItemMustNotBusyLayers.Count > 0)
                         //{
-                        //    if (newTestingItem._UsingItemMustNotBusyLayer < 0)
+                        //    if (useableItemAsset._UsingItemMustNotBusyLayer < 0)
                         //    {
-                        //        newTestingItem._UsingItemMustNotBusyLayer = 0;
+                        //        useableItemAsset._UsingItemMustNotBusyLayer = 0;
 
-                        //        foreach (var item in newTestingItem._UsingItemMustNotBusyLayers)
+                        //        foreach (var item in useableItemAsset._UsingItemMustNotBusyLayers)
                         //        {
-                        //            newTestingItem._UsingItemMustNotBusyLayer = (newTestingItem._UsingItemMustNotBusyLayer | 1 << (int)item);
+                        //            useableItemAsset._UsingItemMustNotBusyLayer = (useableItemAsset._UsingItemMustNotBusyLayer | 1 << (int)item);
                         //        }
                         //    }
 
                         //    willBusyLayer = newTestingItem._UsingItemMustNotBusyLayer;
                         //}
 
-                        //현재 무기 파지법에 의해 필요한 레이어 체크
-                        if (_tempCurrRightWeapon != null)
-                        {
-                            willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.RightHand);
-                        }
+                        ////현재 무기 파지법에 의해 필요한 레이어 체크
+                        //if (_tempCurrRightWeapon != null)
+                        //{
+                        //    willBusyLayer = willBusyLayer | (1 << (int)AnimatorLayerTypes.RightHand);
+                        //}
                     }
 
-
+                    int willBusyLayer = (1 << (int)AnimatorLayerTypes.RightHand | 1 << (int)AnimatorLayerTypes.Head);
 
                     if ((currentAnimatorBusyLayerBitShift & willBusyLayer) != 0)
                     {
@@ -1050,7 +1214,7 @@ public class CharacterScript : GameActorScript, IHitable
                     }
 
                     //Work를 담는다 이전에 Lock 계산을 끝낼것.
-                    GCST<CharacterAnimatorScript>().CalculateBodyWorkType_UseItem_Drink(_tempGrabFocusType, newTestingItem, willBusyLayer);
+                    GCST<CharacterAnimatorScript>().CalculateBodyWorkType_UseItem_Drink(_tempGrabFocusType, useableItemStoreDesc, willBusyLayer);
                 }
                 break;
 

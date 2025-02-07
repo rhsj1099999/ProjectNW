@@ -33,6 +33,11 @@ public class PlayerScript : CharacterScript
     {
         base.Update();
 
+        //임시...휠 드래그 소모템 변경 체크
+        {
+            CheckUseableItemChange();
+        }
+
 
         //인벤토리 오픈코드
         {

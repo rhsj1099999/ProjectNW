@@ -6,13 +6,22 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using Unity.VisualScripting;
 
+/*-------------------------------------------------------
+|NOTI| ★★★★★★★★★★★★★★★★★★★★★★★★★★★
+Canvas Scaler 가 작동중입니다.
+
+UI 위치 변경시 
+    AnchoredPosition
+    Position
+
+의 정확한 구분을 하세여!
+★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+-------------------------------------------------------*/
+
+
+
 public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler
 {
-    /*-------------------------------------------------------
-    아이템을 인벤토리, 장비창 등 생성될때 이것을 사용해 생성한다.
-    즉 UI 객체로 동작한다.
-    맵에 뿌려진 Item은 이것은 아닌데 이거랑 연관이 깊을거다
-    -------------------------------------------------------*/
     private RectTransform _myRectTransform = null;
     private ItemStoreDescBase _itemStoreDesc;
     [SerializeField] private ItemCountUI _itemCountUIObject = null;

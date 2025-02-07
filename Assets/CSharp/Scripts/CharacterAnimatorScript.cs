@@ -55,6 +55,9 @@ public class BodyPartBlendingWork
         WorkComplete,
         OwnerChangeGrabFocusType,
         OwnerIncreaeWeaponIndex,
+        DestroyHandObject,
+        ActiveNextLayerDirectly,
+        ApplyComsumeableItemSkill,
         End,
     }
 
@@ -69,6 +72,7 @@ public class BodyPartBlendingWork
     public CoroutineLock _coroutineLock = null;
     public Transform _weaponEquipTransform = null;
     public ItemStoreDescBase _createItemStoreDesc = null;
+    public List<string> _buffNames = null;
 }
 
 
@@ -1164,11 +1168,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
-    public void CalculateBodyWorkType_UseItem_Drink(WeaponGrabFocus ownerWeaponGrabFocusType, ItemAsset_Consume usingItemInfo, int layerLockResult)
+    public void CalculateBodyWorkType_UseItem_Drink(WeaponGrabFocus ownerWeaponGrabFocusType, ItemStoreDescBase usingItemInfo, int layerLockResult)
     {
-        Debug.Assert(false, "이곳은 수정해야합니다");
-        Debug.Break();
-
         HashSet<int> lockCompares = new HashSet<int>();
 
         int rightHandIndex = (int)AnimatorLayerTypes.RightHand;
@@ -1229,7 +1230,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             //반대손을 무기 집어넣기 애니메이션으로 바꾼다.
             _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
             {
-                _bodyPartWorks[rightHandIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(weaponItemAsset._WeaponType).GetOneHandHandlingAnimation(true);
+                _bodyPartWorks[rightHandIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(weaponItemAsset._WeaponType).GetPutawayAnimation(true);
             }
 
             //Layer Weight로 점점 올린다.
@@ -1249,7 +1250,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         //아이템을 사용하는 부위들에게 일감을 배정한다.
         {
-            List<AnimatorLayerTypes> mustUsingLayers = usingItemInfo._UsingItemMustNotBusyLayers;
+            ItemAsset_Consume itemAsset_Consume = (ItemAsset_Consume)usingItemInfo._itemAsset;
+            List<AnimatorLayerTypes> mustUsingLayers = itemAsset_Consume._UsingItemMustNotBusyLayers;
 
             foreach (AnimatorLayerTypes type in mustUsingLayers)
             {
@@ -1262,11 +1264,19 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                     }
                 }
 
+                //아이템을 손에 붙입니다--------------------------------------------------------------------------
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
+                {
+                    _bodyPartWorks[rightHandIndex].Last.Value._createItemStoreDesc = usingItemInfo;
+                }
+                //-----------------------------------------------------------------------------------------------
+
+
 
                 //아이템을 사용하는 애니메이션으로 바꾼다.
                 _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
                 {
-                    _bodyPartWorks[typeIndex].Last.Value._animationClip = usingItemInfo._UsingItemAnimation;
+                    _bodyPartWorks[typeIndex].Last.Value._animationClip = itemAsset_Consume._UsingItemAnimation_Phase1;
                 }
 
                 //Layer Weight로 점점 올린다.
@@ -1274,6 +1284,50 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
                 //애니메이션이 다 재생될때까지 홀딩한다.
                 _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+
+
+
+                //Phase1이 끝났습니다
+                {
+                    //스킬들을 적용합니다
+                    _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ApplyComsumeableItemSkill));
+                    {
+                        _bodyPartWorks[typeIndex].Last.Value._buffNames = itemAsset_Consume._Buffs;
+                    }
+
+                    if (itemAsset_Consume._UsingItemAnimation_Phase2 != null)
+                    {
+                        //Phase2가 존재하나요? -> 다시 주머니에 집어넣는 충전형인가봐요
+
+                        //충전횟수를 1회 감소시킨다.
+                        {
+                            Debug.Log("-------------- Consumeable Phase 1 End --------------");
+                        }
+
+                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
+                        {
+                            _bodyPartWorks[typeIndex].Last.Value._animationClip = itemAsset_Consume._UsingItemAnimation_Phase2;
+                        }
+
+                        //Layer Weight를 즉시 1로 세팅한다.
+                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayerDirectly));
+
+                        //애니메이션이 다 재생될때까지 홀딩한다.
+                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+                    }
+                    else
+                    {
+                        //카운트를 하나 감소시킵니다.
+                        //이때 다쓰면 뭘 해야하나요?
+
+                        //HUD 에서 뺍니다.
+                        //장착칸에서 뺍니다.
+                    }
+                }
+
+                //아이템을 손에서 제거합니다---------------------------------------------------------------------- -
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyHandObject));
+                //-----------------------------------------------------------------------------------------------
 
                 //Layer Weight를 즉시 꺼버린다.
                 _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.TurnOffAllLayer));
@@ -1447,6 +1501,12 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
+    protected IEnumerator OwnerDestroyHandObject(AnimatorLayerTypes targetBody)
+    {
+        _owner.DestroyHandObject(targetBody);
+        return null;
+    }
+
     protected IEnumerator OwnerIncreaseWeaponIndex(AnimatorLayerTypes targetBody)
     {
         _owner.IncreaseWeaponIndex(targetBody);
@@ -1459,7 +1519,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         return null;
     }
 
-    protected IEnumerator CreateWeaponModelAndEquipCoroutine(AnimatorLayerTypes layerType, ItemStoreDesc_Weapon nextWeaponStoreDesc)
+    protected IEnumerator CreateWeaponModelAndEquipCoroutine(AnimatorLayerTypes layerType, ItemStoreDescBase nextWeaponStoreDesc)
     {
         CreateWeaponModelAndEquip(layerType, nextWeaponStoreDesc);
         return null;
@@ -1471,10 +1531,65 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         return null;
     }
 
-    protected void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemStoreDesc_Weapon nextWeaponStoreDesc)
+    protected void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemStoreDescBase nextWeaponStoreDesc)
     {
         _owner.CreateWeaponModelAndEquip(layerType, nextWeaponStoreDesc);
     }
+
+    protected IEnumerator ApplyComsumeableItemSkill(AnimatorLayerTypes layerType, List<string> buffNames)
+    {
+        _owner.ApplyPotionBuff(buffNames);
+        return null;
+    }
+
+
+    protected IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveNextLayerDirectly(AnimatorLayerTypes layerType)
+    {
+        AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
+
+        if (targetBlendingDesc == null)
+        {
+            Debug.Assert(false, "사용하지 않는 파트에 대해 함수를 호출했습니다");
+            Debug.Break();
+            yield break;
+        }
+
+        int targetHandMainLayerIndex = (int)targetBlendingDesc._myPart * 2;
+        int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
+
+        while (true)
+        {
+            float mainLayerBlendDelta = 0.0f;
+            float subLayerBlendDelta = 0.0f;
+
+            mainLayerBlendDelta = (targetBlendingDesc._isUsingFirstLayer == true)
+                ? 1.0f
+                : -1.0f;
+
+            subLayerBlendDelta = -1.0f * mainLayerBlendDelta;
+
+            targetBlendingDesc._blendTarget += mainLayerBlendDelta;
+            targetBlendingDesc._blendTarget_Sub += subLayerBlendDelta;
+
+            targetBlendingDesc._blendTarget = Mathf.Clamp(targetBlendingDesc._blendTarget, 0.0f, 1.0f);
+            targetBlendingDesc._blendTarget_Sub = Mathf.Clamp(targetBlendingDesc._blendTarget_Sub, 0.0f, 1.0f);
+
+            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, targetBlendingDesc._blendTarget);
+            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, targetBlendingDesc._blendTarget_Sub);
+
+            float target = (targetBlendingDesc._isUsingFirstLayer == true)
+                ? targetBlendingDesc._blendTarget
+                : targetBlendingDesc._blendTarget_Sub;
+
+            if (target >= 1.0f || target <= 0.0f)
+            {
+                break;
+            }
+
+            yield return null;
+        }
+    }
+
 
     protected IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveNextLayer(AnimatorLayerTypes layerType)
     {
@@ -1562,6 +1677,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             yield return null;
         }
     }
+
 
     protected IEnumerator ChangeNextLayerWeightSubCoroutine_DeActiveAllLayer(AnimatorLayerTypes layerType)
     {
@@ -1747,7 +1863,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                     bool isRightHand = (layerType == AnimatorLayerTypes.RightHand);
                     startedCoroutine = StartCoroutine_CallBackAction
                     (
-                        CreateWeaponModelAndEquipCoroutine(layerType, work._createItemStoreDesc as ItemStoreDesc_Weapon),
+                        CreateWeaponModelAndEquipCoroutine(layerType, work._createItemStoreDesc),
                         StartNextCoroutine,
                         layerType
                     );
@@ -1814,6 +1930,41 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                     startedCoroutine = StartCoroutine_CallBackAction
                     (
                         OwnerIncreaseWeaponIndex(layerType),
+                        StartNextCoroutine,
+                        layerType
+                    );
+                }
+                break;
+
+            case BodyPartWorkType.DestroyHandObject:
+                {
+                    startedCoroutine = StartCoroutine_CallBackAction
+                    (
+                        OwnerDestroyHandObject(layerType),
+                        StartNextCoroutine,
+                        layerType
+                    );
+                }
+                break;
+
+            case BodyPartWorkType.ActiveNextLayerDirectly:
+                {
+                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
+                    startedCoroutine = StartCoroutine_CallBackAction
+                    (
+                        ChangeNextLayerWeightSubCoroutine_ActiveNextLayerDirectly(layerType),
+                        StartNextCoroutine,
+                        layerType
+                    );
+                }
+                break;
+
+            case BodyPartWorkType.ApplyComsumeableItemSkill:
+                {
+                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
+                    startedCoroutine = StartCoroutine_CallBackAction
+                    (
+                        ApplyComsumeableItemSkill(layerType, work._buffNames),
                         StartNextCoroutine,
                         layerType
                     );

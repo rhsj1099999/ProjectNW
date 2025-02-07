@@ -70,6 +70,7 @@ public class EquipmentBoard : BoardUIBaseScript
             else if (storeDesc._itemAsset._EquipType == EquipType.UseAndComsumeableByCharacter)
             {
                 //사용템 장착 해제 함수
+                UnEquipItem_Useable(storeDesc);
             }
             else
             {
@@ -97,13 +98,17 @@ public class EquipmentBoard : BoardUIBaseScript
                 return;
             }
 
-            if (storedDesc._itemAsset._EquipType == EquipType.UseAndComsumeableByCharacter)
+            else if (storedDesc._itemAsset._EquipType == EquipType.UseAndComsumeableByCharacter)
             {
                 //사용템 장착 함수 콜
+                EquipItem_Useable(storedDesc, caller);
                 return;
             }
 
-            EquipItemMesh(storedDesc);
+            else
+            {
+                EquipItemMesh(storedDesc);
+            }
         }
     }
 
@@ -141,13 +146,6 @@ public class EquipmentBoard : BoardUIBaseScript
         startX = 0;
         startY = 0;
 
-        if (storedDesc._itemAsset._EquipType == EquipType.UseAndComsumeableByCharacter)
-        {
-            Debug.Assert(false, "사용템 장착 순서입니다 미구현!");
-            Debug.Break();
-            return false;
-        }
-
         if (_currActivatedCell.Contains(caller) == true)
         {
             return false;
@@ -172,7 +170,7 @@ public class EquipmentBoard : BoardUIBaseScript
 
         UIComponent myUIComponent = GetComponentInParent<UIComponent>();
 
-        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, storeDesc as ItemStoreDesc_Weapon);
+        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetEquipItem_Weapon(isRight, index, storeDesc as ItemStoreDesc_Weapon);
     }
 
     public void UnEquipItem_Weapon(ItemStoreDescBase storeDesc)
@@ -200,7 +198,36 @@ public class EquipmentBoard : BoardUIBaseScript
 
         int index = targetCell.gameObject.name.Last() - 49;
 
-        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetWeapon(isRight, index, null);
+        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetEquipItem_Weapon(isRight, index, null);
+    }
+
+
+
+    public void EquipItem_Useable(ItemStoreDescBase storeDesc, BoardUICellBase caller)
+    {
+        bool isRight = caller.gameObject.name.Contains("Right");
+
+        int index = caller.gameObject.name.Last() - 49;
+
+        UIComponent myUIComponent = GetComponentInParent<UIComponent>();
+
+        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetEquipItem_Useable(index, storeDesc);
+    }
+
+    public void UnEquipItem_Useable(ItemStoreDescBase storeDesc)
+    {
+        HashSet<BoardUICellBase> targetCells = null;
+        _currActivatedCell_ByItem.TryGetValue(storeDesc, out targetCells);
+
+        BoardUICellBase targetCell = targetCells.First();
+
+        UIComponent myUIComponent = GetComponentInParent<UIComponent>();
+
+        bool isRight = targetCell.gameObject.name.Contains("Right");
+
+        int index = targetCell.gameObject.name.Last() - 49;
+
+        myUIComponent.GetUIControllingComponent().gameObject.GetComponentInChildren<PlayerScript>().SetEquipItem_Useable(index, null);
     }
 
     private void UnEquipUI(ItemStoreDescBase storeDesc)
