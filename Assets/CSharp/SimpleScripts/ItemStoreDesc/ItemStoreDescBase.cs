@@ -51,6 +51,13 @@ public class ItemStoreDescBase
     {
         _count = count;
         _itemCountDelegate?.Invoke(_count);
+
+        if (_count <= 0)
+        {
+            //0개 -> 없어져야한다!
+            int a = 10;
+            _owner.DeleteOnMe(this);
+        }
     }
 
     public void AddCountDeleAction(Action<int> action)

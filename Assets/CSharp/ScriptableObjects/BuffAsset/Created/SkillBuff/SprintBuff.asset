@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
+  m_Name: SprintBuff
+  m_EditorClassIdentifier: 
+  _buffKey: 9
+  _buffName: "\uB2EC\uB9AC\uAE30\uC774\uC18D\uC99D\uAC00\uBC84\uD504"
+  _maxCount: 1
+  _refresh: 0
+  _durationExpireOnce: 0
+  _specialAction_OnlyOne: 0
+  _buffWorks:
+  - _buffAction:
+      _delegateTiming: 10
+      _buffActionType: 4
+    _targetType: 16
+    _buffApplyType: 1
+    _targetActiveStatType: 0
+    _activeStatApplyType: 1
+    _amount: 3
+  - _buffAction:
+      _delegateTiming: 10
+      _buffActionType: 4
+    _targetType: 13
+    _buffApplyType: 2
+    _targetActiveStatType: 0
+    _activeStatApplyType: 1
+    _amount: 3
+  _isTemporary: 0
+  _isDebuff: 0
+  _duration: 100
+  _buffUIImage: {fileID: 21300000, guid: f6144d9232c28b24aa1a9ccd7a6e14f8, type: 3}

@@ -1256,6 +1256,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             foreach (AnimatorLayerTypes type in mustUsingLayers)
             {
                 int typeIndex = (int)type;
+
                 if (lockCompares.Contains(typeIndex) == false)
                 {
                     _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.WaitCoroutineUnlock));
@@ -1263,15 +1264,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                         _bodyPartWorks[typeIndex].Last.Value._coroutineLock = waitForRightHandReady;
                     }
                 }
-
-                //아이템을 손에 붙입니다--------------------------------------------------------------------------
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
-                {
-                    _bodyPartWorks[rightHandIndex].Last.Value._createItemStoreDesc = usingItemInfo;
-                }
-                //-----------------------------------------------------------------------------------------------
-
-
 
                 //아이템을 사용하는 애니메이션으로 바꾼다.
                 _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
@@ -1282,27 +1274,45 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 //Layer Weight로 점점 올린다.
                 _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
 
+                if (type == AnimatorLayerTypes.RightHand)
+                {
+                    //아이템을 손에 붙입니다--------------------------------------------------------------------------
+                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
+                    {
+                        _bodyPartWorks[rightHandIndex].Last.Value._createItemStoreDesc = usingItemInfo;
+                    }
+                    //-----------------------------------------------------------------------------------------------
+                }
+
+
                 //애니메이션이 다 재생될때까지 홀딩한다.
                 _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
 
-
-
                 //Phase1이 끝났습니다
                 {
-                    //스킬들을 적용합니다
-                    _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ApplyComsumeableItemSkill));
+                    if (type == AnimatorLayerTypes.RightHand)
                     {
-                        _bodyPartWorks[typeIndex].Last.Value._buffNames = itemAsset_Consume._Buffs;
+                        //스킬들을 적용합니다
+                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ApplyComsumeableItemSkill));
+                        {
+                            _bodyPartWorks[typeIndex].Last.Value._buffNames = itemAsset_Consume._Buffs;
+                        }
+
+                        
+                        if (itemAsset_Consume._UsingItemAnimation_Phase2 != null)
+                        {
+                            //충전횟수를 1회 감소시킨다.
+                        }
+                        else
+                        {
+                            int nextCount = usingItemInfo._Count - 1;
+                            usingItemInfo.SetItemCount(nextCount);
+                        }
                     }
 
                     if (itemAsset_Consume._UsingItemAnimation_Phase2 != null)
                     {
                         //Phase2가 존재하나요? -> 다시 주머니에 집어넣는 충전형인가봐요
-
-                        //충전횟수를 1회 감소시킨다.
-                        {
-                            Debug.Log("-------------- Consumeable Phase 1 End --------------");
-                        }
 
                         _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
                         {
@@ -1315,22 +1325,17 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                         //애니메이션이 다 재생될때까지 홀딩한다.
                         _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
                     }
-                    else
-                    {
-                        //카운트를 하나 감소시킵니다.
-                        //이때 다쓰면 뭘 해야하나요?
-
-                        //HUD 에서 뺍니다.
-                        //장착칸에서 뺍니다.
-                    }
                 }
 
-                //아이템을 손에서 제거합니다---------------------------------------------------------------------- -
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyHandObject));
-                //-----------------------------------------------------------------------------------------------
-
+                if (type == AnimatorLayerTypes.RightHand)
+                {
+                    //아이템을 손에서 제거합니다---------------------------------------------------------------------- -
+                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyHandObject));
+                    //-----------------------------------------------------------------------------------------------
+                }
+                
                 //Layer Weight를 즉시 꺼버린다.
-                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.TurnOffAllLayer));
+                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
 
                 lockCompares.Add(typeIndex);
             }

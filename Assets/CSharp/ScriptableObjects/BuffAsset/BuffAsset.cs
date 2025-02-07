@@ -9,6 +9,35 @@ using static StatScript;
 [CreateAssetMenu(fileName = "BuffAsset", menuName = "Scriptable Object/Create_BuffAsset", order = (int)MyUtil.CustomToolOrder.CreateBuffs)]
 public class BuffAsset : ScriptableObject
 {
+    public enum BuffApplyType
+    {
+        //0. Set (강제로 고정시킨다)
+        Set, //이 값이 있으면 이후 값들이 무시된다
+
+        //1. 상수값 증가
+        Plus,
+        Minus,
+
+        //2. 퍼센테이지 증가
+        PercentagePlus,
+        PercentageMinus,
+
+        //3. 곱증가
+        Multiply,
+        Devide,
+
+        End,
+    }
+
+    //[SerializeField] private int _buffKey = 0;
+    //public int _BuffKey => _buffKey;
+    public int _buffKey = 0;
+
+    [SerializeField] private string _buffName = "";
+    public string _BuffName => _buffName;
+
+
+
     /*------------------------------------------------------------
     |NOTI| 동일 이름의 버프린데 레벨만 다르다 => 그래도 다른 버프키다
     ------------------------------------------------------------*/
@@ -22,39 +51,21 @@ public class BuffAsset : ScriptableObject
     [Serializable]
     public class BuffApplyWork
     {
-        public enum BuffApplyType
-        {
-            //0. Set (강제로 고정시킨다)
-            Set, //이 값이 있으면 이후 값들이 무시된다
 
-            //1. 상수값 증가
-            Plus,
-            Minus,
-
-            //2. 퍼센테이지 증가
-            PercentagePlus,
-            PercentageMinus,
-
-            //3. 곱증가
-            Multiply,
-            Devide,
-
-            End,
-        }
 
         public BuffActionWrapper _buffAction = new BuffActionWrapper();
+
         public PassiveStat _targetType = PassiveStat.MaxHP;
         public BuffApplyType _buffApplyType = BuffApplyType.Plus;
+
+        public ActiveStat _targetActiveStatType = ActiveStat.Hp;
+        public BuffApplyType _activeStatApplyType = BuffApplyType.Plus;
+
         public float _amount = 0.0f;
     }
 
 
-    //[SerializeField] private int _buffKey = 0;
-    //public int _BuffKey => _buffKey;
-    public int _buffKey = 0;
 
-    [SerializeField] private string _buffName = "";
-    public string _BuffName => _buffName;
 
 
 
@@ -84,10 +95,11 @@ public class BuffAsset : ScriptableObject
     //--------------------------------------------------------------
 
 
-
-
     [SerializeField] private List<BuffApplyWork> _buffWorks = new List<BuffApplyWork>();
     public List<BuffApplyWork> _BuffWorks => _buffWorks;
+
+    [SerializeField] private bool _isTemporary = false;
+    public bool _IsTemporary => _isTemporary;
 
     [SerializeField] private bool _isDebuff = false;
     public bool _IsDebuff => _isDebuff;

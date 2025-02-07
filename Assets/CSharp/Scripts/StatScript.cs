@@ -351,13 +351,21 @@ public class StatScript : GameCharacterSubScript
             //버프가 없습니다. 처음 만들어집니다
 
             runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
+
+            BuffChangeStatCalculate(runtimeBuffAsset, runtimeBuffAsset._Count);
+
+            if (buff._IsTemporary == true)
+            {
+                //관리대상이 아니다.
+                return;
+            }
+
             if (buff._Duration >= 0.0f)
             {
                 runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
             }
-            target.Add(buff, runtimeBuffAsset);
 
-            BuffChangeStatCalculate(runtimeBuffAsset, runtimeBuffAsset._Count);
+            target.Add(buff, runtimeBuffAsset);
 
             BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
 
@@ -424,6 +432,15 @@ public class StatScript : GameCharacterSubScript
         }
 
         ReCacheBuffAmoints(reCachingTargets);
+
+        foreach (var buffWork in buffWorks)
+        {
+            ActiveStat activeStatType = buffWork._targetActiveStatType;
+            if (activeStatType != ActiveStat.End)
+            {
+                ChangeActiveStat(activeStatType, (int)buffWork._amount);
+            }
+        }
     }
     
     private void ReadAndApply(BuffApplyWork buffWork, int deltaCount)

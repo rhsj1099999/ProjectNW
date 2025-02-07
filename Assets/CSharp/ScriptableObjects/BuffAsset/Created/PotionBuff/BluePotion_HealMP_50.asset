@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
-  m_Name: HeistPotion_LV0
+  m_Name: BluePotion_HealMP_50
   m_EditorClassIdentifier: 
   _buffKey: 7
-  _buffName: "\uD5E4\uC774\uC2A4\uD2B8\uBB3C\uC57D\uBC84\uD504_LV0"
+  _buffName: "\uD30C\uB780\uD3EC\uC158\uC5E0\uD53C\uD68C\uBCF5_50"
   _maxCount: 1
   _refresh: 0
   _durationExpireOnce: 0
@@ -22,9 +22,12 @@ MonoBehaviour:
   - _buffAction:
       _delegateTiming: 10
       _buffActionType: 4
-    _targetType: 16
-    _buffApplyType: 1
-    _amount: 2
+    _targetType: 2048
+    _buffApplyType: 7
+    _targetActiveStatType: 2
+    _activeStatApplyType: 1
+    _amount: 50
+  _isTemporary: 1
   _isDebuff: 0
-  _duration: 30
-  _buffUIImage: {fileID: 21300000, guid: 5e09771f4889ec848bbb02b3554ae4ef, type: 3}
+  _duration: 100
+  _buffUIImage: {fileID: 21300000, guid: c6d938c2f9a2b514a84f3f0ffcdcd6e0, type: 3}
