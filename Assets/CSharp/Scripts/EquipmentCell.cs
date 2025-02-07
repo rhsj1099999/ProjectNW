@@ -20,6 +20,13 @@ public class EquipmentCell : BoardUICellBase
     {
         Debug.Assert(_owner != null, "Cell의 오너는 널일 수 없다.");
 
+        //All type은 Armor 입니다. 따라서 모든 부위에 장착할 수 있는 버그를 수정
+        if ((_equipType < EquipType.HumanHead || _equipType > EquipType.HumanBackpack) &&
+            storedDesc._itemAsset._EquipType == EquipType.All)
+        {
+            return false;
+        }
+
         //장착하려는 셀과 다른 타입입니다.
         if ((storedDesc._itemAsset._EquipType & _equipType) == (int)EquipType.None)
         {

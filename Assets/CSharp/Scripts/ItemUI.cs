@@ -269,11 +269,5 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
         float angle = (_additionalRotating_Dynamic == true) ? 90.0f : -90.0f;
 
         _myRectTransform.RotateAround(_myRectTransform.position, axis, angle);
-
-
-        //회전상태라면. 
-        {
-
-        }
     }
 }

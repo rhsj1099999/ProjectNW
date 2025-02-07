@@ -156,7 +156,10 @@ public class EquipmentBoard : BoardUIBaseScript
         foreach (var cell in cells)
         {
             //장착하려는 아이템중에 겹치는게 하나라도 있으면 무조건 종료 => 머리를 장착하고 있는데 전신장비를 입고있다 그런거..
-            if (_currActivatedCell.Contains(cell) == true) {return false;}
+            if (_currActivatedCell.Contains(cell) == true) 
+            {
+                return false;
+            }
         }
 
         return true;
@@ -349,7 +352,7 @@ public class EquipmentBoard : BoardUIBaseScript
 
         //장착하려는게 Armor 다
         if ((storeDesc._itemAsset._EquipType >= EquipType.HumanHead && storeDesc._itemAsset._EquipType <= EquipType.HumanBackpack) ||
-            storeDesc._itemAsset._EquipType >= EquipType.All)
+            storeDesc._itemAsset._EquipType == EquipType.All)
         {
             foreach (KeyValuePair<EquipType, BoardUICellBase> cell in _equipCellLinked_Armor)
             {

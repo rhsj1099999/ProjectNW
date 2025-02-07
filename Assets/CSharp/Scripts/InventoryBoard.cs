@@ -11,6 +11,7 @@ public class InventoryBoard : BoardUIBaseScript
 
     [SerializeField] private int _rows = 4;
     [SerializeField] private int _cols = 4;
+
     [SerializeField] private GameObject _cellPrefab = null;
     [SerializeField] private GameObject _itemUIPrefab = null;
 
@@ -34,6 +35,8 @@ public class InventoryBoard : BoardUIBaseScript
     {
         EditorApplication.delayCall += () =>
         {
+            RectTransform inventoryCellTransform = (RectTransform)_cellPrefab.transform;
+
             if (this == null) // 오브젝트가 유효한지 확인
             {
                 return;
@@ -46,7 +49,7 @@ public class InventoryBoard : BoardUIBaseScript
                 return;
             }
 
-            rectTransform.sizeDelta = new Vector2(_cols * 20, _rows * 20); // n에 따라 크기 변경
+            rectTransform.sizeDelta = new Vector2(_cols * inventoryCellTransform.rect.width, _rows * inventoryCellTransform.rect.height); // n에 따라 크기 변경
         };
     }
 
@@ -62,7 +65,11 @@ public class InventoryBoard : BoardUIBaseScript
             return;
         }
 
-        _myRectTransform.sizeDelta = new Vector2(20 * _cols, 20 * _rows);
+        RectTransform inventoryCellTransform = (RectTransform)_cellPrefab.transform;
+        float cellWidth = inventoryCellTransform.rect.width;
+        float cellHeight = inventoryCellTransform.rect.height;
+
+        _myRectTransform.sizeDelta = new Vector2(cellWidth * _cols, cellHeight * _rows);
 
         BoardCellDesc cellDesc = new BoardCellDesc();
         cellDesc._owner = this;
@@ -75,7 +82,7 @@ public class InventoryBoard : BoardUIBaseScript
 
                 RectTransform cellRectTransform = cellObject.GetComponent<RectTransform>();
                 Vector2 mySize = _myRectTransform.rect.size;
-                Vector2 cellPosition = new Vector2((-mySize.x / 2) + (10) + (20 * j), (mySize.y / 2) - (10) - (20 * i));
+                Vector2 cellPosition = new Vector2((-mySize.x / 2) + (cellWidth/2.0f) + (cellWidth * j), (mySize.y / 2) - (cellHeight/2.0f) - (cellHeight * i));
                 cellRectTransform.anchoredPosition = cellPosition;
 
                 InventoryCell cellComponent = cellObject.GetComponent<InventoryCell>();
@@ -208,31 +215,34 @@ public class InventoryBoard : BoardUIBaseScript
     {
         GameObject itemUI = Instantiate(_itemUIPrefab, _myRectTransform);
 
+        RectTransform inventoryCellTransform = (RectTransform)_cellPrefab.transform;
+        float cellWidth = inventoryCellTransform.rect.width;
+        float cellHeight = inventoryCellTransform.rect.height;
+
         RectTransform itemUIRectTransform = itemUI.transform as RectTransform;
         itemUIRectTransform.localPosition = Vector3.zero;
         itemUIRectTransform.localRotation = Quaternion.identity;
 
         //사이즈변경
-        itemUIRectTransform.sizeDelta = new Vector2(info._SizeX * 20, info._SizeY * 20);
+        itemUIRectTransform.sizeDelta = new Vector2(info._SizeX * cellHeight, info._SizeY * cellHeight);
 
         //위치변경
-        Vector2 cellIndexToMyPosition = new Vector2(-_myRectTransform.rect.size.x / 2 + 10, _myRectTransform.rect.size.y / 2 - 10);
-        cellIndexToMyPosition.x += (targetX * 20);
-        cellIndexToMyPosition.y -= (targetY * 20);
+        Vector2 cellIndexToMyPosition = new Vector2(-_myRectTransform.rect.size.x / 2 + (cellWidth/2.0f), _myRectTransform.rect.size.y / 2 - (cellHeight/2.0f));
+        cellIndexToMyPosition.x += (targetX * cellWidth);
+        cellIndexToMyPosition.y -= (targetY * cellHeight);
 
-        Vector2 itemUISize = new Vector2(info._SizeX * 20, info._SizeY * 20);
+        Vector2 itemUISize = new Vector2(info._SizeX * cellWidth, info._SizeY * cellHeight);
         Vector2 itemUISizeDelta = new Vector2(itemUISize.x / 2, -itemUISize.y / 2);
-        Vector3 itemOffset = new Vector3(-10, 10, 0);
+        Vector3 itemOffset = new Vector3(-cellWidth / 2.0f, cellHeight/2.0f, 0);
 
         itemUIRectTransform.anchoredPosition = cellIndexToMyPosition + itemUISizeDelta + new Vector2(itemOffset.x, itemOffset.y);
-
 
         if (isAdditionalRotated == true)
         {
             int index = (targetY * _cols) + targetX;
             RectTransform cellRectTransform = _cells[index].transform as RectTransform;
             itemUIRectTransform.RotateAround(cellRectTransform.position, cellRectTransform.forward, 90.0f);
-            itemUIRectTransform.anchoredPosition -= new Vector2(0.0f, (float)(info._SizeX - 1) * 20.0f);
+            itemUIRectTransform.anchoredPosition -= new Vector2(0.0f, (info._SizeX - 1) * cellWidth);
         }
 
         return itemUI;
