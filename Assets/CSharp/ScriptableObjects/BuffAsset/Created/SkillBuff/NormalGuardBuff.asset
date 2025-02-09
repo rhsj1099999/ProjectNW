@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
   m_Name: NormalGuardBuff
   m_EditorClassIdentifier: 
-  _buffKey: 3
+  _buffKey: 9
   _buffName: "\uAC00\uB4DC\uBC84\uD504"
   _maxCount: 1
   _refresh: 0
@@ -24,7 +24,10 @@ MonoBehaviour:
       _buffActionType: 4
     _targetType: 8
     _buffApplyType: 1
+    _targetActiveStatType: 4
+    _activeStatApplyType: 7
     _amount: 1
+  _isTemporary: 0
   _isDebuff: 0
   _duration: -1
   _buffUIImage: {fileID: 21300000, guid: a8f75c9b4b7e28a43ba14b689395662e, type: 3}

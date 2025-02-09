@@ -397,42 +397,8 @@ public class InventoryBoard : BoardUIBaseScript
 
         SortedDictionary<int, ItemStoreDescBase> itemKeyCategory = _items[info._ItemKey];
 
-        ItemStoreDescBase storeDesc = null;
-        {
-            if (info._ItemType == ItemAsset.ItemType.Magazine)
-            {
-                storeDesc = new ItemStoreDesc_Magazine(info, itemCount, inventoryIndex, isRotated, this, null);
-            }
-            else if (info._ItemType == ItemAsset.ItemType.Equip)
-            {
-                if (info._EquipType == ItemAsset.EquipType.Weapon)
-                {
-                    ItemAsset_Weapon weaponInfo = info as ItemAsset_Weapon;
-
-                    if (weaponInfo._WeaponType >= ItemAsset_Weapon.WeaponType.SmallGun && weaponInfo._WeaponType <= ItemAsset_Weapon.WeaponType.LargeGun) 
-                    {
-                        //Equip -> Weapon 인듯
-                        storeDesc = new ItemStoreDesc_Weapon_Gun(info, itemCount, inventoryIndex, isRotated, this);
-                    }
-                    else
-                    {
-                        //Equip -> Weapon -> Gun인듯
-                        storeDesc = new ItemStoreDesc_Weapon(info, itemCount, inventoryIndex, isRotated, this);
-                    }
-                }
-                else
-                {
-                    //Equip -> Armor 인듯
-                    storeDesc = new ItemStoreDescBase(info, itemCount, inventoryIndex, isRotated, this);
-                }
-            }
-            else
-            {
-                storeDesc = new ItemStoreDescBase(info, itemCount, inventoryIndex, isRotated, this);
-            }
-        }
+        ItemStoreDescBase storeDesc = ItemInfoManager.Instance.CreateItemStoreDesc(info, itemCount, inventoryIndex, isRotated, this);
         
-
         itemKeyCategory.Add(inventoryIndex, storeDesc);
 
         ItemUI itemBaseComponent = itemUI.GetComponent<ItemUI>();
@@ -622,6 +588,7 @@ public class InventoryBoard : BoardUIBaseScript
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("M16"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("AK47"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("D_Eagle"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Narukami"), 1);
         }
 
 
@@ -656,9 +623,9 @@ public class InventoryBoard : BoardUIBaseScript
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("RedPotion"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("BluePotion"), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("StaminaPotion"), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("SPPotion"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("HeistPotion_LV0"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("StaminaPotion"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Cheese"), 1);
         }
     }
 
@@ -686,39 +653,4 @@ public class InventoryBoard : BoardUIBaseScript
             }
         }
     }
-
-
 }
-
-
-
-//public void MoveItemSameInventory(ItemStoreDescBase storedDesc, int targetX, int targetY)
-//{
-//    //다음 검사 시 빨리 찾기위한 공간갱신
-//    {
-//        UpdateBlank(false, storedDesc);
-//        int inventoryIndex = _cols * targetY + targetX;
-//        storedDesc._storedIndex = inventoryIndex;
-//        UpdateBlank(true, storedDesc);
-//    }
-//}
-
-
-//public void MoveItemDiffrentInventory(ItemStoreDescBase storedDesc, int targetX, int targetY)
-//{
-//    int inventoryIndex = _cols * targetY + targetX;
-//    storedDesc._storedIndex = inventoryIndex;
-//    UpdateBlank(true, storedDesc);
-
-//    GameObject itemUI = CreateInventoryItem(storedDesc._itemAsset, targetX, targetY, inventoryIndex, storedDesc._count, storedDesc._isRotated);
-//    itemUI.GetComponent<ItemUI>().Initialize(this, storedDesc);
-
-//    _items.Add(storedDesc._itemAsset._ItemKey, new Dictionary<int, ItemStoreDescBase>());
-
-//    Dictionary<int, ItemStoreDescBase> itemKeyCategory = _items[storedDesc._itemAsset._ItemKey];
-
-//    itemKeyCategory.Add(inventoryIndex, storedDesc);
-
-//    Debug.Assert(_itemUIs.ContainsKey(storedDesc) == false, "겹치려고 하고있다");
-//    _itemUIs.Add(storedDesc, itemUI);
-//}

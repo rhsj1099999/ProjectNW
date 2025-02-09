@@ -59,6 +59,14 @@ public class InputController : GameCharacterSubScript
         }
 
         _pr_directionByInput = new Vector3(horizontalValue, 0.0f, verticalValue).normalized;
-        _pr_mouseMove = new Vector2(Input.GetAxis(_MouseMoveX), Input.GetAxis(_MouseMoveY));
+
+        if (UIManager.Instance.IsConsumeInput() == true)
+        {
+            _pr_mouseMove = Vector2.zero;
+        }
+        else
+        {
+            _pr_mouseMove = new Vector2(Input.GetAxis(_MouseMoveX), Input.GetAxis(_MouseMoveY));
+        }
     }
 }

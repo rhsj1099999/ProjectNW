@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
   m_Name: RollInvincibleBuff
   m_EditorClassIdentifier: 
-  _buffKey: 4
+  _buffKey: 10
   _buffName: "\uAD6C\uB974\uAE30\uBB34\uC801\uBC84\uD504"
   _maxCount: 1
   _refresh: 0
@@ -24,7 +24,10 @@ MonoBehaviour:
       _buffActionType: 4
     _targetType: 6
     _buffApplyType: 1
+    _targetActiveStatType: 4
+    _activeStatApplyType: 7
     _amount: 1
+  _isTemporary: 0
   _isDebuff: 0
   _duration: 100
   _buffUIImage: {fileID: 21300000, guid: 49891163b8e889f469d3a7042cb1d42a, type: 3}

@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
@@ -22,6 +23,8 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
     Dictionary<string, int> _itemKeys = new Dictionary<string, int>();
     Dictionary<int, ItemAsset> _itemAssets = new Dictionary<int, ItemAsset>();
 
+    public int GetMaxItemCount() { return _itemAssets.Count; }
+
     public override void SubManagerInit()
     {
         SingletonAwake();
@@ -31,22 +34,45 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
         }
     }
 
-    //private void InitItemSubInfo<T>(List<T> initContainer, Dictionary<ItemAsset, T> targetContainer) 
-    //    where T : ItemSubInfo
-    //{
-    //    foreach (T item in initContainer)
-    //    {
-    //        ItemAsset targetItemInfo = item._UsingThisItemAssets;
 
-    //        if (targetContainer.ContainsKey(targetItemInfo) == true)
-    //        {
-    //            Debug.Assert(false, "타겟이 중복됩니다" + targetItemInfo.name + "//" + item.ToString());
-    //        }
+    public ItemStoreDescBase CreateItemStoreDesc(ItemAsset info, int itemCount, int inventoryIndex, bool isRotated, BoardUIBaseScript owner)
+    {
+        ItemStoreDescBase storeDesc = null;
 
-    //        targetContainer.Add(targetItemInfo, item);
-    //    }
-    //}
+        if (info._ItemType == ItemAsset.ItemType.Magazine)
+        {
+            storeDesc = new ItemStoreDesc_Magazine(info, itemCount, inventoryIndex, isRotated, owner, null);
+        }
+        else if (info._ItemType == ItemAsset.ItemType.Equip)
+        {
+            if (info._EquipType == ItemAsset.EquipType.Weapon)
+            {
+                ItemAsset_Weapon weaponInfo = info as ItemAsset_Weapon;
 
+                if (weaponInfo._WeaponType >= ItemAsset_Weapon.WeaponType.SmallGun && weaponInfo._WeaponType <= ItemAsset_Weapon.WeaponType.LargeGun)
+                {
+                    //Equip -> Weapon 인듯
+                    storeDesc = new ItemStoreDesc_Weapon_Gun(info, itemCount, inventoryIndex, isRotated, owner);
+                }
+                else
+                {
+                    //Equip -> Weapon -> Gun인듯
+                    storeDesc = new ItemStoreDesc_Weapon(info, itemCount, inventoryIndex, isRotated, owner);
+                }
+            }
+            else
+            {
+                //Equip -> Armor 인듯
+                storeDesc = new ItemStoreDescBase(info, itemCount, inventoryIndex, isRotated, owner);
+            }
+        }
+        else
+        {
+            storeDesc = new ItemStoreDescBase(info, itemCount, inventoryIndex, isRotated, owner);
+        }
+
+        return storeDesc;
+    }
 
 
 
@@ -127,7 +153,95 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
         }
     }
 
+    public void DropItemToField(Transform callerTransform, ItemStoreDescBase itemStoreDesc, Vector3 force)
+    {
+        //아이템 생성
+        GameObject dropItemGameObject = new GameObject(itemStoreDesc._itemAsset._ItemName);
+        dropItemGameObject.transform.position = Vector3.zero;
+        dropItemGameObject.transform.rotation = Quaternion.identity;
 
+        GameObject dropItemModel = Instantiate(itemStoreDesc._itemAsset._ItemModel, dropItemGameObject.transform);
+        dropItemModel.transform.localPosition = Vector3.zero;
+        dropItemModel.transform.localRotation = Quaternion.identity;
+
+        WeaponModelScript weaponModelScript = dropItemModel.GetComponent<WeaponModelScript>();
+        if (weaponModelScript != null)
+        {
+            weaponModelScript.OffCollider();
+        }
+
+        Bounds itemBounds = new Bounds();
+        GetActivatedRenderers(dropItemModel, ref itemBounds, callerTransform.gameObject);
+
+        Rigidbody addRigidBody = dropItemGameObject.AddComponent<Rigidbody>();
+        {
+            addRigidBody.drag = 0.5f;
+            addRigidBody.angularDrag = 0.5f;
+            addRigidBody.interpolation = RigidbodyInterpolation.Interpolate;
+            addRigidBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            addRigidBody.includeLayers = 0;
+            addRigidBody.excludeLayers = 0;
+        }
+
+        CapsuleCollider addCapsuleCollider = dropItemGameObject.AddComponent<CapsuleCollider>();
+        {
+            Vector3 lengths = new Vector3(itemBounds.size.x, itemBounds.size.y, itemBounds.size.z);
+            int heightIndex = 0;
+            float maxVal = 0.0f;
+            for (int i = 0; i < 3; i++)
+            {
+                if (maxVal <= lengths[i])
+                {
+                    maxVal = lengths[i];
+                    heightIndex = i;
+                }
+            }
+
+            addCapsuleCollider.direction = heightIndex;
+            addCapsuleCollider.includeLayers = LayerMask.GetMask("StaticNavMeshLayer");
+            addCapsuleCollider.excludeLayers = 0;
+            addCapsuleCollider.center = itemBounds.center;
+            addCapsuleCollider.height = lengths[heightIndex];
+            lengths[heightIndex] = 0.0f;
+            addCapsuleCollider.radius = lengths.magnitude / 2.0f;
+        }
+
+
+
+        GameObject dropItemInteraction = new GameObject("Interaction");
+        dropItemInteraction.SetActive(false);
+        dropItemInteraction.layer = LayerMask.NameToLayer("InteractionableCollider");
+        dropItemInteraction.transform.SetParent(dropItemGameObject.transform);
+        dropItemInteraction.transform.position = Vector3.zero;
+        dropItemInteraction.transform.rotation = Quaternion.identity;
+
+        CapsuleCollider interactionCollider = dropItemInteraction.AddComponent<CapsuleCollider>();
+        {
+            interactionCollider.direction = addCapsuleCollider.direction;
+            interactionCollider.center = addCapsuleCollider.center;
+            interactionCollider.height = addCapsuleCollider.height;
+            interactionCollider.radius = addCapsuleCollider.radius;
+            interactionCollider.isTrigger = true;
+        }
+
+        UICall_AcquireItem interactionUIComponent = dropItemInteraction.AddComponent<UICall_AcquireItem>();
+        UICall_AcquireItem.UICall_AcquireItemDesc newDesc = new UICall_AcquireItem.UICall_AcquireItemDesc();
+        newDesc._itemStoreDesc = itemStoreDesc;
+        newDesc._itemTarget = dropItemGameObject;
+        newDesc._offCollider = interactionCollider;
+        interactionUIComponent.Init(newDesc);
+        dropItemInteraction.SetActive(true);
+
+
+
+        dropItemGameObject.transform.position = callerTransform.gameObject.transform.position + Vector3.up * 1.5f;
+        dropItemGameObject.transform.rotation = callerTransform.gameObject.transform.rotation;
+
+        {
+            addRigidBody.position = callerTransform.gameObject.transform.position + Vector3.up * 1.5f;
+            addRigidBody.AddForce(force, ForceMode.Impulse);
+        }
+    }
 
     public void DropItemToField(Transform callerTransform, ItemStoreDescBase itemStoreDesc)
     {

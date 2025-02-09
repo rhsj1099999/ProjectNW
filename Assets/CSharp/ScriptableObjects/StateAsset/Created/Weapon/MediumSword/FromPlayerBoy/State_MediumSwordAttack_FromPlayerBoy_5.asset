@@ -17,21 +17,14 @@ MonoBehaviour:
     _stateAnimationClip: {fileID: 7400000, guid: 5c207a5b91069c64f89983f4b935ba22,
       type: 2}
     _stateAnimationClipOverride: []
-    _rightWeaponOverride: 0
-    _leftWeaponOverride: 0
     _isAttackState: 1
     _isAttackState_effectedBySpeed: 1
     _attackDamageMultiply:
       _damageReason: 1
       _damage: 1
-      _damagePower: 10
+      _damagePower: 1
       _damagingStamina: 1
-    _isLocoMotionToAttackAction: 0
-    _isLoopState: 0
     _canUseItem: 0
-    _stateLocked: 0
-    _isBlockState: 0
-    _isAIAttackState: 0
     _isAIState: 0
     _aiStateDesc:
       _coolTime: -1
@@ -46,7 +39,6 @@ MonoBehaviour:
     _inStateActionTypes: 1900000006000000
     _ExitStateActionTypes: 0e000000
     _checkingBehaves: 
-    _breakLoopStateCondition: []
     _isSubBlendTreeExist: 0
     _subBlendTree: {fileID: 0}
     _isSubAnimationStateMachineExist: 0

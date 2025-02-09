@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
   m_Name: HeistPotion_LV0
   m_EditorClassIdentifier: 
-  _buffKey: 4
+  _buffKey: 1
   _buffName: "\uD5E4\uC774\uC2A4\uD2B8\uBB3C\uC57D\uBC84\uD504_LV0"
   _maxCount: 1
   _refresh: 0
@@ -24,7 +24,10 @@ MonoBehaviour:
       _buffActionType: 4
     _targetType: 16
     _buffApplyType: 1
-    _amount: 10
+    _targetActiveStatType: 4
+    _activeStatApplyType: 7
+    _amount: 5
+  _isTemporary: 0
   _isDebuff: 0
-  _duration: 5
+  _duration: 10
   _buffUIImage: {fileID: 21300000, guid: 5e09771f4889ec848bbb02b3554ae4ef, type: 3}

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cafea9b1316198e4a9c0494fb865d792, type: 3}
+  m_Name: ItemAsset_Weapon_Narukami
+  m_EditorClassIdentifier: 
+  _itemType: 3
+  _equipType: 32
+  _ItemKey: 13
+  _itemName: Narukami
+  _sizeX: 1
+  _sizeY: 3
+  _maxStack: 1
+  _itemModel: {fileID: 6978618918734375859, guid: b56ba7a9a45604742b01a609e522081e,
+    type: 3}
+  _fieldExistAble: 1
+  _itemImage: {fileID: 21300000, guid: f8e11f7ae627cb34388b95399bdb4327, type: 3}
+  _weaponType: 2
+  _weaponDamageDesc:
+    _damageReason: 1
+    _damage: 1
+    _damagePower: 1
+    _damagingStamina: 1
+  _weaponStateGraph: {fileID: 11400000, guid: 47f1737c68ca7f2498eba0247dcc32e8, type: 2}
+  _usingBulletType: 0
+  _isAutomaticGun: 1

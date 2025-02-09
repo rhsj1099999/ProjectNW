@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
   m_Name: StaminaPotion_RegenBuff
   m_EditorClassIdentifier: 
-  _buffKey: 3
+  _buffKey: 4
   _buffName: "\uC2A4\uD14C\uBBF8\uB098\uBB3C\uC57D\uBC84\uD504_LV0"
   _maxCount: 1
   _refresh: 0
@@ -24,8 +24,8 @@ MonoBehaviour:
       _buffActionType: 4
     _targetType: 13
     _buffApplyType: 1
-    _targetActiveStatType: 0
-    _activeStatApplyType: 1
+    _targetActiveStatType: 4
+    _activeStatApplyType: 7
     _amount: 3
   _isTemporary: 0
   _isDebuff: 0

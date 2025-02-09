@@ -440,7 +440,7 @@ public class Gunscript2 : WeaponScript
         DamageDesc tempTestDamage = new DamageDesc();
         tempTestDamage._damageReason = DamageDesc.DamageReason.Ray;
         tempTestDamage._damage = firedBullet._BulletDamage;
-        tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1;
+        tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1 + 5;
 
         hitColliderScript.CollisionDirectly(tempTestDamage, _owner);
     }

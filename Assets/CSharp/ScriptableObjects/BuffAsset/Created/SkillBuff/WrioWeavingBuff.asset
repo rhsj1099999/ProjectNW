@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
   m_Name: WrioWeavingBuff
   m_EditorClassIdentifier: 
-  _buffKey: 7
+  _buffKey: 13
   _buffName: "\uB77C\uC774\uC624\uC704\uBE59\uBC84\uD504"
   _maxCount: 1
   _refresh: 0
@@ -24,7 +24,10 @@ MonoBehaviour:
       _buffActionType: 2
     _targetType: 6
     _buffApplyType: 1
+    _targetActiveStatType: 4
+    _activeStatApplyType: 7
     _amount: 1
+  _isTemporary: 0
   _isDebuff: 0
   _duration: 100
   _buffUIImage: {fileID: 21300000, guid: c6d938c2f9a2b514a84f3f0ffcdcd6e0, type: 3}

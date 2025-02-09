@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,9 +9,6 @@ public class UICall_OpenChest : UICallScript
     [SerializeField] private bool _isChestRotating = false;
     [SerializeField] private GameObject _chestInventory = null;
 
-    
-
-
     [SerializeField] private float _maxOpenDegree = 100.0f;
     [SerializeField] private float _openTime = 1.0f;
 
@@ -20,8 +18,14 @@ public class UICall_OpenChest : UICallScript
     private float _currRotatingTime = 0.0f;
     private float _rotationSpeed = 0.0f;
 
+    [Serializable]
+    public class FirstItemCreateDesc
+    {
+        public string _itemName = "None";
+        public int _count = 0;
+    }
 
-    [SerializeField] private List<int> _fixedCreateTryItemList = new List<int>();
+    [SerializeField] private List<FirstItemCreateDesc> _fixedCreateTryItemList = new List<FirstItemCreateDesc>();
 
 
     private void Awake()
@@ -32,12 +36,12 @@ public class UICall_OpenChest : UICallScript
 
     private void Start()
     {
-        InventoryBoard boardComponent = GetComponentInChildren<InventoryBoard>();
+        InventoryBoard boardComponent = _chestInventory.GetComponentInChildren<InventoryBoard>();
 
-        //foreach (int itemKey in _fixedCreateTryItemList)
-        //{
-        //    boardComponent.AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(itemKey));
-        //}
+        foreach (FirstItemCreateDesc itemDesc in _fixedCreateTryItemList)
+        {
+            boardComponent.AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo(itemDesc._itemName), itemDesc._count);
+        }
     }
 
 

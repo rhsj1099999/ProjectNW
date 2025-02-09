@@ -13,10 +13,10 @@ class DescendingComparer<T> : IComparer<T> where T : IComparable<T>
 
 public static class MyUtil
 {
-    public const int deltaRoughness_lvl0 = 3;
-    public const int deltaRoughness_lvl1 = 6;
-    public const int deltaRoughness_lvl2 = 9;
-    public const int deltaRoughness_lvl3 = 12;
+    public const int deltaRoughness_lvl0 = 10;
+    public const int deltaRoughness_lvl1 = 20;
+    public const int deltaRoughness_lvl2 = 30;
+    public const int deltaRoughness_lvl3 = 40;
     public static readonly string[] _motionChangingAnimationNames =
     {
         "Layer0",

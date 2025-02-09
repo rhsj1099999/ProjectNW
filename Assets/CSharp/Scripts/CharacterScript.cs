@@ -1434,9 +1434,14 @@ public class CharacterScript : GameActorScript, IHitable
     {
         Debug.Log("가드버프 계산을 시작합니다");
 
+        //int currRoughness = statScript.GetPassiveStat(PassiveStat.Roughness);
+        int currRoughness = 7;
+        
+
+
         //스테미나도 충분하고 강인도도 충분합니다
         if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
-            statScript.GetPassiveStat(PassiveStat.Roughness) >= damage._damagePower)
+            currRoughness >= damage._damagePower)
         {
             nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
             representType = RepresentStateType.Blocked_Reaction;
@@ -1444,7 +1449,7 @@ public class CharacterScript : GameActorScript, IHitable
 
         //스테미나는 충분한데 강인도가 부족합니다.
         else if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
-            statScript.GetPassiveStat(PassiveStat.Roughness) < damage._damagePower)
+            currRoughness < damage._damagePower)
         {
             nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
             representType = RepresentStateType.Blocked_Sliding;
@@ -1452,7 +1457,7 @@ public class CharacterScript : GameActorScript, IHitable
 
         //강인도는 충분한데 스테미나가 부족합니다.
         else if (statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina &&
-            statScript.GetPassiveStat(PassiveStat.Roughness) >= damage._damagePower)
+            currRoughness >= damage._damagePower)
         {
             nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
             representType = RepresentStateType.Blocked_Crash;
@@ -1544,6 +1549,14 @@ public class CharacterScript : GameActorScript, IHitable
         statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_ApplyDamage, damage, isWeakPoint, attacker, victim);
         //Step3. 데미지 적용
         {
+            if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
+            {
+                /*--------------------------------------------
+                임시로 데미지 무효화함
+                --------------------------------------------*/
+                damage._damage = 0;
+            }
+
             bool willDead = false;
 
             if (statScript.GetPassiveStat(PassiveStat.IsInvincible_HP) <= 0)

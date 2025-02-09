@@ -20,25 +20,9 @@ public abstract class SubManager<T> : MonoBehaviour, ISubManager where T : SubMa
     {
         get
         {
-            //if (_instance == null)
-            //{
-            //    GameObject newGameObject = new GameObject(_instance.GetType().ToString());
-            //    _instance = newGameObject.AddComponent<T>();
-            //    DontDestroyOnLoad(newGameObject);
-            //}
-
             return _instance;
         }
     }
-
-    //private virtual void Awake()
-    //{
-    //    if (_instance != null && _instance != this)
-    //    {
-    //        Destroy(this.gameObject);
-    //        return;
-    //    }
-    //}
 
     public void SingletonAwake()
     {
@@ -57,6 +41,8 @@ public abstract class SubManager<T> : MonoBehaviour, ISubManager where T : SubMa
     {
         _instance = null;
     }
+
+    
 
     public abstract void SubManagerUpdate();
     public abstract void SubManagerFixedUpdate();

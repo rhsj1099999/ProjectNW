@@ -54,8 +54,6 @@ public class ItemStoreDescBase
 
         if (_count <= 0)
         {
-            //0개 -> 없어져야한다!
-            int a = 10;
             _owner.DeleteOnMe(this);
         }
     }

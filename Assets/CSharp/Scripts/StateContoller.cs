@@ -1974,6 +1974,7 @@ public class StateContoller : GameCharacterSubScript
     private bool CommandCheck(ConditionDesc conditionDesc, bool isRightSided)
     {
         List<ComboKeyCommandDesc> stateComboKeyCommand = conditionDesc._commandInputConditionTarget;
+
         if (stateComboKeyCommand.Count <= 0)
         {
             Debug.Assert(false, "CommandCondition인데 키가 하나도 없습니다");
@@ -2043,9 +2044,16 @@ public class StateContoller : GameCharacterSubScript
         return true;
     }
     
-    private ComboCommandKeyType KeyConvert(WeaponUseType target, WeaponGrabFocus ownerGrabType, bool isRightHandWeapon)
+    private ComboCommandKeyType KeyConvert(WeaponUseType target, WeaponGrabFocus ownerGrabType, bool isRightHandWeapon, bool isSingleControl = false)
     {
+        /*----------------------------------------------------
+        |NOTI| isSingleControl 역할 -> (좌클 + 우클) 콤보일때 한손 장착 중이라면
+        Click + (x + click)인데 현실적으로 불가능한 콤보 커맨드니까 Click + OppositeClick으로 바꾸는 함수
+        ----------------------------------------------------*/
+
         ComboCommandKeyType convertedRet = ComboCommandKeyType.TargetingFront;
+
+        bool isModifyClick = (target != WeaponUseType.MainUse && isSingleControl == false);
 
         switch (target)
         {
