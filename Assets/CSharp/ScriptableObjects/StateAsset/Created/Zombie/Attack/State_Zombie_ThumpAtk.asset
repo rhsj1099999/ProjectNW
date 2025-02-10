@@ -33,11 +33,13 @@ MonoBehaviour:
     _aiAttackStateDesc:
       _coolTime: 5
       _range: 2
-    _stateBuffs_Add: []
-    _stateBuffs_Remove: []
-    _EnterStateActionTypes: 
+    _stateBuffs_Add:
+    - "\uBAAC\uC2A4\uD130\uACF5\uACA9\uC0C1\uD0DC\uAC15\uC778\uB3C4\uBC84\uD504"
+    _stateBuffs_Remove:
+    - "\uBAAC\uC2A4\uD130\uACF5\uACA9\uC0C1\uD0DC\uAC15\uC778\uB3C4\uBC84\uD504"
+    _EnterStateActionTypes: 25000000
     _inStateActionTypes: 06000000
-    _ExitStateActionTypes: 
+    _ExitStateActionTypes: 26000000
     _checkingBehaves: 
     _isSubBlendTreeExist: 0
     _subBlendTree: {fileID: 0}

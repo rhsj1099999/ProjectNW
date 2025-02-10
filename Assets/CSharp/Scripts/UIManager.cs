@@ -24,9 +24,11 @@ public class UIManager : SubManager<UIManager>
     {
         if (_currHUD != null)
         {
-            Debug.Assert(false, "이미 허드가 있는데요?");
-            Debug.Break();
-            Destroy(_currHUD.gameObject);
+            //Debug.Assert(false, "이미 허드가 있는데요?");
+            //Debug.Break();
+            //Destroy(_currHUD.gameObject);
+
+            return;
         }
         _currHUD = component;
     }

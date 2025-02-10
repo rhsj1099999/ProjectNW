@@ -144,5 +144,4 @@ public class UICall_OpenChest : UICallScript
 
         _isChestRotating = false;
     }
-    
 }

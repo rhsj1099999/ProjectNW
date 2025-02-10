@@ -69,6 +69,12 @@ public class StatScript : GameCharacterSubScript
         public Dictionary<BuffAction, BuffActionClass> _buffActions = new Dictionary<BuffAction, BuffActionClass>();
         public float _timeACC = 0.0f;
 
+        public void AddDelegate(Action<int> action)
+        {
+            _countDelegates += action;
+        }
+        private Action<int> _countDelegates = null;
+
         private int _count = 0;
         public int _Count => _count;
         public void SetCount(int nextCount)
@@ -103,6 +109,11 @@ public class StatScript : GameCharacterSubScript
                     }
                 }
             }
+
+            //델리게이터 호출
+            {
+                _countDelegates?.Invoke(nextCount);
+            }
         }
     }
 
@@ -120,7 +131,6 @@ public class StatScript : GameCharacterSubScript
     private Dictionary<BuffAsset, RuntimeBuffAsset> _buffs = new Dictionary<BuffAsset, RuntimeBuffAsset>();
     private Dictionary<BuffAsset, RuntimeBuffAsset> _deBuffs = new Dictionary<BuffAsset, RuntimeBuffAsset>();
     private Dictionary<PassiveStat, float> _activeStatRegenCalculator = new Dictionary<PassiveStat, float>();
-
 
 
     public RuntimeBuffAsset GetRuntimeBuffAsset(BuffAsset buff)

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbfc78eede3bed24cb4da78da6a91c1b, type: 3}
-  m_Name: RollInvincibleBuff
+  m_Name: RoughnessPotion_Plus50
   m_EditorClassIdentifier: 
-  _buffKey: 12
-  _buffName: "\uAD6C\uB974\uAE30\uBB34\uC801\uBC84\uD504"
+  _buffKey: 4
+  _buffName: "\uAC15\uC778\uB3C4\uBB3C\uC57D\uBC84\uD504"
   _maxCount: 1
   _refresh: 0
   _durationExpireOnce: 0
@@ -22,12 +22,12 @@ MonoBehaviour:
   - _buffAction:
       _delegateTiming: 10
       _buffActionType: 4
-    _targetType: 6
+    _targetType: 4
     _buffApplyType: 1
     _targetActiveStatType: 4
     _activeStatApplyType: 7
-    _amount: 1
+    _amount: 50
   _isTemporary: 0
   _isDebuff: 0
-  _duration: -1
-  _buffUIImage: {fileID: 21300000, guid: 49891163b8e889f469d3a7042cb1d42a, type: 3}
+  _duration: 30
+  _buffUIImage: {fileID: 21300000, guid: f86f13291815ad44ab863d61f605dfac, type: 3}

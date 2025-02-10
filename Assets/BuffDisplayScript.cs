@@ -83,7 +83,7 @@ public class BuffDisplayScript : MonoBehaviour
                 //이미지 세팅
                 {
                     BuffIconScript iconScript = createUIObject.GetComponent<BuffIconScript>();
-                    iconScript.SetImage(asset._fromAsset._BuffUIImage);
+                    iconScript.SetImage(asset._fromAsset._BuffUIImage, asset);
                 }
 
                 //위치세팅

@@ -125,6 +125,11 @@ public class EnemyAIScript : GameCharacterSubScript
 
             AIAttackStateDesc aIAttackStateDesc = stateAsset._myState._aiAttackStateDesc;
 
+            if (stateAsset._myState._isAttackState == false)
+            {
+                continue;
+            }
+
             if (aIAttackStateDesc == null)
             {
                 continue;

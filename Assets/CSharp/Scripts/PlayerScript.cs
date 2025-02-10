@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static AnimationFrameDataAsset;
-using static StateGraphAsset;
 
 
 public class PlayerScript : CharacterScript
@@ -26,6 +24,20 @@ public class PlayerScript : CharacterScript
             HUDScript newHUDScript = newHUDObject.GetComponent<HUDScript>();
 
             newHUDScript.HUDLinking(GCST<StatScript>());
+        }
+
+
+
+
+
+
+
+        //로직이 이곳에 온다면
+        //플레이어의 준비는 끝난다.
+        //하지만 준비를 위해 생성된 객체들의 데이터는 존재하지 않는다.
+        //근데 일단 플레이어 자체를 안사리지게 한다...
+        {
+            DontDestroyOnLoad(this.gameObject);
         }
     }
 

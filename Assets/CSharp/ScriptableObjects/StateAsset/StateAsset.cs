@@ -121,5 +121,25 @@ public class StateAsset : ScriptableObject
                 }
             }
         }
+
+
+
+        //스텟제한이 있나요?
+        {
+            if (_myState._isNeedStat == false)
+            {
+                if (_myState._needStat != null)
+                {
+                    _myState._needStat = null;
+                }
+            }
+            else
+            {
+                if (_myState._needStat == null)
+                {
+                    _myState._needStat = new NeedStatDesc();
+                }
+            }
+        }
     }
 }

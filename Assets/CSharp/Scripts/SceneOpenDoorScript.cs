@@ -15,23 +15,28 @@ public class CameraDraggingDesc
 
 public class SceneOpenDoorScript : MonoBehaviour
 {
+    public enum DoorState
+    {
+        Hide,
+        Closed,
+        End,
+    }
+
+
     [SerializeField] private GameObject _effectPrefabObject = null;
+    [SerializeField] private GameObject _effectPrefabAttachScaler = null;
+
     [SerializeField] private GameObject _cameraAttachPosition_DoorDir = null;
     [SerializeField] private GameObject _cameraAttachPosition_OppositeDir = null;
+
     [SerializeField] private RenderTexture _openDoorRenderTexture = null;
     [SerializeField] private string _targetStage = "None";
 
-    public void SetTargetState(string stageName) { _targetStage = stageName; }
-
-    private bool _objectActivated = false;
-
-    [SerializeField] private bool _firstCreated = false;
-
     private Animator _ownerAnimator = null;
+    private DoorState _state = DoorState.Hide;
 
-    private Coroutine _interactionCoroutine = null;
+    private bool _isBusy = false;
 
-    
 
     private void Awake()
     {
@@ -48,91 +53,134 @@ public class SceneOpenDoorScript : MonoBehaviour
         }
 
         _ownerAnimator = GetComponent<Animator>();
-
-        AnimatorStateInfo stateInfo = _ownerAnimator.GetCurrentAnimatorStateInfo(0);
-
-        StartCoroutine(ActivateCoroutine(stateInfo.length));
     }
 
-    private void Start()
+
+    public void DoorCall()
     {
-        if (_firstCreated == true)
+        if (_isBusy == true)
         {
-            StartCoroutine(OpenDoor());
+            return;
+        }
+
+        switch (_state)
+        {
+            case DoorState.Hide:
+                {
+                    AnimatorStateInfo stateInfo = _ownerAnimator.GetCurrentAnimatorStateInfo(0);
+                    StartCoroutine(CreateDoorCoroutine(stateInfo.length));
+                }
+                break;
+
+            case DoorState.Closed:
+                {
+                    StartCoroutine(OpenDoor());
+                }
+                break;
         }
     }
 
-    private IEnumerator ActivateCoroutine(float targetTime)
-    {
-        float targetTimeAcc = 0.0f;
-        
-        while (true) 
-        {
-            targetTimeAcc += Time.deltaTime;
 
-            if (targetTimeAcc >= targetTime)
+    public void SetTargetStage(string stageName) { _targetStage = stageName; }
+
+    public IEnumerator OpenDoor()
+    {
+        _isBusy = true;
+
+        //렌더 텍스쳐 드로잉 카메라 작업
+        {
+            Camera mainCamera = Camera.main;
+
+            Transform mainCameraChild = mainCamera.transform.Find("SubCamera_OpenDoorLayer");
+
+            if (mainCameraChild == null)
             {
-                _objectActivated = true;
-                break;
+                GameObject mainCameraObject = mainCamera.gameObject;
+                GameObject subCameraObject = new GameObject("SubCamera_OpenDoorLayer");
+                subCameraObject.transform.SetParent(mainCameraObject.transform);
+                subCameraObject.transform.localPosition = Vector3.zero;
+                subCameraObject.transform.localRotation = Quaternion.identity;
+                mainCameraChild = subCameraObject.transform;
+
+                Camera subCamera = mainCameraChild.gameObject.AddComponent<Camera>();
+                subCamera.clearFlags = CameraClearFlags.SolidColor;
+                subCamera.backgroundColor = Color.black;
+                subCamera.targetTexture = _openDoorRenderTexture;
+                subCamera.cullingMask = LayerMask.GetMask("OpenDoorLayer");
+            }
+        }
+
+
+        //이펙트 생성
+        {
+            GameObject effectObject = Instantiate(_effectPrefabObject, _effectPrefabAttachScaler.transform);
+            effectObject.transform.localPosition = Vector3.zero;
+            effectObject.transform.localRotation = Quaternion.identity;
+            effectObject.transform.localScale = Vector3.one;
+        }
+
+
+        //애니메이션 반영까지 최소 한프레임을 기다린다
+        {
+            _ownerAnimator.SetTrigger("Triggered");
+            yield return new WaitForNextFrameUnit();
+        }
+
+        //문열기 작업 시작
+        {
+            float maxWaitTime = 5.0f;
+            float maxWaitTimeAcc = 0.0f;
+            bool animationTransitionFailed = false;
+
+            while (true)
+            {
+                if (_ownerAnimator.IsInTransition(0) == false)
+                {
+                    break;
+                }
+
+                maxWaitTimeAcc += Time.deltaTime;
+
+                if (maxWaitTimeAcc > maxWaitTime)
+                {
+                    animationTransitionFailed = true;
+                    Debug.Assert(false, "Transition Waiting이 실패했습니다");
+                    Debug.Break();
+                    break;
+                }
+
+                yield return null;
             }
 
-            yield return null;
+
+            if (animationTransitionFailed == true)
+            {
+                _state = DoorState.End;
+                _isBusy = false;
+                yield break;
+            }
+
+            AnimatorStateInfo stateInfo = _ownerAnimator.GetCurrentAnimatorStateInfo(0); //Open Node 반영이 됐을꺼다
+            float time = stateInfo.length;
+            float timeACC = 0.0f;
+
+            while (true)
+            {
+                timeACC += Time.deltaTime;
+
+                if (timeACC >= time)
+                {
+                    _state = DoorState.End;
+                    _isBusy = false;
+                    break;
+                }
+
+                yield return null;
+            }
         }
     }
 
-    private void Update()
-    {
-        CheckOpenDoor();
-    }
-
-    private IEnumerator StartOpenDoorProcedural()
-    {
-        yield return StartCoroutine(OpenDoor());
-
-        CameraDragging();
-
-        CurtainCallControl_SimpleColor onDesc = new CurtainCallControl_SimpleColor();
-        onDesc._target = false;
-        onDesc._runningTime = 2.0f;
-        onDesc._color = new Vector3(1.0f, 1.0f, 1.0f);
-        CurtainCallControl_SimpleColor offDesc = new CurtainCallControl_SimpleColor();
-        offDesc._target = true;
-        offDesc._runningTime = 2.0f;
-        offDesc._color = new Vector3(1.0f, 1.0f, 1.0f);
-
-        SceneManagerWrapper.Instance.ChangeScene
-        (
-            _targetStage,
-            CurtainCallType.SimpleColorFadeInOut,
-            onDesc,
-            CurtainCallType.SimpleColorFadeInOut,
-            offDesc
-        );
-    }
-
-
-    private void CheckOpenDoor()
-    {
-        if (_objectActivated == false)
-        {
-            return;
-        }
-
-        if (_interactionCoroutine != null)
-        {
-            return;
-        }
-
-        if (Input.GetKeyDown(KeyCode.H) == false)
-        {
-            return;
-        }
-
-        _interactionCoroutine = StartCoroutine(StartOpenDoorProcedural());
-    }
-
-    //카메라를 끌어오는 함수
-    public void CameraDragging()
+    private void CameraDragging()
     {
         CameraDraggingDesc newDesc = new CameraDraggingDesc();
 
@@ -152,6 +200,53 @@ public class SceneOpenDoorScript : MonoBehaviour
         newDesc._currVelocity = 2.0f;
 
         StartCoroutine(CameraDraggingCorouting(newDesc));
+    }
+
+    private IEnumerator CreateDoorCoroutine(float targetTime)
+    {
+        _isBusy = true;
+
+        float targetTimeAcc = 0.0f;
+
+        while (true) 
+        {
+            targetTimeAcc += Time.deltaTime;
+
+            if (targetTimeAcc >= targetTime)
+            {
+                _state = DoorState.Closed;
+                _isBusy = false;
+                break;
+            }
+
+            yield return null;
+        }
+    }
+
+    public void SceneChange(bool isCameraDraggingNeed)
+    {
+        if (isCameraDraggingNeed == true)
+        {
+            CameraDragging();
+        }
+
+        CurtainCallControl_SimpleColor onDesc = new CurtainCallControl_SimpleColor();
+        onDesc._target = false;
+        onDesc._runningTime = 2.0f;
+        onDesc._color = new Vector3(1.0f, 1.0f, 1.0f);
+        CurtainCallControl_SimpleColor offDesc = new CurtainCallControl_SimpleColor();
+        offDesc._target = true;
+        offDesc._runningTime = 2.0f;
+        offDesc._color = new Vector3(1.0f, 1.0f, 1.0f);
+
+        SceneManagerWrapper.Instance.ChangeScene
+        (
+            _targetStage,
+            CurtainCallType.SimpleColorFadeInOut,
+            onDesc,
+            CurtainCallType.SimpleColorFadeInOut,
+            offDesc
+        );
     }
 
     private IEnumerator CameraDraggingCorouting(CameraDraggingDesc desc)
@@ -191,88 +286,6 @@ public class SceneOpenDoorScript : MonoBehaviour
 
 
             Camera.main.transform.LookAt(Camera.main.transform.position + afterPlaneDir);
-
-            yield return null;
-        }
-    }
-
-
-
-    //문을 여는 함수
-    public IEnumerator OpenDoor()
-    {
-        Camera mainCamera = Camera.main;
-
-        Transform mainCameraChild = mainCamera.transform.Find("SubCamera_OpenDoorLayer");
-
-        if (mainCameraChild == null)
-        {
-            GameObject mainCameraObject = mainCamera.gameObject;
-            GameObject subCameraObject = new GameObject("SubCamera_OpenDoorLayer");
-            subCameraObject.transform.SetParent(mainCameraObject.transform);
-            subCameraObject.transform.localPosition = Vector3.zero;
-            subCameraObject.transform.localRotation = Quaternion.identity;
-            mainCameraChild = subCameraObject.transform;
-
-            Camera subCamera = mainCameraChild.gameObject.AddComponent<Camera>();
-            subCamera.clearFlags = CameraClearFlags.SolidColor;
-            subCamera.backgroundColor = Color.black;
-            subCamera.targetTexture = _openDoorRenderTexture;
-            subCamera.cullingMask = LayerMask.GetMask("OpenDoorLayer");
-        }
-
-
-        
-        Instantiate(_effectPrefabObject, transform);
-
-        //애니메이션 반영까지 최소 한프레임을 기다린다
-        {
-            _ownerAnimator.SetTrigger("Triggered");
-            yield return new WaitForNextFrameUnit();
-        }
-
-        float maxWaitTime = 5.0f;
-        float maxWaitTimeAcc = 0.0f;
-        bool animationTransitionFailed = false;
-
-        while (true)
-        {
-            if (_ownerAnimator.IsInTransition(0) == false)
-            {
-                break;
-            }
-
-            maxWaitTimeAcc += Time.deltaTime;
-
-            if (maxWaitTimeAcc > maxWaitTime)
-            {
-                animationTransitionFailed = true;
-                Debug.Assert(false, "Transition Waiting이 실패했습니다");
-                Debug.Break();
-                break;
-            }
-
-            yield return null;
-        }
-
-
-        if (animationTransitionFailed == true) 
-        {
-            yield break;
-        }
-
-        AnimatorStateInfo stateInfo = _ownerAnimator.GetCurrentAnimatorStateInfo(0); //Open Node 반영이 됐을꺼다
-        float time = stateInfo.length;
-        float timeACC = 0.0f;
-
-        while (true)
-        {
-            timeACC += Time.deltaTime;
-
-            if (timeACC >= time)
-            {
-                break;
-            }
 
             yield return null;
         }

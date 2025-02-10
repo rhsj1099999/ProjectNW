@@ -96,7 +96,15 @@ public static class MyUtil
 
         foreach (ConditionAssetWrapper condition in conditions)
         {
+            if (condition == null)
+            {
+                continue;
+                //Debug.Assert(false, "Condition 이 null 입니다");
+                //Debug.Break();
+            }
+
             ConditionDesc conditionDesc = condition._conditionAsset._conditionDesc;
+
             //기본적으로 조건이 하나 걸려있으면 가중치 +1입니다.
             //콤보 키, KeyInput경우에는 키가 어려울수록 가중치가 더들어갑니다.
             switch (conditionDesc._singleConditionType)

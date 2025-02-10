@@ -626,6 +626,7 @@ public class InventoryBoard : BoardUIBaseScript
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("HeistPotion_LV0"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("StaminaPotion"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Cheese"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("강인도물약"), 1);
         }
     }
 

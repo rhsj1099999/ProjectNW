@@ -191,7 +191,6 @@ public class ConditionDesc
     public int _randomChance = 1;
     public float _degThreshould = 0.0f;
     public int _damageHitThreshould = 1;
-    public NeedStatDesc _needStat = new NeedStatDesc();
 }
 
 
@@ -220,19 +219,6 @@ public class AIAttackStateDesc
 [Serializable]
 public class StateDesc
 {
-    //public bool _rightWeaponOverride = true;
-    //public bool _leftWeaponOverride = true;
-    //public bool _isLocoMotionToAttackAction = false;
-    //public bool _isLoopState = false;
-    //public bool _stateLocked = false; //외부에서 상태변경이 들어와도 씹겠다.
-    ///*------------------------------------------------------------------------------
-    //|NOTI| !_isAttackState = _isLocoMotionToAttackAction의 개념일거같지만 지금은 아니다
-    //------------------------------------------------------------------------------*/
-    //public bool _isBlockState = false; //가드상태입니다.
-    //public bool _isAIAttackState = false;
-    //public List<ConditionDesc> _breakLoopStateCondition = null;
-
-
     public RepresentStateType _stateType = RepresentStateType.End;
     public AnimationClip _stateAnimationClip = null;
     public List<AnimationClip> _stateAnimationClipOverride = new List<AnimationClip>();
@@ -263,6 +249,10 @@ public class StateDesc
 
     public bool _isSubAnimationStateMachineExist = false;
     public SubAnimationStateMachine _subAnimationStateMachine = null;
+
+    public bool _isNeedStat = false;
+    public NeedStatDesc _needStat = new NeedStatDesc();
+
 }
 
 
@@ -561,6 +551,11 @@ public class StateContoller : GameCharacterSubScript
             _randomStateTryCount = 0;
             _failedRandomChanceState.Clear();
 
+
+
+
+
+
             //다음상태 세팅
             _currentGraphType = nextGraphType;
             _currState = nextState;
@@ -706,7 +701,7 @@ public class StateContoller : GameCharacterSubScript
         {
             if (successCount > 100)
             {
-                Debug.Assert(false, "상태가 계속 바뀌려합니다");
+                Debug.Assert(false, "상태가 계속 바뀌려합니다 : " + targetState.name);
                 Debug.Break();
                 return null;
             }
@@ -749,6 +744,62 @@ public class StateContoller : GameCharacterSubScript
                     }
                 }
 
+                //NeedStat검사
+                StateAsset nextState = linkedStateAssetWrapper._linkedState._linkedState;
+                if (isSuccess == true && nextState._myState._isNeedStat == true)
+                {
+                    StatScript ownerStatScript = _owner.GCST<StatScript>();
+
+                    foreach (var item in nextState._myState._needStat._needActiveStatList)
+                    {
+                        int currVar = ownerStatScript.GetActiveStat(item._statType);
+
+                        if (currVar < item._needAmount)
+                        {
+                            isSuccess = false;
+                            break;
+                        }
+                    }
+
+                    if (isSuccess == false)
+                    {
+                        break;
+                    }
+
+                    foreach (var item in nextState._myState._needStat._needPassiveStatList)
+                    {
+                        int currVar = ownerStatScript.GetPassiveStat(item._statType);
+
+                        if (currVar < item._needAmount)
+                        {
+                            isSuccess = false;
+                            break;
+                        }
+                    }
+
+                    if (isSuccess == false)
+                    {
+                        break;
+                    }
+
+
+                    foreach (var item in nextState._myState._needStat._needActiveStatList)
+                    {
+                        if (item._isConsume == true)
+                        {
+                            ownerStatScript.ChangeActiveStat(item._statType, -item._needAmount);
+                        }
+                    }
+
+                    foreach (var item in nextState._myState._needStat._needPassiveStatList)
+                    {
+                        if (item._isConsume == true)
+                        {
+                            //그만큼 소모할겁니다.
+                            //근데 컨텐츠적으로 패시브 스텟에 컨슘이 있다고? 
+                        }
+                    }
+                }
 
                 if (isSuccess == true)
                 {
@@ -1869,63 +1920,63 @@ public class StateContoller : GameCharacterSubScript
 
             case ConditionType.NeedStat:
                 {
-                    StatScript ownerStatScript = _owner.GCST<StatScript>();
+                    //StatScript ownerStatScript = _owner.GCST<StatScript>();
 
-                    bool isSuccess = true;
+                    //bool isSuccess = true;
 
-                    foreach (var item in conditionDesc._needStat._needActiveStatList)
-                    {
-                        int currVar = ownerStatScript.GetActiveStat(item._statType);
+                    //foreach (var item in conditionDesc._needStat._needActiveStatList)
+                    //{
+                    //    int currVar = ownerStatScript.GetActiveStat(item._statType);
 
-                        if (currVar < item._needAmount)
-                        {
-                            isSuccess = false;
-                            break;
-                        }
-                    }
+                    //    if (currVar < item._needAmount)
+                    //    {
+                    //        isSuccess = false;
+                    //        break;
+                    //    }
+                    //}
 
-                    if (isSuccess == false)
-                    {
-                        ret = false;
-                        break;
-                    }
+                    //if (isSuccess == false)
+                    //{
+                    //    ret = false;
+                    //    break;
+                    //}
 
-                    foreach (var item in conditionDesc._needStat._needPassiveStatList)
-                    {
-                        int currVar = ownerStatScript.GetPassiveStat(item._statType);
+                    //foreach (var item in conditionDesc._needStat._needPassiveStatList)
+                    //{
+                    //    int currVar = ownerStatScript.GetPassiveStat(item._statType);
 
-                        if (currVar < item._needAmount)
-                        {
-                            isSuccess = false;
-                            break;
-                        }
-                    }
+                    //    if (currVar < item._needAmount)
+                    //    {
+                    //        isSuccess = false;
+                    //        break;
+                    //    }
+                    //}
 
-                    if (isSuccess == false)
-                    {
-                        ret = false;
-                        break;
-                    }
+                    //if (isSuccess == false)
+                    //{
+                    //    ret = false;
+                    //    break;
+                    //}
 
 
-                    foreach (var item in conditionDesc._needStat._needActiveStatList)
-                    {
-                        if (item._isConsume == true)
-                        {
-                            ownerStatScript.ChangeActiveStat(item._statType, -item._needAmount);
-                        }
-                    }
+                    //foreach (var item in conditionDesc._needStat._needActiveStatList)
+                    //{
+                    //    if (item._isConsume == true)
+                    //    {
+                    //        ownerStatScript.ChangeActiveStat(item._statType, -item._needAmount);
+                    //    }
+                    //}
 
-                    foreach (var item in conditionDesc._needStat._needPassiveStatList)
-                    {
-                        if (item._isConsume == true)
-                        {
-                            //그만큼 소모할겁니다.
-                            //근데 패시브 스텟에 컨슘이 있다고? 컨텐츠적으로
-                        }
-                    }
+                    //foreach (var item in conditionDesc._needStat._needPassiveStatList)
+                    //{
+                    //    if (item._isConsume == true)
+                    //    {
+                    //        //그만큼 소모할겁니다.
+                    //        //근데 패시브 스텟에 컨슘이 있다고? 컨텐츠적으로
+                    //    }
+                    //}
 
-                    ret = true;
+                    //ret = true;
                 }
                 break;
 

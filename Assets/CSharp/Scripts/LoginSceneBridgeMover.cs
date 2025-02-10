@@ -6,6 +6,15 @@ using UnityEngine;
 
 public class LoginSceneBridgeMover : MonoBehaviour
 {
+    public enum LoginSceneState
+    {
+        Moving,
+        StoppedAndSteady,
+        SceneChangeReady,
+        End,
+    }
+
+
 
     [SerializeField] private float _eachModelOffset = 64.0f;
     [SerializeField] private float _deAccelTime = 2.0f;
@@ -20,7 +29,9 @@ public class LoginSceneBridgeMover : MonoBehaviour
     private Vector3 _myAnchoredPosition = Vector3.zero;
     private float _myAnchoredHeightLimit = 0.0f;
     private float _deAccel = 0.0f;
-    private Coroutine _stopMovingCoroutine = null;
+
+    private LoginSceneState _state = LoginSceneState.Moving;
+    private bool _isBusy = false;
 
     [SerializeField] private GameObject _doorSpawnPosition = null;
     [SerializeField] private GameObject _doorPrefab = null;
@@ -37,6 +48,8 @@ public class LoginSceneBridgeMover : MonoBehaviour
     private List<float> _eachMoveDistanceAcc = new List<float>();
 
     private List<GameObject> _createdObjects = new List<GameObject>();
+
+    private GameObject _createdDoor = null;
 
 
     private void Awake()
@@ -57,6 +70,8 @@ public class LoginSceneBridgeMover : MonoBehaviour
 
     private IEnumerator StopMovingCoroutine()
     {
+        _isBusy = true;
+
         _deAccel = _moveSpeed / _deAccelTime;
 
         while (true)
@@ -65,10 +80,15 @@ public class LoginSceneBridgeMover : MonoBehaviour
             if (_moveSpeed <= 0)
             {
                 _moveSpeed = 0.0f;
-                _isMoving = false;
 
-                GameObject door = Instantiate(_doorPrefab, _doorSpawnPosition.transform);
-                door.GetComponent<SceneOpenDoorScript>().SetTargetState("StageScene_3");
+                _createdDoor = Instantiate(_doorPrefab, _doorSpawnPosition.transform);
+                SceneOpenDoorScript doorScript = _createdDoor.GetComponent<SceneOpenDoorScript>();
+                doorScript.DoorCall();
+
+                _isBusy = false;
+                _state = LoginSceneState.StoppedAndSteady;
+
+
                 _isMoving = false;
                 break;
             }
@@ -76,19 +96,41 @@ public class LoginSceneBridgeMover : MonoBehaviour
         }
     }
 
-
-    public void StopMoving()
-    {
-        _stopMovingCoroutine = StartCoroutine(StopMovingCoroutine());
-    }
-
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.J) == true &&
-            _stopMovingCoroutine == null)
+        if (Input.GetKeyDown(KeyCode.J) == true && _isBusy == false)
         {
-            StopMoving();
-            _construct.StopMoving();
+            switch (_state)
+            {
+                case LoginSceneState.Moving:
+                    {
+                        StartCoroutine(StopMovingCoroutine());
+                        _construct.StopMoving();
+                    }
+                    break;
+
+                case LoginSceneState.StoppedAndSteady:
+                    {
+                        SceneOpenDoorScript doorScript = _createdDoor.GetComponent<SceneOpenDoorScript>();
+                        doorScript.SetTargetStage("StageScene_Vil");
+                        doorScript.DoorCall();
+                        _state = LoginSceneState.SceneChangeReady;
+                    }
+                    break;
+
+                case LoginSceneState.SceneChangeReady:
+                    {
+                        SceneOpenDoorScript doorScript = _createdDoor.GetComponent<SceneOpenDoorScript>();
+                        doorScript.SceneChange(true);
+                        _state = LoginSceneState.End;
+                    }
+                    break;
+
+
+                default:
+                    break;
+            }
+
         }
 
         {
