@@ -12,6 +12,7 @@ public class BuffCountUI : MonoBehaviour
         if (count <= 1)
         {
             _textMeshPro.enabled = false;
+            return;
         }
 
         _textMeshPro.enabled = true;

@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9967d1ee22a1d6946bac0890bae4d073, type: 3}
+  m_Name: PlayerDieGraph
+  m_EditorClassIdentifier: 
+  _graphType: 9
+  _usingStates:
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: fdc046532f0874b4dba207e48a72c420, type: 2}
+    _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: c63471036063eed439aa2fdef6075e70, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 12aa5999deacb4e47b2b6d504e0baf61,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 1dad37ca450142041b846d533ee55e14, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 12aa5999deacb4e47b2b6d504e0baf61,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: c63471036063eed439aa2fdef6075e70, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 1dad37ca450142041b846d533ee55e14, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 50d2b82214c62464abb9175364cff25c, type: 2}
+    _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 6e939f5b8cc40e94a892ecf1ca2f65d8, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 6e939f5b8cc40e94a892ecf1ca2f65d8, type: 2}
+    _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 99a29b1cafa449d49a236bce2af52235, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
+          type: 2}
+        _goal: 0
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 99a29b1cafa449d49a236bce2af52235, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  _interactionPointsInitial: []

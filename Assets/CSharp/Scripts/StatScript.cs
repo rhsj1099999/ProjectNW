@@ -332,10 +332,19 @@ public class StatScript : GameCharacterSubScript
                 RemoveBuff(buff, runtimeBuffAsset._Count);
 
                 runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
-                runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
+                if (buff._Duration > 0.0f)
+                {
+                    runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
+                }
                 target.Add(buff, runtimeBuffAsset);
 
                 BuffChangeStatCalculate(runtimeBuffAsset, runtimeBuffAsset._Count);
+
+                if (_owner._CharacterType == CharacterType.Player)
+                {
+                    BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
+                    script.AddBuff(runtimeBuffAsset);
+                }
 
                 return;
             }
@@ -377,9 +386,12 @@ public class StatScript : GameCharacterSubScript
 
             target.Add(buff, runtimeBuffAsset);
 
-            BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
 
-            script.AddBuff(runtimeBuffAsset);
+            if (_owner._CharacterType == CharacterType.Player)
+            {
+                BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
+                script.AddBuff(runtimeBuffAsset);
+            }
         }
     }
 
@@ -418,9 +430,12 @@ public class StatScript : GameCharacterSubScript
 
             target.Remove(buff);
 
-            BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
 
-            script.RemoveBuff(existRuntimeBuffAsset);
+            if (_owner._CharacterType == CharacterType.Player)
+            {
+                BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
+                script.RemoveBuff(existRuntimeBuffAsset);
+            }
         }
     }
 

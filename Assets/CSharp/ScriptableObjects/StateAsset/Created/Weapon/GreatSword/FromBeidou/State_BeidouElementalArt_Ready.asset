@@ -19,8 +19,6 @@ MonoBehaviour:
     _stateAnimationClipOverride:
     - {fileID: 7400000, guid: b4aa83b9d6097ea458c8fd6aad084aaa, type: 2}
     - {fileID: 7400000, guid: b7698da3168eaf847b6ded0b40f5dcff, type: 2}
-    _rightWeaponOverride: 0
-    _leftWeaponOverride: 0
     _isAttackState: 1
     _isAttackState_effectedBySpeed: 0
     _attackDamageMultiply:
@@ -28,12 +26,7 @@ MonoBehaviour:
       _damage: 1
       _damagePower: 1
       _damagingStamina: 1
-    _isLocoMotionToAttackAction: 0
-    _isLoopState: 0
     _canUseItem: 0
-    _stateLocked: 0
-    _isBlockState: 0
-    _isAIAttackState: 0
     _isAIState: 0
     _aiStateDesc:
       _coolTime: -1
@@ -45,14 +38,29 @@ MonoBehaviour:
     _stateBuffs_Add:
     - "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uAC00\uB4DC\uBC84\uD504"
     - "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uB370\uBBF8\uC9C0\uB204\uC801\uBC84\uD504"
+    - "\uBD81\uB450\uBC18\uACA9\uC2A4\uD14C\uAC10\uC18C\uBC84\uD504"
     _stateBuffs_Remove:
     - "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uAC00\uB4DC\uBC84\uD504"
+    - "\uBD81\uB450\uBC18\uACA9\uC2A4\uD14C\uAC10\uC18C\uBC84\uD504"
     _EnterStateActionTypes: 0d0000002200000025000000
     _inStateActionTypes: 1900000006000000
     _ExitStateActionTypes: 0e00000026000000
     _checkingBehaves: 
-    _breakLoopStateCondition: []
     _isSubBlendTreeExist: 0
     _subBlendTree: {fileID: 0}
     _isSubAnimationStateMachineExist: 0
     _subAnimationStateMachine: {fileID: 0}
+    _isNeedStat: 1
+    _needStat:
+      _needPassiveStatList: []
+      _needActiveStatList:
+      - _statType: 2
+        _needAmount: 25
+        _isConsume: 1
+    _isNeedStatLoopBreak: 1
+    _needStat_LoopBreak:
+      _needPassiveStatList: []
+      _needActiveStatList:
+      - _statType: 1
+        _needAmount: 0
+        _isConsume: 0

@@ -43,3 +43,10 @@ MonoBehaviour:
     _subBlendTree: {fileID: 0}
     _isSubAnimationStateMachineExist: 0
     _subAnimationStateMachine: {fileID: 0}
+    _isNeedStat: 1
+    _needStat:
+      _needPassiveStatList: []
+      _needActiveStatList:
+      - _statType: 1
+        _needAmount: 10
+        _isConsume: 1

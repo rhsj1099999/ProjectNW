@@ -38,12 +38,13 @@ public class BuffDisplayScript : MonoBehaviour
 
     public void RemoveBuff(RuntimeBuffAsset asset)
     {
-        BuffIconWrapper buffIconWrapper = _cuffBuffs[asset._fromAsset];
-
+        BuffIconWrapper buffIconWrapper = null;
+        _cuffBuffs.TryGetValue(asset._fromAsset, out buffIconWrapper);
         if (buffIconWrapper == null) 
         {
             Debug.Assert(false, "해당 버프를 찾을수 없었다 " + asset._fromAsset.name);
             Debug.Break();
+            return;
         }
         //없으면 안됩니다.
 

@@ -41,6 +41,33 @@ public class PlayerScript : CharacterScript
         }
     }
 
+    public override void DeadCall()
+    {
+        base.DeadCall();
+
+        //씬전환 합시다...
+        {
+            CurtainCallControl_SimpleColor onDesc = new CurtainCallControl_SimpleColor();
+            onDesc._target = false;
+            onDesc._runningTime = 2.0f;
+            onDesc._color = new Vector3(0.0f, 0.0f, 0.0f);
+            CurtainCallControl_SimpleColor offDesc = new CurtainCallControl_SimpleColor();
+            offDesc._target = true;
+            offDesc._runningTime = 1.0f;
+            offDesc._color = new Vector3(0.0f, 0.0f, 0.0f);
+
+            SceneManagerWrapper.Instance.ChangeScene
+            (
+                "StageScene_Vil2",
+                CurtainCallType.SimpleColorFadeInOut,
+                onDesc,
+                CurtainCallType.SimpleColorFadeInOut,
+                offDesc
+            );
+        }
+    }
+
+
     protected override void Update()
     {
         base.Update();
@@ -48,6 +75,15 @@ public class PlayerScript : CharacterScript
         //임시...휠 드래그 소모템 변경 체크
         {
             CheckUseableItemChange();
+        }
+
+
+
+        if (Input.GetKeyDown(KeyCode.H) == true)
+        {
+            DamageDesc testDamage = new DamageDesc();
+            testDamage._damage = 100;
+            DealMe_Test(testDamage);
         }
 
 

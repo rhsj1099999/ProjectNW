@@ -11,6 +11,7 @@ using static ItemAsset_Weapon;
 using Unity.VisualScripting;
 using static UnityEditor.Rendering.InspectorCurveEditor;
 using UnityEngine.Animations.Rigging;
+using UnityEditor.Experimental.GraphView;
 
 public class StateContollerComponentDesc
 {
@@ -187,7 +188,7 @@ public class CharacterScript : GameActorScript, IHitable
         //    Debug.Break();
         //}
 
-        return (T)_mySubScripts[typeof(T)];
+        return (T)target;
     }
 
     public T GCST<T>() where T : Component
@@ -1497,6 +1498,97 @@ public class CharacterScript : GameActorScript, IHitable
             else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
             {
                 representType = RepresentStateType.Hit_Lvl_2;
+            }
+        }
+    }
+
+
+    protected void DealMe_Test(DamageDesc damage)
+    {
+        StateGraphType nextGraphType = StateGraphType.HitStateGraph;
+        RepresentStateType representType = RepresentStateType.End;
+        StatScript statScript = GCST<StatScript>();
+
+        //Step3. 데미지 적용
+        {
+            bool willDead = false;
+
+            if (statScript.GetPassiveStat(PassiveStat.IsInvincible_HP) <= 0)
+            {
+                statScript.ChangeActiveStat(ActiveStat.Hp, -(int)damage._damage);
+            }
+
+
+            if (statScript.GetActiveStat(ActiveStat.Hp) <= 0)
+            {
+                willDead = true;
+
+                ZeroHPCall(this);
+
+                nextGraphType = StateGraphType.DieGraph;
+
+                if (GCST<StateContoller>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
+                {
+                    Debug.Assert(false, "죽을건데 죽는 그래프가 없네요?");
+                    Debug.Break();
+                }
+
+                if (representType == RepresentStateType.Hit_Lvl_2)
+                {
+                    representType = RepresentStateType.DieThrow;
+                }
+                else
+                {
+                    representType = RepresentStateType.DieNormal;
+                }
+            }
+
+
+
+
+            //데미지 적용하는데, 상태는 어떻게 변경될까요?
+            if (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && //CC면역이 걸려있지 않고,
+                willDead == false) //다음에 죽지 않을 예정이라면 -> 죽을거였으면 죽는모션으로 간다는게 위에 계산돼있다
+            {
+                //다음 상태를 계산합니다.
+
+                if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
+                {
+                    //가드중이였다 = 움찔관련 모션을 계산한다
+                    CalculateNextState_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
+                }
+                else
+                {
+                    float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
+
+                    if (deltaRoughness > 0)
+                    {
+                        if (deltaRoughness <= MyUtil.deltaRoughness_lvl0)
+                        {
+                            representType = RepresentStateType.Hit_Lvl_0;
+                        }
+                        else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1)
+                        {
+                            representType = RepresentStateType.Hit_Lvl_1;
+                        }
+                        else
+                        {
+                            representType = RepresentStateType.Hit_Lvl_2;
+                        }
+                    }
+                }
+            }
+
+
+            if (willDead == true || //다음에 죽을 예정이거나
+                (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && representType != RepresentStateType.End)) //CC면역이 걸려있지 않다면
+            {
+                //Vector3 toAttackerDir = (attacker.transform.position - transform.position);
+                //toAttackerDir.y = 0.0f;
+                //toAttackerDir = toAttackerDir.normalized;
+
+                //GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
+                GCST<StateContoller>().TryChangeState(nextGraphType, representType);
             }
         }
     }

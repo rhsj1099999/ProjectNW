@@ -10,6 +10,7 @@ using UnityEngine.Playables;
 using MagicaCloth2;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using JetBrains.Annotations;
+using static StateContoller;
 
 public enum StateActionType
 {
@@ -253,6 +254,8 @@ public class StateDesc
     public bool _isNeedStat = false;
     public NeedStatDesc _needStat = new NeedStatDesc();
 
+    public bool _isNeedStatLoopBreak = false;
+    public NeedStatDesc _needStat_LoopBreak = new NeedStatDesc();
 }
 
 
@@ -531,7 +534,7 @@ public class StateContoller : GameCharacterSubScript
 
     private void ChangeState(StateGraphType nextGraphType, StateAsset nextState)
     {
-        StatedWillBeChanged();
+        //StatedWillBeChanged();
 
 
         /*-----------------------------------------------------
@@ -550,10 +553,6 @@ public class StateContoller : GameCharacterSubScript
             _randomStateInstructIndex = -1;
             _randomStateTryCount = 0;
             _failedRandomChanceState.Clear();
-
-
-
-
 
 
             //다음상태 세팅
@@ -711,6 +710,41 @@ public class StateContoller : GameCharacterSubScript
                 isSuccess = false;
             }
 
+
+            //현재 연출중인 상태가 NeedStat 이다
+            if (targetState._myState._isNeedStatLoopBreak == true)
+            {
+                bool isLoopBreak = false;
+
+                StatScript ownerStatScript = _owner.GCST<StatScript>();
+
+                foreach (var item in targetState._myState._needStat_LoopBreak._needActiveStatList)
+                {
+                    int currVar = ownerStatScript.GetActiveStat(item._statType);
+
+                    if (currVar < item._needAmount || currVar == 0)
+                    {
+                        isLoopBreak = true;
+                        break;
+                    }
+                }
+
+                if (isLoopBreak == true)
+                {
+                    //Idle로 세팅할 것
+                    if (isStateChangeGuaranted == false)
+                    {
+                        StatedWillBeChanged();
+                        isStateChangeGuaranted = true;
+                    }
+
+                    targetState = GetMyIdleStateAsset();
+                    nextGraphType = StateGraphType.LocoStateGraph;
+                    ReadyLinkedStates(nextGraphType, targetState, true);
+                    continue;
+                }
+            }
+
             foreach (LinkedStateAssetWrapper linkedStateAssetWrapper in _currLinkedStates)
             {
                 isSuccess = true;
@@ -754,7 +788,7 @@ public class StateContoller : GameCharacterSubScript
                     {
                         int currVar = ownerStatScript.GetActiveStat(item._statType);
 
-                        if (currVar < item._needAmount)
+                        if (currVar < item._needAmount || currVar == 0)
                         {
                             isSuccess = false;
                             break;
@@ -763,14 +797,14 @@ public class StateContoller : GameCharacterSubScript
 
                     if (isSuccess == false)
                     {
-                        break;
+                        continue;
                     }
 
                     foreach (var item in nextState._myState._needStat._needPassiveStatList)
                     {
                         int currVar = ownerStatScript.GetPassiveStat(item._statType);
 
-                        if (currVar < item._needAmount)
+                        if (currVar < item._needAmount || currVar == 0)
                         {
                             isSuccess = false;
                             break;
@@ -779,7 +813,7 @@ public class StateContoller : GameCharacterSubScript
 
                     if (isSuccess == false)
                     {
-                        break;
+                        continue;
                     }
 
 
@@ -845,8 +879,6 @@ public class StateContoller : GameCharacterSubScript
         StateGraphType nextGraphType = StateGraphType.End;
 
         StateAsset nextState = CheckChangeState_Recursion2(out nextGraphType);
-
-
 
         if (nextState != null)
         {
@@ -1920,63 +1952,6 @@ public class StateContoller : GameCharacterSubScript
 
             case ConditionType.NeedStat:
                 {
-                    //StatScript ownerStatScript = _owner.GCST<StatScript>();
-
-                    //bool isSuccess = true;
-
-                    //foreach (var item in conditionDesc._needStat._needActiveStatList)
-                    //{
-                    //    int currVar = ownerStatScript.GetActiveStat(item._statType);
-
-                    //    if (currVar < item._needAmount)
-                    //    {
-                    //        isSuccess = false;
-                    //        break;
-                    //    }
-                    //}
-
-                    //if (isSuccess == false)
-                    //{
-                    //    ret = false;
-                    //    break;
-                    //}
-
-                    //foreach (var item in conditionDesc._needStat._needPassiveStatList)
-                    //{
-                    //    int currVar = ownerStatScript.GetPassiveStat(item._statType);
-
-                    //    if (currVar < item._needAmount)
-                    //    {
-                    //        isSuccess = false;
-                    //        break;
-                    //    }
-                    //}
-
-                    //if (isSuccess == false)
-                    //{
-                    //    ret = false;
-                    //    break;
-                    //}
-
-
-                    //foreach (var item in conditionDesc._needStat._needActiveStatList)
-                    //{
-                    //    if (item._isConsume == true)
-                    //    {
-                    //        ownerStatScript.ChangeActiveStat(item._statType, -item._needAmount);
-                    //    }
-                    //}
-
-                    //foreach (var item in conditionDesc._needStat._needPassiveStatList)
-                    //{
-                    //    if (item._isConsume == true)
-                    //    {
-                    //        //그만큼 소모할겁니다.
-                    //        //근데 패시브 스텟에 컨슘이 있다고? 컨텐츠적으로
-                    //    }
-                    //}
-
-                    //ret = true;
                 }
                 break;
 
