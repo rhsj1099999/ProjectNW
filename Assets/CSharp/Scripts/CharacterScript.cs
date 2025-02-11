@@ -127,7 +127,7 @@ public class CharacterScript : GameActorScript, IHitable
     protected List<InventoryBoard> _inventoryBoardCached = new List<InventoryBoard>();
 
     //무기 관련
-    //현재 손에 쥐고있다 = 객체화가 됐다 = GameObject 로 들고있는데 맞음---------------------------
+    //현재 손에 쥐고있다 = 객체화가 됐다 = GameObject 로 들고있는게 맞음---------------------------
     protected GameObject _tempCurrLeftWeapon = null;
     protected GameObject _tempCurrRightWeapon = null;
     //----------------------------------------------------------------------------------------
@@ -282,6 +282,14 @@ public class CharacterScript : GameActorScript, IHitable
     {
         _dead = true;
 
+        AimScript2 aimScript = GetCharacterSubcomponent<AimScript2>(true);
+        if (aimScript != null &&
+            aimScript.GetAimState() == AimState.eLockOnAim &&
+            aimScript.GetLockOnObject() != null)
+        {
+            aimScript.OffAimState();
+        }
+
         if (killedBy != null)
         {
             killedBy.YouKillThisObject(gameObject);
@@ -314,6 +322,19 @@ public class CharacterScript : GameActorScript, IHitable
         gameObject.layer = LayerMask.NameToLayer("DeadObject");
 
         GCST<CharacterContollerable>().CharacterDie();
+    }
+
+
+    public virtual void CharacterRevive(int hp = 0)
+    {
+        _dead = false;
+        StateContoller stateController = GCST<StateContoller>();
+        stateController.enabled = true;
+
+        //뒤로 누웠으면 뒤에서 누웠다 일어나는 자세로 연결, 앞으로 누웠으면 앞으로 누웠다 일어나는 자세로 연결
+        {
+            stateController.TryChangeState(StateGraphType.DieGraph, stateController._CurrLinkedStated.First()._linkedState._linkedState);
+        }
     }
 
 
@@ -603,25 +624,6 @@ public class CharacterScript : GameActorScript, IHitable
             GameObject itemModel = Instantiate(itemStoreDesc._itemAsset._ItemModel, correctSocket);
 
             _currHandObject.Add(layerType, itemModel);
-
-            //다행이 뭘 건드리진 않아도 된다.
-
-            {
-                //_owner = itemOwner;
-
-                //Equip_OnSocket(followTransform);
-
-                //string targetName = (_isRightHandWeapon == true)
-                //    ? "HandlingAbsolute_Right"
-                //    : "HandlingAbsolute_Left";
-
-                //Transform target = transform.Find(targetName);
-
-                //Transform targetTransform = target.transform;
-
-                //_addRotation = targetTransform.localRotation;
-                //_addPosition = targetTransform.localPosition;
-            }
         }
 
         if (itemStoreDesc._itemAsset._EquipType == ItemAsset.EquipType.Weapon)
@@ -942,6 +944,8 @@ public class CharacterScript : GameActorScript, IHitable
         GCST<CharacterColliderScript>().StateChanged();
         GCST<CharacterContollerable>().StateChanged();
     }
+
+
 
 
     public void SetEquipItem_Weapon(bool isRightWeapon, int index, ItemStoreDesc_Weapon weaponInfo)
@@ -1701,6 +1705,15 @@ public class CharacterScript : GameActorScript, IHitable
 
                     if (deltaRoughness > 0)
                     {
+                        if (_CharacterType == CharacterType.Monster_Zombie)
+                        {
+                            EnemyAIScript aiScript = GCST<EnemyAIScript>();
+                            if (aiScript.GetCurrentEnemy() == null) 
+                            {
+                                aiScript.SetEnemy(attacker);
+                            }
+                        }
+
                         if (deltaRoughness <= MyUtil.deltaRoughness_lvl0)
                         {
                             representType = RepresentStateType.Hit_Lvl_0;

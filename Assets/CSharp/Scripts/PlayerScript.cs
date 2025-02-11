@@ -49,11 +49,11 @@ public class PlayerScript : CharacterScript
         {
             CurtainCallControl_SimpleColor onDesc = new CurtainCallControl_SimpleColor();
             onDesc._target = false;
-            onDesc._runningTime = 2.0f;
+            onDesc._runningTime = 1.0f;
             onDesc._color = new Vector3(0.0f, 0.0f, 0.0f);
             CurtainCallControl_SimpleColor offDesc = new CurtainCallControl_SimpleColor();
             offDesc._target = true;
-            offDesc._runningTime = 1.0f;
+            offDesc._runningTime = 2.0f;
             offDesc._color = new Vector3(0.0f, 0.0f, 0.0f);
 
             SceneManagerWrapper.Instance.ChangeScene
@@ -62,7 +62,8 @@ public class PlayerScript : CharacterScript
                 CurtainCallType.SimpleColorFadeInOut,
                 onDesc,
                 CurtainCallType.SimpleColorFadeInOut,
-                offDesc
+                offDesc,
+                true
             );
         }
     }

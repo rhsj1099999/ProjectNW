@@ -42,6 +42,11 @@ public class InteractionUIListScript : GameUISubComponent
             //√÷√ ¥Ÿ!
             _currIndex = 0;
             GameObject newUI = Instantiate(_eachUIPrefab, _myRectTransform);
+            InteractionUIScript interactionUIScript = newUI.GetComponent<InteractionUIScript>();
+            interactionUIScript.SetUIListData(uiCallScript._UIData._sprite, uiCallScript._UIData._message);
+
+
+
             ((RectTransform)newUI.transform).position = _myRectTransform.position;
 
             UIListWrapper newWrapper = new UIListWrapper();
@@ -73,6 +78,8 @@ public class InteractionUIListScript : GameUISubComponent
             Vector3 lastPosition = _currCreated.Last()._uiObject.transform.position;
             lastPosition += new Vector3(0.0f, -dynamicHeight, 0.0f);
             GameObject newUI = Instantiate(_eachUIPrefab, _myRectTransform);
+            InteractionUIScript interactionUIScript = newUI.GetComponent<InteractionUIScript>();
+            interactionUIScript.SetUIListData(uiCallScript._UIData._sprite, uiCallScript._UIData._message);
 
             UIListWrapper newWrapper = new UIListWrapper();
             newWrapper._uiObject = newUI;

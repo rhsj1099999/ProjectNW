@@ -34,6 +34,12 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     //[SerializeField] private float _maxDownHillDeg = 60.0f;
 
 
+    public override void CharacterTeleport(Vector3 position)
+    {
+        _motor.SetPosition(position);
+        //CharacterRootMove(position - transform.position, 1.0f, 1.0f);
+    }
+
     public override void LookAt_Plane(Vector3 dir)
     {
         dir.y = 0.0f;
@@ -54,12 +60,22 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         transform.localScale = Vector3.one;
     }
 
+
+    public override void CharacterRevive()
+    {
+        gameObject.layer = LayerMask.NameToLayer("CharacterVolume");
+        _motor.Capsule.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("CharacterVolume"));
+        _motor.CollidableLayers = _motor.Capsule.includeLayers;
+    }
+
     public override void CharacterDie()
     {
         gameObject.layer = LayerMask.GetMask("Default");
         _motor.Capsule.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer"));
         _motor.CollidableLayers = _motor.Capsule.includeLayers;
     }
+
+    
 
     public override void CharacterRotate(Quaternion rotation)
     {
@@ -77,8 +93,6 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     {
         _capsuleCheckLocal_High = _motor.Capsule.center + Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
         _capsuleCheckLocal_Low = _motor.Capsule.center - Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
-
-        //_motor.Capsule.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("Monster") | LayerMask.GetMask("Player"));
 
         _motor.Capsule.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("CharacterVolume"));
         _motor.CollidableLayers = _motor.Capsule.includeLayers;

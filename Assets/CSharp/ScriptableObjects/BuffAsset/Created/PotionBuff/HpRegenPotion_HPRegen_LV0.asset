@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buffKey: 2
   _buffName: "\uCCB4\uB825\uB9AC\uC820\uBB3C\uC57D\uBC84\uD504_LV0"
-  _maxCount: 1
-  _refresh: 0
+  _maxCount: 2
+  _refresh: 1
   _durationExpireOnce: 0
   _specialAction_OnlyOne: 0
   _buffWorks:
@@ -26,7 +26,7 @@ MonoBehaviour:
     _buffApplyType: 1
     _targetActiveStatType: 4
     _activeStatApplyType: 7
-    _amount: 1
+    _amount: 2
   _isTemporary: 0
   _isDebuff: 0
   _duration: 30

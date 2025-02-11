@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -19,14 +20,17 @@ public class InputController : GameCharacterSubScript
     private bool _inventoryOpen = false;
     public bool GetInventoryOpen() { return _inventoryOpen; }
 
-
     public override void Init(CharacterScript owner)
     {
         _myType = typeof(InputController);
         _owner = owner;
+
     }
 
     public override void SubScriptStart() {}
+
+
+
 
     void Update()
     {

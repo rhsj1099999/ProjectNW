@@ -39,14 +39,17 @@ public class BuffDisplayScript : MonoBehaviour
     public void RemoveBuff(RuntimeBuffAsset asset)
     {
         BuffIconWrapper buffIconWrapper = null;
+
         _cuffBuffs.TryGetValue(asset._fromAsset, out buffIconWrapper);
+
         if (buffIconWrapper == null) 
         {
+            //없으면 안됩니다.
             Debug.Assert(false, "해당 버프를 찾을수 없었다 " + asset._fromAsset.name);
             Debug.Break();
             return;
         }
-        //없으면 안됩니다.
+        
 
         int startIndex = buffIconWrapper._myIndex + 1;
 
@@ -72,33 +75,29 @@ public class BuffDisplayScript : MonoBehaviour
     {
         if (_cuffBuffs.ContainsKey(asset._fromAsset) == true)
         {
-            //이미 UI창에서 있는거다
-            {
-                //수량을 증가시키거나, 쉐이더 초기화 하거나 UI 로직을 작업한다
-            }
+            return;
         }
-        else
+
+
+        GameObject createUIObject = Instantiate(_buffIconPrefab, transform);
         {
-            GameObject createUIObject = Instantiate(_buffIconPrefab, transform);
+            //이미지 세팅
             {
-                //이미지 세팅
-                {
-                    BuffIconScript iconScript = createUIObject.GetComponent<BuffIconScript>();
-                    iconScript.SetImage(asset._fromAsset._BuffUIImage, asset);
-                }
-
-                //위치세팅
-                {
-                    RectTransform iconRectTransform = (RectTransform)createUIObject.transform;
-                    Vector3 delta = new Vector3(iconRectTransform.rect.width * _cuffBuffs.Count, 0.0f, 0.0f);
-                    Vector2 delta_Vector2 = new Vector2(iconRectTransform.rect.width * _cuffBuffs.Count, 0.0f);
-                    iconRectTransform.anchoredPosition = _myReectTransform.anchoredPosition + delta_Vector2;
-                }
+                BuffIconScript iconScript = createUIObject.GetComponent<BuffIconScript>();
+                iconScript.SetImage(asset._fromAsset._BuffUIImage, asset);
             }
 
-            BuffIconWrapper newIconWrapper = new BuffIconWrapper(asset, _cuffBuffs.Count, createUIObject);
-            _createdUIList.Add(newIconWrapper);
-            _cuffBuffs.Add(asset._fromAsset, newIconWrapper);
+            //위치세팅
+            {
+                RectTransform iconRectTransform = (RectTransform)createUIObject.transform;
+                Vector3 delta = new Vector3(iconRectTransform.rect.width * _cuffBuffs.Count, 0.0f, 0.0f);
+                Vector2 delta_Vector2 = new Vector2(iconRectTransform.rect.width * _cuffBuffs.Count, 0.0f);
+                iconRectTransform.anchoredPosition = _myReectTransform.anchoredPosition + delta_Vector2;
+            }
         }
+
+        BuffIconWrapper newIconWrapper = new BuffIconWrapper(asset, _cuffBuffs.Count, createUIObject);
+        _createdUIList.Add(newIconWrapper);
+        _cuffBuffs.Add(asset._fromAsset, newIconWrapper);
     }
 }

@@ -53,6 +53,7 @@ public class EnemyAIScript : GameCharacterSubScript
     public List<CharacterScript> GetEnemiesInScene() { return _enemiesInScene; }
     [SerializeField] private CharacterScript _targetEnemy = null; //인스펙터에서 볼려고 임시 SerializeField
     public CharacterScript GetCurrentEnemy() { return _targetEnemy; }
+    public void SetEnemy(CharacterScript enemy) { _targetEnemy = enemy; }
 
 
 

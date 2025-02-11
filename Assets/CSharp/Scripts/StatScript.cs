@@ -251,8 +251,37 @@ public class StatScript : GameCharacterSubScript
         {
             _activeStatRegenCalculator.Add((PassiveStat)i, 0.0f);
         }
-
     }
+
+    public void CharacterRevive()
+    {
+        for (int i = 0; i < (int)ActiveStat.End; i++)
+        {
+            int maxVal = 0;
+
+            ActiveStat statType = (ActiveStat)i;
+
+            switch (statType)
+            {
+                case ActiveStat.Hp:
+                    maxVal = GetPassiveStat(PassiveStat.MaxHP);
+                    break;
+                case ActiveStat.Stamina:
+                    maxVal = GetPassiveStat(PassiveStat.MaxStamina);
+                    break;
+                case ActiveStat.Mp:
+                    maxVal = GetPassiveStat(PassiveStat.MaxMp);
+                    break;
+                case ActiveStat.Sp:
+                    maxVal = GetPassiveStat(PassiveStat.MaxSp);
+                    break;
+            }
+
+            ChangeActiveStat(statType, maxVal);
+        }
+    }
+
+
     public override void SubScriptStart() { }
 
     public void InvokeDamagingProcessDelegate(DamagingProcessDelegateType type, DamageDesc damage, bool isWeakPoint, CharacterScript attacker, CharacterScript victim)

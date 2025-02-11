@@ -18,6 +18,8 @@ public class UICall_OpenChest : UICallScript
     private float _currRotatingTime = 0.0f;
     private float _rotationSpeed = 0.0f;
 
+
+
     [Serializable]
     public class FirstItemCreateDesc
     {
@@ -25,12 +27,23 @@ public class UICall_OpenChest : UICallScript
         public int _count = 0;
     }
 
+    
     [SerializeField] private List<FirstItemCreateDesc> _fixedCreateTryItemList = new List<FirstItemCreateDesc>();
 
+    [SerializeField] private Sprite _uiImage = null;
 
     private void Awake()
     {
+        if (_uiImage == null)
+        {
+            Debug.Assert(false, "인스펙터에서 UIImage를 설정하세요");
+        }
+
         _originalRotation = _chestLid.transform.rotation;
+
+        _uiData = new InteractionUIData();
+        _uiData._sprite = _uiImage;
+        _uiData._message = "상자 열기.";
     }
 
 

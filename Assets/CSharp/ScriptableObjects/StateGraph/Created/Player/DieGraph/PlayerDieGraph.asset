@@ -31,11 +31,21 @@ MonoBehaviour:
   - _isEntryState: 0
     _stateAsset: {fileID: 11400000, guid: c63471036063eed439aa2fdef6075e70, type: 2}
     _entryCondition: []
-    _linkedStates: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 817a17541fb733949ab23c226a66394e, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 569456a3ad9269049891aea9f4ea0638,
+          type: 2}
+        _goal: 0
   - _isEntryState: 0
     _stateAsset: {fileID: 11400000, guid: 1dad37ca450142041b846d533ee55e14, type: 2}
     _entryCondition: []
-    _linkedStates: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 6ba4c6559bfcb654fa039b3e5f7d97e6, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 569456a3ad9269049891aea9f4ea0638,
+          type: 2}
+        _goal: 0
   - _isEntryState: 0
     _stateAsset: {fileID: 11400000, guid: 50d2b82214c62464abb9175364cff25c, type: 2}
     _entryCondition: []
@@ -57,5 +67,30 @@ MonoBehaviour:
   - _isEntryState: 0
     _stateAsset: {fileID: 11400000, guid: 99a29b1cafa449d49a236bce2af52235, type: 2}
     _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 817a17541fb733949ab23c226a66394e, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 569456a3ad9269049891aea9f4ea0638,
+          type: 2}
+        _goal: 0
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 817a17541fb733949ab23c226a66394e, type: 2}
+    _entryCondition: []
     _linkedStates: []
-  _interactionPointsInitial: []
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 6ba4c6559bfcb654fa039b3e5f7d97e6, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  _interactionPointsInitial:
+  - _anotherType: 0
+    _interactionStates:
+    - _linkedState: {fileID: 11400000, guid: 817a17541fb733949ab23c226a66394e, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 6ba4c6559bfcb654fa039b3e5f7d97e6, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
+          type: 2}
+        _goal: 1

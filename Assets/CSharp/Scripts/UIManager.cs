@@ -53,6 +53,13 @@ public class UIManager : SubManager<UIManager>
         {
             Debug.Assert(false, "MainCanvas는 반드시 존재해야한다");
         }
+
+
+        if (_consumeInputUICount <= 0)
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 
     public bool IsConsumeInput()
@@ -62,12 +69,24 @@ public class UIManager : SubManager<UIManager>
 
     public void IncreaseConsumeInput()
     {
-        ++_consumeInputUICount;
+        int prev = _consumeInputUICount++;
+
+        if (prev <= 0)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 
     public void DecreaseConsumeInput()
     {
-        --_consumeInputUICount;
+        int after = --_consumeInputUICount;
+
+        if (after == 0)
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 
     public void TurnOnUI(GameObject uiInstance)

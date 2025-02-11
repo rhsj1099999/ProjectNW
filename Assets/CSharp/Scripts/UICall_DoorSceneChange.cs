@@ -12,16 +12,25 @@ public class UICall_SceneChange : UICallScript
         public int _count = 0;
     }
 
-
+    [SerializeField] private Sprite _uiImage = null;
     [SerializeField] private SceneChangeDoor_InField _infieldDoorScript = null;
 
     private void Awake()
     {
+        if (_uiImage == null)
+        {
+            Debug.Assert(false, "인스펙터에서 UIImage를 설정하세요");
+        }
+
         if (_infieldDoorScript == null)
         {
             Debug.Assert(false, "인스펙터에서 Door Script를 설정하세요");
             Debug.Break();
         }
+
+        _uiData = new InteractionUIData();
+        _uiData._sprite = _uiImage;
+        _uiData._message = "들어가기.";
     }
 
 

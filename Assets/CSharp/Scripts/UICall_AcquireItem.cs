@@ -18,6 +18,10 @@ public class UICall_AcquireItem : UICallScript
     public void Init(UICall_AcquireItemDesc desc)
     {
         _desc = desc;
+
+        _uiData = new InteractionUIData();
+        _uiData._sprite = desc._itemStoreDesc._itemAsset._ItemImage;
+        _uiData._message = "ащ╠Б : " + desc._itemStoreDesc._itemAsset._ItemName;
     }
 
     private void Awake() {}

@@ -56,6 +56,7 @@ public abstract class CharacterContollerable : GameCharacterSubScript
     }
 
     public abstract void CharacterDie();
+    public abstract void CharacterRevive();
     public abstract void MoverUpdate();
     public abstract void StateChanged();
     public abstract void LookAt_Plane(Vector3 dir);
@@ -66,6 +67,7 @@ public abstract class CharacterContollerable : GameCharacterSubScript
     public abstract void DoJump();
     public abstract void CharacterMove(Vector3 inputDirection, float similarities, float ratio);
     public abstract void CharacterRootMove(Vector3 delta, float similarities, float ratio);
+    public abstract void CharacterTeleport(Vector3 position);
     public abstract void CharacterRotate(Vector3 inputDirection, float ratio);
     public abstract void CharacterRotate(Quaternion rotation);
     public abstract void CharacterRotateDirectly(Quaternion rotation);

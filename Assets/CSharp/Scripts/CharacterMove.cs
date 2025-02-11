@@ -8,6 +8,11 @@ public class CharacterMoveScript2 : CharacterContollerable
 {
     private CharacterController _characterController = null;
 
+    public override void CharacterTeleport(Vector3 position)
+    {
+        _characterController.Move(position);
+    }
+
     public override void SubScriptStart()
     {
         _characterController = GetComponent<CharacterController>();
@@ -42,6 +47,11 @@ public class CharacterMoveScript2 : CharacterContollerable
     public override void CharacterRotate(Quaternion rotation)
     {
         transform.rotation = rotation;
+    }
+
+    public override void CharacterRevive()
+    {
+        
     }
 
     public override void CharacterDie()

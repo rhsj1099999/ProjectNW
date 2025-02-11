@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIScaler : MonoBehaviour
 {
@@ -18,6 +19,24 @@ public class UIScaler : MonoBehaviour
         _myRectTransform = (RectTransform)transform;
     }
 
+    public Vector4 GetAnchorMinMax()
+    {
+        if (_myRectTransform == null)
+        {
+            _myRectTransform = GetComponent<RectTransform>();
+        }
+
+        Vector4 ret = new Vector4
+        (
+            _myRectTransform.anchorMin.x,
+            _myRectTransform.anchorMin.y,
+            _myRectTransform.anchorMax.x,
+            _myRectTransform.anchorMax.y
+        );
+
+        return ret;
+    }
+
     public Vector2 GetAnchoredSize()
     {
         if (_myRectTransform == null)
@@ -25,11 +44,18 @@ public class UIScaler : MonoBehaviour
             _myRectTransform = GetComponent<RectTransform>();
         }
 
-        Vector2 screenSize = new Vector2(Screen.width, Screen.height);
+        Canvas mainCanvasComponent = UIManager.Instance.GetMainCanvasObject().GetComponent<Canvas>();
+        //CanvasScaler canvasScaler = UIManager.Instance.GetMainCanvasObject().GetComponent<CanvasScaler>();
 
-        Vector2 size = new Vector2(
-            (_myRectTransform.anchorMax.x - _myRectTransform.anchorMin.x) * screenSize.x,
-            (_myRectTransform.anchorMax.y - _myRectTransform.anchorMin.y) * screenSize.y
+        RectTransform canvasRectTransform = (RectTransform)mainCanvasComponent.transform;
+        
+        float screenWidth = canvasRectTransform.rect.width;
+        float screenHeight = canvasRectTransform.rect.height;
+
+        Vector2 size = new Vector2
+        (
+            (_myRectTransform.anchorMax.x - _myRectTransform.anchorMin.x) * screenWidth,
+            (_myRectTransform.anchorMax.y - _myRectTransform.anchorMin.y) * screenHeight
         );
 
         return size;

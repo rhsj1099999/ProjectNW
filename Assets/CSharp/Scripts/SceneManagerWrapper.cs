@@ -98,12 +98,12 @@ public class SceneManagerWrapper : SubManager<SceneManagerWrapper>
     }
 
 
-    public Coroutine ChangeScene(string sceneName, CurtainCallType typeOn, CurtainCallControlDesc descOn, CurtainCallType typeOff, CurtainCallControlDesc descOff)
+    public Coroutine ChangeScene(string sceneName, CurtainCallType typeOn, CurtainCallControlDesc descOn, CurtainCallType typeOff, CurtainCallControlDesc descOff, bool isRevive = false)
     {
-        return StartCoroutine(ChangeSceneCoroutine(sceneName, typeOn, descOn, typeOff, descOff));
+        return StartCoroutine(ChangeSceneCoroutine(sceneName, typeOn, descOn, typeOff, descOff, isRevive));
     }
 
-    private IEnumerator ChangeSceneCoroutine(string sceneName, CurtainCallType typeOn, CurtainCallControlDesc descOn, CurtainCallType typeOff, CurtainCallControlDesc descOff)
+    private IEnumerator ChangeSceneCoroutine(string sceneName, CurtainCallType typeOn, CurtainCallControlDesc descOn, CurtainCallType typeOff, CurtainCallControlDesc descOff, bool isRevive = false)
     {
         if (descOn != null)
         {
@@ -113,6 +113,12 @@ public class SceneManagerWrapper : SubManager<SceneManagerWrapper>
         //---------------------------------
         SceneManager.LoadScene(sceneName);
         //---------------------------------
+
+        if (isRevive == true)
+        {
+            PlayerScript playerScript = FindFirstObjectByType<PlayerScript>();
+            playerScript.CharacterRevive();
+        }
 
         if (descOff != null)
         {

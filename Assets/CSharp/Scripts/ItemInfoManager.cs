@@ -8,6 +8,7 @@ using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using UnityEngine.UI;
+using static UICall_AcquireItem;
 
 
 
@@ -315,7 +316,7 @@ public class ItemInfoManager : SubManager<ItemInfoManager>
         }
 
         UICall_AcquireItem interactionUIComponent = dropItemInteraction.AddComponent<UICall_AcquireItem>();
-        UICall_AcquireItem.UICall_AcquireItemDesc newDesc = new UICall_AcquireItem.UICall_AcquireItemDesc();
+        UICall_AcquireItemDesc newDesc = new UICall_AcquireItemDesc();
         newDesc._itemStoreDesc = itemStoreDesc;
         newDesc._itemTarget = dropItemGameObject;
         newDesc._offCollider = interactionCollider;

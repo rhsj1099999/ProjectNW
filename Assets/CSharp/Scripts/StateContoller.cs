@@ -57,6 +57,8 @@ public enum StateActionType
 
     AddBuff,
     RemoveBuff,
+
+    CharacterRevive,
 }
 
 public enum ConditionType
@@ -449,7 +451,8 @@ public class StateContoller : GameCharacterSubScript
     public void StateDeeperCall() { _stateDeeper = true; }
     
 
-    List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
+    private List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
+    public IReadOnlyList<LinkedStateAssetWrapper> _CurrLinkedStated => _currLinkedStates;
 
     private List<Coroutine> _stateActionCoroutines = new List<Coroutine>();
     private int _randomStateInstructIndex = -1;
@@ -522,6 +525,8 @@ public class StateContoller : GameCharacterSubScript
         }
 
         ChangeState(graphType, targetAsset);
+
+        ReadyLinkedStates(graphType, targetAsset, true);
     }
 
     private void StatedWillBeChanged()
@@ -534,7 +539,7 @@ public class StateContoller : GameCharacterSubScript
 
     private void ChangeState(StateGraphType nextGraphType, StateAsset nextState)
     {
-        //StatedWillBeChanged();
+        StatedWillBeChanged();
 
 
         /*-----------------------------------------------------
@@ -554,10 +559,10 @@ public class StateContoller : GameCharacterSubScript
             _randomStateTryCount = 0;
             _failedRandomChanceState.Clear();
 
-
             //다음상태 세팅
             _currentGraphType = nextGraphType;
             _currState = nextState;
+
             if (_currentGraphType == StateGraphType.WeaponState_RightGraph)
             {
                 _owner.SetLatestWeaponUse(true);
@@ -678,7 +683,14 @@ public class StateContoller : GameCharacterSubScript
 
         //InGraphState를 담는다
         {
-            List<LinkedStateAsset> linkedStates = _stateGraphes[(int)currentGraphType].GetGraphStates()[currState];
+            List<LinkedStateAsset> linkedStates = null;
+            _stateGraphes[(int)currentGraphType].GetGraphStates().TryGetValue(currState, out linkedStates);
+
+            if (linkedStates == null)
+            {
+                return;
+            }
+
             foreach (var linkedState in linkedStates)
             {
                 _currLinkedStates.Add(new LinkedStateAssetWrapper(currentGraphType, currentGraphType, linkedState, null));
@@ -1288,6 +1300,28 @@ public class StateContoller : GameCharacterSubScript
                         {
                             _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(buffName), 1);
                         }
+                    }
+                    break;
+
+                case StateActionType.CharacterRevive:
+                    {
+                        _owner.GCST<StatScript>().CharacterRevive();
+
+                        int myLayer = 0;
+                        switch (_owner._CharacterType)
+                        {
+                            case CharacterType.Player:
+                                myLayer = LayerMask.NameToLayer("Player");
+                                break;
+                            case CharacterType.Monster_Zombie:
+                                myLayer = LayerMask.NameToLayer("Monster");
+                                break;
+                            default:
+                                break;
+                        }
+                        gameObject.layer = myLayer;
+
+                        _owner.GCST<CharacterContollerable>().CharacterRevive();
                     }
                     break;
 
