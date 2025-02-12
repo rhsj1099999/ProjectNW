@@ -26,7 +26,7 @@ public class BuffAsset : ScriptableObject
         Multiply,
         Devide,
 
-        End,
+        End = 2048,
     }
 
     //[SerializeField] private int _buffKey = 0;

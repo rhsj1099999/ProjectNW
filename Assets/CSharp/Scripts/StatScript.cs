@@ -168,7 +168,6 @@ public class StatScript : GameCharacterSubScript
     {
         ActiveStat currActiveStatType = ActiveStat.End;
 
-        PassiveStat currMaxActiveStatType = PassiveStat.End;
         for (int i = (int)PassiveStat.HPRegen; i <= (int)PassiveStat.SPRegen; i++)
         {
             PassiveStat currActiveStatRegenType = (PassiveStat)i;
@@ -177,22 +176,18 @@ public class StatScript : GameCharacterSubScript
             {
                 case PassiveStat.HPRegen:
                     currActiveStatType = ActiveStat.Hp;
-                    currMaxActiveStatType = PassiveStat.MaxHP;
                     break;
 
                 case PassiveStat.StaminaRegen:
                     currActiveStatType = ActiveStat.Stamina;
-                    currMaxActiveStatType = PassiveStat.MaxStamina;
                     break;
 
                 case PassiveStat.MPRegen:
                     currActiveStatType = ActiveStat.Mp;
-                    currMaxActiveStatType = PassiveStat.MaxMp;
                     break;
 
                 case PassiveStat.SPRegen:
                     currActiveStatType = ActiveStat.Sp;
-                    currMaxActiveStatType = PassiveStat.MaxSp;
                     break;
 
                 default:
@@ -200,16 +195,6 @@ public class StatScript : GameCharacterSubScript
                     Debug.Break();
                     break;
             }
-
-
-            int currActiveStat = GetActiveStat(currActiveStatType);
-            int currMaxActiveStat = GetPassiveStat(currMaxActiveStatType);
-
-            //if (currActiveStat >= currMaxActiveStat)
-            //{
-            //    _activeStatRegenCalculator[currActiveStatRegenType] = 0.0f;
-            //    continue;
-            //}
 
             _activeStatRegenCalculator[currActiveStatRegenType] += Time.deltaTime * GetPassiveStat(currActiveStatRegenType);
 

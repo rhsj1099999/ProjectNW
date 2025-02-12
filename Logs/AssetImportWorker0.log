@@ -1,0 +1,2219 @@
+Using pre-set license
+Built from '2022.3/staging' branch; Version is '2022.3.55f1 (9f374180d209) revision 10434369'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 32469 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 1
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\2022.3.55f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker0
+-projectPath
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+-logFile
+Logs/AssetImportWorker0.log
+-srvPort
+60671
+Successfully changed project path to: C:/Users/rhsj/Desktop/Unity/ProjectNW
+C:/Users/rhsj/Desktop/Unity/ProjectNW
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [21992]  Target information:
+
+Player connection [21992]  * "[IP] 192.168.100.175 [Port] 0 [Flags] 2 [Guid] 4145081380 [EditorId] 4145081380 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-SUV84E9) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [21992] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [21992] Host joined alternative multi-casting on [225.0.0.222:34997]...
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+Refreshing native plugins compatible for Editor in 15.15 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2022.3.55f1 (9f374180d209)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.55f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/rhsj/Desktop/Unity/ProjectNW/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   31.0.15.5244
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.55f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.55f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.55f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56908
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.55f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.007363 seconds.
+- Loaded All Assemblies, in  0.406 seconds
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.298 seconds
+Domain Reload Profiling: 703ms
+	BeginReloadAssembly (115ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (52ms)
+	RebuildNativeTypeToScriptingClass (15ms)
+	initialDomainReloadingComplete (61ms)
+	LoadAllAssembliesAndSetupDomain (162ms)
+		LoadAssemblies (113ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (160ms)
+			TypeCache.Refresh (158ms)
+				TypeCache.ScanAssembly (146ms)
+			ScanForSourceGeneratedMonoScriptInfo (1ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (299ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (239ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (10ms)
+			SetLoadedEditorAssemblies (9ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (2ms)
+			ProcessInitializeOnLoadAttributes (164ms)
+			ProcessInitializeOnLoadMethodAttributes (54ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.872 seconds
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.125 seconds
+Domain Reload Profiling: 1994ms
+	BeginReloadAssembly (152ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (7ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (23ms)
+	RebuildCommonClasses (45ms)
+	RebuildNativeTypeToScriptingClass (16ms)
+	initialDomainReloadingComplete (33ms)
+	LoadAllAssembliesAndSetupDomain (623ms)
+		LoadAssemblies (365ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (338ms)
+			TypeCache.Refresh (278ms)
+				TypeCache.ScanAssembly (259ms)
+			ScanForSourceGeneratedMonoScriptInfo (39ms)
+			ResolveRequiredComponents (19ms)
+	FinalizeReload (1126ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (888ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (7ms)
+			SetLoadedEditorAssemblies (5ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (118ms)
+			ProcessInitializeOnLoadAttributes (625ms)
+			ProcessInitializeOnLoadMethodAttributes (124ms)
+			AfterProcessingInitializeOnLoad (8ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (7ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.03 seconds
+Refreshing native plugins compatible for Editor in 6.78 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7177 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 60 unused Assets / (2.9 MB). Loaded Objects now: 7690.
+Memory consumption went from 320.4 MB to 317.6 MB.
+Total: 6.638700 ms (FindLiveObjects: 0.688500 ms CreateObjectMapping: 0.391400 ms MarkObjects: 5.085400 ms  DeleteObjects: 0.472100 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 11384.743312 seconds.
+  path: Assets/Resources/Prefabs/BashEffect
+  artifactKey: Guid(54752f16460284640a8ade5069bf368e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect using Guid(54752f16460284640a8ade5069bf368e) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '115d928de743cfb2dbd5246d16380875') in 0.002790 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 1.205442 seconds.
+  path: Assets/Resources/Prefabs/SlashEffect/SlashMesh.prefab
+  artifactKey: Guid(28aa3aa41dbbf924f86716df101ff1a9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/SlashEffect/SlashMesh.prefab using Guid(28aa3aa41dbbf924f86716df101ff1a9) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4d29dc80caddb91ae4e53c1af0c56b14') in 0.247897 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 26
+========================================================================
+Received Import Request.
+  Time since last request: 8.888777 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader
+  artifactKey: Guid(b471353fceeba924b9e88f418f0ca3ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader using Guid(b471353fceeba924b9e88f418f0ca3ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e2b0ada4ef67a02631e346ef082b834c') in 0.000596 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 3.497262 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/SlashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/SlashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '63b3f69874b9a4a9cd81cfe945f776a1') in 0.009833 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 6.449589 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '9c097d554fc0a5641224006fa350d69e') in 0.005046 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 0.796674 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/SlashShader.shadergraph
+  artifactKey: Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/SlashShader.shadergraph using Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '632f35ead64763e1bcdf0bc429c75893') in 0.002670 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 4.525492 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashShader.shadergraph
+  artifactKey: Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashShader.shadergraph using Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '02f5f8840aab8d554d229ba3b4c42b89') in 0.001120 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 5.127798 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/SlashMesh.prefab
+  artifactKey: Guid(de80f9f95ee7a294d82ea4d003dcf859) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/SlashMesh.prefab using Guid(de80f9f95ee7a294d82ea4d003dcf859) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1a9747dc6b1b368342159f1e43b8c165') in 0.008651 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 2.854629 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1150a496f437ffdce82ac5c240484699') in 0.005201 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 1160.801896 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffectMesh.fbx
+  artifactKey: Guid(2d7ecb27ecf3c4244a2e9584550bb5c2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffectMesh.fbx using Guid(2d7ecb27ecf3c4244a2e9584550bb5c2) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6f4e130a8fab1ecbc4ced4fda3412bce') in 0.051587 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 12.302436 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffectMesh.prefab
+  artifactKey: Guid(c5e33870db9a30743aaf17c464afffa5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffectMesh.prefab using Guid(c5e33870db9a30743aaf17c464afffa5) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f21152aedccbd7e190000447850cccff') in 0.016495 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 60.499887 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '38847f919e77f5bbd469b448c5ff445c') in 0.004887 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 141.969039 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '454ca7e1d5012477cca0ad1eb61b52d0') in 0.005398 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 3.738578 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '44cc444cbc515e01c5e4aa3108b14c2c') in 0.006751 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 8.764913 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '06ba0dbc7d0447133288086e4a4c5d62') in 0.004638 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 3.325699 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b9c04126ab4773fa01bf12e5f86445df') in 0.004987 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 1.771026 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd2d5d7db2114991c2af1d08b14b415f9') in 0.005735 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 31.579335 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffectMesh.fbx
+  artifactKey: Guid(2d7ecb27ecf3c4244a2e9584550bb5c2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffectMesh.fbx using Guid(2d7ecb27ecf3c4244a2e9584550bb5c2) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1bac88ae0748ad6e285bfb0b145c0329') in 0.019849 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 114.119655 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '259e7c5b3f6c13d600eb371fae9ecd8b') in 0.005980 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 33.211470 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1036af0a059c0e5a6e02d84dd21054a2') in 0.005029 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 0.828645 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6c201f219a562e6396ff403d8b581d3a') in 0.004575 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 3.192914 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '419a0424370de852477091ad20ff89bf') in 0.005932 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 1.547409 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fe3b22f6b786708ee2a589776a06724c') in 0.005801 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 1.578892 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fe8110be69bf4aa7582b29b8a138529f') in 0.005096 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 37.028585 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '034ee4447bab914456e23d74ec911629') in 0.004551 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 5.666097 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b3e0cae9b69cea3dd44db97b1ff84877') in 0.004565 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 1.991086 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c7a598a095638ff7d72ac3f3fcf7231c') in 0.006710 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 46.637141 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e33ef4c533e4e2fb975d8e46fc74b4f9') in 0.005319 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 5.442573 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'bdd77ac8c9d13f3a4e84b9788dbbbeb3') in 0.005339 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 151.412730 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashShader.shadergraph
+  artifactKey: Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashShader.shadergraph using Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '60609db86a570d2a9b841249e1e4e64c') in 0.001480 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 620.870299 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2789b498367efd9d9853075d94347612') in 0.006903 seconds
+Number of updated asset objects reloaded before import = 2
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 6.285203 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f050327056f1f90be94e4140f686e887') in 0.004832 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 1.425787 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6780b8e48f33e2ef42ad0502065ba6e1') in 0.004744 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 6.512004 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '88dc205282d20192558418b2eda700a2') in 0.005712 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 189.796403 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '199989b2d93bdabb8d36300c560895c2') in 0.006496 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 3.941396 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'aa29b2038b1fab8f7e2820c41913de16') in 0.004489 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 3.367760 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '693a4cf10ff0df656bfb1c9c2c880789') in 0.004400 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 314.560075 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f1df49c0551ff8f62886ab92ea80cb6d') in 0.007737 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 16.108620 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a4aab7fb12fcc42c8e5d707cbea5d74c') in 0.004674 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 7.372535 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cce74d6ce58fb3201e3593083019f8bd') in 0.003294 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 50.297970 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3de186dd08001a724fa9104256ffd5e8') in 0.003955 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 2.585738 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '9ff2682c133f0b0ba38946570f719e2a') in 0.003695 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 7.838449 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '680689af8d4bdb079369a5f9e418c53c') in 0.003964 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 1451.967319 seconds.
+  path: Assets/Resources/Textures/Explosion_1.png
+  artifactKey: Guid(f95da11d621b62b4ab31741fa30ecb9d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/Explosion_1.png using Guid(f95da11d621b62b4ab31741fa30ecb9d) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '894f63332362c367e8b6c32a773f9913') in 0.039665 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 5.770052 seconds.
+  path: Assets/Resources/Textures/Explosion_1.png
+  artifactKey: Guid(f95da11d621b62b4ab31741fa30ecb9d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/Explosion_1.png using Guid(f95da11d621b62b4ab31741fa30ecb9d) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b4fd398ac69932897b8bcbd644862d30') in 0.027484 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 26.121509 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'aa57daa964ed1e0c3993dc4978043532') in 0.003968 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 8.968393 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a9d57d57b035bb6c3726e0a6c2448070') in 0.003285 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 363.581440 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ee5dab520b3a410b833a8c1714d24e41') in 0.006138 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 6.045041 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5ff34e9e7ed2836589bd68ee651102eb') in 0.003672 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 17.918338 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f66096ac882baf8df11bd1ecad746b49') in 0.003396 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 34.320018 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'db8f32f6f2b6935645da344d13ea1cb7') in 0.003328 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 91.693836 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'bbc984fd3e0688f640a261da4f9f0609') in 0.005142 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 15.349232 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fdc75354902f351cac460798e855cf00') in 0.004526 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 6.729533 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '08cb48c5508cfffddadac10c24867bbd') in 0.003260 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 4.243612 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7fd0e4dfb59af5310f6ae01bdf401234') in 0.003500 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 17.427623 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '692872b555cb325bf2b490636b0cc720') in 0.003457 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 5.634987 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '55039cccf108ab00f0a3457d40840426') in 0.004045 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 2.290863 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6daaf6f9f1cd1984c3103496717ac664') in 0.003834 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 6
+========================================================================
+Received Import Request.
+  Time since last request: 2.459287 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '595bd07addadd436745fe1577ad37032') in 0.003350 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 6
+========================================================================
+Received Import Request.
+  Time since last request: 37.020316 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '31863e9caaa1048436ddf1da3146dc8e') in 0.003885 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 8.208204 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5dc095168f5444f6fa78fdc5709cf083') in 0.003212 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 0.960046 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '71878d2d4f61e27b4fca1cb629d7113e') in 0.003485 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 17.857704 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd2993b911ee01a39d3e731b4a650aee8') in 0.003687 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 267.853992 seconds.
+  path: Assets/Resources/Textures/BashEffectMesh.fbx
+  artifactKey: Guid(3db746ec54a6294448577308635564f8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/BashEffectMesh.fbx using Guid(3db746ec54a6294448577308635564f8) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f7acb8af78e23df220029f1fc3df9bf8') in 0.022301 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 86.403640 seconds.
+  path: Assets/Resources/Textures/UpWind.png
+  artifactKey: Guid(9f91e83853014e14fa101809cec63162) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/UpWind.png using Guid(9f91e83853014e14fa101809cec63162) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4eb0feb380cc14300f3659f15e1e81ee') in 0.019624 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.318914 seconds.
+  path: Assets/Resources/Textures/BashEffectMesh2.fbx
+  artifactKey: Guid(03980f8d92d7df74096a312fb751cd53) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/BashEffectMesh2.fbx using Guid(03980f8d92d7df74096a312fb751cd53) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f5035dd947c40852e7dec71a11487148') in 0.020061 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 7.039559 seconds.
+  path: Assets/Resources/Textures/BashEffectMesh2.fbx
+  artifactKey: Guid(03980f8d92d7df74096a312fb751cd53) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/BashEffectMesh2.fbx using Guid(03980f8d92d7df74096a312fb751cd53) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '644e90a2c21a40adcbdd3d4cd4be6aa1') in 0.017366 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 606.368674 seconds.
+  path: Assets/Resources/Textures/BashEffectMesh2.prefab
+  artifactKey: Guid(1bd68f58598b94d4fbcefa46568e6ab6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/BashEffectMesh2.prefab using Guid(1bd68f58598b94d4fbcefa46568e6ab6) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5505b29b50ae0ec281d35a2d2e7f3c64') in 0.017583 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 2.045951 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b3a0357ac99bd0e5b24591fa94f15f71') in 0.003440 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 231.983506 seconds.
+  path: Assets/Resources/Textures/BashEffectMesh3.fbx
+  artifactKey: Guid(8d380f290105dd846949faa3ea3a9869) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/BashEffectMesh3.fbx using Guid(8d380f290105dd846949faa3ea3a9869) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5431f10ef5486b2648355ecf0a21af3a') in 0.018999 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 8.903063 seconds.
+  path: Assets/Resources/Textures/BashEffectMesh3.fbx
+  artifactKey: Guid(8d380f290105dd846949faa3ea3a9869) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/BashEffectMesh3.fbx using Guid(8d380f290105dd846949faa3ea3a9869) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7b3795b92ae41b5a19f5649d76138ef2') in 0.020854 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 5.959270 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b9d6ed5c8548fb7bc4cde4d383035dcf') in 0.003393 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 10.353112 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '26e9ce9585f164d05a417199a6981707') in 0.003107 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 80.527595 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f3513670d90b31856004f52243ed486d') in 0.005152 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 9.964514 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a0cf2a6979d9dfc40cda915361307aaa') in 0.003694 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 32.377480 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fbdde2044ce797f20d006a2026b7716e') in 0.003686 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 2.506388 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ca2f8473396dc8131225a22b3d9f64fb') in 0.003859 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 490.718329 seconds.
+  path: Assets/Resources/Textures/UpWind.png
+  artifactKey: Guid(9f91e83853014e14fa101809cec63162) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Textures/UpWind.png using Guid(9f91e83853014e14fa101809cec63162) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5ffdbd90ba54e1b6cc334fc7289eeffa') in 0.022177 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 380.579409 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '703eb79bd9631afb16a96845b974bf11') in 0.005729 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 10.818348 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ec7bc8458f507a45dff98c41c408b9a9') in 0.003363 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 11.204062 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'abdefcee21ce6beef91bc9552643ccd4') in 0.003782 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 16.939035 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '45432263f290e7627bda774c5ab0bd6e') in 0.003343 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 5.840545 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0639ff86f4a83c135ef372b1a2746201') in 0.003559 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 59.049062 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '18b236c3b286ee2c1b360ed2734cd50e') in 0.004973 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 1.403453 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fe213e010c10da0c51963c578c9d836b') in 0.003628 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 0.469850 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4ed541b628d3ffc561102b3610fc4df1') in 0.003318 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 78.511991 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a6aa827be3f2891f4bd8734e96180e4a') in 0.005595 seconds
+Number of updated asset objects reloaded before import = 2
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 15.055534 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd24a59f4ae45dadae3c1d7c766adbaef') in 0.004777 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 16.724747 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashShader.shadergraph
+  artifactKey: Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashShader.shadergraph using Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '32fb071a9d8a78ec670f4400d4591108') in 0.003593 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 8.163043 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '170f675073177febf73e7a3412bb0a26') in 0.005160 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 2.098534 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '9e9cf2e0fd1c94e893bfdecadfc5eecd') in 0.005961 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 1.967803 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3ea266cb35bf66c1e4601d80e612d070') in 0.007031 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 74.239910 seconds.
+  path: Assets/Resources/Prefabs/SlashEffect/Shader/SlashShader.shadergraph
+  artifactKey: Guid(367b744a958dc274d8c6abf6e8957d72) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/SlashEffect/Shader/SlashShader.shadergraph using Guid(367b744a958dc274d8c6abf6e8957d72) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '16230ee2c7cd0ee63e4028be78f83de2') in 0.001414 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 45.846072 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashShader.shadergraph
+  artifactKey: Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashShader.shadergraph using Guid(28adafe400053454ea6757db1eb452e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0c219efbb0fe209d843b560aaf2c5922') in 0.001243 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 142.986985 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '67d2f583d9f09fc3a001e6601198a28e') in 0.007135 seconds
+Number of updated asset objects reloaded before import = 2
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 0.293375 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ab57971413298bb77223cd3a592ba436') in 0.007196 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 2.109755 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8a210ee727385310d5c0a3c945567760') in 0.004424 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 2.485494 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '065cf00fc71b7f7ef50a128389187e62') in 0.005262 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 232.828074 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/SphereUVSubgraph.shadersubgraph
+  artifactKey: Guid(4f95b08e80041db46ac2c6303ae88a57) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/SphereUVSubgraph.shadersubgraph using Guid(4f95b08e80041db46ac2c6303ae88a57) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '892a33831b2f07a8013bde813e5e3839') in 0.003677 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 62.931325 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '04590bdf3d1c6741a59b606deab43d89') in 0.006844 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 7.110321 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd70288e8f5c446a94649f08e1db31c1b') in 0.005292 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 3.291907 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a528d4dea494b0d88b6edf88cac88e5d') in 0.006024 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 72.557847 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd1ea6853ff9b6754441fc811b6152015') in 0.004536 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 5.203992 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/SphereUVSubgraph.shadersubgraph
+  artifactKey: Guid(4f95b08e80041db46ac2c6303ae88a57) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/SphereUVSubgraph.shadersubgraph using Guid(4f95b08e80041db46ac2c6303ae88a57) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3e63ee03ace0514656e8dd3eac5607b8') in 0.001274 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 90.257131 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c5d47eeb2e8ede29ab7f93a2d5e4baac') in 0.005878 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 1.121947 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '75a1d251d332f50719cedab5e01d4ae6') in 0.004954 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 3.736890 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3f76bb07d44d69570fd8c86f8d75e01f') in 0.004590 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 3.258092 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a8108a1bd853512a1c9ced6dff0bc0de') in 0.004775 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 197.121303 seconds.
+  path: Assets/Resources/Prefabs/SlashEffect/Shader/SlashEffect.vfx
+  artifactKey: Guid(a80d128d1913d6640af74bad7b9a4010) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/SlashEffect/Shader/SlashEffect.vfx using Guid(a80d128d1913d6640af74bad7b9a4010) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '885537f8fad284862688f2300c1315d6') in 0.006626 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 8
+========================================================================
+Received Import Request.
+  Time since last request: 0.880200 seconds.
+  path: Assets/Resources/Prefabs/SlashEffect/Shader/SlashShader.shadergraph
+  artifactKey: Guid(367b744a958dc274d8c6abf6e8957d72) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/SlashEffect/Shader/SlashShader.shadergraph using Guid(367b744a958dc274d8c6abf6e8957d72) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4cec3de2754b351733509270f46e8de2') in 0.001571 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 151.911431 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f77389fd18eafe2b0438d8bec1cacc1d') in 0.005587 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 8.110589 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '13d30a684f8f917ed496e4d0251050fe') in 0.005924 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 16.066224 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7c671402a061d222cf45980a88f6b511') in 0.004986 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 6.201883 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fc1630debf2191e252c7f3d0274a10b2') in 0.005213 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 2.225416 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '080a203e370a01436127e4dfb4cb4c1e') in 0.005250 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 39.387422 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5ca7c455819cc155eaee7d5cbdd11514') in 0.005663 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 8.583929 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx
+  artifactKey: Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/Shader/BashEffect.vfx using Guid(757e754e400a331408775ee6570036bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4f0bf9f09e67dad2adf28881ad34b99e') in 0.005283 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 10
+========================================================================
+Received Import Request.
+  Time since last request: 150.466169 seconds.
+  path: Assets/Resources/Prefabs/SlashEffect/SlashEffect.prefab
+  artifactKey: Guid(abb718560c0171f4cacd4a8fd880fc7b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/SlashEffect/SlashEffect.prefab using Guid(abb718560c0171f4cacd4a8fd880fc7b) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'bc26e7228dbe9e3f1e72e4d83bb8ed28') in 0.016826 seconds
+Number of updated asset objects reloaded before import = 2
+Number of asset objects unloaded after import = 16
+========================================================================
+Received Import Request.
+  Time since last request: 6.134857 seconds.
+  path: Assets/Resources/Prefabs/BashEffect/BashEffect.prefab
+  artifactKey: Guid(7c36b9ea5b433404597e96b788fd2ec7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Prefabs/BashEffect/BashEffect.prefab using Guid(7c36b9ea5b433404597e96b788fd2ec7) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f8bf4a64850a31afe059c50757672224') in 0.015455 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 18
+========================================================================
+Received Import Request.
+  Time since last request: 16.891529 seconds.
+  path: Assets/CSharp/Scripts/StatScript.cs
+  artifactKey: Guid(fee73c601ea8c884e8a6f319aea9375f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/Scripts/StatScript.cs using Guid(fee73c601ea8c884e8a6f319aea9375f) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '792b1f8e49de1ea203cdda808605e919') in 0.000998 seconds
+Number of updated asset objects reloaded before import = 2
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 37.330658 seconds.
+  path: Assets/CSharp/Scripts/StatScript.cs
+  artifactKey: Guid(fee73c601ea8c884e8a6f319aea9375f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/Scripts/StatScript.cs using Guid(fee73c601ea8c884e8a6f319aea9375f) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f95280b077dc71a879864486b2920f2e') in 0.000550 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 9.756006 seconds.
+  path: Assets/CSharp/Scripts/StatScript.cs
+  artifactKey: Guid(fee73c601ea8c884e8a6f319aea9375f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/Scripts/StatScript.cs using Guid(fee73c601ea8c884e8a6f319aea9375f) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fd8e5513ec6ad979ad25f13f13e3fe14') in 0.000762 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Prepare
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  4.210 seconds
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in 22.324 seconds
+Domain Reload Profiling: 26530ms
+	BeginReloadAssembly (244ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (11ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (75ms)
+	RebuildCommonClasses (228ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (31ms)
+	LoadAllAssembliesAndSetupDomain (3694ms)
+		LoadAssemblies (3715ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (85ms)
+			TypeCache.Refresh (14ms)
+				TypeCache.ScanAssembly (4ms)
+			ScanForSourceGeneratedMonoScriptInfo (47ms)
+			ResolveRequiredComponents (23ms)
+	FinalizeReload (22324ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (796ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			SetLoadedEditorAssemblies (4ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (92ms)
+			ProcessInitializeOnLoadAttributes (551ms)
+			ProcessInitializeOnLoadMethodAttributes (135ms)
+			AfterProcessingInitializeOnLoad (6ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (19ms)
+Script is not up to date after domain reload: guid(fee73c601ea8c884e8a6f319aea9375f) path("Assets/CSharp/Scripts/StatScript.cs") state(2)
+Refreshing native plugins compatible for Editor in 6.26 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7000 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (2.9 MB). Loaded Objects now: 7757.
+Memory consumption went from 286.4 MB to 283.5 MB.
+Total: 6.890000 ms (FindLiveObjects: 0.816500 ms CreateObjectMapping: 0.563500 ms MarkObjects: 4.956200 ms  DeleteObjects: 0.552500 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+========================================================================
+Received Prepare
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.629 seconds
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Error saving file Library/StateCache/LayerSettings/9e/9ecc5c3c162a7aba29bafa64c8b94b7c.json. Error: System.IO.IOException: Sharing violation on path C:\Users\rhsj\Desktop\Unity\ProjectNW\Library\StateCache\LayerSettings\9e\9ecc5c3c162a7aba29bafa64c8b94b7c.json
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding, System.Int32 bufferSize) [0x00055] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding) [0x00000] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamWriter..ctor(string,bool,System.Text.Encoding)
+  at System.IO.File.WriteAllText (System.String path, System.String contents, System.Text.Encoding encoding) [0x00034] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at UnityEditor.StateCache`1[T].SetState (UnityEngine.Hash128 key, T obj) [0x0004b] in <c4b0cc57ec424a5a9b1c3b56141bb74a>:0 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.StateCache`1<UnityEditor.Tools/LayerSettings>:SetState (UnityEngine.Hash128,UnityEditor.Tools/LayerSettings)
+UnityEditor.Tools:set_lockedLayers (int)
+UnityEditor.Tools:OnEnable ()
+
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.632 seconds
+Domain Reload Profiling: 2257ms
+	BeginReloadAssembly (166ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (49ms)
+	RebuildCommonClasses (42ms)
+	RebuildNativeTypeToScriptingClass (13ms)
+	initialDomainReloadingComplete (38ms)
+	LoadAllAssembliesAndSetupDomain (365ms)
+		LoadAssemblies (359ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (81ms)
+			TypeCache.Refresh (16ms)
+				TypeCache.ScanAssembly (3ms)
+			ScanForSourceGeneratedMonoScriptInfo (48ms)
+			ResolveRequiredComponents (16ms)
+	FinalizeReload (1633ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (803ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (6ms)
+			SetLoadedEditorAssemblies (4ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (101ms)
+			ProcessInitializeOnLoadAttributes (541ms)
+			ProcessInitializeOnLoadMethodAttributes (145ms)
+			AfterProcessingInitializeOnLoad (5ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (19ms)
+Refreshing native plugins compatible for Editor in 8.78 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7001 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (2.9 MB). Loaded Objects now: 7775.
+Memory consumption went from 286.3 MB to 283.5 MB.
+Total: 8.040400 ms (FindLiveObjects: 1.003500 ms CreateObjectMapping: 0.733400 ms MarkObjects: 5.821000 ms  DeleteObjects: 0.481200 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 77.332720 seconds.
+  path: Assets/CSharp/Scripts/StatScript.cs
+  artifactKey: Guid(fee73c601ea8c884e8a6f319aea9375f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/Scripts/StatScript.cs using Guid(fee73c601ea8c884e8a6f319aea9375f) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5e5c339238a9b3e03163c18a6471daf1') in 0.012532 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Prepare
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.653 seconds
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.854 seconds
+Domain Reload Profiling: 2503ms
+	BeginReloadAssembly (190ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (8ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (47ms)
+	RebuildCommonClasses (39ms)
+	RebuildNativeTypeToScriptingClass (16ms)
+	initialDomainReloadingComplete (31ms)
+	LoadAllAssembliesAndSetupDomain (373ms)
+		LoadAssemblies (385ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (88ms)
+			TypeCache.Refresh (18ms)
+				TypeCache.ScanAssembly (3ms)
+			ScanForSourceGeneratedMonoScriptInfo (49ms)
+			ResolveRequiredComponents (21ms)
+	FinalizeReload (1855ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (861ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (6ms)
+			SetLoadedEditorAssemblies (5ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (130ms)
+			ProcessInitializeOnLoadAttributes (544ms)
+			ProcessInitializeOnLoadMethodAttributes (161ms)
+			AfterProcessingInitializeOnLoad (14ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (22ms)
+Refreshing native plugins compatible for Editor in 9.58 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7001 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (2.9 MB). Loaded Objects now: 7792.
+Memory consumption went from 286.3 MB to 283.5 MB.
+Total: 4.801900 ms (FindLiveObjects: 0.507500 ms CreateObjectMapping: 0.275000 ms MarkObjects: 3.476500 ms  DeleteObjects: 0.541400 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+========================================================================
+Received Prepare
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.651 seconds
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.638 seconds
+Domain Reload Profiling: 2286ms
+	BeginReloadAssembly (179ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (53ms)
+	RebuildCommonClasses (33ms)
+	RebuildNativeTypeToScriptingClass (10ms)
+	initialDomainReloadingComplete (35ms)
+	LoadAllAssembliesAndSetupDomain (391ms)
+		LoadAssemblies (354ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (119ms)
+			TypeCache.Refresh (34ms)
+				TypeCache.ScanAssembly (5ms)
+			ScanForSourceGeneratedMonoScriptInfo (63ms)
+			ResolveRequiredComponents (20ms)
+	FinalizeReload (1638ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (832ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (5ms)
+			SetLoadedEditorAssemblies (3ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (105ms)
+			ProcessInitializeOnLoadAttributes (575ms)
+			ProcessInitializeOnLoadMethodAttributes (137ms)
+			AfterProcessingInitializeOnLoad (7ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (17ms)
+Refreshing native plugins compatible for Editor in 4.15 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7001 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (2.9 MB). Loaded Objects now: 7809.
+Memory consumption went from 286.4 MB to 283.5 MB.
+Total: 5.059900 ms (FindLiveObjects: 0.472900 ms CreateObjectMapping: 0.278000 ms MarkObjects: 3.817300 ms  DeleteObjects: 0.490700 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 565.600919 seconds.
+  path: Assets/CSharp/ScriptableObjects/StateAsset/StateAsset.cs
+  artifactKey: Guid(19d7f5bbe5729f44b88d86835abc5dd3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/StateAsset/StateAsset.cs using Guid(19d7f5bbe5729f44b88d86835abc5dd3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2c6b25c00bfa0ae487e8336b21d1c2fc') in 0.001682 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 5.740058 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementalBuff_ConsumeStamina.asset
+  artifactKey: Guid(e6b46da87bba08244849d2c77b709f93) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementalBuff_ConsumeStamina.asset using Guid(e6b46da87bba08244849d2c77b709f93) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8ecf31614faf383eb3d6caf856d810a5') in 0.021276 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.998965 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageAcc.asset
+  artifactKey: Guid(37c32b45d7700c4408dde3fa542e9be8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageAcc.asset using Guid(37c32b45d7700c4408dde3fa542e9be8) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'eeba8d0bddfac6e6fe40002d2041aacf') in 0.015616 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.470794 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageReturn.asset
+  artifactKey: Guid(ce03b7602f64fdb4a9724b01dab1be75) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageReturn.asset using Guid(ce03b7602f64fdb4a9724b01dab1be75) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8efd4c3f8214ded74e0789683c9dd14c') in 0.020565 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 1.679308 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_Stance.asset
+  artifactKey: Guid(4b2403936776234459f2f091dc1464c9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_Stance.asset using Guid(4b2403936776234459f2f091dc1464c9) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7c872eb4e5f9c9ed1b640a3ee6bc5d1c') in 0.009412 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 13.584022 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/WrioWeavingBuff.asset
+  artifactKey: Guid(6c05ea525ebfcc146a138130cf73dc02) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/WrioWeavingBuff.asset using Guid(6c05ea525ebfcc146a138130cf73dc02) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '9a86bd6ea3008969821fd138a61527f9') in 0.007765 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 2.021170 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/MonsterAttackStateBuff.asset
+  artifactKey: Guid(896d5f26675a8d34aa900ac60daae3b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/MonsterAttackStateBuff.asset using Guid(896d5f26675a8d34aa900ac60daae3b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd76a01b0c25ecf0f890e27cb359be9f7') in 0.001891 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.387903 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/SprintBuff.asset
+  artifactKey: Guid(69174c9666b76ca4eb3360027ae16c6c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/SprintBuff.asset using Guid(69174c9666b76ca4eb3360027ae16c6c) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '9d0e912f6f528b83161a30d6ef81c589') in 0.008372 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Prepare
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.704 seconds
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Error saving file Library/StateCache/LayerSettings/9e/9ecc5c3c162a7aba29bafa64c8b94b7c.json. Error: System.IO.IOException: Sharing violation on path C:\Users\rhsj\Desktop\Unity\ProjectNW\Library\StateCache\LayerSettings\9e\9ecc5c3c162a7aba29bafa64c8b94b7c.json
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding, System.Int32 bufferSize) [0x00055] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding) [0x00000] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamWriter..ctor(string,bool,System.Text.Encoding)
+  at System.IO.File.WriteAllText (System.String path, System.String contents, System.Text.Encoding encoding) [0x00034] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at UnityEditor.StateCache`1[T].SetState (UnityEngine.Hash128 key, T obj) [0x0004b] in <c4b0cc57ec424a5a9b1c3b56141bb74a>:0 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.StateCache`1<UnityEditor.Tools/LayerSettings>:SetState (UnityEngine.Hash128,UnityEditor.Tools/LayerSettings)
+UnityEditor.Tools:set_lockedLayers (int)
+UnityEditor.Tools:OnEnable ()
+
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.679 seconds
+Domain Reload Profiling: 2378ms
+	BeginReloadAssembly (212ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (5ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (68ms)
+	RebuildCommonClasses (48ms)
+	RebuildNativeTypeToScriptingClass (17ms)
+	initialDomainReloadingComplete (39ms)
+	LoadAllAssembliesAndSetupDomain (384ms)
+		LoadAssemblies (404ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (86ms)
+			TypeCache.Refresh (16ms)
+				TypeCache.ScanAssembly (3ms)
+			ScanForSourceGeneratedMonoScriptInfo (51ms)
+			ResolveRequiredComponents (17ms)
+	FinalizeReload (1679ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (821ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (5ms)
+			SetLoadedEditorAssemblies (5ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (101ms)
+			ProcessInitializeOnLoadAttributes (577ms)
+			ProcessInitializeOnLoadMethodAttributes (125ms)
+			AfterProcessingInitializeOnLoad (8ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (21ms)
+Refreshing native plugins compatible for Editor in 4.69 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7001 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (2.9 MB). Loaded Objects now: 7826.
+Memory consumption went from 286.4 MB to 283.5 MB.
+Total: 6.449800 ms (FindLiveObjects: 0.643700 ms CreateObjectMapping: 0.563800 ms MarkObjects: 4.709200 ms  DeleteObjects: 0.532100 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 17.213404 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementalBuff_ConsumeStamina.asset
+  artifactKey: Guid(e6b46da87bba08244849d2c77b709f93) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementalBuff_ConsumeStamina.asset using Guid(e6b46da87bba08244849d2c77b709f93) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6253335cd3283ca55596b0dd15b49617') in 0.032474 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.985735 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageAcc.asset
+  artifactKey: Guid(37c32b45d7700c4408dde3fa542e9be8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageAcc.asset using Guid(37c32b45d7700c4408dde3fa542e9be8) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4831ec6270f7e99483a329345c5ad86e') in 0.001484 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.980402 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageReturn.asset
+  artifactKey: Guid(ce03b7602f64fdb4a9724b01dab1be75) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageReturn.asset using Guid(ce03b7602f64fdb4a9724b01dab1be75) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c5a4e3c4a76d5ddd5c4dad623062a86c') in 0.001458 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.157668 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_Stance.asset
+  artifactKey: Guid(4b2403936776234459f2f091dc1464c9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_Stance.asset using Guid(4b2403936776234459f2f091dc1464c9) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '21f162ecaa10445192c39417f008d2e2') in 0.001213 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 4.434452 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/DamageReflection.asset
+  artifactKey: Guid(d6333e6701c2e6a4db0ba1b3a84b9d91) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/DamageReflection.asset using Guid(d6333e6701c2e6a4db0ba1b3a84b9d91) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a7eb4a0c4ea6e838fb67cc3f3085ba53') in 0.008976 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.400515 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/NormalGuardBuff.asset
+  artifactKey: Guid(348f6ea3b08c96e4aa084ca3fb9b2255) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/NormalGuardBuff.asset using Guid(348f6ea3b08c96e4aa084ca3fb9b2255) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '86789571f4cf814959d215be5b920638') in 0.008341 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 4.095388 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/WrioWeavingAttackSpeedBuff.asset
+  artifactKey: Guid(2f4fb941384f35646956d1746502ea7a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/WrioWeavingAttackSpeedBuff.asset using Guid(2f4fb941384f35646956d1746502ea7a) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '672f0c58481add0c7a1506581d043fbe') in 0.009572 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 7.239119 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/WrioWeavingBuff.asset
+  artifactKey: Guid(6c05ea525ebfcc146a138130cf73dc02) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/WrioWeavingBuff.asset using Guid(6c05ea525ebfcc146a138130cf73dc02) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4bef8a593923d37be55bb464d07bb68a') in 0.001363 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 1.749563 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/WrioWeavingAttackSpeedBuff.asset
+  artifactKey: Guid(2f4fb941384f35646956d1746502ea7a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/WrioWeavingAttackSpeedBuff.asset using Guid(2f4fb941384f35646956d1746502ea7a) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '99ad7cc7c6e81d7603e2a46703bcf08f') in 0.001516 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.296958 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/SprintBuff.asset
+  artifactKey: Guid(69174c9666b76ca4eb3360027ae16c6c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/SprintBuff.asset using Guid(69174c9666b76ca4eb3360027ae16c6c) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0bd060c639fdd3d9b51116ab8a315cbe') in 0.001453 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.242549 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/RollInvincibleBuff.asset
+  artifactKey: Guid(aabde40e452e5d34b9671ef9feacae4a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/RollInvincibleBuff.asset using Guid(aabde40e452e5d34b9671ef9feacae4a) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4292878d7fe62d59a2bed5b522324668') in 0.001566 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 6.229779 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementalBuff_ConsumeStamina.asset
+  artifactKey: Guid(e6b46da87bba08244849d2c77b709f93) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementalBuff_ConsumeStamina.asset using Guid(e6b46da87bba08244849d2c77b709f93) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6d492b4cd85fcaae8cc7e38da59376f5') in 0.001194 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.892442 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageAcc.asset
+  artifactKey: Guid(37c32b45d7700c4408dde3fa542e9be8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageAcc.asset using Guid(37c32b45d7700c4408dde3fa542e9be8) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '07860054f3d5ff6aa94a3f19fa39892d') in 0.001501 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 3.409626 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageReturn.asset
+  artifactKey: Guid(ce03b7602f64fdb4a9724b01dab1be75) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageReturn.asset using Guid(ce03b7602f64fdb4a9724b01dab1be75) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7270cad6cfcd88c40da092a4d2498762') in 0.001364 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 2.534259 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_Stance.asset
+  artifactKey: Guid(4b2403936776234459f2f091dc1464c9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_Stance.asset using Guid(4b2403936776234459f2f091dc1464c9) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '62a6c8854d76754049ae07f44658c011') in 0.001487 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.531308 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/DamageReflection.asset
+  artifactKey: Guid(d6333e6701c2e6a4db0ba1b3a84b9d91) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/DamageReflection.asset using Guid(d6333e6701c2e6a4db0ba1b3a84b9d91) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1966b27ed95a9f84827863683dc73026') in 0.001264 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 2.562217 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/MonsterAttackStateBuff.asset
+  artifactKey: Guid(896d5f26675a8d34aa900ac60daae3b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/MonsterAttackStateBuff.asset using Guid(896d5f26675a8d34aa900ac60daae3b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f73f3a0761dae320cb9c19c53896967b') in 0.001376 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.542577 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/NormalGuardBuff.asset
+  artifactKey: Guid(348f6ea3b08c96e4aa084ca3fb9b2255) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/NormalGuardBuff.asset using Guid(348f6ea3b08c96e4aa084ca3fb9b2255) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4602499ed4ffaf5ae93f3a110e7d4493') in 0.001575 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 3.589424 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageReturn.asset
+  artifactKey: Guid(ce03b7602f64fdb4a9724b01dab1be75) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/SkillBuff/BeidouElementBuff_DamageReturn.asset using Guid(ce03b7602f64fdb4a9724b01dab1be75) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '9864fb0678f4c598cb325a22ad80734b') in 0.001523 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 2.795010 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/PotionBuff/StaminaPotion_RegenBuff.asset
+  artifactKey: Guid(4942097983604fd40ac8b8acdb985e10) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/PotionBuff/StaminaPotion_RegenBuff.asset using Guid(4942097983604fd40ac8b8acdb985e10) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a721c1e767b569ce737e4c777f67e3f3') in 0.015738 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 1.332260 seconds.
+  path: Assets/CSharp/ScriptableObjects/BuffAsset/Created/PotionBuff/HeistPotion_LV0.asset
+  artifactKey: Guid(94bb5dc063d62b345828d40dbcfe17a3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/CSharp/ScriptableObjects/BuffAsset/Created/PotionBuff/HeistPotion_LV0.asset using Guid(94bb5dc063d62b345828d40dbcfe17a3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3b12eee3156506cbb34e084486c3af7e') in 0.028450 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Prepare
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.721 seconds
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.656 seconds
+Domain Reload Profiling: 2369ms
+	BeginReloadAssembly (193ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (4ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (51ms)
+	RebuildCommonClasses (33ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (37ms)
+	LoadAllAssembliesAndSetupDomain (436ms)
+		LoadAssemblies (437ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (91ms)
+			TypeCache.Refresh (18ms)
+				TypeCache.ScanAssembly (4ms)
+			ScanForSourceGeneratedMonoScriptInfo (52ms)
+			ResolveRequiredComponents (20ms)
+	FinalizeReload (1656ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (806ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (9ms)
+			SetLoadedEditorAssemblies (6ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (102ms)
+			ProcessInitializeOnLoadAttributes (534ms)
+			ProcessInitializeOnLoadMethodAttributes (148ms)
+			AfterProcessingInitializeOnLoad (5ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (15ms)
+Refreshing native plugins compatible for Editor in 4.36 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7001 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (2.9 MB). Loaded Objects now: 7843.
+Memory consumption went from 286.4 MB to 283.5 MB.
+Total: 5.887100 ms (FindLiveObjects: 0.655900 ms CreateObjectMapping: 0.458500 ms MarkObjects: 4.373200 ms  DeleteObjects: 0.383500 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+========================================================================
+Received Prepare
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.605 seconds
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.626 seconds
+Domain Reload Profiling: 2226ms
+	BeginReloadAssembly (171ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (4ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (47ms)
+	RebuildCommonClasses (44ms)
+	RebuildNativeTypeToScriptingClass (13ms)
+	initialDomainReloadingComplete (44ms)
+	LoadAllAssembliesAndSetupDomain (327ms)
+		LoadAssemblies (337ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (74ms)
+			TypeCache.Refresh (21ms)
+				TypeCache.ScanAssembly (6ms)
+			ScanForSourceGeneratedMonoScriptInfo (34ms)
+			ResolveRequiredComponents (18ms)
+	FinalizeReload (1626ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (837ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (7ms)
+			SetLoadedEditorAssemblies (6ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (135ms)
+			ProcessInitializeOnLoadAttributes (542ms)
+			ProcessInitializeOnLoadMethodAttributes (132ms)
+			AfterProcessingInitializeOnLoad (16ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (19ms)
+Refreshing native plugins compatible for Editor in 5.77 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7001 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (2.9 MB). Loaded Objects now: 7860.
+Memory consumption went from 286.4 MB to 283.5 MB.
+Total: 4.992900 ms (FindLiveObjects: 0.486700 ms CreateObjectMapping: 0.365900 ms MarkObjects: 3.399200 ms  DeleteObjects: 0.739100 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+========================================================================
+Received Prepare
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.591 seconds
+Native extension for WindowsStandalone target not found
+Error saving file Library/StateCache/LayerSettings/9e/9ecc5c3c162a7aba29bafa64c8b94b7c.json. Error: System.IO.IOException: Sharing violation on path C:\Users\rhsj\Desktop\Unity\ProjectNW\Library\StateCache\LayerSettings\9e\9ecc5c3c162a7aba29bafa64c8b94b7c.json
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding, System.Int32 bufferSize) [0x00055] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at System.IO.StreamWriter..ctor (System.String path, System.Boolean append, System.Text.Encoding encoding) [0x00000] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamWriter..ctor(string,bool,System.Text.Encoding)
+  at System.IO.File.WriteAllText (System.String path, System.String contents, System.Text.Encoding encoding) [0x00034] in <de920293e401402ab375ad8a2e1b19da>:0 
+  at UnityEditor.StateCache`1[T].SetState (UnityEngine.Hash128 key, T obj) [0x0004b] in <c4b0cc57ec424a5a9b1c3b56141bb74a>:0 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.StateCache`1<UnityEditor.Tools/LayerSettings>:SetState (UnityEngine.Hash128,UnityEditor.Tools/LayerSettings)
+UnityEditor.Tools:set_lockedLayers (int)
+UnityEditor.Tools:OnEnable ()
+UnityEngine.ScriptableObject:CreateInstance (System.Type)
+UnityEngine.ScriptableObject:CreateInstance<UnityEditor.Tools> ()
+UnityEditor.Tools:get_get ()
+UnityEditor.Tools:get_visibleLayers ()
+UnityEditor.Animations.Rigging.BoneRendererUtils:.cctor () (at ./Library/PackageCache/com.unity.animation.rigging@1.2.1/Editor/Utils/BoneRendererUtils.cs:121)
+System.Runtime.CompilerServices.RuntimeHelpers:RunClassConstructor (System.RuntimeTypeHandle)
+UnityEditor.EditorAssemblies:ProcessInitializeOnLoadAttributes (System.Type[])
+
+(Filename: ./Library/PackageCache/com.unity.animation.rigging@1.2.1/Editor/Utils/BoneRendererUtils.cs Line: 121)
+
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.576 seconds
+Domain Reload Profiling: 2163ms
+	BeginReloadAssembly (172ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (7ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (46ms)
+	RebuildCommonClasses (37ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (33ms)
+	LoadAllAssembliesAndSetupDomain (335ms)
+		LoadAssemblies (339ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (73ms)
+			TypeCache.Refresh (17ms)
+				TypeCache.ScanAssembly (3ms)
+			ScanForSourceGeneratedMonoScriptInfo (37ms)
+			ResolveRequiredComponents (18ms)
+	FinalizeReload (1577ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (842ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (5ms)
+			SetLoadedEditorAssemblies (3ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (106ms)
+			ProcessInitializeOnLoadAttributes (595ms)
+			ProcessInitializeOnLoadMethodAttributes (126ms)
+			AfterProcessingInitializeOnLoad (7ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (21ms)
+Refreshing native plugins compatible for Editor in 7.13 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7001 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (2.9 MB). Loaded Objects now: 7877.
+Memory consumption went from 286.4 MB to 283.6 MB.
+Total: 5.339300 ms (FindLiveObjects: 0.532900 ms CreateObjectMapping: 0.239400 ms MarkObjects: 4.162700 ms  DeleteObjects: 0.403400 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+========================================================================
+Received Prepare
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.628 seconds
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-ProjectNW
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.688 seconds
+Domain Reload Profiling: 2314ms
+	BeginReloadAssembly (186ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (4ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (48ms)
+	RebuildCommonClasses (31ms)
+	RebuildNativeTypeToScriptingClass (23ms)
+	initialDomainReloadingComplete (34ms)
+	LoadAllAssembliesAndSetupDomain (350ms)
+		LoadAssemblies (362ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (76ms)
+			TypeCache.Refresh (16ms)
+				TypeCache.ScanAssembly (4ms)
+			ScanForSourceGeneratedMonoScriptInfo (41ms)
+			ResolveRequiredComponents (18ms)
+	FinalizeReload (1689ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (839ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (6ms)
+			SetLoadedEditorAssemblies (4ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (96ms)
+			ProcessInitializeOnLoadAttributes (569ms)
+			ProcessInitializeOnLoadMethodAttributes (157ms)
+			AfterProcessingInitializeOnLoad (6ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (22ms)
+Refreshing native plugins compatible for Editor in 4.03 ms, found 4 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 7001 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (2.9 MB). Loaded Objects now: 7894.
+Memory consumption went from 286.4 MB to 283.6 MB.
+Total: 6.656500 ms (FindLiveObjects: 0.443200 ms CreateObjectMapping: 0.243500 ms MarkObjects: 5.628200 ms  DeleteObjects: 0.340200 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:CustomObjectIndexerAttribute: 3ead1caaecf1c488f20bcfeb224b6af5 -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
