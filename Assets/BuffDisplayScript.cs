@@ -21,7 +21,7 @@ public class BuffDisplayScript : MonoBehaviour
 
     [SerializeField] private GameObject _buffIconPrefab = null;
 
-    private Dictionary<BuffAsset, BuffIconWrapper> _cuffBuffs = new Dictionary<BuffAsset, BuffIconWrapper>();
+    private Dictionary<BuffAssetBase, BuffIconWrapper> _cuffBuffs = new Dictionary<BuffAssetBase, BuffIconWrapper>();
     private List<BuffIconWrapper> _createdUIList = new List<BuffIconWrapper>();
     private RectTransform _myReectTransform = null;
 

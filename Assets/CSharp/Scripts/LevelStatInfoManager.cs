@@ -58,8 +58,8 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
 
 
-    public List<BuffAsset> _buffs_Init = new List<BuffAsset>();
-    Dictionary<int, BuffAsset> _buffs = new Dictionary<int, BuffAsset>();
+    public List<BuffAssetBase> _buffs_Init = new List<BuffAssetBase>();
+    Dictionary<int, BuffAssetBase> _buffs = new Dictionary<int, BuffAssetBase>();
     Dictionary<string, int> _buffNames = new Dictionary<string, int>();
 
 
@@ -75,7 +75,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         return _buffNames[buffName];
     }
 
-    public BuffAsset GetBuff(int buffKey)
+    public BuffAssetBase GetBuff(int buffKey)
     {
         if (_buffs.ContainsKey(buffKey) == false)
         {
@@ -87,7 +87,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         return _buffs[buffKey];
     }
 
-    public BuffAsset GetBuff(string buffName)
+    public BuffAssetBase GetBuff(string buffName)
     {
         if (_buffNames.ContainsKey(buffName) == false)
         {
@@ -103,7 +103,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
     private void ReadyBuffs()
     {
         int key = 0;
-        foreach (BuffAsset buff in _buffs_Init)
+        foreach (BuffAssetBase buff in _buffs_Init)
         {
             if (_buffNames.ContainsKey(buff._BuffName) == true)
             {
@@ -276,7 +276,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         {
             StatScript callerStatScript = attacker.GetComponent<StatScript>();
 
-            BuffAsset beidouDamageAccBuff = Instance.GetBuff(Instance.GetBuffKey("북두원소스킬데미지누적버프"));
+            BuffAssetBase beidouDamageAccBuff = Instance.GetBuff(Instance.GetBuffKey("북두원소스킬데미지누적버프"));
 
             RuntimeBuffAsset beidouDamageAccRuntimeBuff = callerStatScript.GetRuntimeBuffAsset(beidouDamageAccBuff);
 

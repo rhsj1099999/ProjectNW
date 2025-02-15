@@ -2,15 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
-using UnityEditor.Build.Content;
 using UnityEngine;
-using static BuffAsset;
-using static BuffAsset.BuffApplyWork;
+using static BuffAsset_StatBase;
 using static LevelStatAsset;
 using static LevelStatInfoManager;
-using static StatScript;
 
 public class StatScript : GameCharacterSubScript
 {
@@ -36,43 +31,20 @@ public class StatScript : GameCharacterSubScript
 
     public class RuntimeBuffAsset
     {
-        public RuntimeBuffAsset(BuffAsset fromAsset, int count, StatScript myOwner)
+        public RuntimeBuffAsset(BuffAssetBase fromAsset, int count, StatScript myOwner)
         {
+            _count = count;
             _myOwner = myOwner;
             _fromAsset = fromAsset;
-            _count = count;
-
-            List<BuffApplyWork> buffWorks = _fromAsset._BuffWorks;
-            foreach (BuffApplyWork work in buffWorks)
-            {
-                BuffAction type = work._buffAction._buffActionType;
-                if (work._buffAction._buffActionType != BuffAction.None)
-                {
-                    DamagingProcessDelegateType delegateType = work._buffAction._delegateTiming;
-                    HashSet<RuntimeBuffAsset> existHashSet = _myOwner._buffActions.GetOrAdd(delegateType);
-
-                    if (existHashSet.Contains(this) == true)
-                    {
-                        Debug.Assert(false, "버프가 만들어지는 타이밍인데 이미 존재하고 있으면 안됩니다");
-                        Debug.Break();
-                    }
-
-                    existHashSet.Add(this);
-                    _buffActions.Add(type, LevelStatInfoManager.Instance.GetBuffAction(type));
-                }
-            }
         }
 
         public StatScript _myOwner = null;
-        public BuffAsset _fromAsset = null;
+        public BuffAssetBase _fromAsset = null;
         public Coroutine _durationCoroutine = null;
-        public Dictionary<BuffAction, BuffActionClass> _buffActions = new Dictionary<BuffAction, BuffActionClass>();
         public float _timeACC = 0.0f;
+        public Dictionary<BuffAction, BuffActionClass> _buffActions = new Dictionary<BuffAction, BuffActionClass>();
 
-        public void AddDelegate(Action<int> action)
-        {
-            _countDelegates += action;
-        }
+        public void AddDelegate(Action<int> action) {_countDelegates += action;}
         private Action<int> _countDelegates = null;
 
         private int _count = 0;
@@ -87,26 +59,6 @@ public class StatScript : GameCharacterSubScript
                 {
                     Debug.Assert(false, "음수가 나와선 안된다");
                     Debug.Break();
-                }
-
-
-                //버프 액션 적용
-                List<BuffApplyWork> buffWorks = _fromAsset._BuffWorks;
-                foreach (BuffApplyWork work in buffWorks)
-                {
-                    if (work._buffAction._buffActionType != BuffAction.None)
-                    {
-                        DamagingProcessDelegateType delegateType = work._buffAction._delegateTiming;
-                        HashSet<RuntimeBuffAsset> existHashSet = _myOwner._buffActions.GetOrAdd(delegateType);
-
-                        if (existHashSet.Contains(this) == false)
-                        {
-                            Debug.Assert(false, "버프액션이 제거될 타이밍인데 없으면 안된다");
-                            Debug.Break();
-                        }
-
-                        existHashSet.Remove(this);
-                    }
                 }
             }
 
@@ -124,18 +76,27 @@ public class StatScript : GameCharacterSubScript
 
     private ActiveStatDesc _currActiveStat = null; //런타임 스텟입니다.
     private PassiveStatDesc _currPassiveStat = null; //런타임 스텟입니다.
+    private RegenStatDesc _currRegenStat = null; //런타임 스텟입니다.
+
     private Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>> _passiveStatDeltaEquation = new Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>>();
+
+    private Dictionary<RegenStat, float> _activeStatRegenCalculator = new Dictionary<RegenStat, float>();
+
+    public Dictionary<RegenStat, Action<int>> _regenStatChangeDelegates = new Dictionary<RegenStat, Action<int>>();
     public Dictionary<ActiveStat, Action<int>> _activeStatChangeDelegates = new Dictionary<ActiveStat, Action<int>>();
     public Dictionary<PassiveStat, Action<int>> _passiveStatChangeDelegates = new Dictionary<PassiveStat, Action<int>>();
 
-    private Dictionary<BuffAsset, RuntimeBuffAsset> _buffs = new Dictionary<BuffAsset, RuntimeBuffAsset>();
-    private Dictionary<BuffAsset, RuntimeBuffAsset> _deBuffs = new Dictionary<BuffAsset, RuntimeBuffAsset>();
-    private Dictionary<PassiveStat, float> _activeStatRegenCalculator = new Dictionary<PassiveStat, float>();
+
+    private Dictionary<BuffAssetBase, RuntimeBuffAsset> _buffs = new Dictionary<BuffAssetBase, RuntimeBuffAsset>();
+    private Dictionary<BuffAssetBase, RuntimeBuffAsset> _deBuffs = new Dictionary<BuffAssetBase, RuntimeBuffAsset>();
+
+    private Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>> _buffActions = new Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>>();
+    public IReadOnlyDictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>> _BuffActions => _buffActions;
 
 
-    public RuntimeBuffAsset GetRuntimeBuffAsset(BuffAsset buff)
+    public RuntimeBuffAsset GetRuntimeBuffAsset(BuffAssetBase buff)
     {
-        Dictionary<BuffAsset, RuntimeBuffAsset> targetDict = (buff._IsDebuff == true)
+        Dictionary<BuffAssetBase, RuntimeBuffAsset> targetDict = (buff._IsDebuff == true)
             ? _deBuffs
             : _buffs;
 
@@ -151,64 +112,7 @@ public class StatScript : GameCharacterSubScript
         return ret;
     }
 
-    private Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>> _buffActions = new Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>>();
-    public IReadOnlyDictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>> _BuffActions => _buffActions;
 
-
-
-
-    public void StatScriptUpdate()
-    {
-        //평상시 뭐해야합니까? -> 리젠 행동을 해야합니다
-        ActiveStatRegen();
-    }
-
-
-    private void ActiveStatRegen()
-    {
-        ActiveStat currActiveStatType = ActiveStat.End;
-
-        for (int i = (int)PassiveStat.HPRegen; i <= (int)PassiveStat.SPRegen; i++)
-        {
-            PassiveStat currActiveStatRegenType = (PassiveStat)i;
-
-            switch (currActiveStatRegenType)
-            {
-                case PassiveStat.HPRegen:
-                    currActiveStatType = ActiveStat.Hp;
-                    break;
-
-                case PassiveStat.StaminaRegen:
-                    currActiveStatType = ActiveStat.Stamina;
-                    break;
-
-                case PassiveStat.MPRegen:
-                    currActiveStatType = ActiveStat.Mp;
-                    break;
-
-                case PassiveStat.SPRegen:
-                    currActiveStatType = ActiveStat.Sp;
-                    break;
-
-                default:
-                    Debug.Assert(false, "대응이 되지 않습니다");
-                    Debug.Break();
-                    break;
-            }
-
-            _activeStatRegenCalculator[currActiveStatRegenType] += Time.deltaTime * GetPassiveStat(currActiveStatRegenType);
-
-            int ready = (int)_activeStatRegenCalculator[currActiveStatRegenType];
-
-            if (ready == 0)
-            {
-                continue;
-            }
-
-            _activeStatRegenCalculator[currActiveStatRegenType] -= ready;
-            ChangeActiveStat(currActiveStatType, ready);
-        }
-    }
 
 
 
@@ -232,9 +136,9 @@ public class StatScript : GameCharacterSubScript
             _passiveStatChangeDelegates.Add((PassiveStat)i, null);
         }
 
-        for (int i = (int)PassiveStat.HPRegen; i <= (int)PassiveStat.SPRegen; i++)
+        for (int i = (int)RegenStat.HPRegen; i <= (int)PassiveStat.End; i++)
         {
-            _activeStatRegenCalculator.Add((PassiveStat)i, 0.0f);
+            _activeStatRegenCalculator.Add((RegenStat)i, 0.0f);
         }
     }
 
@@ -273,7 +177,7 @@ public class StatScript : GameCharacterSubScript
         }
 
 
-        foreach (RuntimeBuffAsset runtimeBuffAsset in buffActions.ToList()) 
+        foreach (RuntimeBuffAsset runtimeBuffAsset in buffActions.ToList())
         {
             for (int i = 0; i < runtimeBuffAsset._Count; i++)
             {
@@ -318,17 +222,17 @@ public class StatScript : GameCharacterSubScript
     }
 
 
-    public void ApplyBuff(BuffAsset buff, int count)
+    public void ApplyBuff(BuffAssetBase buff, int count)
     {
-        Dictionary<BuffAsset, RuntimeBuffAsset> target = null;
+        Dictionary<BuffAssetBase, RuntimeBuffAsset> target = null;
 
         target = (buff._IsDebuff == true)
             ? _deBuffs
             : _buffs;
 
         RuntimeBuffAsset runtimeBuffAsset = null;
-        target.TryGetValue(buff, out runtimeBuffAsset);
 
+        target.TryGetValue(buff, out runtimeBuffAsset);
 
         if (runtimeBuffAsset != null)
         {
@@ -339,10 +243,12 @@ public class StatScript : GameCharacterSubScript
                 RemoveBuff(buff, runtimeBuffAsset._Count);
 
                 runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
+
                 if (buff._Duration > 0.0f)
                 {
                     runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
                 }
+
                 target.Add(buff, runtimeBuffAsset);
 
                 BuffChangeStatCalculate(runtimeBuffAsset, runtimeBuffAsset._Count);
@@ -376,7 +282,7 @@ public class StatScript : GameCharacterSubScript
         {
             //버프가 없습니다. 처음 만들어집니다
 
-            runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
+            //runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
 
             BuffChangeStatCalculate(runtimeBuffAsset, runtimeBuffAsset._Count);
 
@@ -402,9 +308,9 @@ public class StatScript : GameCharacterSubScript
         }
     }
 
-    public void RemoveBuff(BuffAsset buff, int count)
+    public void RemoveBuff(BuffAssetBase buff, int count)
     {
-        Dictionary<BuffAsset, RuntimeBuffAsset> target = null;
+        Dictionary<BuffAssetBase, RuntimeBuffAsset> target = null;
 
         target = (buff._IsDebuff == true)
             ? _deBuffs
@@ -451,7 +357,9 @@ public class StatScript : GameCharacterSubScript
     private void BuffChangeStatCalculate(RuntimeBuffAsset runtimeBuffAsset, int deltaCount)
     {
         List<BuffApplyWork> buffWorks = runtimeBuffAsset._fromAsset._BuffWorks;
+
         HashSet<PassiveStat> reCachingTargets = new HashSet<PassiveStat>();
+
         foreach (var buffWork in buffWorks)
         {
             //수치 변화 계산
@@ -474,30 +382,29 @@ public class StatScript : GameCharacterSubScript
             }
         }
     }
-    
+
     private void ReadAndApply(BuffApplyWork buffWork, int deltaCount)
     {
-        SortedDictionary<BuffApplyType, int> currAppliedBuffs = _passiveStatDeltaEquation.GetOrAdd(buffWork._targetType);
+        //SortedDictionary<BuffApplyType, int> currAppliedBuffs = _passiveStatDeltaEquation.GetOrAdd(buffWork._applyType);
 
-        BuffApplyType applyType = buffWork._buffApplyType;
+        //BuffApplyType applyType = buffWork._applyType;
 
-        if (currAppliedBuffs.ContainsKey(applyType) == false)
-        {
-            currAppliedBuffs.Add(applyType, 0);
-        }
+        //if (currAppliedBuffs.ContainsKey(applyType) == false)
+        //{
+        //    currAppliedBuffs.Add(applyType, 0);
+        //}
 
-        int applyAmount = (applyType == BuffApplyType.Set)
-            ? (int)buffWork._amount
-            : (int)buffWork._amount * deltaCount;
+        //int applyAmount = (applyType == BuffApplyType.Set)
+        //    ? (int)buffWork._amount
+        //    : (int)buffWork._amount * deltaCount;
 
-        currAppliedBuffs[applyType] += applyAmount;
+        //currAppliedBuffs[applyType] += applyAmount;
 
-        if (currAppliedBuffs[applyType] < 0)
-        {
-            Debug.Assert(false, "음수가 나와선 안됩니다");
-            Debug.Break();
-        }
-        
+        //if (currAppliedBuffs[applyType] < 0)
+        //{
+        //    Debug.Assert(false, "음수가 나와선 안됩니다");
+        //    Debug.Break();
+        //}
     }
 
 
@@ -693,6 +600,10 @@ public class StatScript : GameCharacterSubScript
     {
         return _currPassiveStat._PassiveStats[type];
     }
+    public int GetRegenStat(RegenStat type)
+    {
+        return _currRegenStat._RegenStats[type];
+    }
 
     public int CalculateStatDamage()
     {
@@ -706,9 +617,73 @@ public class StatScript : GameCharacterSubScript
     {
         return 1;
     }
-
     private void AfterCalculateActiveStat(ActiveStat type)
     {
 
+    }
+
+
+
+
+
+
+
+
+
+    public void StatScriptUpdate()
+    {
+        //평상시 뭐해야합니까? -> 리젠 행동을 해야합니다
+        ActiveStatRegen();
+    }
+
+
+    private void ActiveStatRegen()
+    {
+        ActiveStat currActiveStatType = ActiveStat.End;
+
+        for (int i = (int)RegenStat.HPRegen; i <= (int)RegenStat.End; i++)
+        {
+            RegenStat currActiveStatRegenType = (RegenStat)i;
+
+            switch (currActiveStatRegenType)
+            {
+                case RegenStat.HPRegen:
+                    currActiveStatType = ActiveStat.Hp;
+                    break;
+
+                case RegenStat.StaminaRegen:
+                    currActiveStatType = ActiveStat.Stamina;
+                    break;
+
+                case RegenStat.MPRegen:
+                    currActiveStatType = ActiveStat.Mp;
+                    break;
+
+                case RegenStat.SPRegen:
+                    currActiveStatType = ActiveStat.Sp;
+                    break;
+
+                case RegenStat.PostureRecovery:
+                    currActiveStatType = ActiveStat.PosturePercent;
+                    break;
+
+                default:
+                    Debug.Assert(false, "대응이 되지 않습니다");
+                    Debug.Break();
+                    break;
+            }
+
+            _activeStatRegenCalculator[currActiveStatRegenType] += Time.deltaTime * GetRegenStat(currActiveStatRegenType);
+
+            int ready = (int)_activeStatRegenCalculator[currActiveStatRegenType];
+
+            if (ready == 0)
+            {
+                continue;
+            }
+
+            _activeStatRegenCalculator[currActiveStatRegenType] -= ready;
+            ChangeActiveStat(currActiveStatType, ready);
+        }
     }
 }

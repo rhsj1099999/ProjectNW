@@ -10,20 +10,14 @@ using static UnityEditor.VersionControl.Asset;
 [CreateAssetMenu(fileName = "LevelStatAsset", menuName = "Scriptable Object/Create_LevelStatAsset", order = (int)MyUtil.CustomToolOrder.CreateBuffs)]
 public class LevelStatAsset : ScriptableObject
 {
-    //내 게임캐릭터는 이런 스탯들이 존재해요
-
-    //-> 자꾸 '소모' 되는 것들
+    //-> 실시간으로 늘어나거나 줄어드는것들
     public enum ActiveStat
     {
         Hp, 
         Stamina, 
         Mp, 
         Sp, 
-
         PosturePercent, //자세 유지 = 높을수록 위험함
-
-
-
         End = 2048, //4
     }
 
@@ -42,18 +36,18 @@ public class LevelStatAsset : ScriptableObject
         IsInvincible_HP,        //피가 깎이진 않지만, 자세가 무너질 수 있다.
         IsInvincible_Stance,    //자세가 무너지진 않지만, 피가 깎인다.
         AttackSpeedPercentage,
+        MoveSpeed,
+        PostruePercentPhase1, //자세 1차 무너짐
+        End = 2048,
+    }
 
+    public enum RegenStat
+    {
         HPRegen,
         StaminaRegen,
         MPRegen,
         SPRegen,
-
-        MoveSpeed,
-
-
-        PostruePercentPhase1, //자세 1차 무너짐
         PostureRecovery,
-
         End = 2048,
     }
 
@@ -93,6 +87,42 @@ public class LevelStatAsset : ScriptableObject
         [SerializeField] private int _mp = 100;
         [SerializeField] private int _sp = 100;
         [SerializeField] private int _posturePercentage = 100;
+    }
+
+
+    [Serializable]
+    public class RegenStatDesc
+    {
+        public RegenStatDesc() { }
+        public RegenStatDesc(RegenStatDesc other)
+        {
+            _hpRegen = other._hpRegen;
+            _staminaRegen = other._staminaRegen;
+            _mpRegen = other._mpRegen;
+            _spRegen = other._spRegen;
+            _postureRecovery = other._postureRecovery;
+
+            InitDict();
+        }
+
+        public void InitDict()
+        {
+            _regenStats.Clear();
+            _regenStats.Add(RegenStat.HPRegen, _hpRegen);
+            _regenStats.Add(RegenStat.StaminaRegen, _staminaRegen);
+            _regenStats.Add(RegenStat.MPRegen, _mpRegen);
+            _regenStats.Add(RegenStat.SPRegen, _spRegen);
+            _regenStats.Add(RegenStat.PostureRecovery, _postureRecovery);
+        }
+
+        private Dictionary<RegenStat, int> _regenStats = new Dictionary<RegenStat, int>();
+        public Dictionary<RegenStat, int> _RegenStats => _regenStats;
+
+        [SerializeField] private int _hpRegen = 0;
+        [SerializeField] private int _mpRegen = 5;
+        [SerializeField] private int _staminaRegen = 10;
+        [SerializeField] private int _spRegen = 5;
+        [SerializeField] private int _postureRecovery = 10;
     }
 
 
@@ -146,15 +176,9 @@ public class LevelStatAsset : ScriptableObject
             _PassiveStats.Add(PassiveStat.IsInvincible_Stance, _isInvincible_Stance);
             _PassiveStats.Add(PassiveStat.AttackSpeedPercentage, _attackSpeedPercentage);
 
-            _PassiveStats.Add(PassiveStat.HPRegen, _hpRegen);
-            _PassiveStats.Add(PassiveStat.StaminaRegen, _staminaRegen);
-            _PassiveStats.Add(PassiveStat.MPRegen, _mpRegen);
-            _PassiveStats.Add(PassiveStat.SPRegen, _spRegen);
-
             _PassiveStats.Add(PassiveStat.MoveSpeed, _moveSpeed);
 
             _PassiveStats.Add(PassiveStat.PostruePercentPhase1, _posturePercentagePhase1);
-            _PassiveStats.Add(PassiveStat.PostureRecovery, _postureRecovery);
         }
 
         private Dictionary<PassiveStat, int> _passiveStats = new Dictionary<PassiveStat, int>();
@@ -200,6 +224,9 @@ public class LevelStatAsset : ScriptableObject
 
     [SerializeField] private PassiveStatDesc _passiveStatDesc = new PassiveStatDesc();
     public PassiveStatDesc _PassiveStatDesc => _passiveStatDesc;
+
+    [SerializeField] private RegenStatDesc _regenStatDesc = new RegenStatDesc();
+    public RegenStatDesc _RegenStatDesc => _regenStatDesc;
 
     public void PartailAwake_InitDict()
     {

@@ -49,12 +49,12 @@ public class LevelStatInfoManagerCustomInspector : Editor
     {
         // 프로젝트에서 모든 A ScriptableObject 검색
         string[] guids = AssetDatabase.FindAssets("t:BuffAsset");
-        List<BuffAsset> foundObjects = new List<BuffAsset>();
+        List<BuffAssetBase> foundObjects = new List<BuffAssetBase>();
 
         foreach (string guid in guids)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
-            BuffAsset asset = AssetDatabase.LoadAssetAtPath<BuffAsset>(path);
+            BuffAssetBase asset = AssetDatabase.LoadAssetAtPath<BuffAssetBase>(path);
             if (asset != null)
             {
                 foundObjects.Add(asset);
