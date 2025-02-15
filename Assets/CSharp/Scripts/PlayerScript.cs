@@ -8,6 +8,8 @@ public class PlayerScript : CharacterScript
 
     [SerializeField] protected GameObject _interactionUIPrefab = null;
 
+
+
     protected override void Awake()
     {
         base.Awake();
@@ -19,15 +21,12 @@ public class PlayerScript : CharacterScript
         //HUD가 필요합니다
         if (_usingHUDPrefab != null)
         {
-            GameObject canvasObject = UIManager.Instance.GetMainCanvasObject();
+            Canvas canvasObject = UIManager.Instance.Get2DCanvs();
             GameObject newHUDObject = Instantiate(_usingHUDPrefab, canvasObject.transform);
             HUDScript newHUDScript = newHUDObject.GetComponent<HUDScript>();
 
             newHUDScript.HUDLinking(GCST<StatScript>());
         }
-
-
-
 
 
 
@@ -92,7 +91,7 @@ public class PlayerScript : CharacterScript
         {
             if (GCST<InputController>().GetInventoryOpen() == true)
             {
-                UIManager.Instance.TurnOnUI(_inventoryUIPrefab);
+                UIManager.Instance.TurnOnUI(_inventoryUIPrefab, UIManager.LayerOrder.InventorySomethingElse);
             }
         }
 

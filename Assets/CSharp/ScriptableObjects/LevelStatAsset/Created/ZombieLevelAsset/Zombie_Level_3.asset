@@ -19,8 +19,9 @@ MonoBehaviour:
     _stamina: 150
     _mp: 150
     _sp: 150
+    _posturePercentage: 0
   _passiveStatDesc:
-    _maxHP: 150
+    _maxHP: 15
     _maxStamina: 150
     _maxMp: 150
     _maxSp: 150
@@ -37,3 +38,4 @@ MonoBehaviour:
     _mpRegen: 0
     _spRegen: 0
     _moveSpeed: 5
+    _posturePercentagePhase1: 60

@@ -80,11 +80,11 @@ public class SceneManagerWrapper : SubManager<SceneManagerWrapper>
 
     public Coroutine CurtainCall(CurtainCallType type, CurtainCallControlDesc desc)
     {
-        GameObject mainCanvasObject = UIManager.Instance.GetMainCanvasObject();
+        Canvas canvasObject = UIManager.Instance.Get2DCanvs();
 
         GameObject simpleColorFadeInOut = _curtainCallPrefabs[type];
 
-        GameObject newCurtainCall = Instantiate(simpleColorFadeInOut, mainCanvasObject.transform);
+        GameObject newCurtainCall = Instantiate(simpleColorFadeInOut, canvasObject.transform);
 
         CurtainCallBase component = newCurtainCall.GetComponent<CurtainCallBase>();
 

@@ -55,7 +55,7 @@ public class InteractionUIListScript : GameUISubComponent
 
             _currCreated.Add(newWrapper);
 
-            UIManager.Instance.TurnOnUI(gameObject);
+            UIManager.Instance.TurnOnUI(gameObject, UIManager.LayerOrder.PlayerHUD);
 
             _focusedUI.SetActive(true);
         }

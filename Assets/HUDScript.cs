@@ -28,7 +28,7 @@ public class HUDScript : MonoBehaviour
     {
         _owner = caller;
 
-        UIManager.Instance.SetHUD(this);
+        UIManager.Instance.SetHUD(gameObject, this);
 
         if (_buffDisplay == null)
         {

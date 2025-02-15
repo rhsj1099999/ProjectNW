@@ -10,8 +10,25 @@ using UnityEngine.UI;
 
 public class UIManager : SubManager<UIManager>
 {
-    [SerializeField] private GameObject _mainCanvas = null;
-    public GameObject GetMainCanvasObject(){return _mainCanvas;}
+    public enum LayerOrder
+    {
+        Default,
+        First,
+        PlayerHUD,
+        EnemyInBattle,
+        InventorySomethingElse,
+        Dialog,
+        End,
+    }
+
+    
+
+    [SerializeField] private List<GameObject> _uiSortingObject = new List<GameObject>();
+    [SerializeField] private GameObject _uiSortingObjectPrefab = null;
+    
+    
+    [SerializeField] private Canvas _canvas_2D = null;
+    public Canvas Get2DCanvs(){return _canvas_2D; }
 
     [SerializeField] private EventSystem _eventSystem = null;
     [SerializeField] private int _consumeInputUICount = 0;
@@ -20,7 +37,7 @@ public class UIManager : SubManager<UIManager>
     public HUDScript _CurrHUD => _currHUD;
 
 
-    public void SetHUD(HUDScript component)
+    public void SetHUD(GameObject hudObject, HUDScript component)
     {
         if (_currHUD != null)
         {
@@ -30,6 +47,11 @@ public class UIManager : SubManager<UIManager>
 
             return;
         }
+
+        GameObject sortingObject = _uiSortingObject[(int)LayerOrder.PlayerHUD];
+
+        hudObject.transform.SetParent(sortingObject.transform, false);
+
         _currHUD = component;
     }
 
@@ -49,7 +71,13 @@ public class UIManager : SubManager<UIManager>
     {
         SingletonAwake();
 
-        if (_mainCanvas == null)
+        if (_uiSortingObjectPrefab == null)
+        {
+            Debug.Assert(false, "UI를 정렬하기위한 임시 오브젝트를 만들어뒀습니다 반드시 설정하세요");
+            Debug.Break();
+        }
+
+        if (_canvas_2D == null)
         {
             Debug.Assert(false, "MainCanvas는 반드시 존재해야한다");
         }
@@ -59,6 +87,18 @@ public class UIManager : SubManager<UIManager>
         {
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
+        }
+
+        ReadySortingLayer();
+    }
+
+    private void ReadySortingLayer()
+    {
+        for (int i = 0; i < (int)LayerOrder.End; i++)
+        {
+            GameObject newGameObject = Instantiate(_uiSortingObjectPrefab, _canvas_2D.transform);
+            newGameObject.name = "UISortingLayer" + ((LayerOrder)i).ToString();
+            _uiSortingObject.Add(newGameObject);
         }
     }
 
@@ -89,7 +129,7 @@ public class UIManager : SubManager<UIManager>
         }
     }
 
-    public void TurnOnUI(GameObject uiInstance)
+    public void TurnOnUI(GameObject uiInstance, LayerOrder order)
     {
         UIComponent uiComponent = uiInstance.GetComponent<UIComponent>();
 
@@ -103,15 +143,15 @@ public class UIManager : SubManager<UIManager>
         {
             Transform parent = uiComponent.transform.parent;
 
-            if (parent != _mainCanvas.transform) 
+            if (parent != _canvas_2D.transform) 
             {
                 IncreaseConsumeInput();
             }
         }
 
-        
+        GameObject layerObject = _uiSortingObject[(int)order];
 
-        uiInstance.transform.SetParent(_mainCanvas.transform);
+        uiInstance.transform.SetParent(layerObject.transform);
         uiInstance.transform.SetAsLastSibling();
         uiComponent.ShowUI();
 
@@ -121,8 +161,6 @@ public class UIManager : SubManager<UIManager>
 
         ((RectTransform)uiInstance.transform).anchoredPosition = Vector2.zero;
         ((RectTransform)uiInstance.transform).anchoredPosition += new Vector2(50.0f, 0.0f);
-
-
     }
 
     public void TurnOffUI(GameObject uiInstance)
@@ -137,33 +175,31 @@ public class UIManager : SubManager<UIManager>
 
         if (uiComponent.GetIsConsumeInput() == true)
         {
-            Transform parent = uiComponent.transform.parent;
-
-            if (parent == _mainCanvas.transform)
-            {
-                DecreaseConsumeInput();
-            }
+            DecreaseConsumeInput();
         }
 
         uiComponent.HideUI();
     }
 
 
-    public void SetMeFinalZOrder(GameObject caller)
+    public void SetMeFinalZOrder(GameObject caller, LayerOrder order)
     {
-        caller.gameObject.transform.SetParent(_mainCanvas.transform);
+        GameObject targetObject = _uiSortingObject[(int)order];
+
+
+        caller.gameObject.transform.SetParent(targetObject.transform);
         caller.gameObject.transform.SetAsLastSibling();
     }
 
 
     public void RayCastAll(ref List<RaycastResult> results, bool isReverse = false)
     {
-        if (_mainCanvas == null)
+        if (_canvas_2D == null)
         {
             return;
         }
 
-        GameObject rootObject = _mainCanvas;
+        GameObject rootObject = _canvas_2D.gameObject;
 
         PointerEventData pointerEventData = new PointerEventData(_eventSystem);
         pointerEventData.position = Input.mousePosition;

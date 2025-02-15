@@ -72,7 +72,7 @@ public class UICall_OpenChest : UICallScript
 
         _isChestOpened = true;
 
-        UIManager.Instance.TurnOnUI(_chestInventory);
+        UIManager.Instance.TurnOnUI(_chestInventory, UIManager.LayerOrder.InventorySomethingElse);
 
         _openedRotation = _originalRotation * Quaternion.Euler(_maxOpenDegree, 0.0f, 0.0f);
         Quaternion goalRotation = _openedRotation;

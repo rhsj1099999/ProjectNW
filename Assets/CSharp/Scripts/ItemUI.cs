@@ -240,7 +240,7 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
             _beforeDragTransform = transform.parent;
 
             //나를 제일 마지막에 그려라
-            UIManager.Instance.SetMeFinalZOrder(gameObject);
+            UIManager.Instance.SetMeFinalZOrder(gameObject, UIManager.LayerOrder.InventorySomethingElse);
         }
 
         int sizeX = (_itemStoreDesc._isRotated == false) ? _itemStoreDesc._itemAsset._SizeX * 20: _itemStoreDesc._itemAsset._SizeY * 20;

@@ -40,6 +40,9 @@ public class StatBarScript : MonoBehaviour
         }
 
         //½ºÅÈ¸µÅ·, »ö±ò ¿¬µ¿´Ü°è
+
+        
+
         switch (_targetActiveStatType)
         {
             case ActiveStat.Hp:
@@ -60,6 +63,11 @@ public class StatBarScript : MonoBehaviour
             case ActiveStat.Sp:
                 _targetPassiveStatType = PassiveStat.MaxSp;
                 _statBarImageComponent.color = new Color(183.0f / 255.0f, 181.0f / 255.0f, 0);
+                break;
+
+            case ActiveStat.PosturePercent:
+                _targetPassiveStatType = PassiveStat.End;
+                _statBarImageComponent.color = new Color(150.0f / 112.0f, 0.0f / 255.0f, 0);
                 break;
 
             default:
@@ -85,7 +93,9 @@ public class StatBarScript : MonoBehaviour
 
     public void IfStatBarChanged(int nextVar)
     {
-        int maxVal = _myStatTarget.GetPassiveStat(_targetPassiveStatType);
+        int maxVal = (_targetActiveStatType != ActiveStat.PosturePercent)
+        ? _myStatTarget.GetPassiveStat(_targetPassiveStatType)
+        : 100;
 
         float ratio = (float)nextVar / (float)maxVal;
 

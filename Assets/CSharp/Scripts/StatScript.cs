@@ -246,20 +246,13 @@ public class StatScript : GameCharacterSubScript
 
             ActiveStat statType = (ActiveStat)i;
 
-            switch (statType)
+            if (statType == ActiveStat.PosturePercent)
             {
-                case ActiveStat.Hp:
-                    maxVal = GetPassiveStat(PassiveStat.MaxHP);
-                    break;
-                case ActiveStat.Stamina:
-                    maxVal = GetPassiveStat(PassiveStat.MaxStamina);
-                    break;
-                case ActiveStat.Mp:
-                    maxVal = GetPassiveStat(PassiveStat.MaxMp);
-                    break;
-                case ActiveStat.Sp:
-                    maxVal = GetPassiveStat(PassiveStat.MaxSp);
-                    break;
+                maxVal = 0;
+            }
+            else
+            {
+                GetReletivePassiveStat(statType, ref maxVal);
             }
 
             ChangeActiveStat(statType, maxVal);
@@ -590,6 +583,8 @@ public class StatScript : GameCharacterSubScript
             --------------------------------------------------*/
             _passiveStatChangeDelegates[type]?.Invoke(nextVar);
 
+            int statOut = 0;
+            GetReletiveActiveStat(type, ref statOut);
             {
                 //스탯에 변경되면 뭘 해야합니까?
                 //ex 최대체력이 변경되면 현재체력을 늘려야합니다.
@@ -617,6 +612,56 @@ public class StatScript : GameCharacterSubScript
     }
 
 
+    public void GetReletivePassiveStat(ActiveStat type, ref int statOut)
+    {
+        switch (type)
+        {
+            case ActiveStat.Hp:
+                statOut = GetPassiveStat(PassiveStat.MaxHP);
+                break;
+            case ActiveStat.Stamina:
+                statOut = GetPassiveStat(PassiveStat.MaxStamina);
+                break;
+            case ActiveStat.Mp:
+                statOut = GetPassiveStat(PassiveStat.MaxMp);
+                break;
+            case ActiveStat.Sp:
+                statOut = GetPassiveStat(PassiveStat.MaxSp);
+                break;
+
+            default:
+                //Debug.Assert(false, "대응이 되지 않습니다");
+                //Debug.Break();
+                break;
+        }
+    }
+
+    public void GetReletiveActiveStat(PassiveStat type, ref int statOut)
+    {
+        switch (type)
+        {
+            case PassiveStat.MaxHP:
+                statOut = GetActiveStat(ActiveStat.Hp);
+                break;
+            case PassiveStat.MaxMp:
+                statOut = GetActiveStat(ActiveStat.Mp);
+                break;
+            case PassiveStat.MaxStamina:
+                statOut = GetActiveStat(ActiveStat.Stamina);
+                break;
+            case PassiveStat.MaxSp:
+                statOut = GetActiveStat(ActiveStat.Sp);
+                break;
+
+            default:
+                //Debug.Assert(false, "대응이 되지 않습니다");
+                //Debug.Break();
+                break;
+        }
+    }
+
+
+
     public void ChangeActiveStat(ActiveStat type, int amount)
     {
         int nextVal = (_currActiveStat._ActiveStats[type] + amount);
@@ -626,26 +671,7 @@ public class StatScript : GameCharacterSubScript
 
         int maxVar = 0;
 
-        switch (type)
-        {
-            case ActiveStat.Hp:
-                maxVar = GetPassiveStat(PassiveStat.MaxHP);
-                break;
-            case ActiveStat.Stamina:
-                maxVar = GetPassiveStat(PassiveStat.MaxStamina);
-                break;
-            case ActiveStat.Mp:
-                maxVar = GetPassiveStat(PassiveStat.MaxMp);
-                break;
-            case ActiveStat.Sp:
-                maxVar = GetPassiveStat(PassiveStat.MaxSp);
-                break;
-
-            default:
-                Debug.Assert(false, "대응이 되지 않습니다");
-                Debug.Break();
-                break;
-        }
+        GetReletivePassiveStat(type, ref maxVar);
 
         nextVal = Math.Clamp(nextVal, 0, maxVar);
 

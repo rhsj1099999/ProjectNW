@@ -52,8 +52,7 @@ public class LevelStatAsset : ScriptableObject
 
 
         PostruePercentPhase1, //자세 1차 무너짐
-
-
+        PostureRecovery,
 
         End = 2048,
     }
@@ -71,6 +70,7 @@ public class LevelStatAsset : ScriptableObject
             _stamina = other._stamina;
             _mp = other._mp;
             _sp = other._sp;
+            _posturePercentage = other._posturePercentage;
 
             InitDict();
         }
@@ -82,6 +82,7 @@ public class LevelStatAsset : ScriptableObject
             _ActiveStats.Add(ActiveStat.Stamina, _stamina);
             _ActiveStats.Add(ActiveStat.Mp, _mp);
             _ActiveStats.Add(ActiveStat.Sp, _sp);
+            _ActiveStats.Add(ActiveStat.PosturePercent, _posturePercentage);
         }
 
         private Dictionary<ActiveStat, int> _activeStats = new Dictionary<ActiveStat, int>();
@@ -91,6 +92,7 @@ public class LevelStatAsset : ScriptableObject
         [SerializeField] private int _stamina = 100;
         [SerializeField] private int _mp = 100;
         [SerializeField] private int _sp = 100;
+        [SerializeField] private int _posturePercentage = 100;
     }
 
 
@@ -120,6 +122,10 @@ public class LevelStatAsset : ScriptableObject
 
             _moveSpeed = other._moveSpeed;
 
+            _posturePercentagePhase1 = other._posturePercentagePhase1;
+            _postureRecovery = other._postureRecovery;
+
+
             InitDict();
         }
 
@@ -146,6 +152,9 @@ public class LevelStatAsset : ScriptableObject
             _PassiveStats.Add(PassiveStat.SPRegen, _spRegen);
 
             _PassiveStats.Add(PassiveStat.MoveSpeed, _moveSpeed);
+
+            _PassiveStats.Add(PassiveStat.PostruePercentPhase1, _posturePercentagePhase1);
+            _PassiveStats.Add(PassiveStat.PostureRecovery, _postureRecovery);
         }
 
         private Dictionary<PassiveStat, int> _passiveStats = new Dictionary<PassiveStat, int>();
@@ -173,6 +182,10 @@ public class LevelStatAsset : ScriptableObject
         [SerializeField] private int _spRegen = 1;
 
         [SerializeField] private int _moveSpeed = 5;
+
+        [SerializeField] private int _posturePercentagePhase1 = 60;
+
+        [SerializeField] private int _postureRecovery = 10;
     }
 
 

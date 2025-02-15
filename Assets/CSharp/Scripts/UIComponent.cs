@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Build;
 using UnityEngine;
 
 public class UIComponent : MonoBehaviour
@@ -9,10 +10,11 @@ public class UIComponent : MonoBehaviour
 
     [SerializeField] private GameActorScript _uiControllingObject = null;
     public GameActorScript GetUIControllingComponent() { return _uiControllingObject; }
-    private RectTransform _myRectTransform = null;
-    
+    protected RectTransform _myRectTransform = null;
+    protected bool _isShow = false;
+    public bool _IsShow => _isShow;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         if (_uiControllingObject == null)
         {
@@ -34,6 +36,7 @@ public class UIComponent : MonoBehaviour
     public void HideUI()
     {
         transform.SetParent(_uiControllingObject.transform);
+        _isShow = false;
     }
 
     public void ShowUI()
@@ -43,6 +46,7 @@ public class UIComponent : MonoBehaviour
 
         _myRectTransform.offsetMin = Vector2.zero;
         _myRectTransform.offsetMax = Vector2.zero;
+        _isShow = true;
     }
 
     public bool GetIsConsumeInput()

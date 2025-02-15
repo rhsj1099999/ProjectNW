@@ -1,10 +1,29 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
 public class ZombieScript : CharacterScript, IHitable
 {
+    [SerializeField] private BattleUIScript _battleUIInstanced = null;
+    [SerializeField] private float _battleUICounterTarget = 5.0f;
+    [SerializeField] private float _battleUICounterACC = 0.0f;
+    private Coroutine _battleUICoroutine = null;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        if (_battleUIInstanced == null)
+        {
+            Debug.Assert(false, "전투중 표시될 UI 프리팹을 설정하세요");
+            Debug.Break();
+        }
+
+
+    }
+
     public override LayerMask CalculateWeaponColliderIncludeLayerMask()
     {
         int ret = LayerMask.GetMask("Player");
@@ -39,8 +58,40 @@ public class ZombieScript : CharacterScript, IHitable
 
             ItemInfoManager.Instance.DropItemToField(transform, newStoreDescBase, dir);
         }
+    }
 
+    public override void DealMe_Final(DamageDesc damage, bool isWeakPoint, CharacterScript attacker, CharacterScript victim)
+    {
+        base.DealMe_Final(damage, isWeakPoint, attacker, victim);
 
+        if (_battleUICoroutine == null)
+        {
+            _battleUICoroutine = StartCoroutine(ShowBattleUICoroutine());
+        }
+        else
+        {
+            _battleUICounterACC = 0.0f;
+            UIManager.Instance.SetMeFinalZOrder(_battleUIInstanced.gameObject, UIManager.LayerOrder.EnemyInBattle);
+        }
+    }
 
+    private IEnumerator ShowBattleUICoroutine()
+    {
+        _battleUICounterACC = 0.0f;
+        UIManager.Instance.TurnOnUI(_battleUIInstanced.gameObject, UIManager.LayerOrder.EnemyInBattle);
+
+        while (true) 
+        {
+            _battleUICounterACC += Time.deltaTime;
+
+            if (_battleUICounterACC >= _battleUICounterTarget)
+            {
+                UIManager.Instance.TurnOffUI(_battleUIInstanced.gameObject);
+                _battleUICoroutine = null;
+                break;
+            }
+
+            yield return null;
+        }
     }
 }

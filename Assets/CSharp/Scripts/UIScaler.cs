@@ -44,7 +44,7 @@ public class UIScaler : MonoBehaviour
             _myRectTransform = GetComponent<RectTransform>();
         }
 
-        Canvas mainCanvasComponent = UIManager.Instance.GetMainCanvasObject().GetComponent<Canvas>();
+        Canvas mainCanvasComponent = UIManager.Instance.Get2DCanvs().GetComponent<Canvas>();
         //CanvasScaler canvasScaler = UIManager.Instance.GetMainCanvasObject().GetComponent<CanvasScaler>();
 
         RectTransform canvasRectTransform = (RectTransform)mainCanvasComponent.transform;
