@@ -34,9 +34,11 @@ MonoBehaviour:
       _coolTime: -1
       _range: -1
     _stateBuffs_Add:
-    - "\uB77C\uC774\uC624\uC704\uBE59\uBC84\uD504"
+    - {fileID: 11400000, guid: ad1e226fe9d8b844a9560652e8bae3c8, type: 2}
+    - {fileID: 11400000, guid: c06f92caf3b235644bbb2705db30fbbd, type: 2}
     _stateBuffs_Remove:
-    - "\uB77C\uC774\uC624\uC704\uBE59\uBC84\uD504"
+    - {fileID: 11400000, guid: ad1e226fe9d8b844a9560652e8bae3c8, type: 2}
+    - {fileID: 11400000, guid: c06f92caf3b235644bbb2705db30fbbd, type: 2}
     _EnterStateActionTypes: 0d0000002200000025000000
     _inStateActionTypes: 1900000006000000
     _ExitStateActionTypes: 0e00000026000000
@@ -52,3 +54,7 @@ MonoBehaviour:
       - _statType: 3
         _needAmount: 10
         _isConsume: 1
+    _isNeedStatLoopBreak: 0
+    _needStat_LoopBreak:
+      _needPassiveStatList: []
+      _needActiveStatList: []

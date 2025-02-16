@@ -36,12 +36,12 @@ MonoBehaviour:
       _coolTime: -1
       _range: -1
     _stateBuffs_Add:
-    - "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uAC00\uB4DC\uBC84\uD504"
-    - "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uB370\uBBF8\uC9C0\uB204\uC801\uBC84\uD504"
-    - "\uBD81\uB450\uBC18\uACA9\uC2A4\uD14C\uAC10\uC18C\uBC84\uD504"
+    - {fileID: 11400000, guid: a4d110ee8eae0584a948c74657841a56, type: 2}
+    - {fileID: 11400000, guid: 83d769499fe842c4ea3ebd1884ca9c50, type: 2}
+    - {fileID: 11400000, guid: fb9c92dcdf64ec34797768564232a418, type: 2}
     _stateBuffs_Remove:
-    - "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uAC00\uB4DC\uBC84\uD504"
-    - "\uBD81\uB450\uBC18\uACA9\uC2A4\uD14C\uAC10\uC18C\uBC84\uD504"
+    - {fileID: 11400000, guid: a4d110ee8eae0584a948c74657841a56, type: 2}
+    - {fileID: 11400000, guid: 83d769499fe842c4ea3ebd1884ca9c50, type: 2}
     _EnterStateActionTypes: 0d0000002200000025000000
     _inStateActionTypes: 1900000006000000
     _ExitStateActionTypes: 0e00000026000000

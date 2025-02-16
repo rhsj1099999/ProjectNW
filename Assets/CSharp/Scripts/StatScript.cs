@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,12 +59,15 @@ public class StatScript : GameCharacterSubScript
             {
                 if (nextCount < 0)
                 {
-                    Debug.Assert(false, "À½¼ö°¡ ³ª¿Í¼± ¾ÈµÈ´Ù");
+                    Debug.Assert(false, "ìŒìˆ˜ê°€ ë‚˜ì™€ì„  ì•ˆëœë‹¤");
                     Debug.Break();
                 }
             }
 
-            //µ¨¸®°ÔÀÌÅÍ È£Ãâ
+
+
+
+            //ë¸ë¦¬ê²Œì´í„° í˜¸ì¶œ
             {
                 _countDelegates?.Invoke(nextCount);
             }
@@ -72,13 +75,13 @@ public class StatScript : GameCharacterSubScript
     }
 
     /*---------------------------------------------------
-    |NOTI| ±âº»»§ ½ºÅİÀº ¸Å´ÏÀú¿Í ·¹º§À» ÅëÇØ ¹Ù·Î ¾Ë ¼ö ÀÖ´Ù
+    |NOTI| ê¸°ë³¸ë¹µ ìŠ¤í…Ÿì€ ë§¤ë‹ˆì €ì™€ ë ˆë²¨ì„ í†µí•´ ë°”ë¡œ ì•Œ ìˆ˜ ìˆë‹¤
     ---------------------------------------------------*/
     private int _currLevel = 1;
 
-    private ActiveStatDesc _currActiveStat = null; //·±Å¸ÀÓ ½ºÅİÀÔ´Ï´Ù.
-    private PassiveStatDesc _currPassiveStat = null; //·±Å¸ÀÓ ½ºÅİÀÔ´Ï´Ù.
-    private RegenStatDesc _currRegenStat = null; //·±Å¸ÀÓ ½ºÅİÀÔ´Ï´Ù.
+    private ActiveStatDesc _currActiveStat = null; //ëŸ°íƒ€ì„ ìŠ¤í…Ÿì…ë‹ˆë‹¤.
+    private PassiveStatDesc _currPassiveStat = null; //ëŸ°íƒ€ì„ ìŠ¤í…Ÿì…ë‹ˆë‹¤.
+    private RegenStatDesc _currRegenStat = null; //ëŸ°íƒ€ì„ ìŠ¤í…Ÿì…ë‹ˆë‹¤.
 
     private Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>> _passiveStatDeltaEquation = new Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>>();
     private Dictionary<RegenStat, SortedDictionary<BuffApplyType, int>> _regenStatDeltaEquation = new Dictionary<RegenStat, SortedDictionary<BuffApplyType, int>>();
@@ -93,8 +96,7 @@ public class StatScript : GameCharacterSubScript
     private Dictionary<BuffAssetBase, RuntimeBuffAsset> _buffs = new Dictionary<BuffAssetBase, RuntimeBuffAsset>();
     private Dictionary<BuffAssetBase, RuntimeBuffAsset> _deBuffs = new Dictionary<BuffAssetBase, RuntimeBuffAsset>();
 
-    private Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>> _buffActions = new Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>>();
-    public IReadOnlyDictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>> _BuffActions => _buffActions;
+    public Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>> _buffActions = new Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>>();
 
 
     public RuntimeBuffAsset GetRuntimeBuffAsset(BuffAssetBase buff)
@@ -108,7 +110,7 @@ public class StatScript : GameCharacterSubScript
 
         if (ret == null)
         {
-            Debug.Assert(false, "ÇØ´ç ¹öÇÁ°¡ °É¸°ÀûÀÌ ¾ø½À´Ï´Ù");
+            Debug.Assert(false, "í•´ë‹¹ ë²„í”„ê°€ ê±¸ë¦°ì ì´ ì—†ìŠµë‹ˆë‹¤");
             Debug.Break();
         }
 
@@ -139,6 +141,15 @@ public class StatScript : GameCharacterSubScript
         {
             _passiveStatChangeDelegates.Add((PassiveStat)i, null);
         }
+
+        for (int i = 0; i < (int)RegenStat.End; i++)
+        {
+           _regenStatChangeDelegates.Add((RegenStat)i, null);
+        }
+
+
+
+
 
         for (int i = (int)RegenStat.HPRegen; i <= (int)PassiveStat.End; i++)
         {
@@ -204,9 +215,9 @@ public class StatScript : GameCharacterSubScript
         {
             wrapper._timeACC += Time.deltaTime;
             
-            if (wrapper._fromAsset._Duration <= wrapper._timeACC) //¹öÇÁ½Ã°£ÀÌ ¸¸·áµÊ. 
+            if (wrapper._fromAsset._Duration <= wrapper._timeACC) //ë²„í”„ì‹œê°„ì´ ë§Œë£Œë¨. 
             {
-                Debug.Log("¹öÇÁ½Ã°£¸¸·á Å° : " + wrapper._fromAsset._BuffName);
+                Debug.Log("ë²„í”„ì‹œê°„ë§Œë£Œ í‚¤ : " + wrapper._fromAsset._BuffName);
 
 
                 if (wrapper._fromAsset._DurationExpireOnce == true)
@@ -228,11 +239,6 @@ public class StatScript : GameCharacterSubScript
 
     public void ApplyBuff(BuffAssetBase buff, int count)
     {
-        if (buff == null)
-        {
-            return;
-        }
-
         Dictionary<BuffAssetBase, RuntimeBuffAsset> target = null;
 
         target = (buff._IsDebuff == true)
@@ -245,7 +251,7 @@ public class StatScript : GameCharacterSubScript
 
         if (runtimeBuffAsset != null)
         {
-            //¹öÇÁ°¡ ÀÌ¹Ì ÀÖ½À´Ï´Ù. ½Ã°£ °»½Å, ¼ö·® °»½ÅµîÀ» ÇÕ´Ï´Ù.
+            //ë²„í”„ê°€ ì´ë¯¸ ìˆìŠµë‹ˆë‹¤. ì‹œê°„ ê°±ì‹ , ìˆ˜ëŸ‰ ê°±ì‹ ë“±ì„ í•©ë‹ˆë‹¤.
 
             if (buff._SpecialAction_OnlyOne == true)
             {
@@ -255,7 +261,7 @@ public class StatScript : GameCharacterSubScript
 
                 target.Add(buff, runtimeBuffAsset);
 
-                BuffChangeStatCalculate(runtimeBuffAsset);
+                BuffChangeStatCalculate(runtimeBuffAsset, count);
 
                 if (_owner._CharacterType == CharacterType.Player)
                 {
@@ -279,7 +285,7 @@ public class StatScript : GameCharacterSubScript
 
                 runtimeBuffAsset.SetCount(nextCount);
 
-                BuffChangeStatCalculate(runtimeBuffAsset);
+                BuffChangeStatCalculate(runtimeBuffAsset, nextCount - prevCount);
             }
 
 
@@ -290,7 +296,14 @@ public class StatScript : GameCharacterSubScript
         }
         else
         {
-            BuffChangeStatCalculate(runtimeBuffAsset);
+            runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
+
+            BuffChangeStatCalculate(runtimeBuffAsset, count);
+
+            if (buff._IsTemporary == true)
+            {
+                return;
+            }
 
             if (buff._Duration >= 0.0f)
             {
@@ -298,7 +311,6 @@ public class StatScript : GameCharacterSubScript
             }
 
             target.Add(buff, runtimeBuffAsset);
-
 
             if (_owner._CharacterType == CharacterType.Player)
             {
@@ -326,7 +338,7 @@ public class StatScript : GameCharacterSubScript
 
         if (existRuntimeBuffAsset == null)
         {
-            Debug.Assert(false, "ÀÌ¹Ì Ãë¼ÒµÆ½À´Ï´Ù?");
+            Debug.Assert(false, "ì´ë¯¸ ì·¨ì†ŒëìŠµë‹ˆë‹¤?");
             Debug.Break();
             return;
         }
@@ -337,7 +349,7 @@ public class StatScript : GameCharacterSubScript
 
         existRuntimeBuffAsset.SetCount(nextCount);
 
-        BuffChangeStatCalculate(existRuntimeBuffAsset);
+        BuffChangeStatCalculate(existRuntimeBuffAsset, nextCount - prevCount);
 
         if (existRuntimeBuffAsset._Count <= 0) 
         {
@@ -359,12 +371,12 @@ public class StatScript : GameCharacterSubScript
 
 
 
-    private void BuffChangeStatCalculate(RuntimeBuffAsset runtimeBuffAsset)
+    private void BuffChangeStatCalculate(RuntimeBuffAsset runtimeBuffAsset, int deltaCount)
     {
-        runtimeBuffAsset._fromAsset.DoWork(this);
+        runtimeBuffAsset._fromAsset.DoWork(this, runtimeBuffAsset, deltaCount);
     }
 
-    public void ReadAndApplyPassiveStatBuff(ApplyDesc_PassiveStat buffWork)
+    public void ReadAndApplyPassiveStatBuff(ApplyDesc_PassiveStat buffWork, int deltaCount)
     {
         SortedDictionary<BuffApplyType, int> currAppliedBuffs = _passiveStatDeltaEquation.GetOrAdd(buffWork._targetStat);
 
@@ -375,20 +387,20 @@ public class StatScript : GameCharacterSubScript
             currAppliedBuffs.Add(applyType, 0);
         }
 
-        int applyAmount = buffWork._amout;
+        int applyAmount = buffWork._amout * deltaCount;
         
         currAppliedBuffs[applyType] += applyAmount;
 
         if (currAppliedBuffs[applyType] < 0)
         {
-            Debug.Assert(false, "À½¼ö°¡ ³ª¿Í¼± ¾ÈµË´Ï´Ù");
+            Debug.Assert(false, "ìŒìˆ˜ê°€ ë‚˜ì™€ì„  ì•ˆë©ë‹ˆë‹¤");
             Debug.Break();
         }
     }
 
 
 
-    public void ReadAndApplyPassiveStatBuff(ApplyDesc_RegenStat buffWork)
+    public void ReadAndApplyRegenStatBuff(ApplyDesc_RegenStat buffWork, int deltaCount)
     {
         SortedDictionary<BuffApplyType, int> currAppliedBuffs = _regenStatDeltaEquation.GetOrAdd(buffWork._targetStat);
 
@@ -399,13 +411,13 @@ public class StatScript : GameCharacterSubScript
             currAppliedBuffs.Add(applyType, 0);
         }
 
-        int applyAmount = buffWork._amout;
+        int applyAmount = buffWork._amout * deltaCount;
 
         currAppliedBuffs[applyType] += applyAmount;
 
         if (currAppliedBuffs[applyType] < 0)
         {
-            Debug.Assert(false, "À½¼ö°¡ ³ª¿Í¼± ¾ÈµË´Ï´Ù");
+            Debug.Assert(false, "ìŒìˆ˜ê°€ ë‚˜ì™€ì„  ì•ˆë©ë‹ˆë‹¤");
             Debug.Break();
         }
     }
@@ -476,7 +488,7 @@ public class StatScript : GameCharacterSubScript
                         break;
 
                     default:
-                        Debug.Assert(false, "ApplyType°ú ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù");
+                        Debug.Assert(false, "ApplyTypeê³¼ ì¼ì¹˜í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤");
                         Debug.Break();
                         break;
                 }
@@ -489,15 +501,15 @@ public class StatScript : GameCharacterSubScript
 
             _currPassiveStat._PassiveStats[type] = nextVar;
             /*--------------------------------------------------
-            |NOTI| Passive StatÀÌ º¯°æµÆ½À´Ï´Ù.
+            |NOTI| Passive Statì´ ë³€ê²½ëìŠµë‹ˆë‹¤.
             --------------------------------------------------*/
             _passiveStatChangeDelegates[type]?.Invoke(nextVar);
 
             int statOut = 0;
             GetReletiveActiveStat(type, ref statOut);
             {
-                //½ºÅÈ¿¡ º¯°æµÇ¸é ¹» ÇØ¾ßÇÕ´Ï±î?
-                //ex ÃÖ´ëÃ¼·ÂÀÌ º¯°æµÇ¸é ÇöÀçÃ¼·ÂÀ» ´Ã·Á¾ßÇÕ´Ï´Ù.
+                //ìŠ¤íƒ¯ì— ë³€ê²½ë˜ë©´ ë­˜ í•´ì•¼í•©ë‹ˆê¹Œ?
+                //ex ìµœëŒ€ì²´ë ¥ì´ ë³€ê²½ë˜ë©´ í˜„ì¬ì²´ë ¥ì„ ëŠ˜ë ¤ì•¼í•©ë‹ˆë‹¤.
                 switch (type)
                 {
                     case PassiveStat.MaxHP:
@@ -586,7 +598,7 @@ public class StatScript : GameCharacterSubScript
                         break;
 
                     default:
-                        Debug.Assert(false, "ApplyType°ú ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù");
+                        Debug.Assert(false, "ApplyTypeê³¼ ì¼ì¹˜í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤");
                         Debug.Break();
                         break;
                 }
@@ -599,7 +611,7 @@ public class StatScript : GameCharacterSubScript
 
             _currRegenStat._RegenStats[type] = nextVar;
             /*--------------------------------------------------
-            |NOTI| Passive StatÀÌ º¯°æµÆ½À´Ï´Ù.
+            |NOTI| Passive Statì´ ë³€ê²½ëìŠµë‹ˆë‹¤.
             --------------------------------------------------*/
             _regenStatChangeDelegates[type]?.Invoke(nextVar);
         }
@@ -624,7 +636,7 @@ public class StatScript : GameCharacterSubScript
                 break;
 
             default:
-                //Debug.Assert(false, "´ëÀÀÀÌ µÇÁö ¾Ê½À´Ï´Ù");
+                //Debug.Assert(false, "ëŒ€ì‘ì´ ë˜ì§€ ì•ŠìŠµë‹ˆë‹¤");
                 //Debug.Break();
                 break;
         }
@@ -648,7 +660,7 @@ public class StatScript : GameCharacterSubScript
                 break;
 
             default:
-                //Debug.Assert(false, "´ëÀÀÀÌ µÇÁö ¾Ê½À´Ï´Ù");
+                //Debug.Assert(false, "ëŒ€ì‘ì´ ë˜ì§€ ì•ŠìŠµë‹ˆë‹¤");
                 //Debug.Break();
                 break;
         }
@@ -673,7 +685,7 @@ public class StatScript : GameCharacterSubScript
 
 
         /*--------------------------------------------------
-        |NOTI| Active StatÀÌ º¯°æµÆ½À´Ï´Ù.
+        |NOTI| Active Statì´ ë³€ê²½ëìŠµë‹ˆë‹¤.
         --------------------------------------------------*/
         _activeStatChangeDelegates[type]?.Invoke(nextVal);
     }
@@ -719,7 +731,7 @@ public class StatScript : GameCharacterSubScript
 
     public void StatScriptUpdate()
     {
-        //Æò»ó½Ã ¹¹ÇØ¾ßÇÕ´Ï±î? -> ¸®Á¨ Çàµ¿À» ÇØ¾ßÇÕ´Ï´Ù
+        //í‰ìƒì‹œ ë­í•´ì•¼í•©ë‹ˆê¹Œ? -> ë¦¬ì   í–‰ë™ì„ í•´ì•¼í•©ë‹ˆë‹¤
         ActiveStatRegen();
     }
 
@@ -755,7 +767,7 @@ public class StatScript : GameCharacterSubScript
                     break;
 
                 default:
-                    Debug.Assert(false, "´ëÀÀÀÌ µÇÁö ¾Ê½À´Ï´Ù");
+                    Debug.Assert(false, "ëŒ€ì‘ì´ ë˜ì§€ ì•ŠìŠµë‹ˆë‹¤");
                     Debug.Break();
                     break;
             }

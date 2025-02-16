@@ -19,7 +19,7 @@ public abstract class BuffAsset_StatBase : BuffAssetBase
         Multiply,
         Devide,
 
-        End = 2048,
+        End = 7,
     }
 
     [Serializable]

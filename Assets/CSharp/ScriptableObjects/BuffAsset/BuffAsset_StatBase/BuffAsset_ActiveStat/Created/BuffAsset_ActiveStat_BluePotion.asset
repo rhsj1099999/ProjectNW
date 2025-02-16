@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e24a748bb70e42b4d9acdecb82a47fa4, type: 3}
   m_Name: BuffAsset_ActiveStat_BluePotion
   m_EditorClassIdentifier: 
-  _buffKey: 0
+  _buffKey: 4
   _buffName: BluePotion_MP50
   _maxCount: 1
   _refresh: 0
   _durationExpireOnce: 0
   _specialAction_OnlyOne: 0
+  _isTemporary: 1
   _isDebuff: 0
   _duration: -1
-  _buffUIImage: {fileID: 0}
+  _buffUIImage: {fileID: 21300000, guid: 4a8081a60f0bd0141829d22d0fa1dabc, type: 3}
   _buffList:
   - _applyType: 1
     _amout: 50

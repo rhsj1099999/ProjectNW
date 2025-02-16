@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -20,8 +21,6 @@ public class ZombieScript : CharacterScript, IHitable
             Debug.Assert(false, "전투중 표시될 UI 프리팹을 설정하세요");
             Debug.Break();
         }
-
-
     }
 
     public override LayerMask CalculateWeaponColliderIncludeLayerMask()
@@ -64,14 +63,28 @@ public class ZombieScript : CharacterScript, IHitable
     {
         base.DealMe_Final(damage, isWeakPoint, attacker, victim);
 
-        if (_battleUICoroutine == null)
+        if (_dead == false)
         {
-            _battleUICoroutine = StartCoroutine(ShowBattleUICoroutine());
+            if (_battleUICoroutine == null)
+            {
+                _battleUICoroutine = StartCoroutine(ShowBattleUICoroutine());
+            }
+            else
+            {
+                _battleUICounterACC = 0.0f;
+                UIManager.Instance.SetMeFinalZOrder(_battleUIInstanced.gameObject, UIManager.LayerOrder.EnemyInBattle);
+            }
         }
-        else
+    }
+
+    protected override void ZeroHPCall(CharacterScript killedBy)
+    {
+        base.ZeroHPCall(killedBy);
+
+        if (_battleUICoroutine != null)
         {
-            _battleUICounterACC = 0.0f;
-            UIManager.Instance.SetMeFinalZOrder(_battleUIInstanced.gameObject, UIManager.LayerOrder.EnemyInBattle);
+            StopCoroutine(_battleUICoroutine);
+            TurnOffBattleUI();
         }
     }
 
@@ -86,12 +99,17 @@ public class ZombieScript : CharacterScript, IHitable
 
             if (_battleUICounterACC >= _battleUICounterTarget)
             {
-                UIManager.Instance.TurnOffUI(_battleUIInstanced.gameObject);
-                _battleUICoroutine = null;
+                TurnOffBattleUI();
                 break;
             }
 
             yield return null;
         }
+    }
+
+    private void TurnOffBattleUI()
+    {
+        UIManager.Instance.TurnOffUI(_battleUIInstanced.gameObject);
+        _battleUICoroutine = null;
     }
 }

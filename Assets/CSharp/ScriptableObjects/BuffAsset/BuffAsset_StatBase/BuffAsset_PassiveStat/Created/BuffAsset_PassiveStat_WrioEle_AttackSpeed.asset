@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b873ffa554e566949b7d99ea20fab6d5, type: 3}
   m_Name: BuffAsset_PassiveStat_WrioEle_AttackSpeed
   m_EditorClassIdentifier: 
-  _buffKey: 0
+  _buffKey: 13
   _buffName: WrioEle_AttackSpeed
   _maxCount: 5
   _refresh: 1
@@ -20,7 +20,7 @@ MonoBehaviour:
   _specialAction_OnlyOne: 0
   _isTemporary: 0
   _isDebuff: 0
-  _duration: 15
+  _duration: 5
   _buffUIImage: {fileID: 21300000, guid: 5f68f6170cec9a445858458601744b85, type: 3}
   _buffList:
   - _applyType: 1

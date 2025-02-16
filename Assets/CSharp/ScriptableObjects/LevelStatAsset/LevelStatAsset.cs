@@ -18,7 +18,7 @@ public class LevelStatAsset : ScriptableObject
         Mp, 
         Sp, 
         PosturePercent, //자세 유지 = 높을수록 위험함
-        End = 2048, //4
+        End = 5,
     }
 
     //-> '계산에 사용' 되는 것들
@@ -38,7 +38,7 @@ public class LevelStatAsset : ScriptableObject
         AttackSpeedPercentage,
         MoveSpeed,
         PostruePercentPhase1, //자세 1차 무너짐
-        End = 2048,
+        End = 14,
     }
 
     public enum RegenStat
@@ -48,7 +48,7 @@ public class LevelStatAsset : ScriptableObject
         MPRegen,
         SPRegen,
         PostureRecovery,
-        End = 2048,
+        End = 5,
     }
 
 

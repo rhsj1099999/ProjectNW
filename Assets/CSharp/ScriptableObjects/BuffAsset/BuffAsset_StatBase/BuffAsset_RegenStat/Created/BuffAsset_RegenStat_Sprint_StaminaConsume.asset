@@ -12,16 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb8685d6aef5b934c91b1d07c924bbe0, type: 3}
   m_Name: BuffAsset_RegenStat_Sprint_StaminaConsume
   m_EditorClassIdentifier: 
-  _buffKey: 0
+  _buffKey: 17
   _buffName: Sprint_StaminaConsume
   _maxCount: 1
   _refresh: 1
   _durationExpireOnce: 1
   _specialAction_OnlyOne: 0
+  _isTemporary: 0
   _isDebuff: 1
   _duration: -1
   _buffUIImage: {fileID: 21300000, guid: d23e6c209ae6c0345a40717234cb0573, type: 3}
   _buffList:
   - _applyType: 2
-    _amout: 10
+    _amout: 25
     _targetStat: 1

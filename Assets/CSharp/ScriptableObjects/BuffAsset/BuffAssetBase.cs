@@ -45,6 +45,9 @@ public abstract class BuffAssetBase : ScriptableObject
     //--------------------------------------------------------------
 
 
+    [SerializeField] private bool _isTemporary = false;
+    public bool _IsTemporary => _isTemporary;
+
     [SerializeField] private bool _isDebuff = false;
     public bool _IsDebuff => _isDebuff;
 
@@ -54,5 +57,5 @@ public abstract class BuffAssetBase : ScriptableObject
     [SerializeField] private Sprite _buffUIImage = null;
     public Sprite _BuffUIImage => _buffUIImage;
 
-    public abstract void DoWork(StatScript usingThisBuffStatScript);
+    public abstract void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount);
 }

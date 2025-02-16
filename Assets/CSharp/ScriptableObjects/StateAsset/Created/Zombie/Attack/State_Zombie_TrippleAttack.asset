@@ -34,9 +34,9 @@ MonoBehaviour:
       _coolTime: 5
       _range: 2
     _stateBuffs_Add:
-    - "\uBAAC\uC2A4\uD130\uACF5\uACA9\uC0C1\uD0DC\uAC15\uC778\uB3C4\uBC84\uD504"
+    - {fileID: 11400000, guid: 55acff689b3bb2c4496809f796d20285, type: 2}
     _stateBuffs_Remove:
-    - "\uBAAC\uC2A4\uD130\uACF5\uACA9\uC0C1\uD0DC\uAC15\uC778\uB3C4\uBC84\uD504"
+    - {fileID: 11400000, guid: 55acff689b3bb2c4496809f796d20285, type: 2}
     _EnterStateActionTypes: 25000000
     _inStateActionTypes: 06000000
     _ExitStateActionTypes: 26000000
@@ -45,3 +45,11 @@ MonoBehaviour:
     _subBlendTree: {fileID: 0}
     _isSubAnimationStateMachineExist: 0
     _subAnimationStateMachine: {fileID: 0}
+    _isNeedStat: 0
+    _needStat:
+      _needPassiveStatList: []
+      _needActiveStatList: []
+    _isNeedStatLoopBreak: 0
+    _needStat_LoopBreak:
+      _needPassiveStatList: []
+      _needActiveStatList: []

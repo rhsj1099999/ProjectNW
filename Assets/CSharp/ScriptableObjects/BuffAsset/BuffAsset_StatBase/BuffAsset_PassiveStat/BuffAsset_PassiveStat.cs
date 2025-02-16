@@ -22,7 +22,7 @@ public class BuffAsset_PassiveStat : BuffAsset_StatBase
     public List<ApplyDesc_PassiveStat> _BuffList => _buffList;
 
 
-    public override void DoWork(StatScript usingThisBuffStatScript)
+    public override void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount)
     {
         HashSet<PassiveStat> reCachingTargets = new HashSet<PassiveStat>();
 
@@ -30,7 +30,7 @@ public class BuffAsset_PassiveStat : BuffAsset_StatBase
         {
             //수치 변화 계산
             reCachingTargets.Add(buffWork._targetStat);
-            usingThisBuffStatScript.ReadAndApplyPassiveStatBuff(buffWork);
+            usingThisBuffStatScript.ReadAndApplyPassiveStatBuff(buffWork, deltaCount);
         }
 
         usingThisBuffStatScript.ReCacheBuffAmoints(reCachingTargets);

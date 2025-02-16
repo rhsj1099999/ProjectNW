@@ -276,7 +276,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         {
             StatScript callerStatScript = attacker.GetComponent<StatScript>();
 
-            BuffAssetBase beidouDamageAccBuff = Instance.GetBuff(Instance.GetBuffKey("북두원소스킬데미지누적버프"));
+            BuffAssetBase beidouDamageAccBuff = Instance.GetBuff(Instance.GetBuffKey("BeidouEle_DamageACC"));
 
             if (beidouDamageAccBuff == null)
             {
@@ -315,8 +315,8 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
             StatScript owner_victimStatScript = victim.GCST<StatScript>();
 
-            owner_victimStatScript.ApplyBuff(Instance.GetBuff("라이오위빙공속버프"), 1);
-            owner_victimStatScript.ApplyBuff(Instance.GetBuff("대미지반사버프"), 1);
+            owner_victimStatScript.ApplyBuff(Instance.GetBuff("WrioEle_AttackSpeed"), 1);
+            owner_victimStatScript.ApplyBuff(Instance.GetBuff("WrioEle_DamageReflect"), 1);
         }
 
         private IEnumerator TimeSlowCoroutine(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)

@@ -22,7 +22,7 @@ public class BuffAsset_ActiveStat : BuffAsset_StatBase
     public List<ApplyDesc_ActiveStat> _BuffList => _buffList;
 
 
-    public override void DoWork(StatScript usingThisBuffStatScript)
+    public override void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount)
     {
         foreach (ApplyDesc_ActiveStat buffWork in _buffList)
         {
@@ -30,7 +30,7 @@ public class BuffAsset_ActiveStat : BuffAsset_StatBase
 
             if (activeStatType != ActiveStat.End)
             {
-                usingThisBuffStatScript.ChangeActiveStat(activeStatType, buffWork._amout);
+                usingThisBuffStatScript.ChangeActiveStat(activeStatType, buffWork._amout * deltaCount);
             }
         }
     }

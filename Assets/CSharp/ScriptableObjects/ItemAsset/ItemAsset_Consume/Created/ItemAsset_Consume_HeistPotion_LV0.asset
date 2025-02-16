@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _itemType: 0
   _equipType: 64
-  _ItemKey: 39
+  _ItemKey: 40
   _itemName: HeistPotion_LV0
   _sizeX: 1
   _sizeY: 1
@@ -27,5 +27,5 @@ MonoBehaviour:
   _usingItemAnimation_Phase1: {fileID: 7400000, guid: 9dad94ccba34eff4ea11aa5df3a5ced0,
     type: 2}
   _Buffs:
-  - "\uD5E4\uC774\uC2A4\uD2B8\uBB3C\uC57D\uBC84\uD504_LV0"
+  - {fileID: 11400000, guid: 71c73a3428fa4c14ba123ac548ef8520, type: 2}
   _usingItemAnimation_Phase2: {fileID: 0}

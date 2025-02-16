@@ -23,7 +23,7 @@ public class BuffAsset_RegenStat : BuffAsset_StatBase
     public List<ApplyDesc_RegenStat> _BuffList => _buffList;
 
 
-    public override void DoWork(StatScript usingThisBuffStatScript)
+    public override void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount)
     {
         HashSet<RegenStat> reCachingTargets = new HashSet<RegenStat>();
 
@@ -31,7 +31,7 @@ public class BuffAsset_RegenStat : BuffAsset_StatBase
         {
             //수치 변화 계산
             reCachingTargets.Add(buffWork._targetStat);
-            usingThisBuffStatScript.ReadAndApplyPassiveStatBuff(buffWork);
+            usingThisBuffStatScript.ReadAndApplyRegenStatBuff(buffWork, deltaCount);
         }
 
         usingThisBuffStatScript.ReCacheBuffAmoints(reCachingTargets);

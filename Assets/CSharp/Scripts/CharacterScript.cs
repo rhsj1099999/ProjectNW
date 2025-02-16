@@ -105,7 +105,7 @@ public class CharacterScript : GameActorScript, IHitable
     [SerializeField] private CharacterType _characterType = CharacterType.Player;
     public CharacterType _CharacterType => _characterType;
 
-    private bool _dead = false;
+    protected bool _dead = false;
     public bool GetDead() { return _dead; }
 
 

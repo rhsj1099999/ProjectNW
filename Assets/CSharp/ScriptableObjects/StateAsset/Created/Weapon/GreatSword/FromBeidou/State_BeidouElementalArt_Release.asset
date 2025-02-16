@@ -34,10 +34,10 @@ MonoBehaviour:
       _coolTime: -1
       _range: -1
     _stateBuffs_Add:
-    - "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uB370\uBBF8\uC9C0\uBC29\uCD9C\uBC84\uD504"
+    - {fileID: 11400000, guid: f4f2fb1492b4326448e25945d7c9a530, type: 2}
     _stateBuffs_Remove:
-    - "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uB370\uBBF8\uC9C0\uBC29\uCD9C\uBC84\uD504"
-    - "\uBD81\uB450\uC6D0\uC18C\uC2A4\uD0AC\uB370\uBBF8\uC9C0\uB204\uC801\uBC84\uD504"
+    - {fileID: 11400000, guid: f4f2fb1492b4326448e25945d7c9a530, type: 2}
+    - {fileID: 11400000, guid: fb9c92dcdf64ec34797768564232a418, type: 2}
     _EnterStateActionTypes: 0d0000002200000025000000
     _inStateActionTypes: 1900000006000000
     _ExitStateActionTypes: 0e00000026000000
@@ -46,3 +46,11 @@ MonoBehaviour:
     _subBlendTree: {fileID: 0}
     _isSubAnimationStateMachineExist: 0
     _subAnimationStateMachine: {fileID: 0}
+    _isNeedStat: 0
+    _needStat:
+      _needPassiveStatList: []
+      _needActiveStatList: []
+    _isNeedStatLoopBreak: 0
+    _needStat_LoopBreak:
+      _needPassiveStatList: []
+      _needActiveStatList: []
