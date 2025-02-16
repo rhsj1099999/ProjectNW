@@ -278,6 +278,11 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
             BuffAssetBase beidouDamageAccBuff = Instance.GetBuff(Instance.GetBuffKey("북두원소스킬데미지누적버프"));
 
+            if (beidouDamageAccBuff == null)
+            {
+                return;
+            }
+
             RuntimeBuffAsset beidouDamageAccRuntimeBuff = callerStatScript.GetRuntimeBuffAsset(beidouDamageAccBuff);
 
             BuffActionClass_BeidouDamageACC currDamageAcc = (BuffActionClass_BeidouDamageACC)beidouDamageAccRuntimeBuff._buffActions[LevelStatInfoManager.BuffAction.BeidouElementalArt];

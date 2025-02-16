@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dc85b63d0def354485b1d8cc87a9363, type: 3}
+  m_Name: BuffAsset_Skill_BeidouEle_DamageReturn
+  m_EditorClassIdentifier: 
+  _buffKey: 0
+  _buffName: BeidouEle_DamageReturn
+  _maxCount: 1
+  _refresh: 0
+  _durationExpireOnce: 0
+  _specialAction_OnlyOne: 0
+  _isTemporary: 0
+  _isDebuff: 0
+  _duration: -1
+  _buffUIImage: {fileID: 21300000, guid: 66ed19725a8d0944998862551e469070, type: 3}
+  _buffTargets:
+  - _delegateTiming: 8
+    _buffActionType: 1

@@ -239,8 +239,8 @@ public class StateDesc
     public AIStateDesc _aiStateDesc = null;
     public AIAttackStateDesc _aiAttackStateDesc = null;
 
-    public List<string> _stateBuffs_Add = new List<string>();
-    public List<string> _stateBuffs_Remove = new List<string>();
+    public List<BuffAssetBase> _stateBuffs_Add = new List<BuffAssetBase>();
+    public List<BuffAssetBase> _stateBuffs_Remove = new List<BuffAssetBase>();
 
     public List<StateActionType> _EnterStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _inStateActionTypes = new List<StateActionType>();
@@ -1283,22 +1283,22 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.AddBuff:
                     {
-                        List<string> addBuffList = _currState._myState._stateBuffs_Add;
+                        List<BuffAssetBase> addBuffList = _currState._myState._stateBuffs_Add;
 
-                        foreach (string buffName in addBuffList)
+                        foreach (BuffAssetBase buff in addBuffList)
                         {
-                            _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(buffName), 1);
+                            _owner.GCST<StatScript>().ApplyBuff(buff, 1);
                         }
                     }
                     break;
 
                 case StateActionType.RemoveBuff:
                     {
-                        List<string> addBuffList = _currState._myState._stateBuffs_Remove;
+                        List<BuffAssetBase> removeBuffList = _currState._myState._stateBuffs_Remove;
 
-                        foreach (string buffName in addBuffList)
+                        foreach (BuffAssetBase buff in removeBuffList)
                         {
-                            _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(buffName), 1);
+                            _owner.GCST<StatScript>().RemoveBuff(buff, 1);
                         }
                     }
                     break;
@@ -1512,10 +1512,10 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timer.Check() == true)
             {
-                List<string> buffNames = target._frameData._buffNames;
-                foreach (string buffName in buffNames)
+                List<BuffAssetBase> buffs = target._frameData._buffs;
+                foreach (BuffAssetBase buff in buffs)
                 {
-                    _owner.GCST<StatScript>().ApplyBuff(LevelStatInfoManager.Instance.GetBuff(buffName), 1);
+                    _owner.GCST<StatScript>().ApplyBuff(buff, 1);
                 }
                 break;
             }
@@ -1531,10 +1531,10 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timer.Check() == true)
             {
-                List<string> buffNames = target._frameData._buffNames;
-                foreach (string buffName in buffNames)
+                List<BuffAssetBase> buffs = target._frameData._buffs;
+                foreach (BuffAssetBase buff in buffs)
                 {
-                    _owner.GCST<StatScript>().RemoveBuff(LevelStatInfoManager.Instance.GetBuff(buffName), 1);
+                    _owner.GCST<StatScript>().RemoveBuff(buff, 1);
                 }
                 break;
             }

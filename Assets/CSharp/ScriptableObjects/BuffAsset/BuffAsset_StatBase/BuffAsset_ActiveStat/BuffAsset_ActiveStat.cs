@@ -24,6 +24,14 @@ public class BuffAsset_ActiveStat : BuffAsset_StatBase
 
     public override void DoWork(StatScript usingThisBuffStatScript)
     {
-        
+        foreach (ApplyDesc_ActiveStat buffWork in _buffList)
+        {
+            ActiveStat activeStatType = buffWork._targetStat;
+
+            if (activeStatType != ActiveStat.End)
+            {
+                usingThisBuffStatScript.ChangeActiveStat(activeStatType, buffWork._amout);
+            }
+        }
     }
 }

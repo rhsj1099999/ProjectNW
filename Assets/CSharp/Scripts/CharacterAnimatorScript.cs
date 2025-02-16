@@ -72,7 +72,7 @@ public class BodyPartBlendingWork
     public CoroutineLock _coroutineLock = null;
     public Transform _weaponEquipTransform = null;
     public ItemStoreDescBase _createItemStoreDesc = null;
-    public List<string> _buffNames = null;
+    public List<BuffAssetBase> _buffs = null;
 }
 
 
@@ -1295,7 +1295,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                         //스킬들을 적용합니다
                         _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ApplyComsumeableItemSkill));
                         {
-                            _bodyPartWorks[typeIndex].Last.Value._buffNames = itemAsset_Consume._Buffs;
+                            _bodyPartWorks[typeIndex].Last.Value._buffs = itemAsset_Consume._Buffs;
                         }
 
                         
@@ -1544,6 +1544,12 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     protected IEnumerator ApplyComsumeableItemSkill(AnimatorLayerTypes layerType, List<string> buffNames)
     {
         _owner.ApplyPotionBuff(buffNames);
+        return null;
+    }
+
+    protected IEnumerator ApplyComsumeableItemSkill(AnimatorLayerTypes layerType, List<BuffAssetBase> buffs)
+    {
+        _owner.ApplyPotionBuff(buffs);
         return null;
     }
 
@@ -1969,7 +1975,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                     AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
                     startedCoroutine = StartCoroutine_CallBackAction
                     (
-                        ApplyComsumeableItemSkill(layerType, work._buffNames),
+                        ApplyComsumeableItemSkill(layerType, work._buffs),
                         StartNextCoroutine,
                         layerType
                     );

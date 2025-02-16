@@ -24,6 +24,15 @@ public class BuffAsset_PassiveStat : BuffAsset_StatBase
 
     public override void DoWork(StatScript usingThisBuffStatScript)
     {
-        
+        HashSet<PassiveStat> reCachingTargets = new HashSet<PassiveStat>();
+
+        foreach (ApplyDesc_PassiveStat buffWork in _buffList)
+        {
+            //수치 변화 계산
+            reCachingTargets.Add(buffWork._targetStat);
+            usingThisBuffStatScript.ReadAndApplyPassiveStatBuff(buffWork);
+        }
+
+        usingThisBuffStatScript.ReCacheBuffAmoints(reCachingTargets);
     }
 }

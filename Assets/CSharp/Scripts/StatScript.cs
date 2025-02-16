@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static BuffAsset_PassiveStat;
+using static BuffAsset_RegenStat;
 using static BuffAsset_StatBase;
 using static LevelStatAsset;
 using static LevelStatInfoManager;
@@ -79,6 +81,7 @@ public class StatScript : GameCharacterSubScript
     private RegenStatDesc _currRegenStat = null; //런타임 스텟입니다.
 
     private Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>> _passiveStatDeltaEquation = new Dictionary<PassiveStat, SortedDictionary<BuffApplyType, int>>();
+    private Dictionary<RegenStat, SortedDictionary<BuffApplyType, int>> _regenStatDeltaEquation = new Dictionary<RegenStat, SortedDictionary<BuffApplyType, int>>();
 
     private Dictionary<RegenStat, float> _activeStatRegenCalculator = new Dictionary<RegenStat, float>();
 
@@ -125,6 +128,7 @@ public class StatScript : GameCharacterSubScript
 
         _currActiveStat = new ActiveStatDesc(statAsset._ActiveStatDesc);
         _currPassiveStat = new PassiveStatDesc(statAsset._PassiveStatDesc);
+        _currRegenStat = new RegenStatDesc(statAsset._RegenStatDesc);
 
         for (int i = 0; i < (int)ActiveStat.End; i++)
         {
@@ -224,6 +228,11 @@ public class StatScript : GameCharacterSubScript
 
     public void ApplyBuff(BuffAssetBase buff, int count)
     {
+        if (buff == null)
+        {
+            return;
+        }
+
         Dictionary<BuffAssetBase, RuntimeBuffAsset> target = null;
 
         target = (buff._IsDebuff == true)
@@ -244,19 +253,19 @@ public class StatScript : GameCharacterSubScript
 
                 runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
 
-                if (buff._Duration > 0.0f)
-                {
-                    runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
-                }
-
                 target.Add(buff, runtimeBuffAsset);
 
-                BuffChangeStatCalculate(runtimeBuffAsset, runtimeBuffAsset._Count);
+                BuffChangeStatCalculate(runtimeBuffAsset);
 
                 if (_owner._CharacterType == CharacterType.Player)
                 {
                     BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
                     script.AddBuff(runtimeBuffAsset);
+                }
+
+                if (buff._Duration > 0.0f)
+                {
+                    runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
                 }
 
                 return;
@@ -267,9 +276,10 @@ public class StatScript : GameCharacterSubScript
                 int prevCount = runtimeBuffAsset._Count;
                 int nextCount = runtimeBuffAsset._Count + count;
                 nextCount = Math.Clamp(nextCount, 0, buff._MaxCount);
+
                 runtimeBuffAsset.SetCount(nextCount);
 
-                BuffChangeStatCalculate(runtimeBuffAsset, nextCount - prevCount);
+                BuffChangeStatCalculate(runtimeBuffAsset);
             }
 
 
@@ -280,17 +290,7 @@ public class StatScript : GameCharacterSubScript
         }
         else
         {
-            //버프가 없습니다. 처음 만들어집니다
-
-            //runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
-
-            BuffChangeStatCalculate(runtimeBuffAsset, runtimeBuffAsset._Count);
-
-            if (buff._IsTemporary == true)
-            {
-                //관리대상이 아니다.
-                return;
-            }
+            BuffChangeStatCalculate(runtimeBuffAsset);
 
             if (buff._Duration >= 0.0f)
             {
@@ -310,6 +310,11 @@ public class StatScript : GameCharacterSubScript
 
     public void RemoveBuff(BuffAssetBase buff, int count)
     {
+        if (buff == null)
+        {
+            return;
+        }
+
         Dictionary<BuffAssetBase, RuntimeBuffAsset> target = null;
 
         target = (buff._IsDebuff == true)
@@ -332,7 +337,7 @@ public class StatScript : GameCharacterSubScript
 
         existRuntimeBuffAsset.SetCount(nextCount);
 
-        BuffChangeStatCalculate(existRuntimeBuffAsset, nextCount - prevCount);
+        BuffChangeStatCalculate(existRuntimeBuffAsset);
 
         if (existRuntimeBuffAsset._Count <= 0) 
         {
@@ -354,62 +359,60 @@ public class StatScript : GameCharacterSubScript
 
 
 
-    private void BuffChangeStatCalculate(RuntimeBuffAsset runtimeBuffAsset, int deltaCount)
+    private void BuffChangeStatCalculate(RuntimeBuffAsset runtimeBuffAsset)
     {
-        List<BuffApplyWork> buffWorks = runtimeBuffAsset._fromAsset._BuffWorks;
+        runtimeBuffAsset._fromAsset.DoWork(this);
+    }
 
-        HashSet<PassiveStat> reCachingTargets = new HashSet<PassiveStat>();
+    public void ReadAndApplyPassiveStatBuff(ApplyDesc_PassiveStat buffWork)
+    {
+        SortedDictionary<BuffApplyType, int> currAppliedBuffs = _passiveStatDeltaEquation.GetOrAdd(buffWork._targetStat);
 
-        foreach (var buffWork in buffWorks)
+        BuffApplyType applyType = buffWork._applyType;
+
+        if (currAppliedBuffs.ContainsKey(applyType) == false)
         {
-            //수치 변화 계산
-            PassiveStat targetType = buffWork._targetType;
-            if (targetType != PassiveStat.End)
-            {
-                reCachingTargets.Add(targetType);
-                ReadAndApply(buffWork, deltaCount);
-            }
+            currAppliedBuffs.Add(applyType, 0);
         }
 
-        ReCacheBuffAmoints(reCachingTargets);
+        int applyAmount = buffWork._amout;
+        
+        currAppliedBuffs[applyType] += applyAmount;
 
-        foreach (var buffWork in buffWorks)
+        if (currAppliedBuffs[applyType] < 0)
         {
-            ActiveStat activeStatType = buffWork._targetActiveStatType;
-            if (activeStatType != ActiveStat.End)
-            {
-                ChangeActiveStat(activeStatType, (int)buffWork._amount);
-            }
+            Debug.Assert(false, "음수가 나와선 안됩니다");
+            Debug.Break();
         }
     }
 
-    private void ReadAndApply(BuffApplyWork buffWork, int deltaCount)
+
+
+    public void ReadAndApplyPassiveStatBuff(ApplyDesc_RegenStat buffWork)
     {
-        //SortedDictionary<BuffApplyType, int> currAppliedBuffs = _passiveStatDeltaEquation.GetOrAdd(buffWork._applyType);
+        SortedDictionary<BuffApplyType, int> currAppliedBuffs = _regenStatDeltaEquation.GetOrAdd(buffWork._targetStat);
 
-        //BuffApplyType applyType = buffWork._applyType;
+        BuffApplyType applyType = buffWork._applyType;
 
-        //if (currAppliedBuffs.ContainsKey(applyType) == false)
-        //{
-        //    currAppliedBuffs.Add(applyType, 0);
-        //}
+        if (currAppliedBuffs.ContainsKey(applyType) == false)
+        {
+            currAppliedBuffs.Add(applyType, 0);
+        }
 
-        //int applyAmount = (applyType == BuffApplyType.Set)
-        //    ? (int)buffWork._amount
-        //    : (int)buffWork._amount * deltaCount;
+        int applyAmount = buffWork._amout;
 
-        //currAppliedBuffs[applyType] += applyAmount;
+        currAppliedBuffs[applyType] += applyAmount;
 
-        //if (currAppliedBuffs[applyType] < 0)
-        //{
-        //    Debug.Assert(false, "음수가 나와선 안됩니다");
-        //    Debug.Break();
-        //}
+        if (currAppliedBuffs[applyType] < 0)
+        {
+            Debug.Assert(false, "음수가 나와선 안됩니다");
+            Debug.Break();
+        }
     }
 
 
 
-    private void ReCacheBuffAmoints(HashSet<PassiveStat> types)
+    public void ReCacheBuffAmoints(HashSet<PassiveStat> types)
     {
         foreach (PassiveStat type in types)
         {
@@ -515,6 +518,90 @@ public class StatScript : GameCharacterSubScript
                         break;
                 }
             }
+        }
+    }
+
+
+    public void ReCacheBuffAmoints(HashSet<RegenStat> types)
+    {
+        foreach (RegenStat type in types)
+        {
+            int baseStat = LevelStatInfoManager.Instance.GetLevelStatAsset(_currLevel, _owner._CharacterType)._RegenStatDesc._RegenStats[type];
+            int beforeVar = _currRegenStat._RegenStats[type];
+            int nextVar = baseStat;
+
+            SortedDictionary<BuffApplyType, int> currBuffs = _regenStatDeltaEquation.GetOrAdd(type);
+
+            foreach (KeyValuePair<BuffApplyType, int> buffAmoint in currBuffs)
+            {
+                BuffApplyType applyType = buffAmoint.Key;
+
+
+                bool isSet = false;
+
+                switch (applyType)
+                {
+                    case BuffApplyType.Set:
+                        {
+                            _currRegenStat._RegenStats[type] = buffAmoint.Value;
+                            nextVar = buffAmoint.Value;
+                            isSet = true;
+                        }
+                        break;
+
+
+                    case BuffApplyType.Plus:
+                        {
+                            nextVar += buffAmoint.Value;
+                        }
+                        break;
+
+                    case BuffApplyType.Minus:
+                        {
+                            nextVar -= buffAmoint.Value;
+                        }
+                        break;
+
+                    case BuffApplyType.PercentagePlus:
+                        {
+                            nextVar += (int)((float)baseStat * ((float)buffAmoint.Value / 100.0f));
+                        }
+                        break;
+                    case BuffApplyType.PercentageMinus:
+                        {
+                            nextVar -= (int)((float)baseStat * ((float)buffAmoint.Value / 100.0f));
+                        }
+                        break;
+
+                    case BuffApplyType.Multiply:
+                        {
+                            nextVar *= buffAmoint.Value;
+                        }
+                        break;
+
+                    case BuffApplyType.Devide:
+                        {
+                            nextVar /= buffAmoint.Value;
+                        }
+                        break;
+
+                    default:
+                        Debug.Assert(false, "ApplyType과 일치하지 않습니다");
+                        Debug.Break();
+                        break;
+                }
+
+                if (isSet == true)
+                {
+                    break;
+                }
+            }
+
+            _currRegenStat._RegenStats[type] = nextVar;
+            /*--------------------------------------------------
+            |NOTI| Passive Stat이 변경됐습니다.
+            --------------------------------------------------*/
+            _regenStatChangeDelegates[type]?.Invoke(nextVar);
         }
     }
 
@@ -641,7 +728,7 @@ public class StatScript : GameCharacterSubScript
     {
         ActiveStat currActiveStatType = ActiveStat.End;
 
-        for (int i = (int)RegenStat.HPRegen; i <= (int)RegenStat.End; i++)
+        for (int i = (int)RegenStat.HPRegen; i <= (int)RegenStat.PostureRecovery; i++)
         {
             RegenStat currActiveStatRegenType = (RegenStat)i;
 

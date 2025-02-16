@@ -119,10 +119,10 @@ public class LevelStatAsset : ScriptableObject
         public Dictionary<RegenStat, int> _RegenStats => _regenStats;
 
         [SerializeField] private int _hpRegen = 0;
-        [SerializeField] private int _mpRegen = 5;
+        [SerializeField] private int _mpRegen = 10;
         [SerializeField] private int _staminaRegen = 10;
-        [SerializeField] private int _spRegen = 5;
-        [SerializeField] private int _postureRecovery = 10;
+        [SerializeField] private int _spRegen = 10;
+        [SerializeField] private int _postureRecovery = -10;
     }
 
 
@@ -153,8 +153,6 @@ public class LevelStatAsset : ScriptableObject
             _moveSpeed = other._moveSpeed;
 
             _posturePercentagePhase1 = other._posturePercentagePhase1;
-            _postureRecovery = other._postureRecovery;
-
 
             InitDict();
         }
@@ -208,8 +206,6 @@ public class LevelStatAsset : ScriptableObject
         [SerializeField] private int _moveSpeed = 5;
 
         [SerializeField] private int _posturePercentagePhase1 = 60;
-
-        [SerializeField] private int _postureRecovery = 10;
     }
 
 
@@ -232,5 +228,6 @@ public class LevelStatAsset : ScriptableObject
     {
         _activeStatDesc.InitDict();
         _passiveStatDesc.InitDict();
+        _regenStatDesc.InitDict();
     }
 }

@@ -22,8 +22,8 @@ public class ItemAsset_Consume : ItemAsset
     private AnimationClip _usingItemAnimation_Phase1 = null;
     public AnimationClip _UsingItemAnimation_Phase1 => _usingItemAnimation_Phase1;
 
-    private List<string> _buffs = new List<string>();
-    public List<string> _Buffs = new List<string>();
+    private List<BuffAssetBase> _buffs = new List<BuffAssetBase>();
+    public List<BuffAssetBase> _Buffs = new List<BuffAssetBase>();
 
 
     //이 애니메이션이 존재한다? 지금은 ReUseable 애니메이션이다

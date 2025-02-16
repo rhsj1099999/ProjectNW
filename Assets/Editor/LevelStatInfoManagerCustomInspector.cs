@@ -48,7 +48,7 @@ public class LevelStatInfoManagerCustomInspector : Editor
     private void LoadAllBuffAsset(LevelStatInfoManager manager)
     {
         // 프로젝트에서 모든 A ScriptableObject 검색
-        string[] guids = AssetDatabase.FindAssets("t:BuffAsset");
+        string[] guids = AssetDatabase.FindAssets("t:BuffAssetBase");
         List<BuffAssetBase> foundObjects = new List<BuffAssetBase>();
 
         foreach (string guid in guids)

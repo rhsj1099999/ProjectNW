@@ -586,6 +586,15 @@ public class CharacterScript : GameActorScript, IHitable
         }
     }
 
+    public void ApplyPotionBuff(List<BuffAssetBase> buffs)
+    {
+        StatScript statScript = GCST<StatScript>();
+        foreach (BuffAssetBase buff in buffs)
+        {
+            statScript.ApplyBuff(buff, 1);
+        }
+    }
+
     public void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemStoreDescBase itemStoreDesc)
     {
         if (layerType != AnimatorLayerTypes.RightHand && layerType != AnimatorLayerTypes.LeftHand) {return;}

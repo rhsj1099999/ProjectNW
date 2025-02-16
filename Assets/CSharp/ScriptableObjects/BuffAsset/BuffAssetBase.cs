@@ -10,75 +10,6 @@ using static StatScript;
 
 public abstract class BuffAssetBase : ScriptableObject
 {
-    //public enum BuffApplyType
-    //{
-    //    //0. Set (강제로 고정시킨다)
-    //    Set, //이 값이 있으면 이후 값들이 무시된다
-
-    //    //1. 상수값 증가
-    //    Plus,
-    //    Minus,
-
-    //    //2. 퍼센테이지 증가
-    //    PercentagePlus,
-    //    PercentageMinus,
-
-    //    //3. 곱증가
-    //    Multiply,
-    //    Devide,
-
-    //    End = 2048,
-    //}
-
-    //[Serializable]
-    //public class BuffApplyWork_Skill
-    //{
-    //    public DamagingProcessDelegateType _delegateTiming = DamagingProcessDelegateType.End;
-    //    public BuffAction _buffActionType = BuffAction.None;
-    //}
-
-    //[Serializable]
-    //public class BuffApplyWork_Passive
-    //{
-    //    public PassiveStat _buffTarget_Passive = PassiveStat.End;
-    //    public BuffApplyType _applyType = BuffApplyType.Plus;
-    //    public float _amount = 0.0f;
-    //}
-
-    //[Serializable]
-    //public class BuffApplyWork_Active
-    //{
-    //    public ActiveStat _buffTarget_Active = ActiveStat.End;
-    //    public BuffApplyType _applyType = BuffApplyType.Plus;
-    //    public float _amount = 0.0f;
-    //}
-
-    //[Serializable]
-    //public class BuffApplyWork_Regen
-    //{
-    //    public RegenStat _buffTarget_Regen = RegenStat.End;
-    //    public BuffApplyType _applyType = BuffApplyType.Plus;
-    //    public float _amount = 0.0f;
-    //}
-
-
-
-
-    //public enum BuffType
-    //{
-    //    Skill,
-    //    PassiveStat,
-    //    ActiveStat,
-    //    RegenStat,
-    //    End,
-    //}
-
-
-
-
-
-
-
     //[SerializeField] private int _buffKey = 0;
     //public int _BuffKey => _buffKey;
     public int _buffKey = 0;
@@ -86,9 +17,6 @@ public abstract class BuffAssetBase : ScriptableObject
 
     [SerializeField] private string _buffName = "";
     public string _BuffName => _buffName;
-
-
-
 
 
 
@@ -116,9 +44,6 @@ public abstract class BuffAssetBase : ScriptableObject
     //--------------------------------------------------------------
     //--------------------------------------------------------------
 
-
-    [SerializeField] private bool _isTemporary = false;
-    public bool _IsTemporary => _isTemporary;
 
     [SerializeField] private bool _isDebuff = false;
     public bool _IsDebuff => _isDebuff;

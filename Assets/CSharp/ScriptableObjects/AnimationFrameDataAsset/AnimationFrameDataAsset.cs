@@ -43,7 +43,7 @@ public class AnimationFrameDataAsset : ScriptableObject
 
         public int _frameUp = -1;
         public int _frameUnder = -1;
-        public List<string> _buffNames = new List<string>();
+        public List<BuffAssetBase> _buffs = new List<BuffAssetBase>();
     }
 
 

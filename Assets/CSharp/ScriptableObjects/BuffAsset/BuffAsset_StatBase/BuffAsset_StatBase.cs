@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
-using static BuffAsset_ActiveStat;
 
 public abstract class BuffAsset_StatBase : BuffAssetBase
 {
