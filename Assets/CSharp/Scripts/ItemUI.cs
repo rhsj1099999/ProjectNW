@@ -109,19 +109,17 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
     {
         if (_isDragging == false)
         {
-            //클릭만했지 드래깅을 안했다;
+            //클릭만했지 드래깅을 안했다
             return;
-        }
+        } //중략...드래그한적이 없을때 단순 Return
 
-        //드래깅 종료
         {
+            //드래깅 종료
             _isDragging = false;
             _myRectTransform.rotation = _myOriginalRotation;
             _myRectTransform.position = _myOriginalPosition;
-            _myRectTransform.sizeDelta = _myOriginalSize;
             transform.SetParent(_beforeDragTransform);
-        }
-
+        } //중략...마우스에서 손을 뗐을때 변수 갱신
 
         List<RaycastResult> uiRayCastResult = new List<RaycastResult>();
 
@@ -137,6 +135,7 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
                 ItemInfoManager.Instance.DropItemToField(ownerCharacter.transform, _itemStoreDesc);
             }
 
+            //아이템 삭제요청
             _itemStoreDesc._owner.DeleteOnMe(_itemStoreDesc);
             StartCoroutine(DestroyCoroutine());
 
@@ -155,11 +154,6 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
             topObject = uiRayCastResult[1].gameObject;
         }
 
-        if (topObject == null)
-        {
-            return;
-        }
-
 
         //최상단이 ItemUI이다.
         ItemUI itemBaseComponent = topObject.GetComponent<ItemUI>();
@@ -167,11 +161,13 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
         {
             bool isDelete = false;
             itemBaseComponent._itemStoreDesc.OverlapItem(_itemStoreDesc, ref isDelete);
+
             if (isDelete == true) 
             {
                 _itemStoreDesc._owner.DeleteOnMe(_itemStoreDesc);
                 StartCoroutine(DestroyCoroutine());
             }
+
             return;
         }
 
@@ -193,17 +189,12 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
             이전 owner 가 Equip일수도있고, Inventory 일수도 있어 통일성을 위해서입니다.
             --------------------------------------------------------------------------------------------------------*/
 
-
             //삭제할때 _owner = 이전에 있었던 저장 컨테이너
             _itemStoreDesc._owner.DeleteOnMe(_itemStoreDesc);
             _itemStoreDesc._isRotated = _additionalRotating_Dynamic;
             cellComponent.GetOwner().AddItemUsingForcedIndex(_itemStoreDesc, startX, startY, cellComponent);
             StartCoroutine(DestroyCoroutine());
-
-            return;
         }
-
-        return;
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -232,10 +223,10 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
             _myRectTransform.position = Input.mousePosition;
 
             //마우스를 놨을때 돌아갈 크기 세팅
-            _myOriginalSize = _myRectTransform.sizeDelta;
+            //_myOriginalSize = _myRectTransform.sizeDelta;
 
             //원래 크기로 돌려놓는다
-            _myRectTransform.sizeDelta = new Vector2(_itemStoreDesc._itemAsset._SizeX * 20, _itemStoreDesc._itemAsset._SizeY * 20);
+            //_myRectTransform.sizeDelta = new Vector2(_itemStoreDesc._itemAsset._SizeX * 20, _itemStoreDesc._itemAsset._SizeY * 20);
 
             _beforeDragTransform = transform.parent;
 
@@ -247,8 +238,7 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
         int sizeY = (_itemStoreDesc._isRotated == false) ? _itemStoreDesc._itemAsset._SizeY * 20 : _itemStoreDesc._itemAsset._SizeX * 20;
 
         _myRectTransform.position = Input.mousePosition;
-        _myRectTransform.position += new Vector3(sizeX / 2, -sizeY / 2, 0);
-        _myRectTransform.position += new Vector3(-10, 10, 0); //오프셋임
+        _myRectTransform.anchoredPosition += new Vector2(sizeX, -sizeY);
     }
 
     private void RotateInGrab()
@@ -261,8 +251,7 @@ public class ItemUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointer
         int sizeY = (_additionalRotating_Dynamic == false) ? _itemStoreDesc._itemAsset._SizeY * 20 : _itemStoreDesc._itemAsset._SizeX * 20;
 
         _myRectTransform.position = Input.mousePosition;
-        _myRectTransform.position += new Vector3(sizeX / 2, -sizeY / 2, 0);
-        _myRectTransform.position += new Vector3(-10, 10, 0); //오프셋임
+        _myRectTransform.anchoredPosition += new Vector2(sizeX, -sizeY);
 
 
         Vector3 axis = new Vector3(0.0f, 0.0f, 1.0f);

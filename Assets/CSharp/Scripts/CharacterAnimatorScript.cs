@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Rendering;
@@ -8,8 +9,12 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Playables;
-using static BodyPartBlendingWork;
+
 using static CharacterScript;
+using static BodyPartBlendingWork_LayerModifier;
+using static BodyPartBlendingWork_CoroutineLock;
+
+
 
 
 
@@ -19,60 +24,466 @@ using static CharacterScript;
 구조가 필요하다.
 ----------------------------------------------------*/
 
+public abstract class BodyPartBlendingWorkBase
+{
+    protected BodyPartBlendingWorkBase(AnimatorLayerTypes layerType)
+    {
+        _layerType = layerType;
+    }
+
+    protected AnimatorLayerTypes _layerType = AnimatorLayerTypes.End;
+    /*------------------------------------------------------------
+    |NOTI| 상속된 클래스는 자신의 리소스만으로 일을 할 수 있어야 한다.
+    ------------------------------------------------------------*/
+    public abstract IEnumerator DoWork();
+}
+
+/*----------------------------------------------------
+|NOTI| Character Script가 필요한 Work들
+----------------------------------------------------*/
+public abstract class BodyPartBlendingWork_OwnerNeed : BodyPartBlendingWorkBase
+{
+    protected CharacterScript _owner = null;
+    protected BodyPartBlendingWork_OwnerNeed(AnimatorLayerTypes layerType, CharacterScript owner) : base(layerType)
+    {
+        _owner = owner;
+    }
+}
+
+public class BodyPartBlendingWork_DestroyHandObject : BodyPartBlendingWork_OwnerNeed
+{
+    public BodyPartBlendingWork_DestroyHandObject(AnimatorLayerTypes layerType, CharacterScript owner) : base(layerType, owner) {}
+
+    public override IEnumerator DoWork()
+    {
+        _owner.DestroyHandObject(_layerType);
+        return null;
+    }
+}
+
+public class BodyPartBlendingWork_IncreaseWeaponIndex : BodyPartBlendingWork_OwnerNeed
+{
+    public BodyPartBlendingWork_IncreaseWeaponIndex(AnimatorLayerTypes layerType, CharacterScript owner) : base(layerType, owner)
+    {}
+
+    public override IEnumerator DoWork()
+    {
+        _owner.IncreaseWeaponIndex(_layerType);
+        return null;
+    }
+}
+
+public class BodyPartBlendingWork_AttachObject : BodyPartBlendingWork_OwnerNeed
+{
+    public BodyPartBlendingWork_AttachObject(AnimatorLayerTypes layerType, CharacterScript owner, ItemStoreDescBase itemStoreDescBase) : base(layerType, owner)
+    {
+        _itemStoreDescBase = itemStoreDescBase;
+    }
+
+    private ItemStoreDescBase _itemStoreDescBase = null;
+
+    public override IEnumerator DoWork()
+    {
+        _owner.CreateWeaponModelAndEquip(_layerType, _itemStoreDescBase);
+        return null;
+    }
+}
+
+public class BodyPartBlendingWork_ApplyConsumeable : BodyPartBlendingWork_OwnerNeed
+{
+    public BodyPartBlendingWork_ApplyConsumeable(AnimatorLayerTypes layerType, CharacterScript owner, List<BuffAssetBase> buffs) : base(layerType, owner)
+    {
+        _buffs = buffs;
+    }
+
+    private List<BuffAssetBase> _buffs = null; //ApplyComsumeableItemSkill
+
+    public override IEnumerator DoWork()
+    {
+        _owner.ApplyPotionBuff(_buffs);
+        return null;
+    }
+}
+
+public class BodyPartBlendingWork_ChangeGrabFocus : BodyPartBlendingWork_OwnerNeed
+{
+    public BodyPartBlendingWork_ChangeGrabFocus(AnimatorLayerTypes layerType, CharacterScript owner, WeaponGrabFocus targetGrabFocusType) : base(layerType, owner)
+    {
+        _targetGrabFocusType = targetGrabFocusType;
+    }
+
+    private WeaponGrabFocus _targetGrabFocusType = WeaponGrabFocus.Normal; //OwnerChangeGrabFocusType
+
+    public override IEnumerator DoWork()
+    {
+        _owner.ChangeGrabFocusType(_targetGrabFocusType);
+        return null;
+    }
+}
+
+public class BodyPartBlendingWork_SwitchHand : BodyPartBlendingWork_OwnerNeed
+{
+    public BodyPartBlendingWork_SwitchHand(AnimatorLayerTypes layerType, Transform oppositeTransform, CharacterScript owner) : base(layerType, owner)
+    {
+        _oppositeTransform = oppositeTransform;
+    }
+
+    private Transform _oppositeTransform = null; //OwnerChangeGrabFocusType
+
+    public override IEnumerator DoWork()
+    {
+        _owner.WeaponSwitchHand(_layerType, _oppositeTransform);
+        return null;
+    }
+}
+
+public class BodyPartBlendingWork_DestroyWeapon : BodyPartBlendingWork_OwnerNeed
+{
+    public BodyPartBlendingWork_DestroyWeapon(AnimatorLayerTypes layerType, CharacterScript owner) : base(layerType, owner) {}
+
+    public override IEnumerator DoWork()
+    {
+        _owner.DestroyWeapon(_layerType);
+        return null;
+    }
+}
 
 
 /*----------------------------------------------------
-|TODO| 
-
-몬스터가 플레이어를 죽이면 nullref 오류 = 몬스터는 AimScript가 없어서
-
-Aim을 했다가 풀고 죽이면 nullref 오류 = 죽였을때 null의 trnasform을 받아와서
-
-Lock On 햇다가 바로 Aim하면 이동속도 더 빠름
+|NOTI| CharacterAnimatorScript가 필요한 Work들
 ----------------------------------------------------*/
-
-
-
-
-
-
-public class BodyPartBlendingWork
+public abstract class BodyPartBlendingWork_CharacterAnimatorScriptNeed : BodyPartBlendingWorkBase
 {
-    public enum BodyPartWorkType
+    public BodyPartBlendingWork_CharacterAnimatorScriptNeed(AnimatorLayerTypes layerType, CharacterAnimatorScript characterAnimatorScript) : base (layerType) 
+    {
+        _characterAnimatorScript = characterAnimatorScript;    
+    }
+
+    protected CharacterAnimatorScript _characterAnimatorScript = null;
+}
+
+public class BodyPartBlendingWork_ChangeAnimation : BodyPartBlendingWork_CharacterAnimatorScriptNeed
+{
+    public enum AnimationType
+    {
+        ChangeAnimation,
+        ChangeAnimation_ZeroFrame,
+        End,
+    }
+
+    public BodyPartBlendingWork_ChangeAnimation(AnimatorLayerTypes layerType, CharacterAnimatorScript characterAnimatorScript, bool isZeroFrame, AnimationClip animationClip) : base(layerType, characterAnimatorScript)
+    {
+        _isZeroFrame = isZeroFrame;
+        _animationClip = animationClip;
+    }
+
+    private bool _isZeroFrame = false;
+    private AnimationClip _animationClip = null;
+
+    public override IEnumerator DoWork()
+    {
+        AnimatorBlendingDesc targetPart = _characterAnimatorScript.GetBlendingDesc(_layerType);
+
+        targetPart._isUsingFirstLayer = !(targetPart._isUsingFirstLayer);
+
+        int layerStartIndex = (int)_layerType * 2;
+
+        int layerIndex = (targetPart._isUsingFirstLayer == true)
+            ? layerStartIndex
+            : layerStartIndex + 1;
+
+        string nextNodeName = (targetPart._isUsingFirstLayer == true)
+            ? "State1"
+            : "State2";
+
+        AnimationClip targetclip = (_isZeroFrame == true)
+            ? ResourceDataManager.Instance.GetZeroFrameAnimation(_animationClip.name)
+            : _animationClip;
+
+        _characterAnimatorScript._OverrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = targetclip;
+
+        _characterAnimatorScript._Animator.Play(nextNodeName, layerIndex, 0.0f);
+
+        return null;
+    }
+}
+
+public class BodyPartBlendingWork_LayerModifier : BodyPartBlendingWork_CharacterAnimatorScriptNeed
+{
+    public enum LayerModifyType
     {
         ActiveNextLayer,
         ActiveAllLayer,
         DeActiveAllLayer,
         TurnOffAllLayer,
-        ChangeAnimation,
-        ChangeAnimation_ZeroFrame,
-        AnimationPlayHold,
-        AttatchObjet,
-        DestroyWeapon,
-        WaitCoroutineUnlock,
-        UnLockCoroutine,
-        SwitchHand,
-        WorkComplete,
-        OwnerChangeGrabFocusType,
-        OwnerIncreaeWeaponIndex,
-        DestroyHandObject,
         ActiveNextLayerDirectly,
-        ApplyComsumeableItemSkill,
+        AnimationPlayHold,
         End,
     }
 
-    public BodyPartBlendingWork(BodyPartWorkType type)
+    public BodyPartBlendingWork_LayerModifier(AnimatorLayerTypes layerType, CharacterAnimatorScript characterAnimatorScript, LayerModifyType workType) : base(layerType, characterAnimatorScript)
     {
-        _workType = type;
+        _workType = workType;
     }
 
-    public WeaponGrabFocus _targetGrabFocusType = WeaponGrabFocus.Normal;
-    public BodyPartWorkType _workType = BodyPartWorkType.End;
-    public AnimationClip _animationClip = null;
-    public CoroutineLock _coroutineLock = null;
-    public Transform _weaponEquipTransform = null;
-    public ItemStoreDescBase _createItemStoreDesc = null;
-    public List<BuffAssetBase> _buffs = null;
+    private LayerModifyType _workType = LayerModifyType.End;
+
+    public override IEnumerator DoWork()
+    {
+        AnimatorBlendingDesc blendingDesc = _characterAnimatorScript.GetBlendingDesc(_layerType);
+
+        if (blendingDesc == null)
+        {
+            Debug.Assert(false, "사용하지 않는 파트에 대해 함수를 호출했습니다");
+            Debug.Break();
+            yield break;
+        }
+
+        switch (_workType)
+        {
+            case LayerModifyType.ActiveNextLayer:
+                {
+                    if (blendingDesc == null)
+                    {
+                        Debug.Assert(false, "사용하지 않는 파트에 대해 함수를 호출했습니다");
+                        Debug.Break();
+                        yield break;
+                    }
+
+                    int targetHandMainLayerIndex = (int)blendingDesc._myPart * 2;
+                    int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
+
+                    while (true)
+                    {
+                        float mainLayerBlendDelta = 0.0f;
+                        float subLayerBlendDelta = 0.0f;
+
+                        mainLayerBlendDelta = (blendingDesc._isUsingFirstLayer == true)
+                            ? blendingDesc._transitionSpeed * Time.deltaTime
+                            : blendingDesc._transitionSpeed * Time.deltaTime * -1.0f;
+
+                        subLayerBlendDelta = -1.0f * mainLayerBlendDelta;
+
+                        blendingDesc._blendTarget += mainLayerBlendDelta;
+                        blendingDesc._blendTarget_Sub += subLayerBlendDelta;
+
+                        blendingDesc._blendTarget = Mathf.Clamp(blendingDesc._blendTarget, 0.0f, 1.0f);
+                        blendingDesc._blendTarget_Sub = Mathf.Clamp(blendingDesc._blendTarget_Sub, 0.0f, 1.0f);
+
+                        blendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, blendingDesc._blendTarget);
+                        blendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, blendingDesc._blendTarget_Sub);
+
+                        float target = (blendingDesc._isUsingFirstLayer == true)
+                            ? blendingDesc._blendTarget
+                            : blendingDesc._blendTarget_Sub;
+
+                        if (target >= 1.0f || target <= 0.0f)
+                        {
+                            break;
+                        }
+
+                        yield return null;
+                    }
+                }
+                break;
+
+            case LayerModifyType.ActiveAllLayer:
+                {
+                    int targetHandMainLayerIndex = (int)blendingDesc._myPart * 2;
+                    int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
+
+                    while (true)
+                    {
+                        float mainLayerBlendDelta = 0.0f;
+                        float subLayerBlendDelta = 0.0f;
+
+                        mainLayerBlendDelta = (blendingDesc._isUsingFirstLayer == true)
+                            ? blendingDesc._transitionSpeed * Time.deltaTime
+                            : blendingDesc._transitionSpeed * Time.deltaTime * -1.0f;
+
+                        subLayerBlendDelta = -1.0f * mainLayerBlendDelta;
+
+                        blendingDesc._blendTarget += mainLayerBlendDelta;
+                        blendingDesc._blendTarget_Sub += subLayerBlendDelta;
+
+                        blendingDesc._blendTarget = Mathf.Clamp(blendingDesc._blendTarget, 0.0f, 1.0f);
+                        blendingDesc._blendTarget_Sub = Mathf.Clamp(blendingDesc._blendTarget_Sub, 0.0f, 1.0f);
+
+                        blendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, blendingDesc._blendTarget);
+                        blendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, blendingDesc._blendTarget_Sub);
+
+                        float target = (blendingDesc._isUsingFirstLayer == true)
+                            ? blendingDesc._blendTarget
+                            : blendingDesc._blendTarget_Sub;
+
+                        if (target >= 1.0f)
+                        {
+                            break;
+                        }
+
+                        yield return null;
+                    }
+                }
+                break;
+
+            case LayerModifyType.DeActiveAllLayer:
+                {
+                    int targetHandMainLayerIndex = (int)blendingDesc._myPart * 2;
+                    int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
+
+                    while (true)
+                    {
+                        float mainLayerBlendDelta = blendingDesc._transitionSpeed * Time.deltaTime * -1.0f;
+
+                        blendingDesc._blendTarget += mainLayerBlendDelta;
+                        blendingDesc._blendTarget_Sub += mainLayerBlendDelta;
+
+                        blendingDesc._blendTarget = Mathf.Clamp(blendingDesc._blendTarget, 0.0f, 1.0f);
+                        blendingDesc._blendTarget_Sub = Mathf.Clamp(blendingDesc._blendTarget_Sub, 0.0f, 1.0f);
+
+                        blendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, blendingDesc._blendTarget);
+                        blendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, blendingDesc._blendTarget_Sub);
+
+                        float maxTarget = Mathf.Max(blendingDesc._blendTarget, blendingDesc._blendTarget_Sub);
+
+                        if (maxTarget <= 0.0f)
+                        {
+                            break;
+                        }
+
+                        yield return null;
+                    }
+                }
+                break;
+
+            case LayerModifyType.TurnOffAllLayer:
+                {
+                    int targetHandMainLayerIndex = (int)blendingDesc._myPart * 2;
+                    int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
+
+                    blendingDesc._blendTarget = 0.0f;
+                    blendingDesc._blendTarget_Sub = 0.0f;
+
+                    blendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, blendingDesc._blendTarget);
+                    blendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, blendingDesc._blendTarget_Sub);
+                }
+                break;
+
+            case LayerModifyType.ActiveNextLayerDirectly:
+                {
+                    int targetHandMainLayerIndex = (int)blendingDesc._myPart * 2;
+                    int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
+
+                    while (true)
+                    {
+                        float mainLayerBlendDelta = 0.0f;
+                        float subLayerBlendDelta = 0.0f;
+
+                        mainLayerBlendDelta = (blendingDesc._isUsingFirstLayer == true)
+                            ? 1.0f
+                            : -1.0f;
+
+                        subLayerBlendDelta = -1.0f * mainLayerBlendDelta;
+
+                        blendingDesc._blendTarget += mainLayerBlendDelta;
+                        blendingDesc._blendTarget_Sub += subLayerBlendDelta;
+
+                        blendingDesc._blendTarget = Mathf.Clamp(blendingDesc._blendTarget, 0.0f, 1.0f);
+                        blendingDesc._blendTarget_Sub = Mathf.Clamp(blendingDesc._blendTarget_Sub, 0.0f, 1.0f);
+
+                        blendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, blendingDesc._blendTarget);
+                        blendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, blendingDesc._blendTarget_Sub);
+
+                        float target = (blendingDesc._isUsingFirstLayer == true)
+                            ? blendingDesc._blendTarget
+                            : blendingDesc._blendTarget_Sub;
+
+                        if (target >= 1.0f || target <= 0.0f)
+                        {
+                            break;
+                        }
+
+                        yield return null;
+                    }
+                }
+                break;
+            case LayerModifyType.AnimationPlayHold:
+                {
+                    while (true)
+                    {
+                        int layerIndex = (blendingDesc._isUsingFirstLayer == true)
+                            ? (int)_layerType * 2
+                            : (int)_layerType * 2 + 1;
+
+                        float normalizedTime = _characterAnimatorScript._Animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
+
+                        if (normalizedTime >= 1.0f)
+                        {
+                            break;
+                        }
+
+                        yield return null;
+                    }
+                }
+                break;
+
+            default:
+                {
+                    Debug.Assert(false, "대응이 되지 ㅇㄶ습니다");
+                    Debug.Break();
+                }
+                break;
+        }
+        yield break;
+    }
+}
+
+
+
+public class BodyPartBlendingWork_CoroutineLock : BodyPartBlendingWorkBase
+{
+    public enum CoroutineLockType
+    {
+        WaitFor,
+        Unlock,
+        End,
+    }
+
+    public BodyPartBlendingWork_CoroutineLock(AnimatorLayerTypes layerType, CoroutineLockType lockType, CoroutineLock targetCoroutineLock) : base(layerType)
+    {
+        _lockType = lockType;
+        _coroutineLock = targetCoroutineLock;
+    }
+
+    private CoroutineLockType _lockType = CoroutineLockType.End;
+    private CoroutineLock _coroutineLock = null;
+
+    public override IEnumerator DoWork()
+    {
+        switch (_lockType)
+        {
+            case CoroutineLockType.WaitFor:
+                while (_coroutineLock._isEnd == false)
+                {
+                    yield return null;
+                }
+                break;
+
+            case CoroutineLockType.Unlock:
+            _coroutineLock._isEnd = true;
+            break;
+
+            case CoroutineLockType.End:
+                break;
+
+            default:
+                {
+                    Debug.Assert(false, "대응이 되지 않는다");
+                    Debug.Break();
+                }
+                break;
+        }
+    }
 }
 
 
@@ -105,9 +516,13 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     private GameObject _gameBasicCharacter = null;
 
     protected Animator _animator = null;
+    public Animator _Animator => _animator;
+
     protected GameObject _characterModelObject = null;
 
     protected AnimatorOverrideController _overrideController = null;
+    public AnimatorOverrideController _OverrideController => _overrideController;
+
     protected AnimationClip _currAnimClip = null;
 
     private StateAsset _currStateAsset = null;
@@ -126,7 +541,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     [SerializeField] protected int _currentBusyAnimatorLayer_BitShift = 0;
     [SerializeField] protected List<AnimatorLayerTypes> _usingBodyPart = new List<AnimatorLayerTypes>();
     protected List<AnimatorBlendingDesc> _partBlendingDesc = new List<AnimatorBlendingDesc>();
-    protected List<LinkedList<BodyPartBlendingWork>> _bodyPartWorks = new List<LinkedList<BodyPartBlendingWork>>();
+    public AnimatorBlendingDesc GetBlendingDesc(AnimatorLayerTypes layerType) {return _partBlendingDesc[(int)layerType];}
+    protected List<LinkedList<BodyPartBlendingWorkBase>> _bodyPartWorks = new List<LinkedList<BodyPartBlendingWorkBase>>();
 
     [SerializeField] protected AnimationClip _ifWeaponIsLight = null;
 
@@ -169,6 +585,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
     protected RigBuilder _characterRigBuilder = null;
     protected Rig _characterRig = null;
+
+    private Action<float> _animationSpeedChanged = null;
 
     private void OnDestroy()
     {
@@ -264,11 +682,11 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         _overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
         _animator.runtimeAnimatorController = _overrideController;
 
-        for (int i = 0; i < (int)AnimatorLayerTypes.End; i++)
+        for (int i = 0; i < _usingBodyPart.Count; i++)
         {
             _partBlendingDesc.Add(null);
             _currentBusyAnimatorLayer.Add(false);
-            _bodyPartWorks.Add(new LinkedList<BodyPartBlendingWork>());
+            _bodyPartWorks.Add(new LinkedList<BodyPartBlendingWorkBase>());
             _bodyCoroutineStarted.Add(false);
             _currentBodyCoroutine.Add(null);
         }
@@ -368,9 +786,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         AnimationClipPlayable newPlayable = AnimationClipPlayable.Create(_playableGraph, targetAnimationClip);
 
-
-        bool temp = newPlayable.GetApplyFootIK();
-
         _layerMixer.ConnectInput(1, newPlayable, 0);
 
         _layerMixer.SetInputWeight(1, 1.0f);
@@ -400,12 +815,10 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         oldPlayable.Value.Destroy();
     }
 
-
     public override void SubScriptStart()
     {
         _owner.GCST<CharacterColliderScript>().InitModelCollider(_characterModelObject);
     }
-
 
     public void ResetCharacterModel()
     {
@@ -567,11 +980,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     }
 
 
-
-
-
-
-
     public void StateChanged(StateAsset nextState)
     {
         _currStateAsset = nextState;
@@ -583,9 +991,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             //애니메이션을 다시 결정해야한다.
 
             int animationIndex = _owner.GCST<StateContoller>().SubAnimationStateIndex(nextState);
-
             _currAnimIndex = animationIndex;
-
             nextAnimation = nextState._myState._subAnimationStateMachine._animations[animationIndex];
         }
 
@@ -601,42 +1007,40 @@ public class CharacterAnimatorScript : GameCharacterSubScript
     {
         _currAnimClip = nextAnimation;
 
-        if (_currStateAsset._myState._isAttackState == true &&
-            _currStateAsset._myState._isAttackState_effectedBySpeed == true)
+        float animationSpeed = (_currStateAsset._myState._isAttackState_effectedBySpeed == true)
+            ? _owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.AttackSpeedPercentage) / 100.0f
+            : 1.0f;
+
+        _animator.SetFloat("Speed", animationSpeed);
+
+        /*-------------------------------------------------------------------
+        |NOTI| AnimationSpeed 변경됨. 액션호출
+        -------------------------------------------------------------------*/
         {
-            float attackSpeed = (float)_owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.AttackSpeedPercentage) / 100.0f;
-            _animator.SetFloat("Speed", attackSpeed);
+            _animationSpeedChanged?.Invoke(animationSpeed);
         }
-        else
+
+        /*-------------------------------------------------------------------
+        |NOTI| FullBody Animation 변경
+        -------------------------------------------------------------------*/
         {
-            _animator.SetFloat("Speed", 1.0f);
-        }
-
-
-        //FullBody Animation 변경
-        {
-            /*-------------------------------------------------------------------
-            |NOTI| FullBody는 특별합니다. 뭔가 일하고있다면 취소하고 진행해야 합니다.
-            -------------------------------------------------------------------*/
-
             AnimatorLayerTypes fullBodyLayer = AnimatorLayerTypes.FullBody;
             int fullBodyLayerIndex = (int)fullBodyLayer;
 
-            if (_currentBodyCoroutine[(int)AnimatorLayerTypes.FullBody] != null)
+            if (_currentBodyCoroutine[(int)fullBodyLayer] != null)
             {
-                StopCoroutine(_currentBodyCoroutine[(int)AnimatorLayerTypes.FullBody]);
+                StopCoroutine(_currentBodyCoroutine[(int)fullBodyLayer]);
                 _bodyPartWorks[fullBodyLayerIndex].Clear();
             }
 
-            _bodyPartWorks[fullBodyLayerIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-            {
-                _bodyPartWorks[fullBodyLayerIndex].Last.Value._animationClip = nextAnimation;
-            }
-            _bodyPartWorks[fullBodyLayerIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            _bodyPartWorks[fullBodyLayerIndex].AddLast(new BodyPartBlendingWork_ChangeAnimation(fullBodyLayer, this, false, nextAnimation));
+            _bodyPartWorks[fullBodyLayerIndex].AddLast(new BodyPartBlendingWork_LayerModifier(fullBodyLayer, this, LayerModifyType.ActiveNextLayer));
 
             StartProceduralWork(fullBodyLayer, _bodyPartWorks[fullBodyLayerIndex].First.Value);
         }
     }
+
+
 
     protected void UpdateBusyAnimatorLayers(int willBusyLayers_BitShift, bool isOn)
     {
@@ -649,6 +1053,18 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             _currentBusyAnimatorLayer_BitShift = (_currentBusyAnimatorLayer_BitShift & ~willBusyLayers_BitShift);
         }
     }
+
+    public List<bool> GetCurrentBusyAnimatorLayer()
+    {
+        return _currentBusyAnimatorLayer;
+    }
+
+    public int GetCurrentBusyAnimatorLayer_BitShift()
+    {
+        return _currentBusyAnimatorLayer_BitShift;
+    }
+
+
 
     public void WeaponLayerChange(WeaponGrabFocus grapFocusType, StateAsset currState, bool isUsingRightWeapon, bool isEnter)
     {
@@ -770,8 +1186,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
-
-
     public CoroutineLock CalculateBodyWorkType_WeaponReload(bool isRightWeaponTrigger)
     {
         HashSet<int> lockCompares = new HashSet<int>();
@@ -795,25 +1209,21 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             ItemAsset_Weapon currentOppositeWeaponInfo = _owner.GetCurrentWeaponInfo(oppositePartType);
 
             //무기 집어넣기 애니메이션으로 바꾸기
-            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-            {
-                _bodyPartWorks[(int)oppositePartType].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(currentOppositeWeaponInfo._WeaponType).GetPutawayAnimation(oppositePartType);
-            }
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(oppositePartType, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(currentOppositeWeaponInfo._WeaponType).GetPutawayAnimation(oppositePartType)));
             //LayerWeight 바꾸기
-            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.ActiveNextLayer));
             //다 재생할때까지 대기하기
-            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.AnimationPlayHold));
             //무기삭제하기
-            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyWeapon));
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_DestroyWeapon(oppositePartType, _owner));
             //레이어 웨이트 내리기
-            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.DeActiveAllLayer));
             //코루틴 락 해제
-
             ret = new CoroutineLock();
-            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.UnLockCoroutine));
-            {
-                _bodyPartWorks[(int)oppositePartType].Last.Value._coroutineLock = ret;
-            }
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_CoroutineLock(oppositePartType, BodyPartBlendingWork_CoroutineLock.CoroutineLockType.Unlock, ret));
+
+
+
 
             lockCompares.Add(oppositePartIndex);
 
@@ -825,6 +1235,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         return ret;
     }
+
+
 
     public void CalculateBodyWorkType_ChangeWeapon(WeaponGrabFocus ownerWeaponGrabFocusType, bool isRightWeaponTrigger, int layerLockResult, bool forcedGo = false)
     {
@@ -842,24 +1254,24 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         //반대손 Work 예약
         {
+            ItemStoreDesc_Weapon currentOppositeWeapon = _owner.GetCurrentWeaponStoreDesc(oppositePartType);
             ItemAsset_Weapon currentOppositeWeaponScript = _owner.GetCurrentWeaponInfo(oppositePartType);
 
-            if (ownerWeaponGrabFocusType == WeaponGrabFocus.RightHandFocused || ownerWeaponGrabFocusType == WeaponGrabFocus.LeftHandFocused) //무기를 양손으로 잡고있었다.
+            if (ownerWeaponGrabFocusType == WeaponGrabFocus.RightHandFocused ||
+                ownerWeaponGrabFocusType == WeaponGrabFocus.LeftHandFocused) //무기를 양손으로 잡고있었다.
             {
                 if (currentOppositeWeaponScript != null) //반대손에 무기가 있다.
                 {
-                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-                    {
-                        _bodyPartWorks[(int)oppositePartType].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(currentOppositeWeaponScript._WeaponType).GetPutawayAnimation(oppositePartType);
-                    }
-
-                    //레이어 웨이트 바꾸기
-                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+                    //무기 집어넣기 애니메이션으로 바꾸기
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(oppositePartType, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(currentOppositeWeaponScript._WeaponType).GetDrawAnimation(oppositePartType)));
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_AttachObject(oppositePartType, _owner, currentOppositeWeapon));
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.ActiveNextLayer));
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.AnimationPlayHold));
                 }
                 else
                 {
                     //반대손에 양손으로 잡으면서 집어넣은 무기가 없다.
-                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+                    _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.DeActiveAllLayer));
                 }
 
                 lockCompares.Add(oppositePartIndex);
@@ -875,17 +1287,13 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 WeaponScript currWeaponScript = currWeapon.GetComponent<WeaponScript>();
 
                 //무기 집어넣기 애니메이션으로 바꾸기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-                {
-                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(currWeaponScript.GetItemAsset()._WeaponType).GetPutawayAnimation(targetPartType);
-                }
-
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(targetPartType, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(currWeaponScript.GetItemAsset()._WeaponType).GetPutawayAnimation(targetPartType)));
                 //LayerWeight 바꾸기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_LayerModifier(targetPartType, this, LayerModifyType.ActiveNextLayer));
                 //다 재생할때까지 대기하기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_LayerModifier(targetPartType, this, LayerModifyType.AnimationPlayHold));
                 //무기삭제하기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyWeapon));
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_DestroyWeapon(targetPartType, _owner));
             }
 
             ItemAsset_Weapon nextWeaponScript = _owner.GetNextWeaponInfo(targetPartType);
@@ -893,46 +1301,31 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
             if (nextWeaponScript != null)
             {
-                //바꾸려는 다음 무기가 있다
-
-                //무기꺼내기 ZeroFrame 으로 바꾸기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
-                {
-                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(nextWeaponScript._WeaponType).GetDrawAnimation(targetPartType);
-                }
-
-                //Layer Wright 바꾸기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-
+                //무기 집어넣기 애니메이션으로 바꾸기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(targetPartType, this, true, ResourceDataManager.Instance.GetHandlingAnimationInfo(nextWeaponScript._WeaponType).GetDrawAnimation(targetPartType)));
+                //LayerWeight 바꾸기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_LayerModifier(targetPartType, this, LayerModifyType.ActiveNextLayer));
                 //무기쥐어주기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
-                {
-                    _bodyPartWorks[(int)targetPartType].Last.Value._createItemStoreDesc = nextWeaponStoreDesc;
-                }
-
-                //무기꺼내기 애니메이션으로 바꾸기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-                {
-                    _bodyPartWorks[(int)targetPartType].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(nextWeaponScript._WeaponType).GetDrawAnimation(targetPartType);
-                }
-
-                //Layer Wright 바꾸기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-                //다 재생할때까지 기다리기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_AttachObject(targetPartType, _owner, nextWeaponStoreDesc));
+                //무기 집어넣기 애니메이션으로 바꾸기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(targetPartType, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(nextWeaponScript._WeaponType).GetDrawAnimation(targetPartType)));
+                //LayerWeight 바꾸기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_LayerModifier(targetPartType, this, LayerModifyType.ActiveNextLayer));
+                //다 재생할때까지 대기하기
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_LayerModifier(targetPartType, this, LayerModifyType.AnimationPlayHold));
             }
             else
             {
                 //바꾸려는 다음 무기가 없다
-
                 //레이어 꺼버리기
-                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+                _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_LayerModifier(targetPartType, this, LayerModifyType.DeActiveAllLayer));
             }
 
             lockCompares.Add(targetPartIndex);
         }
 
-        _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork(BodyPartWorkType.OwnerIncreaeWeaponIndex));
+        _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_IncreaseWeaponIndex(targetPartType, _owner));
+
 
         int usingLockResult = 0;
         foreach (int index in lockCompares)
@@ -948,10 +1341,8 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             return;
         }
 
-        _bodyPartWorks[targetPartIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.OwnerChangeGrabFocusType));
-        {
-            _bodyPartWorks[targetPartIndex].Last.Value._targetGrabFocusType = WeaponGrabFocus.Normal;
-        }
+        //무기 집어넣기 애니메이션으로 바꾸기
+        _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_ChangeGrabFocus(targetPartType, _owner, WeaponGrabFocus.Normal));
 
         UpdateBusyAnimatorLayers(usingLockResult, true);
 
@@ -981,37 +1372,26 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         //반대 손에 무기를 들고있다.
         if (oppositeWeaponInfo != null)
         {
-            //반대손을 무기 집어넣기 애니메이션으로 바꾼다.
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-            {
-                _bodyPartWorks[(int)oppositeBodyIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(oppositeWeaponInfo._WeaponType).GetPutawayAnimation(oppositePartType);
-            }
-
-            //Layer Weight로 점점 올린다.
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-            //반대손의 무기 집어넣기 애니메이션이 다 재생될때까지 홀딩한다.
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+            //무기 집어넣기 애니메이션으로 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(oppositePartType, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(oppositeWeaponInfo._WeaponType).GetPutawayAnimation(oppositePartType)));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.ActiveNextLayer));
+            //다 재생할때까지 대기하기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.AnimationPlayHold));
             //반대손의 무기를 삭제한다.
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyWeapon));
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_DestroyWeapon(oppositePartType, _owner));
 
             lockCompares.Add(oppositeBodyIndex);
         }
 
         //이 Behave에서 단계를 넘어섬을 코루틴 락을 해제하여 알려준다.
         CoroutineLock waitOppsiteWeaponPutAwayLock = new CoroutineLock();
-        _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.UnLockCoroutine));
-        {
-            _bodyPartWorks[oppositeBodyIndex].Last.Value._coroutineLock = waitOppsiteWeaponPutAwayLock;
-        }
+        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_CoroutineLock(oppositePartType, CoroutineLockType.Unlock, waitOppsiteWeaponPutAwayLock));
+        //무기 집어넣기 애니메이션으로 바꾸기
+        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(oppositePartType, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(targetWeaponInfo._WeaponType).GetTwoHandHandlingAnimation(targetPartType)));
+        //LayerWeight 바꾸기
+        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.ActiveNextLayer));
 
-        //반대손의 애니메이션을 바꾼다
-        _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-        {
-            _bodyPartWorks[(int)oppositeBodyIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(targetWeaponInfo._WeaponType).GetTwoHandHandlingAnimation(targetPartType);
-        }
-
-        //반대손의 LayerWeight를 올린다.
-        _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
 
         lockCompares.Add(oppositeBodyIndex);
 
@@ -1019,27 +1399,19 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         //해당 무기를 양손으로 잡는 애니메이션을 실행한다. 해당 손의 애니메이션을 바꾼다
         {
             //반대손의 이벤트가 끝날때까지 무한 대기한다
-            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.WaitCoroutineUnlock));
-            {
-                _bodyPartWorks[targetBodyIndex].Last.Value._coroutineLock = waitOppsiteWeaponPutAwayLock;
-            }
-            //해당 손의 애니메이션을 바꾼다
-            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-            {
-                _bodyPartWorks[(int)targetBodyIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(targetWeaponInfo._WeaponType).GetTwoHandHandlingAnimation(targetPartType);
-            }
-            //해당 손의 Layer Weight를 바꾼다.
-            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_CoroutineLock(targetPartType, CoroutineLockType.WaitFor, waitOppsiteWeaponPutAwayLock));
+            //무기 집어넣기 애니메이션으로 바꾸기
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(targetPartType, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(targetWeaponInfo._WeaponType).GetTwoHandHandlingAnimation(targetPartType)));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_LayerModifier(targetPartType, this, LayerModifyType.ActiveNextLayer));
 
             lockCompares.Add(targetBodyIndex);
         }
 
-        _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.OwnerChangeGrabFocusType));
-        {
-            _bodyPartWorks[(int)targetBodyIndex].Last.Value._targetGrabFocusType = (isRightHandTrigger == true)
+        WeaponGrabFocus nextGrabFocus = (isRightHandTrigger == true)
                 ? WeaponGrabFocus.RightHandFocused
                 : WeaponGrabFocus.LeftHandFocused;
-        }
+        _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_ChangeGrabFocus(oppositePartType, _owner, nextGrabFocus));
 
         int usingLockResult = 0;
         foreach (int index in lockCompares)
@@ -1083,36 +1455,25 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         //반대 손에 양손으로 잡기 전, 무기를 들고있었다.
         if (oppositeWeaponInfo != null)
         {
-            //반대손을 무기 꺼내기 Zero Frame 애니메이션으로 바꾼다.
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
-            {
-                _bodyPartWorks[oppositeBodyIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(oppositeWeaponInfo._WeaponType).GetDrawAnimation(oppositePartType);
-            }
+            //무기 집어넣기 애니메이션으로 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(oppositePartType, this, true, ResourceDataManager.Instance.GetHandlingAnimationInfo(oppositeWeaponInfo._WeaponType).GetDrawAnimation(oppositePartType)));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.ActiveNextLayer));
+            //무기 쥐어주기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_AttachObject(oppositePartType, _owner, oppositeWeaponStoreDesc));
 
-            //반대손 Layer Weight로 점점 올린다.
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-            //무기를 쥐어준다
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
-            {
-                _bodyPartWorks[oppositeBodyIndex].Last.Value._createItemStoreDesc = oppositeWeaponStoreDesc;
-            }
 
-            //반대손을 무기 꺼내기 애니메이션으로 바꾼다.
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-            {
-                _bodyPartWorks[oppositeBodyIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(oppositeWeaponInfo._WeaponType).GetDrawAnimation(oppositePartType);
-            }
-
-            //반대손 Layer Weight로 점점 올린다.
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-
-            //반대손의 무기 꺼내기 애니메이션이 다 재생될때까지 홀딩한다.
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+            //무기 집어넣기 애니메이션으로 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(oppositePartType, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(oppositeWeaponInfo._WeaponType).GetDrawAnimation(oppositePartType)));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.ActiveNextLayer));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.AnimationPlayHold));
         }
         else
         {
-            //그냥 꺼버린다
-            _bodyPartWorks[oppositeBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[(int)oppositePartType].AddLast(new BodyPartBlendingWork_LayerModifier(oppositePartType, this, LayerModifyType.DeActiveAllLayer));
         }
 
         lockCompares.Add(oppositeBodyIndex);
@@ -1126,24 +1487,18 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         {
             //자세 애니메이션이 있습니다.
 
-            //해당 손의 애니메이션을 바꾼다
-            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-            {
-                _bodyPartWorks[targetBodyIndex].Last.Value._animationClip = oneHandHadlingAnimation;
-            }
-            //해당 손의 LayerWeight을 바꾼다
-            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+            //무기 집어넣기 애니메이션으로 바꾸기
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_ChangeAnimation(targetPartType, this, false, oneHandHadlingAnimation));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_LayerModifier(targetPartType, this, LayerModifyType.ActiveNextLayer));
         }
         else
         {
             //자세 애니메이션이 없습니다.
-            _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+            _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_LayerModifier(targetPartType, this, LayerModifyType.DeActiveAllLayer));
         }
 
-        _bodyPartWorks[targetBodyIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.OwnerChangeGrabFocusType));
-        {
-            _bodyPartWorks[(int)targetBodyIndex].Last.Value._targetGrabFocusType = WeaponGrabFocus.Normal;
-        }
+        _bodyPartWorks[(int)targetPartType].AddLast(new BodyPartBlendingWork_ChangeGrabFocus(targetPartType, _owner, WeaponGrabFocus.Normal));
 
         lockCompares.Add(targetBodyIndex);
 
@@ -1186,7 +1541,6 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             ItemAsset_Weapon weaponItemAsset = weaponScript.GetItemAsset();
 
             //오른손에 양손으로 쥐고 있었다면 잠시 왼손에 쥐어준다.
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
             {
                 WeaponSocketScript.SideType targetSide = WeaponSocketScript.SideType.Left;
 
@@ -1196,6 +1550,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                 GameObject ownerModelObject = _characterModelObject;
 
                 //반대손 소켓 찾기
+                Transform oppositeTransform = null;
                 {
                     Debug.Assert(ownerModelObject != null, "무기를 붙이려는데 모델이 없어서는 안된다");
 
@@ -1214,12 +1569,14 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                         {
                             if (type == weaponItemAsset._WeaponType)
                             {
-                                _bodyPartWorks[rightHandIndex].Last.Value._weaponEquipTransform = socketComponent.gameObject.transform;
+                                oppositeTransform = socketComponent.gameObject.transform;
                                 break;
                             }
                         }
                     }
                 }
+
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_SwitchHand(AnimatorLayerTypes.RightHand, oppositeTransform, _owner));
             }
         }
         else if (currRightHandWeapon != null) //양손으로 잡고있진 않았습니다. 근데 오른손에 무기를 들긴 했습니다.
@@ -1227,25 +1584,20 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             WeaponScript weaponScript = currRightHandWeapon.GetComponent<WeaponScript>();
             ItemAsset_Weapon weaponItemAsset = weaponScript.GetItemAsset();
 
-            //반대손을 무기 집어넣기 애니메이션으로 바꾼다.
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-            {
-                _bodyPartWorks[rightHandIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(weaponItemAsset._WeaponType).GetPutawayAnimation(true);
-            }
-
-            //Layer Weight로 점점 올린다.
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-            //반대손의 무기 집어넣기 애니메이션이 다 재생될때까지 홀딩한다.
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+            //무기 집어넣기 애니메이션으로 바꾸기
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_ChangeAnimation(AnimatorLayerTypes.RightHand, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(weaponItemAsset._WeaponType).GetPutawayAnimation(true)));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_LayerModifier(AnimatorLayerTypes.RightHand, this, LayerModifyType.ActiveNextLayer));
+            //LayerWeight 바꾸기
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_LayerModifier(AnimatorLayerTypes.RightHand, this, LayerModifyType.AnimationPlayHold));
             //반대손의 무기를 삭제한다.
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyWeapon));
+            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_DestroyWeapon(AnimatorLayerTypes.RightHand, _owner));
         }
 
         CoroutineLock waitForRightHandReady = new CoroutineLock();
-        _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.UnLockCoroutine));
-        {
-            _bodyPartWorks[rightHandIndex].Last.Value._coroutineLock = waitForRightHandReady;
-        }
+        _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_CoroutineLock(AnimatorLayerTypes.RightHand,CoroutineLockType.Unlock, waitForRightHandReady));
+
+
         lockCompares.Add(rightHandIndex);
 
         //아이템을 사용하는 부위들에게 일감을 배정한다.
@@ -1259,46 +1611,34 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
                 if (lockCompares.Contains(typeIndex) == false)
                 {
-                    _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.WaitCoroutineUnlock));
-                    {
-                        _bodyPartWorks[typeIndex].Last.Value._coroutineLock = waitForRightHandReady;
-                    }
+                    _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_CoroutineLock(type, CoroutineLockType.WaitFor, waitForRightHandReady));
                 }
 
-                //아이템을 사용하는 애니메이션으로 바꾼다.
-                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-                {
-                    _bodyPartWorks[typeIndex].Last.Value._animationClip = itemAsset_Consume._UsingItemAnimation_Phase1;
-                }
 
-                //Layer Weight로 점점 올린다.
-                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
+                //무기 집어넣기 애니메이션으로 바꾸기
+                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_ChangeAnimation(type, this, false, itemAsset_Consume._UsingItemAnimation_Phase1));
+                //LayerWeight 바꾸기
+                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_LayerModifier(type, this, LayerModifyType.ActiveNextLayer));
+
 
                 if (type == AnimatorLayerTypes.RightHand)
                 {
                     //아이템을 손에 붙입니다--------------------------------------------------------------------------
-                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
-                    {
-                        _bodyPartWorks[rightHandIndex].Last.Value._createItemStoreDesc = usingItemInfo;
-                    }
+                    _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_AttachObject(type, _owner, usingItemInfo));
                     //-----------------------------------------------------------------------------------------------
                 }
 
 
-                //애니메이션이 다 재생될때까지 홀딩한다.
-                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+                //LayerWeight 바꾸기
+                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_LayerModifier(type, this, LayerModifyType.AnimationPlayHold));
 
                 //Phase1이 끝났습니다
                 {
                     if (type == AnimatorLayerTypes.RightHand)
                     {
-                        //스킬들을 적용합니다
-                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ApplyComsumeableItemSkill));
-                        {
-                            _bodyPartWorks[typeIndex].Last.Value._buffs = itemAsset_Consume._Buffs;
-                        }
+                        //LayerWeight 바꾸기
+                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_ApplyConsumeable(type, _owner, itemAsset_Consume._Buffs));
 
-                        
                         if (itemAsset_Consume._UsingItemAnimation_Phase2 != null)
                         {
                             //충전횟수를 1회 감소시킨다.
@@ -1314,28 +1654,24 @@ public class CharacterAnimatorScript : GameCharacterSubScript
                     {
                         //Phase2가 존재하나요? -> 다시 주머니에 집어넣는 충전형인가봐요
 
-                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-                        {
-                            _bodyPartWorks[typeIndex].Last.Value._animationClip = itemAsset_Consume._UsingItemAnimation_Phase2;
-                        }
-
-                        //Layer Weight를 즉시 1로 세팅한다.
-                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayerDirectly));
-
-                        //애니메이션이 다 재생될때까지 홀딩한다.
-                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AnimationPlayHold));
+                        //무기 집어넣기 애니메이션으로 바꾸기
+                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_ChangeAnimation(type, this, false, itemAsset_Consume._UsingItemAnimation_Phase2));
+                        //LayerWeight 바꾸기
+                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_LayerModifier(type, this, LayerModifyType.ActiveNextLayerDirectly));
+                        //LayerWeight 바꾸기
+                        _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_LayerModifier(type, this, LayerModifyType.AnimationPlayHold));
                     }
                 }
 
                 if (type == AnimatorLayerTypes.RightHand)
                 {
                     //아이템을 손에서 제거합니다---------------------------------------------------------------------- -
-                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DestroyHandObject));
+                    _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_DestroyHandObject(type, _owner));
                     //-----------------------------------------------------------------------------------------------
                 }
                 
-                //Layer Weight를 즉시 꺼버린다.
-                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+                //LayerWeight 바꾸기
+                _bodyPartWorks[typeIndex].AddLast(new BodyPartBlendingWork_LayerModifier(type, this, LayerModifyType.DeActiveAllLayer));
 
                 lockCompares.Add(typeIndex);
             }
@@ -1349,54 +1685,56 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         {
             if (ownerWeaponGrabFocusType == WeaponGrabFocus.RightHandFocused)
             {
-                //양손으로 쥐는 애니메이션으로 바꾼다.
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-                {
-                    _bodyPartWorks[rightHandIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(currRightHandWeaponInfo._WeaponType).GetOneHandHandlingAnimation(AnimatorLayerTypes.RightHand);
-                }
-
-                //Layer Weight로 점점 올린다.
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-
-                //아까 반대손에 쥐어줬던 무기를 다시 반대로 쥔다.
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.SwitchHand));
-                {
-                    _bodyPartWorks[rightHandIndex].Last.Value._weaponEquipTransform = rightHandWeaponOriginalTransform;
-                }
+                //무기 집어넣기 애니메이션으로 바꾸기
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_ChangeAnimation(AnimatorLayerTypes.RightHand, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(currRightHandWeaponInfo._WeaponType).GetTwoHandHandlingAnimation(AnimatorLayerTypes.RightHand)));
+                //LayerWeight 바꾸기
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_LayerModifier(AnimatorLayerTypes.RightHand, this, LayerModifyType.ActiveNextLayer));
+                //LayerWeight 바꾸기
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_SwitchHand(AnimatorLayerTypes.RightHand, rightHandWeaponOriginalTransform, _owner));
             }
             else
             {
-                //무기를 꺼내는 Zero Frame Animation 으로 바꾼다
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation_ZeroFrame));
+                if (ownerWeaponGrabFocusType != WeaponGrabFocus.LeftHandFocused)
                 {
-                    _bodyPartWorks[rightHandIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(currRightHandWeaponInfo._WeaponType).GetDrawAnimation(AnimatorLayerTypes.RightHand);
+                    //무기 집어넣기 애니메이션으로 바꾸기
+                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_ChangeAnimation(AnimatorLayerTypes.RightHand, this, true, ResourceDataManager.Instance.GetHandlingAnimationInfo(currRightHandWeaponInfo._WeaponType).GetDrawAnimation(AnimatorLayerTypes.RightHand)));
+                    //LayerWeight 바꾸기
+                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_LayerModifier(AnimatorLayerTypes.RightHand, this, LayerModifyType.ActiveNextLayer));
+                    //LayerWeight 바꾸기
+                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_AttachObject(AnimatorLayerTypes.RightHand, _owner, currRightHandWeaponStoreDesc));
+
+
+                    //무기 집어넣기 애니메이션으로 바꾸기
+                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_ChangeAnimation(AnimatorLayerTypes.RightHand, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(currRightHandWeaponInfo._WeaponType).GetDrawAnimation(AnimatorLayerTypes.RightHand)));
+                    //LayerWeight 바꾸기
+                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_LayerModifier(AnimatorLayerTypes.RightHand, this, LayerModifyType.ActiveNextLayer));
+                }
+                else
+                {
+                    ItemAsset_Weapon currLeftHandWeaponInfo = _owner.GetCurrentWeaponInfo(AnimatorLayerTypes.LeftHand);
+
+                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_ChangeAnimation(AnimatorLayerTypes.RightHand, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(currLeftHandWeaponInfo._WeaponType).GetTwoHandHandlingAnimation(AnimatorLayerTypes.LeftHand)));
+                    _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_LayerModifier(AnimatorLayerTypes.RightHand, this, LayerModifyType.ActiveNextLayer));
                 }
 
-                //Layer Weight로 점점 올린다.
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
-
-                //무기를 쥐어준다
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.AttatchObjet));
-                {
-                    _bodyPartWorks[rightHandIndex].Last.Value._createItemStoreDesc = currRightHandWeaponStoreDesc;
-                }
-
-                //무기를 꺼내는 animation으로 바꾼다
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ChangeAnimation));
-                {
-                    _bodyPartWorks[rightHandIndex].Last.Value._animationClip = ResourceDataManager.Instance.GetHandlingAnimationInfo(currRightHandWeaponInfo._WeaponType).GetDrawAnimation(AnimatorLayerTypes.RightHand);
-                }
-
-                //Layer Weight로 점점 올린다.
-                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.ActiveNextLayer));
             }
 
             lockCompares.Add(rightHandIndex);
         }
         else
         {
-            //그냥 꺼버린다
-            _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork(BodyPartWorkType.DeActiveAllLayer));
+            if (ownerWeaponGrabFocusType == WeaponGrabFocus.LeftHandFocused)
+            {
+                ItemAsset_Weapon currLeftHandWeaponInfo = _owner.GetCurrentWeaponInfo(AnimatorLayerTypes.LeftHand);
+
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_ChangeAnimation(AnimatorLayerTypes.RightHand, this, false, ResourceDataManager.Instance.GetHandlingAnimationInfo(currLeftHandWeaponInfo._WeaponType).GetTwoHandHandlingAnimation(AnimatorLayerTypes.LeftHand)));
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_LayerModifier(AnimatorLayerTypes.RightHand, this, LayerModifyType.ActiveNextLayer));
+            }
+            else
+            {
+                //그냥 꺼버린다
+                _bodyPartWorks[rightHandIndex].AddLast(new BodyPartBlendingWork_LayerModifier(AnimatorLayerTypes.RightHand, this, LayerModifyType.DeActiveAllLayer));
+            }
 
             lockCompares.Add(rightHandIndex);
         }
@@ -1422,320 +1760,12 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
-    public List<bool> GetCurrentBusyAnimatorLayer()
-    {
-        return _currentBusyAnimatorLayer;
-    }
 
-    public int GetCurrentBusyAnimatorLayer_BitShift()
-    {
-        return _currentBusyAnimatorLayer_BitShift;
-    }
 
-    public void WeaponChange_Animation(AnimationClip nextAnimation, AnimatorLayerTypes targetBody, bool isZeroFrame)
-    {
-        AnimatorBlendingDesc targetPart = _partBlendingDesc[(int)targetBody];
-
-        targetPart._isUsingFirstLayer = !(targetPart._isUsingFirstLayer);
-
-        int layerStartIndex = (int)targetBody * 2;
-
-        int layerIndex = (targetPart._isUsingFirstLayer == true)
-            ? layerStartIndex
-            : layerStartIndex + 1;
-
-        string nextNodeName = (targetPart._isUsingFirstLayer == true)
-            ? "State1"
-            : "State2";
-
-        AnimationClip targetclip = (isZeroFrame == true)
-            ? ResourceDataManager.Instance.GetZeroFrameAnimation(nextAnimation.name)
-            : nextAnimation;
-
-        _overrideController[MyUtil._motionChangingAnimationNames[layerIndex]] = targetclip;
-
-        _animator.Play(nextNodeName, layerIndex, 0.0f);
-    }
 
     #region Coroutines
 
-    protected IEnumerator SwitchHandCoroutine(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
-    {
-        _owner.WeaponSwitchHand(layerType, work);
-        return null;
-    }
-
-    protected IEnumerator DestroyWeaponCoroutine(AnimatorLayerTypes layerType)
-    {
-        _owner.DestroyWeapon(layerType);
-        return null;
-    }
-
-    protected IEnumerator WaitCoroutineLock(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
-    {
-        while (work._coroutineLock._isEnd == false)
-        {
-            yield return null;
-        }
-    }
-
-    protected IEnumerator UnlockCoroutineLock(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
-    {
-        work._coroutineLock._isEnd = true;
-        return null;
-    }
-
-    protected IEnumerator AnimationPlayHoldCoroutine(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
-    {
-        AnimatorBlendingDesc blendingDesc = _partBlendingDesc[(int)layerType];
-
-        while (true)
-        {
-            int layerIndex = (blendingDesc._isUsingFirstLayer == true)
-                ? (int)layerType * 2
-                : (int)layerType * 2 + 1;
-
-            float normalizedTime = _animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-
-            if (normalizedTime >= 1.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-    }
-
-    protected IEnumerator OwnerDestroyHandObject(AnimatorLayerTypes targetBody)
-    {
-        _owner.DestroyHandObject(targetBody);
-        return null;
-    }
-
-    protected IEnumerator OwnerIncreaseWeaponIndex(AnimatorLayerTypes targetBody)
-    {
-        _owner.IncreaseWeaponIndex(targetBody);
-        return null;
-    }
-
-    protected IEnumerator WeaponChange_AnimationCoroutine(AnimationClip nextAnimation, AnimatorLayerTypes targetBody, bool isZeroFrame)
-    {
-        WeaponChange_Animation(nextAnimation, targetBody, isZeroFrame);
-        return null;
-    }
-
-    protected IEnumerator CreateWeaponModelAndEquipCoroutine(AnimatorLayerTypes layerType, ItemStoreDescBase nextWeaponStoreDesc)
-    {
-        CreateWeaponModelAndEquip(layerType, nextWeaponStoreDesc);
-        return null;
-    }
-
-    protected IEnumerator OwnerChangeWeaponGrabFocusType(WeaponGrabFocus targetType)
-    {
-        _owner.ChangeGrabFocusType(targetType);
-        return null;
-    }
-
-    protected void CreateWeaponModelAndEquip(AnimatorLayerTypes layerType, ItemStoreDescBase nextWeaponStoreDesc)
-    {
-        _owner.CreateWeaponModelAndEquip(layerType, nextWeaponStoreDesc);
-    }
-
-    protected IEnumerator ApplyComsumeableItemSkill(AnimatorLayerTypes layerType, List<string> buffNames)
-    {
-        _owner.ApplyPotionBuff(buffNames);
-        return null;
-    }
-
-    protected IEnumerator ApplyComsumeableItemSkill(AnimatorLayerTypes layerType, List<BuffAssetBase> buffs)
-    {
-        _owner.ApplyPotionBuff(buffs);
-        return null;
-    }
-
-
-    protected IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveNextLayerDirectly(AnimatorLayerTypes layerType)
-    {
-        AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-
-        if (targetBlendingDesc == null)
-        {
-            Debug.Assert(false, "사용하지 않는 파트에 대해 함수를 호출했습니다");
-            Debug.Break();
-            yield break;
-        }
-
-        int targetHandMainLayerIndex = (int)targetBlendingDesc._myPart * 2;
-        int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
-
-        while (true)
-        {
-            float mainLayerBlendDelta = 0.0f;
-            float subLayerBlendDelta = 0.0f;
-
-            mainLayerBlendDelta = (targetBlendingDesc._isUsingFirstLayer == true)
-                ? 1.0f
-                : -1.0f;
-
-            subLayerBlendDelta = -1.0f * mainLayerBlendDelta;
-
-            targetBlendingDesc._blendTarget += mainLayerBlendDelta;
-            targetBlendingDesc._blendTarget_Sub += subLayerBlendDelta;
-
-            targetBlendingDesc._blendTarget = Mathf.Clamp(targetBlendingDesc._blendTarget, 0.0f, 1.0f);
-            targetBlendingDesc._blendTarget_Sub = Mathf.Clamp(targetBlendingDesc._blendTarget_Sub, 0.0f, 1.0f);
-
-            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, targetBlendingDesc._blendTarget);
-            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, targetBlendingDesc._blendTarget_Sub);
-
-            float target = (targetBlendingDesc._isUsingFirstLayer == true)
-                ? targetBlendingDesc._blendTarget
-                : targetBlendingDesc._blendTarget_Sub;
-
-            if (target >= 1.0f || target <= 0.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-    }
-
-
-    protected IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveNextLayer(AnimatorLayerTypes layerType)
-    {
-        AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-
-        if (targetBlendingDesc == null)
-        {
-            Debug.Assert(false, "사용하지 않는 파트에 대해 함수를 호출했습니다");
-            Debug.Break();
-            yield break;
-        }
-
-        int targetHandMainLayerIndex = (int)targetBlendingDesc._myPart * 2;
-        int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
-
-        while (true)
-        {
-            float mainLayerBlendDelta = 0.0f;
-            float subLayerBlendDelta = 0.0f;
-
-            mainLayerBlendDelta = (targetBlendingDesc._isUsingFirstLayer == true)
-                ? targetBlendingDesc._transitionSpeed * Time.deltaTime
-                : targetBlendingDesc._transitionSpeed * Time.deltaTime * -1.0f;
-
-            subLayerBlendDelta = -1.0f * mainLayerBlendDelta;
-
-            targetBlendingDesc._blendTarget += mainLayerBlendDelta;
-            targetBlendingDesc._blendTarget_Sub += subLayerBlendDelta;
-
-            targetBlendingDesc._blendTarget = Mathf.Clamp(targetBlendingDesc._blendTarget, 0.0f, 1.0f);
-            targetBlendingDesc._blendTarget_Sub = Mathf.Clamp(targetBlendingDesc._blendTarget_Sub, 0.0f, 1.0f);
-
-            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, targetBlendingDesc._blendTarget);
-            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, targetBlendingDesc._blendTarget_Sub);
-
-            float target = (targetBlendingDesc._isUsingFirstLayer == true)
-                ? targetBlendingDesc._blendTarget
-                : targetBlendingDesc._blendTarget_Sub;
-
-            if (target >= 1.0f || target <= 0.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-    }
-
-    protected IEnumerator ChangeNextLayerWeightSubCoroutine_ActiveAllLayer(AnimatorLayerTypes layerType)
-    {
-        AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-
-        int targetHandMainLayerIndex = (int)targetBlendingDesc._myPart * 2;
-        int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
-
-        while (true)
-        {
-            float mainLayerBlendDelta = 0.0f;
-            float subLayerBlendDelta = 0.0f;
-
-            mainLayerBlendDelta = (targetBlendingDesc._isUsingFirstLayer == true)
-                ? targetBlendingDesc._transitionSpeed * Time.deltaTime
-                : targetBlendingDesc._transitionSpeed * Time.deltaTime * -1.0f;
-
-            subLayerBlendDelta = -1.0f * mainLayerBlendDelta;
-
-            targetBlendingDesc._blendTarget += mainLayerBlendDelta;
-            targetBlendingDesc._blendTarget_Sub += subLayerBlendDelta;
-
-            targetBlendingDesc._blendTarget = Mathf.Clamp(targetBlendingDesc._blendTarget, 0.0f, 1.0f);
-            targetBlendingDesc._blendTarget_Sub = Mathf.Clamp(targetBlendingDesc._blendTarget_Sub, 0.0f, 1.0f);
-
-            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, targetBlendingDesc._blendTarget);
-            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, targetBlendingDesc._blendTarget_Sub);
-
-            float target = (targetBlendingDesc._isUsingFirstLayer == true)
-                ? targetBlendingDesc._blendTarget
-                : targetBlendingDesc._blendTarget_Sub;
-
-            if (target >= 1.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-    }
-
-
-    protected IEnumerator ChangeNextLayerWeightSubCoroutine_DeActiveAllLayer(AnimatorLayerTypes layerType)
-    {
-        AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-
-        int targetHandMainLayerIndex = (int)targetBlendingDesc._myPart * 2;
-        int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
-
-        while (true)
-        {
-            float mainLayerBlendDelta = targetBlendingDesc._transitionSpeed * Time.deltaTime * -1.0f;
-
-            targetBlendingDesc._blendTarget += mainLayerBlendDelta;
-            targetBlendingDesc._blendTarget_Sub += mainLayerBlendDelta;
-
-            targetBlendingDesc._blendTarget = Mathf.Clamp(targetBlendingDesc._blendTarget, 0.0f, 1.0f);
-            targetBlendingDesc._blendTarget_Sub = Mathf.Clamp(targetBlendingDesc._blendTarget_Sub, 0.0f, 1.0f);
-
-            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, targetBlendingDesc._blendTarget);
-            targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, targetBlendingDesc._blendTarget_Sub);
-
-            float maxTarget = Mathf.Max(targetBlendingDesc._blendTarget, targetBlendingDesc._blendTarget_Sub);
-
-            if (maxTarget <= 0.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-    }
-
-    protected IEnumerator ChangeNextLayerWeightSubCoroutine_TurnOffAllLayer(AnimatorLayerTypes layerType)
-    {
-        AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-
-        int targetHandMainLayerIndex = (int)targetBlendingDesc._myPart * 2;
-        int targetHandSubLayerIndex = targetHandMainLayerIndex + 1;
-
-        targetBlendingDesc._blendTarget = 0.0f;
-        targetBlendingDesc._blendTarget_Sub = 0.0f;
-
-        targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandMainLayerIndex, targetBlendingDesc._blendTarget);
-        targetBlendingDesc._ownerAnimator.SetLayerWeight(targetHandSubLayerIndex, targetBlendingDesc._blendTarget_Sub);
-
-        return null;
-    }
+    //Corous
 
     #endregion Coroutines
 
@@ -1744,7 +1774,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
     protected void StartNextCoroutine(AnimatorLayerTypes layerType)
     {
-        LinkedList<BodyPartBlendingWork> target = _bodyPartWorks[(int)layerType];
+        LinkedList<BodyPartBlendingWorkBase> target = _bodyPartWorks[(int)layerType];
         target.RemoveFirst();
 
         if (target.Count <= 0)
@@ -1782,218 +1812,9 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
     #endregion Start CoroutineFunc
 
-    protected void StartProceduralWork(AnimatorLayerTypes layerType, BodyPartBlendingWork work)
+    protected void StartProceduralWork(AnimatorLayerTypes layerType, BodyPartBlendingWorkBase work)
     {
-        Coroutine startedCoroutine = null;
-
-        switch (work._workType)
-        {
-            case BodyPartWorkType.ActiveNextLayer:
-                {
-                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        ChangeNextLayerWeightSubCoroutine_ActiveNextLayer(layerType),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.ActiveAllLayer:
-                {
-                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        ChangeNextLayerWeightSubCoroutine_ActiveAllLayer(layerType),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.DeActiveAllLayer:
-                {
-                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        ChangeNextLayerWeightSubCoroutine_DeActiveAllLayer(layerType),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.TurnOffAllLayer:
-                {
-                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        ChangeNextLayerWeightSubCoroutine_TurnOffAllLayer(layerType),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.ChangeAnimation:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        WeaponChange_AnimationCoroutine(work._animationClip, layerType, false),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.ChangeAnimation_ZeroFrame:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        WeaponChange_AnimationCoroutine(work._animationClip, layerType, true),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.AnimationPlayHold:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        AnimationPlayHoldCoroutine(layerType, work),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.AttatchObjet:
-                {
-                    bool isRightHand = (layerType == AnimatorLayerTypes.RightHand);
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        CreateWeaponModelAndEquipCoroutine(layerType, work._createItemStoreDesc),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.DestroyWeapon:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        DestroyWeaponCoroutine(layerType),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.WaitCoroutineUnlock:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        WaitCoroutineLock(layerType, work),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.UnLockCoroutine:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        UnlockCoroutineLock(layerType, work),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.SwitchHand:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        SwitchHandCoroutine(layerType, work),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.OwnerChangeGrabFocusType:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        OwnerChangeWeaponGrabFocusType(work._targetGrabFocusType),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.OwnerIncreaeWeaponIndex:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        OwnerIncreaseWeaponIndex(layerType),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.DestroyHandObject:
-                {
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        OwnerDestroyHandObject(layerType),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.ActiveNextLayerDirectly:
-                {
-                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        ChangeNextLayerWeightSubCoroutine_ActiveNextLayerDirectly(layerType),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.ApplyComsumeableItemSkill:
-                {
-                    AnimatorBlendingDesc targetBlendingDesc = _partBlendingDesc[(int)layerType];
-                    startedCoroutine = StartCoroutine_CallBackAction
-                    (
-                        ApplyComsumeableItemSkill(layerType, work._buffs),
-                        StartNextCoroutine,
-                        layerType
-                    );
-                }
-                break;
-
-            case BodyPartWorkType.End:
-                {
-                    startedCoroutine = null;
-                }
-                break;
-
-            default:
-                Debug.Assert(false, "케이스가 추가됐습니까?");
-                Debug.Break();
-                break;
-
-        }
+        Coroutine startedCoroutine = StartCoroutine_CallBackAction(work.DoWork(), StartNextCoroutine, layerType);
 
         if (startedCoroutine == null)
         {
@@ -2020,9 +1841,14 @@ public class CharacterAnimatorScript : GameCharacterSubScript
 
         fullBodySubLayerWeight = Mathf.Clamp(fullBodySubLayerWeight, 0.0f, 1.0f);
 
-        if (_bodyPartWorks[(int)AnimatorLayerTypes.FullBody].Count > 0 && _bodyPartWorks[(int)AnimatorLayerTypes.FullBody].First.Value._workType == BodyPartWorkType.ChangeAnimation)
+        if (_bodyPartWorks[(int)AnimatorLayerTypes.FullBody].Count > 0)
         {
-            fullBodySubLayerWeight = Mathf.Clamp(fullBodySubLayerWeight, 0.01f, 0.99f);
+            BodyPartBlendingWork_ChangeAnimation cast = _bodyPartWorks[(int)AnimatorLayerTypes.FullBody].First.Value as BodyPartBlendingWork_ChangeAnimation;
+
+            if (cast != null)
+            {
+                fullBodySubLayerWeight = Mathf.Clamp(fullBodySubLayerWeight, 0.01f, 0.99f);
+            }
         }
 
         return fullBodySubLayerWeight;

@@ -249,74 +249,77 @@ public class StatScript : GameCharacterSubScript
 
         target.TryGetValue(buff, out runtimeBuffAsset);
 
-        if (runtimeBuffAsset != null)
-        {
-            //버프가 이미 있습니다. 시간 갱신, 수량 갱신등을 합니다.
+        int buffCount = 0;
 
-            if (buff._SpecialAction_OnlyOne == true)
+        if (buff._SpecialAction_OnlyOne == true)
+        {
+            if (runtimeBuffAsset != null)
             {
                 RemoveBuff(buff, runtimeBuffAsset._Count);
-
-                runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
-
-                target.Add(buff, runtimeBuffAsset);
-
-                BuffChangeStatCalculate(runtimeBuffAsset, count);
-
-                if (_owner._CharacterType == CharacterType.Player)
-                {
-                    BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
-                    script.AddBuff(runtimeBuffAsset);
-                }
-
-                if (buff._Duration > 0.0f)
-                {
-                    runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
-                }
-
-                return;
             }
 
-            if (buff._MaxCount > runtimeBuffAsset._Count)
-            {
-                int prevCount = runtimeBuffAsset._Count;
-                int nextCount = runtimeBuffAsset._Count + count;
-                nextCount = Math.Clamp(nextCount, 0, buff._MaxCount);
-
-                runtimeBuffAsset.SetCount(nextCount);
-
-                BuffChangeStatCalculate(runtimeBuffAsset, nextCount - prevCount);
-            }
-
-
-            if (buff._Refresh == true)
-            {
-                runtimeBuffAsset._timeACC = 0.0f;
-            }
-        }
-        else
-        {
             runtimeBuffAsset = new RuntimeBuffAsset(buff, count, this);
 
-            BuffChangeStatCalculate(runtimeBuffAsset, count);
-
-            if (buff._IsTemporary == true)
-            {
-                return;
-            }
-
-            if (buff._Duration >= 0.0f)
-            {
-                runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
-            }
-
             target.Add(buff, runtimeBuffAsset);
+
+            BuffChangeStatCalculate(runtimeBuffAsset, count);
 
             if (_owner._CharacterType == CharacterType.Player)
             {
                 BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
                 script.AddBuff(runtimeBuffAsset);
             }
+
+            if (buff._Duration > 0.0f)
+            {
+                runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
+            }
+
+            return;
+        }
+
+        if (runtimeBuffAsset == null)
+        {
+            runtimeBuffAsset = new RuntimeBuffAsset(buff, 0, this);
+
+            if (buff._IsTemporary == false)
+            {
+                target.Add(buff, runtimeBuffAsset);
+            }
+        }
+
+        if (buff._MaxCount > runtimeBuffAsset._Count)
+        {
+            int prevCount = runtimeBuffAsset._Count;
+            int nextCount = runtimeBuffAsset._Count + count;
+            nextCount = Math.Clamp(nextCount, 0, buff._MaxCount);
+
+            runtimeBuffAsset.SetCount(nextCount);
+
+            buffCount = nextCount - prevCount;
+        }
+
+        BuffChangeStatCalculate(runtimeBuffAsset, buffCount);
+
+        if (buff._IsTemporary == true)
+        {
+            return;
+        }
+
+        if (buff._Duration >= 0.0f && runtimeBuffAsset._durationCoroutine == null)
+        {
+            runtimeBuffAsset._durationCoroutine = StartCoroutine(BuffRunningCoroutine(runtimeBuffAsset));
+        }
+
+        if (buff._Refresh == true)
+        {
+            runtimeBuffAsset._timeACC = 0.0f;
+        }
+
+        if (_owner._CharacterType == CharacterType.Player)
+        {
+            BuffDisplayScript script = UIManager.Instance._CurrHUD._BuffDisplay;
+            script.AddBuff(runtimeBuffAsset);
         }
     }
 
@@ -635,9 +638,13 @@ public class StatScript : GameCharacterSubScript
                 statOut = GetPassiveStat(PassiveStat.MaxSp);
                 break;
 
+            case ActiveStat.PosturePercent:
+                statOut = 100;
+                break;
+
             default:
-                //Debug.Assert(false, "대응이 되지 않습니다");
-                //Debug.Break();
+                Debug.Assert(false, "대응이 되지 않습니다");
+                Debug.Break();
                 break;
         }
     }

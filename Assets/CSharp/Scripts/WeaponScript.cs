@@ -144,7 +144,7 @@ public class WeaponScript : MonoBehaviour
         }
     }
 
-    protected virtual void LateUpdate()
+    private void LateUpdate()
     {
         FollowSocketTransform();
     }

@@ -346,9 +346,9 @@ public class StateContoller : GameCharacterSubScript
         {
             _fromType = fromType;
             _goalType = goalType;
-            _linkedState = linkedStateAsset;
+            _linkedStateWrapper = linkedStateAsset;
             _additionalCondition = additionalCondition;
-            _hardness = CalculateConditionWeight(_linkedState._conditionAsset);
+            _hardness = CalculateConditionWeight(_linkedStateWrapper._conditionAsset);
 
             if (_additionalCondition != null)
             {
@@ -358,7 +358,7 @@ public class StateContoller : GameCharacterSubScript
 
         public StateGraphType _fromType = StateGraphType.End;
         public StateGraphType _goalType = StateGraphType.End;
-        public LinkedStateAsset _linkedState = null;
+        public LinkedStateAsset _linkedStateWrapper = null;
         public List<ConditionAssetWrapper> _additionalCondition = null;
         public int _hardness = -1;
     }
@@ -541,39 +541,36 @@ public class StateContoller : GameCharacterSubScript
     {
         StatedWillBeChanged();
 
-
-        /*-----------------------------------------------------
-        상태가 바뀌기 전, 이전 상태에 대해 Exit 을 먼저 실행
-        기존에 걸려있던 버프들은 날라가게됨 (상태에 의한것이라면)
-        -----------------------------------------------------*/
         if (_currState != null)
         {
             DoActions(_currState._myState._ExitStateActionTypes);
         }
 
         {
-            //변수 세팅
-            _nextComboReady = true;
-            _previousGraphType = _currentGraphType;
-            _randomStateInstructIndex = -1;
-            _randomStateTryCount = 0;
-            _failedRandomChanceState.Clear();
-
-            //다음상태 세팅
-            _currentGraphType = nextGraphType;
-            _currState = nextState;
-
-            if (_currentGraphType == StateGraphType.WeaponState_RightGraph)
+            //중략 ... 상태 전환 성공시 다음 상태에 대한 변수 세팅
             {
-                _owner.SetLatestWeaponUse(true);
+                //다음상태 변수 세팅
+                _nextComboReady = true;
+                _previousGraphType = _currentGraphType;
+                _currentGraphType = nextGraphType;
+                _currState = nextState;
+
+                _randomStateInstructIndex = -1;
+                _randomStateTryCount = 0;
+                _failedRandomChanceState.Clear();
             }
-            else if (_currentGraphType == StateGraphType.WeaponState_LeftGraph)
-            {
-                _owner.SetLatestWeaponUse(false);
-            }
+
 
             //owner에게 시그널 -> 다른 컴포넌트들이 상태 변화를 실행함
-            _owner.StateChanged(_currState);
+            {
+                if (_currentGraphType == StateGraphType.WeaponState_RightGraph ||
+                    _currentGraphType == StateGraphType.WeaponState_LeftGraph)
+                {
+                    _owner.SetLatestWeaponUse(_currentGraphType == StateGraphType.WeaponState_RightGraph);
+                }
+                _owner.StateChanged(_currState);
+            }
+
         }
 
         AllStopCoroutine();
@@ -698,18 +695,71 @@ public class StateContoller : GameCharacterSubScript
         }
     }
 
-    public StateAsset CheckChangeState_Recursion2(out StateGraphType nextGraphType) //최종 상태를 결정할때까지 재귀적으로 실행할 함수
+
+    private bool CheckStateJumpCondotion(List<ConditionAssetWrapper> conditionAssets, LinkedStateAssetWrapper linkedStateAssetWrapper, StateAsset targetState, bool isRightSided)
     {
-        //List<StateAsset> record = new List<StateAsset>();
-        StateAsset targetState = _currState;
+        foreach (ConditionAssetWrapper conditionAssetWrapper in conditionAssets)
+        {
+            if (CheckCondition(targetState, linkedStateAssetWrapper, conditionAssetWrapper, isRightSided) == false)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void ReadyCheckNextState(ref StateAsset targetState,StateAsset nextState, ref StateGraphType targetGraphType, StateGraphType nextStateGraph, ref bool stateChangeGraunted)
+    {
+        if (stateChangeGraunted == false)
+        {
+            StatedWillBeChanged();
+            stateChangeGraunted = true;
+        }
+
+        targetState = nextState;
+        targetGraphType = nextStateGraph;
+        ReadyLinkedStates(targetGraphType, targetState, true);
+    }
+
+    private bool CheckStateNeedStat(List<ActiveStatNeedTarget> needActiveStatList, StatScript ownerStatScript)
+    {
+        foreach (var item in needActiveStatList)
+        {
+            int currVar = ownerStatScript.GetActiveStat(item._statType);
+
+            if (currVar < item._needAmount || currVar == 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    //최종 상태를 결정할때까지 재귀적으로 실행할 함수
+    public StateAsset CheckChangeState_Recursion(out StateGraphType nextGraphType) 
+    {
         nextGraphType = _currentGraphType;
 
-        int successCount = 0;
+        //중략...(반복문에서 사용할 변수들 미리 선언)
+        #region PreDeclare
+        StatScript ownerStatScript = _owner.GCST<StatScript>();
+        StateAsset targetState = _currState;
+        LinkedStateAsset linkedState = null;
+        List<ConditionAssetWrapper> conditionAssetWrappers = null;
+
+        bool isRightSided = false;
         bool isStateChangeGuaranted = false;
         bool isSuccess = false;
 
+        int successCount = 0;
+        #endregion PreDeclare
+
         while (true)
         {
+            //중략...(디버깅 : 100회 이상이면 Break)
             if (successCount > 100)
             {
                 Debug.Assert(false, "상태가 계속 바뀌려합니다 : " + targetState.name);
@@ -717,117 +767,45 @@ public class StateContoller : GameCharacterSubScript
                 return null;
             }
 
-            if (_currLinkedStates.Count <= 0)
-            {
-                isSuccess = false;
-            }
-
-
-            //현재 연출중인 상태가 NeedStat 이다
+            
             if (targetState._myState._isNeedStatLoopBreak == true)
             {
-                bool isLoopBreak = false;
+                bool isLoopContinue = CheckStateNeedStat(targetState._myState._needStat_LoopBreak._needActiveStatList, ownerStatScript);
 
-                StatScript ownerStatScript = _owner.GCST<StatScript>();
-
-                foreach (var item in targetState._myState._needStat_LoopBreak._needActiveStatList)
-                {
-                    int currVar = ownerStatScript.GetActiveStat(item._statType);
-
-                    if (currVar < item._needAmount || currVar == 0)
-                    {
-                        isLoopBreak = true;
-                        break;
-                    }
-                }
-
-                if (isLoopBreak == true)
+                if (isLoopContinue == false)
                 {
                     //Idle로 세팅할 것
-                    if (isStateChangeGuaranted == false)
-                    {
-                        StatedWillBeChanged();
-                        isStateChangeGuaranted = true;
-                    }
-
-                    targetState = GetMyIdleStateAsset();
-                    nextGraphType = StateGraphType.LocoStateGraph;
-                    ReadyLinkedStates(nextGraphType, targetState, true);
+                    ReadyCheckNextState(ref targetState, GetMyIdleStateAsset(), ref nextGraphType, StateGraphType.LocoStateGraph, ref isStateChangeGuaranted);
                     continue;
                 }
             }
 
             foreach (LinkedStateAssetWrapper linkedStateAssetWrapper in _currLinkedStates)
             {
-                isSuccess = true;
+                linkedState = linkedStateAssetWrapper._linkedStateWrapper;
+                conditionAssetWrappers = linkedState._conditionAsset;
+                isRightSided = (linkedStateAssetWrapper._goalType != StateGraphType.WeaponState_LeftGraph && linkedStateAssetWrapper._fromType != StateGraphType.WeaponState_LeftGraph);
 
-                StateGraphType nextStateGraphtype = linkedStateAssetWrapper._fromType;
-                LinkedStateAsset linkedState = linkedStateAssetWrapper._linkedState;
-                List<ConditionAssetWrapper> conditionAssetWrappers = linkedState._conditionAsset;
-
-                bool isRightSided = (linkedStateAssetWrapper._goalType != StateGraphType.WeaponState_LeftGraph && linkedStateAssetWrapper._fromType != StateGraphType.WeaponState_LeftGraph);
-
-                foreach (ConditionAssetWrapper conditionAssetWrapper in conditionAssetWrappers)
-                {
-                    if (CheckCondition(targetState, linkedStateAssetWrapper, conditionAssetWrapper, isRightSided) == false)
-                    {
-                        isSuccess = false;
-                        break;
-                    }
-                }
+                isSuccess = CheckStateJumpCondotion(conditionAssetWrappers, linkedStateAssetWrapper, targetState, isRightSided);
 
                 if (linkedStateAssetWrapper._additionalCondition != null &&
                     linkedStateAssetWrapper._additionalCondition.Count > 0 &&
                     isSuccess == true)
                 {
-                    foreach (ConditionAssetWrapper conditionAssetWrapper in linkedStateAssetWrapper._additionalCondition)
-                    {
-                        if (CheckCondition(targetState, linkedStateAssetWrapper, conditionAssetWrapper, isRightSided) == false)
-                        {
-                            isSuccess = false;
-                            break;
-                        }
-                    }
+                    isSuccess = CheckStateJumpCondotion(linkedStateAssetWrapper._additionalCondition, linkedStateAssetWrapper, targetState, isRightSided);
                 }
 
+
                 //NeedStat검사
-                StateAsset nextState = linkedStateAssetWrapper._linkedState._linkedState;
+                StateAsset nextState = linkedStateAssetWrapper._linkedStateWrapper._linkedState;
                 if (isSuccess == true && nextState._myState._isNeedStat == true)
                 {
-                    StatScript ownerStatScript = _owner.GCST<StatScript>();
-
-                    foreach (var item in nextState._myState._needStat._needActiveStatList)
-                    {
-                        int currVar = ownerStatScript.GetActiveStat(item._statType);
-
-                        if (currVar < item._needAmount || currVar == 0)
-                        {
-                            isSuccess = false;
-                            break;
-                        }
-                    }
+                    isSuccess = CheckStateNeedStat(nextState._myState._needStat._needActiveStatList, ownerStatScript);
 
                     if (isSuccess == false)
                     {
                         continue;
                     }
-
-                    foreach (var item in nextState._myState._needStat._needPassiveStatList)
-                    {
-                        int currVar = ownerStatScript.GetPassiveStat(item._statType);
-
-                        if (currVar < item._needAmount || currVar == 0)
-                        {
-                            isSuccess = false;
-                            break;
-                        }
-                    }
-
-                    if (isSuccess == false)
-                    {
-                        continue;
-                    }
-
 
                     foreach (var item in nextState._myState._needStat._needActiveStatList)
                     {
@@ -836,38 +814,27 @@ public class StateContoller : GameCharacterSubScript
                             ownerStatScript.ChangeActiveStat(item._statType, -item._needAmount);
                         }
                     }
-
-                    foreach (var item in nextState._myState._needStat._needPassiveStatList)
-                    {
-                        if (item._isConsume == true)
-                        {
-                            //그만큼 소모할겁니다.
-                            //근데 컨텐츠적으로 패시브 스텟에 컨슘이 있다고? 
-                        }
-                    }
                 }
 
                 if (isSuccess == true)
                 {
-                    if (isStateChangeGuaranted == false)
+                    ReadyCheckNextState(ref targetState, linkedStateAssetWrapper._linkedStateWrapper._linkedState, ref nextGraphType, linkedStateAssetWrapper._goalType, ref isStateChangeGuaranted);
+
+                    //점프에 대한 예외처리
                     {
-                        StatedWillBeChanged();
-                        isStateChangeGuaranted = true;
+                        if (targetState._myState._EnterStateActionTypes.Count > 0 &&
+                            targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump)
+                        {
+                            return targetState;
+                        }
                     }
 
-                    targetState = linkedStateAssetWrapper._linkedState._linkedState;
-
-                    nextGraphType = linkedStateAssetWrapper._goalType;
-                    ReadyLinkedStates(nextGraphType, targetState, true);
-
-                    if (targetState._myState._EnterStateActionTypes.Count > 0 && targetState._myState._EnterStateActionTypes[0] == StateActionType.Jump) { return targetState; }
                     break;
                 }
             }
 
             if (isSuccess == true)
             {
-                //record.Add(targetState);
                 successCount++;
                 continue;
             }
@@ -886,11 +853,9 @@ public class StateContoller : GameCharacterSubScript
 
     public void DoWork()
     {
-        Debug.Assert(_currState != null, "스테이트 null입니다");
-
         StateGraphType nextGraphType = StateGraphType.End;
 
-        StateAsset nextState = CheckChangeState_Recursion2(out nextGraphType);
+        StateAsset nextState = CheckChangeState_Recursion(out nextGraphType);
 
         if (nextState != null)
         {
@@ -1676,7 +1641,7 @@ public class StateContoller : GameCharacterSubScript
                 {
                     forcedValue = true;
 
-                    ret = _owner.GCST<EnemyAIScript>().InAttackRangeCheck(nextStateAsset._linkedState._linkedState);
+                    ret = _owner.GCST<EnemyAIScript>().InAttackRangeCheck(nextStateAsset._linkedStateWrapper._linkedState);
                 }
                 break;
 
@@ -1748,7 +1713,7 @@ public class StateContoller : GameCharacterSubScript
             case ConditionType.AI_StateCoolTimeCheck:
                 {
                     EnemyAIScript ownerEnemyAIScript = _owner.GCST<EnemyAIScript>();
-                    ret = ownerEnemyAIScript.FindCoolTimeCoroutine(nextStateAsset._linkedState._linkedState);
+                    ret = ownerEnemyAIScript.FindCoolTimeCoroutine(nextStateAsset._linkedStateWrapper._linkedState);
                 }
                 break;
 
@@ -1866,31 +1831,31 @@ public class StateContoller : GameCharacterSubScript
                 {
                     float randomValue = UnityEngine.Random.Range(0.0f, 100.0f); // 0.0f ~ 100.0f 범위의 float 생성
 
-                    if (nextStateAsset._linkedState._linkedState._myState._isAIState == false)
+                    if (nextStateAsset._linkedStateWrapper._linkedState._myState._isAIState == false)
                     {
                         Debug.Assert(false, "AI_TryRandomChance 조건인데 해당 값이 false입니다");
                         Debug.Break();
                         return false;
                     }
 
-                    if (_failedRandomChanceState.Contains(nextStateAsset._linkedState._linkedState) == true)
+                    if (_failedRandomChanceState.Contains(nextStateAsset._linkedStateWrapper._linkedState) == true)
                     {
                         ret = false;
                         break;
                     }
 
-                    if (nextStateAsset._linkedState._linkedState._myState._aiStateDesc._randomChancePercentage < 0.0f)
+                    if (nextStateAsset._linkedStateWrapper._linkedState._myState._aiStateDesc._randomChancePercentage < 0.0f)
                     {
-                        Debug.Assert(false, "AI_TryRandomChance 조건에는 확률에 유효한값이 있어야합니다" + nextStateAsset._linkedState._linkedState.name);
+                        Debug.Assert(false, "AI_TryRandomChance 조건에는 확률에 유효한값이 있어야합니다" + nextStateAsset._linkedStateWrapper._linkedState.name);
                         Debug.Break();
                         return false;
                     }
 
-                    ret = (randomValue <= nextStateAsset._linkedState._linkedState._myState._aiStateDesc._randomChancePercentage);
+                    ret = (randomValue <= nextStateAsset._linkedStateWrapper._linkedState._myState._aiStateDesc._randomChancePercentage);
 
                     if (ret == false)
                     {
-                        _failedRandomChanceState.Add(nextStateAsset._linkedState._linkedState);
+                        _failedRandomChanceState.Add(nextStateAsset._linkedStateWrapper._linkedState);
                     }
                 }
                 break;

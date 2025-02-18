@@ -48,7 +48,7 @@ public class Gunscript2 : WeaponScript
     private List<int> _firingEffectedLayer = new List<int>();
 
 
-    protected override void LateUpdate()
+    private void LateUpdate()
     {
         FollowSocketTransform();
     }
@@ -88,8 +88,8 @@ public class Gunscript2 : WeaponScript
     {
         if (GetAimStateChanged() == true)
         {
-            //바뀌었다.
             _aimScript.ResetAimRotation();
+
             if (_isAimed == true)
             {
                 _aimScript.OnAimState(AimState.eTPSAim);
@@ -98,14 +98,14 @@ public class Gunscript2 : WeaponScript
             {
                 _aimScript.OffAimState();
             }
+
             _aimScript.TurnOnRigging(_isAimed);
         }
 
 
         if (GetIKStateChanged() == true)
         {
-            //바뀌었다.
-            CalculateAimIK(_isIK); //1. IK를 해야합니다.
+            CalculateAimIK(_isIK); 
         }
 
         if (_isAimed == true && _reloadingCoroutine == null)
@@ -114,12 +114,13 @@ public class Gunscript2 : WeaponScript
             Vector3 stockPosition = _shoulderStock_Unity.transform.position;
             Vector3 deltaPosition = stockPosition - gunPosition;
 
-
             Vector3 targetPosition = transform.position + deltaPosition;
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _followPositionRef, _dampingSpeed * Time.smoothDeltaTime);
 
 
-            //총구를 Aim지점을 바라보게 할겁니다. 근데 Animation에 따라서 미세한 조정을 할겁니다.
+            /*----------------------------------------------------------------------------------
+            |NOTI| 총구를 Aim지점을 바라보게 할겁니다. 근데 Animation에 따라서 미세한 조정을 할겁니다.
+            ----------------------------------------------------------------------------------*/
             DelicateRotationControl();
         }
         else
@@ -251,12 +252,27 @@ public class Gunscript2 : WeaponScript
             Debug.Assert(_stockPosition != null, "자세제어를 위해 견착위치가 필요합니다(권총도 마찬가지)");
 
             _shoulderStock_Unity = (_isRightHandWeapon == true)
-              ? _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightUpperArm)
-              : _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.LeftUpperArm);
+              ? _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightUpperArm)
+              : _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.LeftUpperArm);
+
+            if (_shoulderStock_Unity == null)
+            {
+                Animator ani = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator();
+
+                _shoulderStock_Unity = (_isRightHandWeapon == true)
+                  ? _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightShoulder)
+                  : _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.LeftShoulder);
+
+                if (_shoulderStock_Unity == null)
+                {
+                    Debug.Assert(false, "총에서 어깨 위치가 null이 나와선 안된다");
+                    Debug.Break();
+                }
+            }
 
             _elbowPosition_Unity = (_isRightHandWeapon == true)
-              ? _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightLowerArm)
-              : _owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.LeftLowerArm);
+              ? _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.RightLowerArm)
+              : _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.LeftLowerArm);
         }
 
         //조준 스크립트, 리깅관련

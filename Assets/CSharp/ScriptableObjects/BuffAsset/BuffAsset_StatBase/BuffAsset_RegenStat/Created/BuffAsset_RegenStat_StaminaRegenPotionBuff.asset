@@ -12,14 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb8685d6aef5b934c91b1d07c924bbe0, type: 3}
   m_Name: BuffAsset_RegenStat_StaminaRegenPotionBuff
   m_EditorClassIdentifier: 
-  _buffKey: 0
+  _buffKey: 18
   _buffName: StaminaRegenPotionBuff
   _maxCount: 1
   _refresh: 1
   _durationExpireOnce: 1
   _specialAction_OnlyOne: 0
+  _isTemporary: 0
   _isDebuff: 1
-  _duration: 30
+  _duration: 60
   _buffUIImage: {fileID: 21300000, guid: e109672edb5028c4ca7ac3a753134aa0, type: 3}
   _buffList:
   - _applyType: 1
