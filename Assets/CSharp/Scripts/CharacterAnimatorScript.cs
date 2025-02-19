@@ -502,7 +502,7 @@ public class AnimatorBlendingDesc
 
     public float _blendTarget = 0.0f;
     public float _blendTarget_Sub = 0.0f;
-    public float _transitionSpeed = 7.0f;
+    public float _transitionSpeed = 100.0f;
 
     public bool _isUsingFirstLayer = false;
 }

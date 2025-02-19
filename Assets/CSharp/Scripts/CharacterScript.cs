@@ -1602,9 +1602,9 @@ public class CharacterScript : GameActorScript, IHitable
         statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, attacker, victim);
 
 
-        Debug.Log("들어온 데미지" + damage._damage);
-        Debug.Log("들어온 스테미나데미지" + damage._damagingStamina);
-        Debug.Log("들어온 파워" + damage._damagePower);
+        //Debug.Log("들어온 데미지" + damage._damage);
+        //Debug.Log("들어온 스테미나데미지" + damage._damagingStamina);
+        //Debug.Log("들어온 파워" + damage._damagePower);
 
 
         StateGraphType nextGraphType = StateGraphType.HitStateGraph;
@@ -1726,13 +1726,15 @@ public class CharacterScript : GameActorScript, IHitable
 
     public void WhenTriggerEnterWithWeaponCollider(Collider other, bool isWeakCollider)
     {
+        //Debug.Log("WhenTriggerEnterWithWeaponCollider");
+
         if (_dead == true) {return;}
 
         //연쇄 충돌이라면 무시합니다. 한번만 계산할겁니다.
-        if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == false)
-        {
-            return;
-        }
+        //if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == false)
+        //{
+        //    return;
+        //}
 
         /*----------------------------------------------------
         |NOTI| isWeakCollider 변수가 함께 들어옵니다.

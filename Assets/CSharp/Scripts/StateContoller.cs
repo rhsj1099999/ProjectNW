@@ -767,7 +767,11 @@ public class StateContoller : GameCharacterSubScript
                 return null;
             }
 
-            
+            if (_currLinkedStates.Count <= 0)
+            {
+                isSuccess = false;
+            }
+
             if (targetState._myState._isNeedStatLoopBreak == true)
             {
                 bool isLoopContinue = CheckStateNeedStat(targetState._myState._needStat_LoopBreak._needActiveStatList, ownerStatScript);

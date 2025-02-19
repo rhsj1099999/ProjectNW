@@ -8,6 +8,8 @@ public class ColliderScript : MonoBehaviour
     [SerializeField] protected ColliderAttachType _attachType = ColliderAttachType.ENEND;
     protected Collider _attackCollider = null;
     protected CharacterColliderScript _ownerCharacterColliderScript = null;
+    protected bool _isActive = true;
+    public bool _IsActive => _isActive;
 
     public virtual ColliderAttachType GetAttachType() { return _attachType; }
 

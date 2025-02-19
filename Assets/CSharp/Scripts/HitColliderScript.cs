@@ -31,6 +31,7 @@ public class HitColliderScript : MonoBehaviour
     {
         if (_enterAction != null)
         {
+            Debug.Log("Enter");
             _enterAction(other, _isWeakPoint);
         }
     }

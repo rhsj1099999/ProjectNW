@@ -19,11 +19,14 @@ public class CharacterColliderScript : GameCharacterSubScript
         public float _targetTime = -1.0f;
         public float _currTime = 0.0f;
         public Coroutine _runningCoroutine = null;
+        public uint _key = 0;
+        public bool _isActivated = false;
     }
 
 
     private Dictionary<ColliderAttachType, GameObject> _colliders = new Dictionary<ColliderAttachType, GameObject>();
     private List<LinkedList<ColliderWorkDesc>> _colliderWorks = new List<LinkedList<ColliderWorkDesc>>();
+    private uint _keyMaker = 0;
 
 
     public override void Init(CharacterScript owner)
@@ -89,6 +92,7 @@ public class CharacterColliderScript : GameCharacterSubScript
             if (colliderObject != null)
             {
                 _colliders[type].SetActive(false);
+                AnimationAttackManager.Instance.ClearCollider(colliderObject);
             }
 
             colliderWorkList.Clear();
@@ -180,33 +184,50 @@ public class CharacterColliderScript : GameCharacterSubScript
 
 
             //------------------------------------------------------------------
-            float animationSpeed = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetFloat("Speed");
+            //float animationSpeed = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetFloat("Speed");
+            float animationSpeed = _owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.AttackSpeedPercentage) / 100.0f;
             //------------------------------------------------------------------
 
+            float time_1 = -1.0f;
+            float time_2 = -1.0f;
 
+            
             if (desc._frameUp >= 0.0f)
             {
-                float targetFrame = (float)desc._frameUp;
+                float targetFrame = desc._frameUp;
                 float animationFPS = currAnimationClip.frameRate;
 
                 ColliderWorkDesc colliderWorkDesc = new ColliderWorkDesc();
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;
-                colliderWorkDesc._runningCoroutine = StartCoroutine(ActiveColliderCoroutine(colliderWorkDesc));
                 colliderWorkDesc._type = type;
-                _colliderWorks[(int)type].AddLast(colliderWorkDesc);
+                colliderWorkDesc._key = _keyMaker++;
+                colliderWorkDesc._runningCoroutine = StartCoroutine(ActiveColliderCoroutine(colliderWorkDesc));
+                //_colliderWorks[(int)type].AddLast(colliderWorkDesc);
+                time_1 = colliderWorkDesc._targetTime;
             }
 
 
             if (desc._frameUnder >= 0.0f)
             {
-                float targetFrame = (float)desc._frameUnder;
+                float targetFrame = desc._frameUnder;
                 float animationFPS = currAnimationClip.frameRate;
 
                 ColliderWorkDesc colliderWorkDesc = new ColliderWorkDesc();
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;
-                colliderWorkDesc._runningCoroutine = StartCoroutine(DeActiveColliderCoroutine(colliderWorkDesc));
                 colliderWorkDesc._type = type;
-                _colliderWorks[(int)type].AddLast(colliderWorkDesc);
+                colliderWorkDesc._key = _keyMaker++;
+                colliderWorkDesc._runningCoroutine = StartCoroutine(DeActiveColliderCoroutine(colliderWorkDesc));
+                //_colliderWorks[(int)type].AddLast(colliderWorkDesc);
+                time_2 = colliderWorkDesc._targetTime;
+            }
+
+            if (time_1 > 0.0f && time_2 > 0.0f)
+            {
+                float delta = time_2 - time_1;
+                if (delta <= Time.fixedDeltaTime) 
+                {
+                    Debug.Assert(false, "충돌이 부정확할 수 있습니다");
+                }
             }
         }
     }
@@ -225,6 +246,10 @@ public class CharacterColliderScript : GameCharacterSubScript
                 _colliders.TryGetValue(workDesc._type, out targetObject);
                 if (targetObject != null) 
                 {
+                    if (targetObject.activeSelf == true)
+                    {
+                        Debug.Assert(false, "이미 활성화가 돼 있었다");
+                    }
                     targetObject.SetActive(true);
                 }
                 else
@@ -237,7 +262,8 @@ public class CharacterColliderScript : GameCharacterSubScript
             yield return null;
         }
 
-        _colliderWorks[(int)workDesc._type].RemoveFirst(); //다했으니 뺀다
+
+        //_colliderWorks[(int)workDesc._type].RemoveFirst(); //다했으니 뺀다
     }
 
 
@@ -253,16 +279,21 @@ public class CharacterColliderScript : GameCharacterSubScript
                 _colliders.TryGetValue(workDesc._type, out targetObject);
                 if (targetObject != null)
                 {
+                    if (targetObject.activeSelf == false)
+                    {
+                        Debug.Assert(false, "이미 비활성화");
+                    }
                     AnimationAttackManager.Instance.ClearCollider(targetObject);
                     targetObject.SetActive(false);
                 }
+
                 break;
             }
 
             yield return null;
         }
 
-        _colliderWorks[(int)workDesc._type].RemoveFirst(); //다했으니 뺀다
+        //_colliderWorks[(int)workDesc._type].RemoveFirst(); //다했으니 뺀다
     }
     
 }
