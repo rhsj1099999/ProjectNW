@@ -1726,15 +1726,13 @@ public class CharacterScript : GameActorScript, IHitable
 
     public void WhenTriggerEnterWithWeaponCollider(Collider other, bool isWeakCollider)
     {
-        //Debug.Log("WhenTriggerEnterWithWeaponCollider");
-
         if (_dead == true) {return;}
 
-        //연쇄 충돌이라면 무시합니다. 한번만 계산할겁니다.
-        //if (AnimationAttackManager.Instance.TriggerEnterCheck(this, other) == false)
-        //{
-        //    return;
-        //}
+        //연쇄 충돌이라면 무시합니다.한번만 계산할겁니다.
+        if (WeaponColliderManager.Instance.TriggerEnterCheck(this, other) == false)
+        {
+            return;
+        }
 
         /*----------------------------------------------------
         |NOTI| isWeakCollider 변수가 함께 들어옵니다.

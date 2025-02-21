@@ -12,7 +12,7 @@ public interface ISubManager
     public abstract void SubManagerStart();
 }
 
-public abstract class SubManager<T> : MonoBehaviour, ISubManager where T : SubManager<T>
+public abstract class SubManager<T> : MMonoBehaviour, ISubManager where T : SubManager<T>
 {
     protected static T _instance = null;
 
