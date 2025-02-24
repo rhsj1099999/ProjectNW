@@ -21,6 +21,7 @@ MonoBehaviour:
     _isAttackState_effectedBySpeed: 1
     _attackDamageMultiply:
       _damageReason: 1
+      _hitType: 1
       _damage: 1
       _damagePower: 1
       _damagingStamina: 1
@@ -50,3 +51,7 @@ MonoBehaviour:
       - _statType: 1
         _needAmount: 5
         _isConsume: 1
+    _isNeedStatLoopBreak: 0
+    _needStat_LoopBreak:
+      _needPassiveStatList: []
+      _needActiveStatList: []

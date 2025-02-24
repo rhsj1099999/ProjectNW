@@ -57,9 +57,9 @@ public class ZombieScript : CharacterScript, IHitable
         }
     }
 
-    public override void DealMe_Final(DamageDesc damage, bool isWeakPoint, CharacterScript attacker, CharacterScript victim)
+    public override void DealMe_Final(DamageDesc damage, bool isWeakPoint, CharacterScript attacker, CharacterScript victim, ref Vector3 closetPoint, ref Vector3 hitNormal)
     {
-        base.DealMe_Final(damage, isWeakPoint, attacker, victim);
+        base.DealMe_Final(damage, isWeakPoint, attacker, victim, ref closetPoint, ref hitNormal);
 
         if (_dead == false)
         {
@@ -84,6 +84,11 @@ public class ZombieScript : CharacterScript, IHitable
             StopCoroutine(_battleUICoroutine);
             TurnOffBattleUI();
         }
+    }
+
+    public override void YouKillThisObject(GameObject killObject)
+    {
+        TurnOffBattleUI();
     }
 
     private IEnumerator ShowBattleUICoroutine()

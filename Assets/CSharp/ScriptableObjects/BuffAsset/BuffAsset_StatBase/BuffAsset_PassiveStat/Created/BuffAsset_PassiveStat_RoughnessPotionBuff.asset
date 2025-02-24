@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b873ffa554e566949b7d99ea20fab6d5, type: 3}
   m_Name: BuffAsset_PassiveStat_RoughnessPotionBuff
   m_EditorClassIdentifier: 
-  _buffKey: 11
+  _buffKey: 13
   _buffName: RoughnessPotionBuff
   _maxCount: 1
   _refresh: 1
@@ -20,7 +20,7 @@ MonoBehaviour:
   _specialAction_OnlyOne: 0
   _isTemporary: 0
   _isDebuff: 0
-  _duration: 60
+  _duration: 30
   _buffUIImage: {fileID: 21300000, guid: f86f13291815ad44ab863d61f605dfac, type: 3}
   _buffList:
   - _applyType: 1

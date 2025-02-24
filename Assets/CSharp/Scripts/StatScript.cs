@@ -28,7 +28,9 @@ public class StatScript : GameCharacterSubScript
         Before_AttackerBuffCheck,
         After_AttackerBuffCheck,
 
-        End,
+        ApplyDamage_AttackerCallback,
+
+        End = 11,
     }
 
     public class RuntimeBuffAsset
@@ -43,11 +45,12 @@ public class StatScript : GameCharacterSubScript
         public StatScript _myOwner = null;
         public BuffAssetBase _fromAsset = null;
         public Coroutine _durationCoroutine = null;
-        public float _timeACC = 0.0f;
         public Dictionary<BuffAction, BuffActionClass> _buffActions = new Dictionary<BuffAction, BuffActionClass>();
+        private Action<int> _countDelegates = null;
+
+        public float _timeACC = 0.0f;
 
         public void AddDelegate(Action<int> action) {_countDelegates += action;}
-        private Action<int> _countDelegates = null;
 
         private int _count = 0;
         public int _Count => _count;
@@ -63,9 +66,6 @@ public class StatScript : GameCharacterSubScript
                     Debug.Break();
                 }
             }
-
-
-
 
             //델리게이터 호출
             {
@@ -95,7 +95,6 @@ public class StatScript : GameCharacterSubScript
 
     private Dictionary<BuffAssetBase, RuntimeBuffAsset> _buffs = new Dictionary<BuffAssetBase, RuntimeBuffAsset>();
     private Dictionary<BuffAssetBase, RuntimeBuffAsset> _deBuffs = new Dictionary<BuffAssetBase, RuntimeBuffAsset>();
-
     public Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>> _buffActions = new Dictionary<DamagingProcessDelegateType, HashSet<RuntimeBuffAsset>>();
 
 
@@ -105,16 +104,11 @@ public class StatScript : GameCharacterSubScript
             ? _deBuffs
             : _buffs;
 
-        RuntimeBuffAsset ret = null;
-        targetDict.TryGetValue(buff, out ret);
+        RuntimeBuffAsset runtimeBuffAsset = null;
 
-        if (ret == null)
-        {
-            Debug.Assert(false, "해당 버프가 걸린적이 없습니다");
-            Debug.Break();
-        }
+        targetDict.TryGetValue(buff, out runtimeBuffAsset);
 
-        return ret;
+        return runtimeBuffAsset;
     }
 
 
@@ -146,10 +140,6 @@ public class StatScript : GameCharacterSubScript
         {
            _regenStatChangeDelegates.Add((RegenStat)i, null);
         }
-
-
-
-
 
         for (int i = (int)RegenStat.HPRegen; i <= (int)PassiveStat.End; i++)
         {
@@ -347,8 +337,12 @@ public class StatScript : GameCharacterSubScript
         }
 
         int prevCount = existRuntimeBuffAsset._Count;
-        int nextCount = existRuntimeBuffAsset._Count - count;
+        int nextCount = (count < 0)
+            ? 0
+            : existRuntimeBuffAsset._Count - count;
+
         nextCount = Math.Clamp(nextCount, 0, buff._MaxCount);
+
 
         existRuntimeBuffAsset.SetCount(nextCount);
 

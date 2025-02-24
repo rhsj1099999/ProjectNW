@@ -128,6 +128,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         BeidouElementalArtDamageReturn,
         WrioWeavingBuff,
         DamageReflection_SpikeArmor,
+        AatroxSword_DrainHP,
         None,
     }
 
@@ -158,17 +159,25 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         {
             AddBuffAction(BuffAction.BeidouElementalArt, new BuffActionClass_BeidouDamageACC());
         }
+
         //북두 반격 데미지방출버프
         {
             AddBuffAction(BuffAction.BeidouElementalArtDamageReturn, new BuffActionClass_BeidouElementalArtReturn());
         }
+
         //라이오 위빙 버프
         {
             AddBuffAction(BuffAction.WrioWeavingBuff, new BuffActionClass_WrioWeaving());
         }
-        //라이오 위빙 버프
+
+        //라이오 위빙 버프_가시갑옷
         {
             AddBuffAction(BuffAction.DamageReflection_SpikeArmor, new BuffActionClass_DamageReflectionSpikeArmor());
+        }
+
+        //아트록스 흡혈
+        {
+            AddBuffAction(BuffAction.AatroxSword_DrainHP, new BuffActionClass_AatroxDrainBuff());
         }
     }
 
@@ -230,8 +239,13 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         public int _damageACC = 0;
         public override void BuffAction(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
         {
-            CharacterScript ownerCharacterScript = victim.GetComponent<CharacterScript>();
-            StatScript ownerStatScript = ownerCharacterScript.GCST<StatScript>();
+            StatScript ownerStatScript = victim.GCST<StatScript>();
+
+            //이펙트 생성
+            {
+                Vector3 ChestPosition = victim.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.Chest).transform.position;
+                EffectManager.Instance.CreateEffect("HitSparkBeidouDamageACC", Vector3.up, ChestPosition);
+            }
 
             int ownerMaxHP = ownerStatScript.GetPassiveStat(LevelStatAsset.PassiveStat.MaxHP);
 
@@ -258,7 +272,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
             if (beforeACCLvl != afterACCLvl)
             {
                 Debug.Log("북두 뎀 누산 버프 || 레벨 증가 : " + afterACCLvl);
-                ownerCharacterScript.GCST<StateContoller>().OverrideAnimationClip(afterACCLvl - 1);
+                victim.GCST<StateContoller>().OverrideAnimationClip(afterACCLvl - 1);
             }
 
         }
@@ -354,5 +368,27 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
         }
 
         public override BuffActionClass CopyMe() { return new BuffActionClass_DamageReflectionSpikeArmor(_myKey, _myTiming); }
+    }
+    public class BuffActionClass_AatroxDrainBuff : BuffActionClass
+    {
+        public BuffActionClass_AatroxDrainBuff() { }
+        public BuffActionClass_AatroxDrainBuff(int buffKey, DamagingProcessDelegateType timing) : base(buffKey, timing) { }
+
+        public override void BuffAction(DamageDesc damage, bool weakPoint, CharacterScript attacker, CharacterScript victim)
+        {
+            StatScript attackerStatScript = attacker.GCST<StatScript>();
+
+            //이펙트 생성
+            {
+                Vector3 ChestPosition = victim.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBoneTransform(HumanBodyBones.Chest).transform.position;
+                EffectManager.Instance.CreateEffect("HitSparkCritical", Vector3.up, ChestPosition);
+            }
+
+            int currHP = attackerStatScript.GetActiveStat(LevelStatAsset.ActiveStat.Hp);
+
+            attackerStatScript.ChangeActiveStat(LevelStatAsset.ActiveStat.Hp, (int)(damage._damage * 2.0f));
+        }
+
+        public override BuffActionClass CopyMe() { return new BuffActionClass_AatroxDrainBuff(_myKey, _myTiming); }
     }
 }

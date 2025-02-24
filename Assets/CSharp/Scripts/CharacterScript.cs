@@ -74,19 +74,28 @@ public class DamageDesc
         Collision,
     }
 
-    public class DamageDescToApply
+    public enum HitType
     {
-        public int _damage = 1;
-        public int _damagePower = 1;
-        public int _damagingStamina = 1;
+        Blunt,
+        Slash,
+        End,
     }
 
-    public DamageDesc ShallowCopy()
-    {
-        return MemberwiseClone() as DamageDesc;
-    }
+    //public class DamageDescToApply
+    //{
+    //    public int _damage = 1;
+    //    public int _damagePower = 1;
+    //    public int _damagingStamina = 1;
+    //}
+
+    //public DamageDesc ShallowCopy()
+    //{
+    //    return MemberwiseClone() as DamageDesc;
+    //}
 
     public DamageReason _damageReason = DamageReason.Collision;
+    public HitType _hitType = HitType.Blunt;
+
     public float _damage = 1;
     public float _damagePower = 1;
     public float _damagingStamina = 1;
@@ -115,6 +124,7 @@ public class CharacterScript : GameActorScript, IHitable
 
     //캐릭터 중심
     protected GameObject _characterHeart = null;
+    public GameObject _CharacterHeart => _characterHeart;
 
     //대표 컴포넌트들
     public List<GameCharacterSubScript> _components = new List<GameCharacterSubScript>();
@@ -518,21 +528,43 @@ public class CharacterScript : GameActorScript, IHitable
             //_tempCurrRightWeapon = _tempRightWeaponPrefabs[_currRightWeaponIndex];
         }
     }
+
     public void DestroyWeapon(AnimatorLayerTypes layerType)
     {
         StateGraphType targetType = StateGraphType.End;
 
+        //아이템 버프 해제
+        ItemAsset_Weapon weaponAsset = null;
+        StatScript statScript = GCST<StatScript>();
+
+
         if (layerType == AnimatorLayerTypes.RightHand && _tempCurrRightWeapon != null)
         {
+            WeaponScript weaponScript = _tempCurrRightWeapon.GetComponent<WeaponScript>();
+            if (weaponScript != null)
+            {
+                weaponAsset = (ItemAsset_Weapon)weaponScript._ItemStoreInfo._itemAsset;
+            }
             Destroy(_tempCurrRightWeapon);
             _tempCurrRightWeapon = null;
             targetType = StateGraphType.WeaponState_RightGraph;
         }
         else if (layerType == AnimatorLayerTypes.LeftHand && _tempCurrLeftWeapon != null)
         {
+            WeaponScript weaponScript = _tempCurrLeftWeapon.GetComponent<WeaponScript>();
+            if (weaponScript != null)
+            {
+                weaponAsset = (ItemAsset_Weapon)weaponScript._ItemStoreInfo._itemAsset;
+            }
+
             Destroy(_tempCurrLeftWeapon);
             _tempCurrLeftWeapon = null;
             targetType = StateGraphType.WeaponState_LeftGraph;
+        }
+
+        foreach (BuffAssetBase buff in weaponAsset._Buffs)
+        {
+            statScript.RemoveBuff(buff, -1);
         }
 
 
@@ -733,6 +765,15 @@ public class CharacterScript : GameActorScript, IHitable
                     weaponColliderScript.gameObject.SetActive(false);
                 }
 
+                //버프걸기
+                {
+                    ItemAsset_Weapon weaponAsset = (ItemAsset_Weapon)itemStoreDesc._itemAsset;
+                    foreach (BuffAssetBase buff in weaponAsset._Buffs)
+                    {
+                        GCST<StatScript>().ApplyBuff(buff, 1);
+                    }
+                }
+
                 //HUD 세팅
                 InventoryHUDScript.InventoryHUDType targetHUDType = (layerType == AnimatorLayerTypes.RightHand)
                     ? InventoryHUDScript.InventoryHUDType.RightWeapon
@@ -790,7 +831,7 @@ public class CharacterScript : GameActorScript, IHitable
         return type;
     }
 
-    private void TriggerEnterWithWeapon(Collider other, bool isWeakPointCollider)
+    private void TriggerEnterWithWeapon(Collider other, bool isWeakPointCollider, ref Vector3 closetPoint, ref Vector3 hitNormal)
     {
         CharacterScript attackerCharacterScript = other.gameObject.GetComponentInParent<CharacterScript>();
 
@@ -814,7 +855,7 @@ public class CharacterScript : GameActorScript, IHitable
         /*----------------------------------------------------------
         |NOTI| isWeakPointCollider 가 True 라면 부위에 의한치명타입니다
         ----------------------------------------------------------*/
-        DealMe_Final(currentDamage, isWeakPointCollider, attackerCharacterScript, this);
+        DealMe_Final(currentDamage, isWeakPointCollider, attackerCharacterScript, this, ref closetPoint, ref hitNormal);
     }
 
     public void MoveWeapons()
@@ -956,6 +997,8 @@ public class CharacterScript : GameActorScript, IHitable
         List<ItemStoreDesc_Weapon> targetWeaponPrefabs = (isRightWeapon == true)
             ? _tempRightWeaponPrefabs
             : _tempLeftWeaponPrefabs;
+
+        ItemStoreDesc_Weapon prev = targetWeaponPrefabs[index];
 
         targetWeaponPrefabs[index] = weaponInfo;
 
@@ -1399,6 +1442,7 @@ public class CharacterScript : GameActorScript, IHitable
                 damageDesc._damage *= attackMultiplyDesc._damage;
                 damageDesc._damagingStamina *= attackMultiplyDesc._damagingStamina;
                 damageDesc._damagePower *= attackMultiplyDesc._damagePower;
+                damageDesc._hitType = attackMultiplyDesc._hitType;
             }
         }
 
@@ -1582,7 +1626,7 @@ public class CharacterScript : GameActorScript, IHitable
         }
     }
 
-    public virtual void DealMe_Final(DamageDesc damage, bool isWeakPoint, CharacterScript attacker, CharacterScript victim)
+    public virtual void DealMe_Final(DamageDesc damage, bool isWeakPoint, CharacterScript attacker, CharacterScript victim, ref Vector3 closetPoint, ref Vector3 hitNormal)
     {
         StatScript statScript = GCST<StatScript>();
 
@@ -1610,8 +1654,8 @@ public class CharacterScript : GameActorScript, IHitable
         StateGraphType nextGraphType = StateGraphType.HitStateGraph;
         RepresentStateType representType = RepresentStateType.End;
 
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_BuffCheck, damage, isWeakPoint, attacker, victim);
         // Step1 피격자 버프체크
+        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_BuffCheck, damage, isWeakPoint, attacker, victim);
         {
             if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
             {
@@ -1621,8 +1665,8 @@ public class CharacterScript : GameActorScript, IHitable
         }
         statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_BuffCheck, damage, isWeakPoint, attacker, victim);
 
+        // Step2 대미지 적용
         statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_ApplyDamage, damage, isWeakPoint, attacker, victim);
-        // Step2 피격자 버프체크
         {
             if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
             {
@@ -1679,31 +1723,83 @@ public class CharacterScript : GameActorScript, IHitable
             //다음에 죽지 않을 예정이라면 -> 죽을거였으면 죽는모션으로 간다는게 위에 계산돼있다. 다시 계산하는건 낭비다
             if (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && willDead == false)
             {
-                //if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
-                //{
-                //    CalculateNextState_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
-                //}
-                //else
-                //{
-                //    float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
+                if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0 &&
+                    true /*가드 범위 내에서 맞았냐? 가드하는데 뒤에서 맞으면 실패임*/)
+                {
+                    CalculateNextState_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
+                }
+                else
+                {
+                    float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
 
-                //    if (deltaRoughness > 0)
-                //    {
-                //        if (deltaRoughness <= MyUtil.deltaRoughness_lvl0)
-                //        {
-                //            representType = RepresentStateType.Hit_Lvl_0;
-                //        }
-                //        else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1)
-                //        {
-                //            representType = RepresentStateType.Hit_Lvl_1;
-                //        }
-                //        else
-                //        {
-                //            representType = RepresentStateType.Hit_Lvl_2;
-                //        }
-                //    }
-                //}
+                    if (deltaRoughness > 0)
+                    {
+                        if (deltaRoughness <= MyUtil.deltaRoughness_lvl0)
+                        {
+                            representType = RepresentStateType.Hit_Lvl_0;
+                        }
+                        else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1)
+                        {
+                            representType = RepresentStateType.Hit_Lvl_1;
+                        }
+                        else
+                        {
+                            representType = RepresentStateType.Hit_Lvl_2;
+                        }
+                    }
+                }
             }
+
+
+
+            StatScript attackerStatScript = attacker.GCST<StatScript>();
+            attackerStatScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.ApplyDamage_AttackerCallback, damage, isWeakPoint, attacker, victim);
+
+            //이펙트 생성을 위한 코드영역
+            {
+                string effectName = "HitSparkEffect";
+
+                //공격에 의한 이펙트가 결정됩니다.
+                switch (damage._hitType)
+                {
+                    case DamageDesc.HitType.Blunt:
+                        {
+                            if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+                            {
+                                effectName = "HitSparkCritical";
+                            }
+                        }
+                        break;
+                    case DamageDesc.HitType.Slash:
+                        effectName = "SlashedSparkEffect";
+                        break;
+                    case DamageDesc.HitType.End:
+                        {
+                            //Debug.Assert(false, "상태 Asset에서 어떻게 때리는지 지정하세요. 기본값 '타격'으로 세팅됩니다");
+                        }
+                        break;
+                }
+
+                if (representType == RepresentStateType.Blocked_Reaction ||
+                    representType == RepresentStateType.Blocked_Sliding ||
+                    representType == RepresentStateType.Blocked_Crash)
+                {
+                    string guardEffectName = "ConeSparkEffect";
+
+                    if (representType == RepresentStateType.Blocked_Sliding ||
+                        representType == RepresentStateType.Blocked_Crash)
+                    {
+                        guardEffectName = "CartoonSparkEffect";
+                    }
+
+                    closetPoint = _tempCurrLeftWeapon.transform.position; //방패피격점
+
+                    EffectManager.Instance.CreateEffect(guardEffectName, hitNormal, closetPoint); //가드이펙트
+                }
+
+                EffectManager.Instance.CreateEffect(effectName, hitNormal, closetPoint);
+            }
+
 
             //-------------------------------------------------------------------------------------------------------------
             if (willDead == true || //-----------------------------------------------------다음에 죽을 예정이거나,
@@ -1724,7 +1820,7 @@ public class CharacterScript : GameActorScript, IHitable
         statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_ApplyDamage, damage, isWeakPoint, attacker, victim);
     }
 
-    public void WhenTriggerEnterWithWeaponCollider(Collider other, bool isWeakCollider)
+    public void WhenTriggerEnterWithWeaponCollider(Collider other, bool isWeakCollider, Vector3 closetPoint, Vector3 hitNormal)
     {
         if (_dead == true) {return;}
 
@@ -1738,7 +1834,7 @@ public class CharacterScript : GameActorScript, IHitable
         |NOTI| isWeakCollider 변수가 함께 들어옵니다.
         피격시 이 충돌체가 WeakPoint였다면 true 입니다. (머리같은거)
         ----------------------------------------------------*/
-        TriggerEnterWithWeapon(other, isWeakCollider);
+        TriggerEnterWithWeapon(other, isWeakCollider, ref closetPoint, ref hitNormal);
     }
 
 

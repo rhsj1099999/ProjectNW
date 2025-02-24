@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3172b3879607b484db00242c8af3e1d1, type: 3}
+  m_Name: Condition_Combo_DilucBuffCount_1
+  m_EditorClassIdentifier: 
+  _conditionDesc:
+    _singleConditionType: 35
+    _weaponTypeGoal: 0
+    _keyInputConditionTarget: []
+    _commandInputConditionTarget: []
+    _comboStrainedTime: -1
+    _mustNotBusyLayers: 
+    _mustNotBusyLayers_BitShift: 0
+    _enterStatetimeThreshould: 0
+    _randomChance: 1
+    _degThreshould: 0
+    _damageHitThreshould: 1
+    _targetBuffAsset: {fileID: 11400000, guid: 92b29754b768785448415d9848d61b36, type: 2}
+    _targetBuffAssetCount: 1

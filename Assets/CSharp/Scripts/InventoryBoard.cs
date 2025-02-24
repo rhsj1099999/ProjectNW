@@ -611,6 +611,7 @@ public class InventoryBoard : BoardUIBaseScript
         {
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("WolfMound"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("BeidouArmor"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("AatroxSword"), 1);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha7) == true)

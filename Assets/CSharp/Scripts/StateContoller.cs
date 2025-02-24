@@ -6,6 +6,7 @@ using static StateGraphAsset;
 using static MyUtil;
 using static AnimationFrameDataAsset;
 using static LevelStatAsset;
+using static StatScript;
 using UnityEngine.Playables;
 using MagicaCloth2;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
@@ -105,6 +106,8 @@ public enum ConditionType
     StateDeeper, //현재 유지하려는 상태의 레벨이 증가했습니다.
 
     NeedStat,
+
+    BuffAssetCount,
 }
 
 
@@ -194,6 +197,9 @@ public class ConditionDesc
     public int _randomChance = 1;
     public float _degThreshould = 0.0f;
     public int _damageHitThreshould = 1;
+
+    public BuffAssetBase _targetBuffAsset = null;
+    public int _targetBuffAssetCount = -1;
 }
 
 
@@ -246,6 +252,9 @@ public class StateDesc
     public List<StateActionType> _inStateActionTypes = new List<StateActionType>();
     public List<StateActionType> _ExitStateActionTypes = new List<StateActionType>();
     public List<AdditionalBehaveType> _checkingBehaves = new List<AdditionalBehaveType>();
+
+    public bool _isOverrideStateExsist = false;
+    public List<StateAsset> _overrideStates = null;
 
     public bool _isSubBlendTreeExist = false;
     public SubBlendTreeAsset_2D _subBlendTree = null;
@@ -780,6 +789,11 @@ public class StateContoller : GameCharacterSubScript
                 }
             }
 
+            if (_currLinkedStates.Count <= 0)
+            {
+                isSuccess = false;
+            }
+
             foreach (LinkedStateAssetWrapper linkedStateAssetWrapper in _currLinkedStates)
             {
                 linkedState = linkedStateAssetWrapper._linkedStateWrapper;
@@ -1263,7 +1277,7 @@ public class StateContoller : GameCharacterSubScript
 
                         foreach (BuffAssetBase buff in removeBuffList)
                         {
-                            _owner.GCST<StatScript>().RemoveBuff(buff, 1);
+                            _owner.GCST<StatScript>().RemoveBuff(buff, -1);
                         }
                     }
                     break;
@@ -1499,7 +1513,7 @@ public class StateContoller : GameCharacterSubScript
                 List<BuffAssetBase> buffs = target._frameData._buffs;
                 foreach (BuffAssetBase buff in buffs)
                 {
-                    _owner.GCST<StatScript>().RemoveBuff(buff, 1);
+                    _owner.GCST<StatScript>().RemoveBuff(buff, -1);
                 }
                 break;
             }
@@ -1951,6 +1965,34 @@ public class StateContoller : GameCharacterSubScript
 
             case ConditionType.NeedStat:
                 {
+                }
+                break;
+
+            case ConditionType.BuffAssetCount:
+                {
+                    StatScript statScript = _owner.GCST<StatScript>();
+
+                    if (statScript == null)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    RuntimeBuffAsset currRuntimeBuffAsset = statScript.GetRuntimeBuffAsset(conditionDesc._targetBuffAsset);
+
+                    if (currRuntimeBuffAsset == null)
+                    {
+                        ret = false;
+                        break;
+                    }
+
+                    if (currRuntimeBuffAsset._Count == conditionDesc._targetBuffAssetCount)
+                    {
+                        ret = true;
+                        break;
+                    }
+
+                    ret = false;
                 }
                 break;
 

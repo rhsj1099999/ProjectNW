@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cafea9b1316198e4a9c0494fb865d792, type: 3}
+  m_Name: ItemAsset_Weapon_AatroxSword
+  m_EditorClassIdentifier: 
+  _itemType: 3
+  _equipType: 32
+  _ItemKey: 42
+  _itemName: AatroxSword
+  _sizeX: 2
+  _sizeY: 5
+  _maxStack: 1
+  _itemModel: {fileID: 6978618918734375859, guid: 6c1f4c8c272f8c249870d05f8ac01f23,
+    type: 3}
+  _fieldExistAble: 1
+  _itemImage: {fileID: 21300000, guid: 7af56c7dd19bd1e449561909191f48d5, type: 3}
+  _weaponType: 3
+  _weaponDamageDesc:
+    _damageReason: 1
+    _hitType: 0
+    _damage: 1
+    _damagePower: 1
+    _damagingStamina: 1
+  _weaponStateGraph: {fileID: 11400000, guid: dcb30300fcef39246858183ed46313ed, type: 2}
+  _buffs:
+  - {fileID: 11400000, guid: 8ce4ff91ce2c8624db8f199dcba2dc8f, type: 2}
+  _usingBulletType: 0
+  _isAutomaticGun: 0

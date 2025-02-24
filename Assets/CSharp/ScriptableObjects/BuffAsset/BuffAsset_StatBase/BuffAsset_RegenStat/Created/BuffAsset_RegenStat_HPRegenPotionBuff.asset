@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb8685d6aef5b934c91b1d07c924bbe0, type: 3}
   m_Name: BuffAsset_RegenStat_HPRegenPotionBuff
   m_EditorClassIdentifier: 
-  _buffKey: 16
+  _buffKey: 18
   _buffName: HPRegenPotionBuff
   _maxCount: 1
   _refresh: 1
@@ -20,7 +20,7 @@ MonoBehaviour:
   _specialAction_OnlyOne: 0
   _isTemporary: 0
   _isDebuff: 1
-  _duration: 60
+  _duration: 30
   _buffUIImage: {fileID: 21300000, guid: d9898880f57f63b4799ffb066146858a, type: 3}
   _buffList:
   - _applyType: 1
