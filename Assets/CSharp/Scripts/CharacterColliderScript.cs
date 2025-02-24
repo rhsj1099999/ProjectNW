@@ -1,4 +1,3 @@
-using MagicaCloth2;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,23 +12,18 @@ public class CharacterColliderScript : GameCharacterSubScript
     public class ColliderWorkDesc
     {
         /*----------------------------------------------------------
-        |NOTI| n초 이후에 (활성 / 비활성화)만 해주는 구조체이다
-        공격중에 공속버프가 들어온다면 _targetTime을 수정하세요
+        |NOTI| 공격중에 공속버프가 들어온다면 _targetTime을 수정하세요
         ----------------------------------------------------------*/
         public ColliderAttachType _type = ColliderAttachType.ENEND;
 
-        public Coroutine _runningCoroutine = null;
-
         public float _targetTime = -1.0f;
         public float _currTime = 0.0f;
-
-        public uint _key = 0;
+        public Coroutine _runningCoroutine = null;
     }
 
 
     private Dictionary<ColliderAttachType, GameObject> _colliders = new Dictionary<ColliderAttachType, GameObject>();
     private List<LinkedList<ColliderWorkDesc>> _colliderWorks = new List<LinkedList<ColliderWorkDesc>>();
-    private uint _keyMaker = 0;
 
 
     public override void Init(CharacterScript owner)
@@ -83,19 +77,18 @@ public class CharacterColliderScript : GameCharacterSubScript
             }
 
             ColliderAttachType type = ColliderAttachType.ENEND;
+
             foreach (ColliderWorkDesc colliderWork in colliderWorkList)
             {
                 type = colliderWork._type;
                 StopCoroutine(colliderWork._runningCoroutine);
+            }
 
-                //GameObject colliderObject = null;
-
-                //_colliders.TryGetValue(type, out colliderObject);
-                //if (colliderObject != null)
-                //{
-                //    _colliders[type].SetActive(false);
-                //    WeaponColliderManager.Instance.ClearCollider(colliderObject);
-                //}
+            GameObject colliderObject = null;
+            _colliders.TryGetValue(type, out colliderObject);
+            if (colliderObject != null)
+            {
+                _colliders[type].SetActive(false);
             }
 
             colliderWorkList.Clear();
@@ -118,21 +111,14 @@ public class CharacterColliderScript : GameCharacterSubScript
         충돌 로직을 바꿔야합니다.
         -------------------------------------------------------------*/
 
-        if (_colliderWorks[(int)type].Count > 0)
-        {
-            foreach (ColliderWorkDesc workDesc in _colliderWorks[(int)type])
-            {
-                StopCoroutine(workDesc._runningCoroutine);
-            }
-
-            _colliderWorks[(int)type].Clear();
-        }
-
         _colliders[type] = targetObject;
 
         Collider collider = targetObject.GetComponent<Collider>();
 
-        collider.includeLayers = _owner.CalculateWeaponColliderIncludeLayerMask();
+        if (collider != null)
+        {
+            collider.includeLayers = _owner.CalculateWeaponColliderIncludeLayerMask();
+        }
 
         targetObject.SetActive(false);
     }
@@ -141,46 +127,6 @@ public class CharacterColliderScript : GameCharacterSubScript
     {
         return _colliders[type];
     }
-
-
-    private void CalculateColliderAttachType(AEachFrameData desc, ref ColliderAttachType retOut)
-    {
-        retOut = desc._colliderAttachType;
-
-        if (_owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBool("IsMirroring") == true)
-        {
-            switch (retOut)
-            {
-                case ColliderAttachType.HumanoidLeftHand:
-                    retOut = ColliderAttachType.HumanoidRightHand;
-                    break;
-                case ColliderAttachType.HumanoidRightHand:
-                    retOut = ColliderAttachType.HumanoidLeftHand;
-                    break;
-                case ColliderAttachType.HumanoidLeftLeg:
-                    retOut = ColliderAttachType.HumanoidRightLeg;
-                    break;
-                case ColliderAttachType.HumanoidRightLeg:
-                    retOut = ColliderAttachType.HumanoidLeftLeg;
-                    break;
-                case ColliderAttachType.HumanoidHead:
-                    break;
-                case ColliderAttachType.HumanoidRightHandWeapon:
-                    retOut = ColliderAttachType.HumanoidLeftHandWeapon;
-                    break;
-                case ColliderAttachType.HumanoidLeftHandWeapon:
-                    retOut = ColliderAttachType.HumanoidRightHandWeapon;
-                    break;
-                case ColliderAttachType.ENEND:
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-
-
 
     public void ColliderWork(List<AEachFrameData> frameDataAssetList, StateAsset currStateAsset)
     {
@@ -191,8 +137,39 @@ public class CharacterColliderScript : GameCharacterSubScript
 
         foreach (AEachFrameData desc in frameDataAssetList)
         {
-            ColliderAttachType type = ColliderAttachType.ENEND;
-            CalculateColliderAttachType(desc, ref type);
+            ColliderAttachType type = desc._colliderAttachType;
+
+            if (_owner.GetComponentInChildren<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetBool("IsMirroring") == true)
+            {
+                switch (type)
+                {
+                    case ColliderAttachType.HumanoidLeftHand:
+                        type = ColliderAttachType.HumanoidRightHand;
+                        break;
+                    case ColliderAttachType.HumanoidRightHand:
+                        type = ColliderAttachType.HumanoidLeftHand;
+                        break;
+                    case ColliderAttachType.HumanoidLeftLeg:
+                        type = ColliderAttachType.HumanoidRightLeg;
+                        break;
+                    case ColliderAttachType.HumanoidRightLeg:
+                        type = ColliderAttachType.HumanoidLeftLeg;
+                        break;
+                    case ColliderAttachType.HumanoidHead:
+                        break;
+                    case ColliderAttachType.HumanoidRightHandWeapon:
+                        type = ColliderAttachType.HumanoidLeftHandWeapon;
+                        break;
+                    case ColliderAttachType.HumanoidLeftHandWeapon:
+                        type = ColliderAttachType.HumanoidRightHandWeapon;
+                        break;
+                    case ColliderAttachType.ENEND:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             if (_colliders.ContainsKey(type) == false)
             {
                 Debug.Log("콜라이더가 없다!");
@@ -201,35 +178,34 @@ public class CharacterColliderScript : GameCharacterSubScript
 
             AnimationClip currAnimationClip = currStateAsset._myState._stateAnimationClip;
 
+
             //------------------------------------------------------------------
-            //float animationSpeed = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetFloat("Speed");
-            float animationSpeed = _owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.AttackSpeedPercentage) / 100.0f;
+            float animationSpeed = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedAnimator().GetFloat("Speed");
             //------------------------------------------------------------------
+
 
             if (desc._frameUp >= 0.0f)
             {
-                float targetFrame = desc._frameUp;
+                float targetFrame = (float)desc._frameUp;
                 float animationFPS = currAnimationClip.frameRate;
 
                 ColliderWorkDesc colliderWorkDesc = new ColliderWorkDesc();
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;
-                colliderWorkDesc._type = type;
-                colliderWorkDesc._key = _keyMaker++;
                 colliderWorkDesc._runningCoroutine = StartCoroutine(ActiveColliderCoroutine(colliderWorkDesc));
+                colliderWorkDesc._type = type;
                 _colliderWorks[(int)type].AddLast(colliderWorkDesc);
             }
 
 
             if (desc._frameUnder >= 0.0f)
             {
-                float targetFrame = desc._frameUnder;
+                float targetFrame = (float)desc._frameUnder;
                 float animationFPS = currAnimationClip.frameRate;
 
                 ColliderWorkDesc colliderWorkDesc = new ColliderWorkDesc();
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;
-                colliderWorkDesc._type = type;
-                colliderWorkDesc._key = _keyMaker++;
                 colliderWorkDesc._runningCoroutine = StartCoroutine(DeActiveColliderCoroutine(colliderWorkDesc));
+                colliderWorkDesc._type = type;
                 _colliderWorks[(int)type].AddLast(colliderWorkDesc);
             }
         }
@@ -245,13 +221,21 @@ public class CharacterColliderScript : GameCharacterSubScript
 
             if (workDesc._currTime >= workDesc._targetTime)
             {
-                //이 콜라더를 등록 = 매 프레임마다 Overlap Box 체크 서비스 지원
+                GameObject targetObject = null;
+                _colliders.TryGetValue(workDesc._type, out targetObject);
+                if (targetObject != null) 
+                {
+                    targetObject.SetActive(true);
+                }
+                else
+                {
+                    Debug.Log("콜라이더가 없다!");
+                }
                 break;
             }
 
             yield return null;
         }
-
 
         _colliderWorks[(int)workDesc._type].RemoveFirst(); //다했으니 뺀다
     }
@@ -265,7 +249,13 @@ public class CharacterColliderScript : GameCharacterSubScript
 
             if (workDesc._currTime >= workDesc._targetTime)
             {
-                //이 콜라더를 등록해제
+                GameObject targetObject = null;
+                _colliders.TryGetValue(workDesc._type, out targetObject);
+                if (targetObject != null)
+                {
+                    AnimationAttackManager.Instance.ClearCollider(targetObject);
+                    targetObject.SetActive(false);
+                }
                 break;
             }
 

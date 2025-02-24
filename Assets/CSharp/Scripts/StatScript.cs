@@ -104,10 +104,7 @@ public class StatScript : GameCharacterSubScript
             ? _deBuffs
             : _buffs;
 
-        RuntimeBuffAsset runtimeBuffAsset = null;
-
-        targetDict.TryGetValue(buff, out runtimeBuffAsset);
-        return runtimeBuffAsset;
+        return targetDict[buff];
     }
 
 
