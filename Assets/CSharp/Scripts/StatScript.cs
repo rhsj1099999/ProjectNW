@@ -105,11 +105,15 @@ public class StatScript : GameCharacterSubScript
             : _buffs;
 
         RuntimeBuffAsset runtimeBuffAsset = null;
+<<<<<<< Updated upstream
 
         int a = 10;
 
         targetDict.TryGetValue(buff, out runtimeBuffAsset);
 
+=======
+        targetDict.TryGetValue(buff, out runtimeBuffAsset);
+>>>>>>> Stashed changes
         return runtimeBuffAsset;
     }
 
