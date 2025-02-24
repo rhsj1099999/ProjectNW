@@ -39,6 +39,14 @@ public class ItemAsset_Weapon : ItemAsset
 
 
 
+    /*------------------------------------------
+    Buff Section.
+    ------------------------------------------*/
+    [SerializeField] private List<BuffAssetBase> _buffs = new List<BuffAssetBase>();
+    public IReadOnlyList<BuffAssetBase> _Buffs => _buffs;
+
+
+
 
     /*---------------------------------------------------
     |TODO| 총한테만 필요한 정보입니다. 클래스 파생시켜서 뺄것

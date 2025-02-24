@@ -15,6 +15,7 @@ public class Gunscript2 : WeaponScript
     private AimScript2 _aimScript = null;
 
     [SerializeField] private GameObject _firePosition = null;
+    private GunFireEffectScript _gunFireEffectScript = null;
     [SerializeField] private GameObject _stockPosition = null;
 
     private Coroutine _coolTimeCoroutine = null;
@@ -294,6 +295,7 @@ public class Gunscript2 : WeaponScript
         {
             _firePosition = transform.Find("FirePosition").gameObject;
             Debug.Assert(_firePosition != null, "발사할곳이 없는데 이게 총입니까?");
+            _gunFireEffectScript = _firePosition.GetComponent<GunFireEffectScript>();
         }
     }
 
@@ -428,9 +430,11 @@ public class Gunscript2 : WeaponScript
 
         if (Physics.Raycast(rayStartPosition, rayDir, out hit, 1000.0f, targetLayer, QueryTriggerInteraction.Collide) == false)
         {
+            _gunFireEffectScript.Fire(rayStartPosition + rayDir * 1000.0f);
             return;
         }
-        
+
+        _gunFireEffectScript.Fire(hit.point);
 
         HitColliderScript hitColliderScript = hit.collider.GetComponent<HitColliderScript>();
 
@@ -456,9 +460,13 @@ public class Gunscript2 : WeaponScript
         DamageDesc tempTestDamage = new DamageDesc();
         tempTestDamage._damageReason = DamageDesc.DamageReason.Ray;
         tempTestDamage._damage = firedBullet._BulletDamage;
-        tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl1 + 5;
+        tempTestDamage._damagePower = MyUtil.deltaRoughness_lvl0 + 5;
+        tempTestDamage._hitType = DamageDesc.HitType.Blunt;
 
-        hitColliderScript.CollisionDirectly(tempTestDamage, _owner);
+        Vector3 closetPoint = hit.point;
+        Vector3 hitNormal = Vector3.up;
+
+        hitColliderScript.CollisionDirectly(tempTestDamage, _owner, ref closetPoint, ref hitNormal);
     }
 
     public IEnumerator CooltimeCoroutine()

@@ -7,8 +7,8 @@ using static LevelStatAsset;
 using static LevelStatInfoManager;
 using static StatScript;
 
-
-public abstract class BuffAssetBase : ScriptableObject
+[CreateAssetMenu(fileName = "BuffAsset_Normal", menuName = "Scriptable Object/Create_BuffAsset_Normal", order = (int)MyUtil.CustomToolOrder.CreateBuffs)]
+public class BuffAssetBase : ScriptableObject
 {
     //[SerializeField] private int _buffKey = 0;
     //public int _BuffKey => _buffKey;
@@ -57,5 +57,8 @@ public abstract class BuffAssetBase : ScriptableObject
     [SerializeField] private Sprite _buffUIImage = null;
     public Sprite _BuffUIImage => _buffUIImage;
 
-    public abstract void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount);
+    public virtual void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount)
+    {
+
+    }
 }

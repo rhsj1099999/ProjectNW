@@ -122,6 +122,13 @@ public class UIManager : SubManager<UIManager>
     {
         int after = --_consumeInputUICount;
 
+        if (_consumeInputUICount < 0)
+        {
+            _consumeInputUICount = 0;
+            after = 0;
+            Debug.Log("Warning!!!!!!!! 짝이 맞지 않아요. 지금 확인된건 Close Button이 따로 UI만 끕니다");
+        }
+
         if (after == 0)
         {
             Cursor.visible = false;

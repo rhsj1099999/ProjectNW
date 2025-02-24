@@ -48,6 +48,25 @@ public class StateAsset : ScriptableObject
             //}
         }
 
+        //Override가 존재하나요?
+        {
+            if (_myState._isOverrideStateExsist == true)
+            {
+                if (_myState._overrideStates == null)
+                {
+                    _myState._overrideStates = new List<StateAsset>();
+                }
+            }
+            else
+            {
+                if (_myState._attackDamageMultiply != null)
+                {
+                    _myState._overrideStates = null;
+                }
+            }
+        }
+
+
         //AI 상태입니까?
         {
             if (_myState._isAttackState == true)

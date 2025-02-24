@@ -19,10 +19,11 @@ MonoBehaviour:
     _stateAnimationClipOverride:
     - {fileID: 7400000, guid: b4aa83b9d6097ea458c8fd6aad084aaa, type: 2}
     - {fileID: 7400000, guid: b7698da3168eaf847b6ded0b40f5dcff, type: 2}
-    _isAttackState: 1
+    _isAttackState: 0
     _isAttackState_effectedBySpeed: 0
     _attackDamageMultiply:
       _damageReason: 1
+      _hitType: 0
       _damage: 1
       _damagePower: 1
       _damagingStamina: 1
