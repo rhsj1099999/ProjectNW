@@ -1316,6 +1316,12 @@ public class StateContoller : GameCharacterSubScript
     {
         foreach (Coroutine coroutine in _stateActionCoroutines)
         {
+            if (coroutine != null)
+            {
+                /*-------------------------------------------
+                |TODO| null이 되는 이유를 반드시 찾아야 합니다.
+                -------------------------------------------*/
+            }
             StopCoroutine(coroutine);
         }
 
@@ -1617,7 +1623,7 @@ public class StateContoller : GameCharacterSubScript
             case ConditionType.ComboKeyCommand:
                 {
                     forcedValue = true;
-                    
+
                     ret = PartailFunc_ComboCommandCheck(conditionDesc, isRightSided);
                 }
                 break;
@@ -2016,7 +2022,7 @@ public class StateContoller : GameCharacterSubScript
         if (false) return false;
         -----------------------------------------------------------*/
 
-        if (_nextComboReady == false)
+        if (CustomKeyManager.Instance._AttackKeyTry == false)
         {
             return false;
         }

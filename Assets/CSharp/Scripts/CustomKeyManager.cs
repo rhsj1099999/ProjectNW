@@ -87,7 +87,14 @@ public class CustomKeyManager : SubManager<CustomKeyManager>
     public void LinkPlayer(PlayerScript player) {_playerOnlyOne = player;}
     private LinkedList<ComboCommandKeyDesc> _comboCommandRecorder = new LinkedList<ComboCommandKeyDesc>();
     public LinkedList<ComboCommandKeyDesc> GetComboCommandKeyDescs() { return _comboCommandRecorder; }
-    public void ClearKeyRecord() { _comboCommandRecorder.Clear(); }
+    public void ClearKeyRecord() 
+    { 
+        _comboCommandRecorder.Clear();
+        _attackKeyTry = false;
+    }
+
+    private bool _attackKeyTry = false;
+    public bool _AttackKeyTry => _attackKeyTry;
 
     private KeyCode _leftClick = KeyCode.Mouse0;
     private KeyCode _rightClick = KeyCode.Mouse1;
@@ -181,6 +188,8 @@ public class CustomKeyManager : SubManager<CustomKeyManager>
 
         if (Input.GetKeyDown(_leftClick) == true)
         {
+            _attackKeyTry = true;
+
             if (Input.GetKey(_ctrlUseWith) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlLeftClick, Time.time));
@@ -199,6 +208,8 @@ public class CustomKeyManager : SubManager<CustomKeyManager>
         }
         else if (Input.GetKeyUp(_leftClick) == true)
         {
+            _attackKeyTry = true;
+
             if (Input.GetKey(_ctrlUseWith) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlLeftUp, Time.time));
@@ -218,6 +229,8 @@ public class CustomKeyManager : SubManager<CustomKeyManager>
 
         if (Input.GetKeyDown(_rightClick) == true)
         {
+            _attackKeyTry = true;
+
             if (Input.GetKey(_ctrlUseWith) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlRightClick, Time.time));
@@ -236,6 +249,8 @@ public class CustomKeyManager : SubManager<CustomKeyManager>
         }
         else if (Input.GetKeyUp(_rightClick) == true)
         {
+            _attackKeyTry = true;
+
             if (Input.GetKey(_ctrlUseWith) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlRightUp, Time.time));
@@ -255,6 +270,8 @@ public class CustomKeyManager : SubManager<CustomKeyManager>
 
         if (Input.GetKeyDown(_ultUse) == true)
         {
+            _attackKeyTry = true;
+
             if (Input.GetKey(_ctrlUseWith) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlUltClick, Time.time));
@@ -273,6 +290,8 @@ public class CustomKeyManager : SubManager<CustomKeyManager>
         }
         else if (Input.GetKeyUp(_ultUse) == true)
         {
+            _attackKeyTry = true;
+
             if (Input.GetKey(_ctrlUseWith) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlUltUp, Time.time));
@@ -292,6 +311,8 @@ public class CustomKeyManager : SubManager<CustomKeyManager>
 
         if (Input.GetKeyDown(_eleUse) == true)
         {
+            _attackKeyTry = true;
+
             if (Input.GetKey(_ctrlUseWith) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlEleUp, Time.time));
@@ -310,6 +331,8 @@ public class CustomKeyManager : SubManager<CustomKeyManager>
         }
         else if (Input.GetKeyUp(_eleUse) == true)
         {
+            _attackKeyTry = true;
+
             if (Input.GetKey(_ctrlUseWith) == true)
             {
                 _comboCommandRecorder.AddLast(new ComboCommandKeyDesc(ComboCommandKeyType.CtrlEleUp, Time.time));

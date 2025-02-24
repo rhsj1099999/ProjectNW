@@ -23,7 +23,7 @@ public class CharacterColliderScript : GameCharacterSubScript
 
 
     private Dictionary<ColliderAttachType, GameObject> _colliders = new Dictionary<ColliderAttachType, GameObject>();
-    private List<LinkedList<ColliderWorkDesc>> _colliderWorks = new List<LinkedList<ColliderWorkDesc>>();
+    private List<HashSet<ColliderWorkDesc>> _colliderWorks = new List<HashSet<ColliderWorkDesc>>();
 
 
     public override void Init(CharacterScript owner)
@@ -33,7 +33,7 @@ public class CharacterColliderScript : GameCharacterSubScript
 
         for (int i = 0; i < (int)ColliderAttachType.ENEND; i++)
         {
-            _colliderWorks.Add(new LinkedList<ColliderWorkDesc>());
+            _colliderWorks.Add(new HashSet<ColliderWorkDesc>());
         }
     }
 
@@ -69,7 +69,7 @@ public class CharacterColliderScript : GameCharacterSubScript
     public void StateChanged()
     {
         //전부 취소하기
-        foreach (LinkedList<ColliderWorkDesc> colliderWorkList in _colliderWorks)
+        foreach (HashSet<ColliderWorkDesc> colliderWorkList in _colliderWorks)
         {
             if (colliderWorkList == null)
             {
@@ -86,9 +86,11 @@ public class CharacterColliderScript : GameCharacterSubScript
 
             GameObject colliderObject = null;
             _colliders.TryGetValue(type, out colliderObject);
+
             if (colliderObject != null)
             {
-                _colliders[type].SetActive(false);
+                colliderObject.SetActive(false);
+                AnimationAttackManager.Instance.ClearCollider(colliderObject);
             }
 
             colliderWorkList.Clear();
@@ -193,7 +195,7 @@ public class CharacterColliderScript : GameCharacterSubScript
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;
                 colliderWorkDesc._runningCoroutine = StartCoroutine(ActiveColliderCoroutine(colliderWorkDesc));
                 colliderWorkDesc._type = type;
-                _colliderWorks[(int)type].AddLast(colliderWorkDesc);
+                _colliderWorks[(int)type].Add(colliderWorkDesc);
             }
 
 
@@ -206,7 +208,7 @@ public class CharacterColliderScript : GameCharacterSubScript
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;
                 colliderWorkDesc._runningCoroutine = StartCoroutine(DeActiveColliderCoroutine(colliderWorkDesc));
                 colliderWorkDesc._type = type;
-                _colliderWorks[(int)type].AddLast(colliderWorkDesc);
+                _colliderWorks[(int)type].Add(colliderWorkDesc);
             }
         }
     }
@@ -237,7 +239,7 @@ public class CharacterColliderScript : GameCharacterSubScript
             yield return null;
         }
 
-        _colliderWorks[(int)workDesc._type].RemoveFirst(); //다했으니 뺀다
+        _colliderWorks[(int)workDesc._type].Remove(workDesc); //다했으니 뺀다
     }
 
 
@@ -253,8 +255,12 @@ public class CharacterColliderScript : GameCharacterSubScript
                 _colliders.TryGetValue(workDesc._type, out targetObject);
                 if (targetObject != null)
                 {
-                    AnimationAttackManager.Instance.ClearCollider(targetObject);
                     targetObject.SetActive(false);
+                    AnimationAttackManager.Instance.ClearCollider(targetObject);
+                }
+                else
+                {
+                    Debug.Log("콜라이더가 없다!");
                 }
                 break;
             }
@@ -262,7 +268,7 @@ public class CharacterColliderScript : GameCharacterSubScript
             yield return null;
         }
 
-        _colliderWorks[(int)workDesc._type].RemoveFirst(); //다했으니 뺀다
+        _colliderWorks[(int)workDesc._type].Remove(workDesc); //다했으니 뺀다
     }
     
 }
