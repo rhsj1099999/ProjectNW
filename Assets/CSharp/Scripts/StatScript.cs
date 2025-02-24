@@ -106,6 +106,8 @@ public class StatScript : GameCharacterSubScript
 
         RuntimeBuffAsset runtimeBuffAsset = null;
 
+        int a = 10;
+
         targetDict.TryGetValue(buff, out runtimeBuffAsset);
 
         return runtimeBuffAsset;
