@@ -12,8 +12,6 @@ Assets/ExtractedAnimations
 Assets/Resources
 
 #에셋은 직접받게
-
-# 유니티 내장녹화 폴더 깃이그노어에 추가
 Recordings/
  
 # Visual Studio cache directory
@@ -44,12 +42,11 @@ sysinfo.txt
  
 # Builds
 *.apk
+
+
 # *.unitypackage
- 
 build_info.txt
-Assets/CSharp/ForTest/
-Assets/IgnoreResources/
-Assets/StreamingAssets/build_info
-Assets/PlayMaker/Editor/Resources/EditorStartupPrefs.asset
-Assets/StreamingAssets/build_info.meta
-Assets/PlayMaker/Editor/Resources/EditorStartupPrefs.asset.meta
+Assets/Resources
+
+Logs/
+*.log
