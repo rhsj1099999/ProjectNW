@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
+  m_Name: State_TryReposite
+  m_EditorClassIdentifier: 
+  _myState:
+    _stateType: 0
+    _stateAnimationClip: {fileID: 7400000, guid: 703deed1044967e4c94ca1d0a3bfcb1d,
+      type: 2}
+    _stateAnimationClipOverride: []
+    _isAttackState: 1
+    _isAttackState_effectedBySpeed: 1
+    _attackDamageMultiply:
+      _damageReason: 1
+      _hitType: 0
+      _damage: 0
+      _damagePower: 0
+      _damagingStamina: 0
+    _canUseItem: 0
+    _isAIState: 0
+    _aiStateDesc:
+      _coolTime: -1
+      _randomChancePercentage: -1
+      _stateTimeThreshould: -1
+    _aiAttackStateDesc:
+      _coolTime: -1
+      _range: -1
+    _stateBuffs_Add:
+    - {fileID: 11400000, guid: 926b03bfa80020c47991a004ab3942a6, type: 2}
+    _stateBuffs_Remove:
+    - {fileID: 11400000, guid: 926b03bfa80020c47991a004ab3942a6, type: 2}
+    _EnterStateActionTypes: 0d0000002200000025000000
+    _inStateActionTypes: 1900000006000000
+    _ExitStateActionTypes: 0e00000026000000
+    _checkingBehaves: 
+    _isOverrideStateExsist: 0
+    _overrideStates: []
+    _isSubBlendTreeExist: 0
+    _subBlendTree: {fileID: 0}
+    _isSubAnimationStateMachineExist: 0
+    _subAnimationStateMachine: {fileID: 0}
+    _isNeedStat: 1
+    _needStat:
+      _needPassiveStatList: []
+      _needActiveStatList:
+      - _statType: 1
+        _needAmount: 5
+        _isConsume: 1
+    _isNeedStatLoopBreak: 0
+    _needStat_LoopBreak:
+      _needPassiveStatList: []
+      _needActiveStatList: []

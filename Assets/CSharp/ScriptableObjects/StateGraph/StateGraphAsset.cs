@@ -25,7 +25,8 @@ public class StateGraphAsset : ScriptableObject
         AI_WeaknessGraph,
         AI_GuardGraph,
         DieGraph,
-        End,
+        RipositeGraph,
+        End = 11,
     };
 
 
@@ -665,6 +666,12 @@ public class StateGraphAsset : ScriptableObject
                     break;
 
                 case StateActionType.CharacterRevive:
+                    break;
+
+                case StateActionType.PostureReset:
+                    break;
+
+                case StateActionType.SpuriousDead:
                     break;
 
                 default:
