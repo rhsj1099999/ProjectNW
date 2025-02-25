@@ -20,7 +20,8 @@ public class AnimationFrameDataAsset : ScriptableObject
         DeadCall,                 //죽음 기능
         AddBuff,                  //버프를 걸어준다
         RemoveBuff,               //버프를 해제한다
-        End,
+        RipositeAttack,           //치명타 공격
+        End = 8,
     }
 
     public enum ColliderAttachType

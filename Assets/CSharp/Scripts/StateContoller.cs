@@ -60,6 +60,10 @@ public enum StateActionType
     RemoveBuff,
 
     CharacterRevive,
+
+    PostureReset,
+
+    SpuriousDead, //상태 전환시에 죽을지도 모르는 상황... -> 대경직에 쓰고있습니다 ... 누운다음 일어나야되는데 dead가 true가 되버린 상황
 }
 
 public enum ConditionType
@@ -108,6 +112,8 @@ public enum ConditionType
     NeedStat,
 
     BuffAssetCount,
+
+    IsDead,
 }
 
 
@@ -136,7 +142,23 @@ public enum RepresentStateType
     DieNormal,
     DieThrow,
 
-    End,
+    Groggy,
+
+    Riposte_BackStab,
+    Riposte_FrontStab,
+    Riposte_Smash,
+
+
+    Die_Riposte_BackStab,
+    Die_Riposte_FrontStab,
+    Die_Riposte_Smash,
+
+
+    Hit_Riposte_BackStab,
+    Hit_Riposte_FrontStab,
+    Hit_Riposte_Smash,
+
+    End = 29,
 }
 
 [Serializable]
@@ -524,6 +546,29 @@ public class StateContoller : GameCharacterSubScript
         ReadyLinkedStates(graphType, targetAsset, true);
     }
 
+
+    public void TryChangeStateContinue(StateGraphType graphType, RepresentStateType representType)
+    {
+        StateGraphAsset targetGraphAsset = _stateGraphes[(int)graphType];
+
+        if (targetGraphAsset == null)
+        {
+            return; //해당 그래프가 없다.
+        }
+
+        StateAsset targetAsset = targetGraphAsset.GetRepresentStateAsset(representType);
+
+        if (targetAsset == null)
+        {
+            return; //그래프에 해당 상태가 없다.
+        }
+
+        ChangeStateContinue(graphType, targetAsset);
+
+        ReadyLinkedStates(graphType, targetAsset, true);
+    }
+
+
     public void TryChangeState(StateGraphType graphType, StateAsset targetAsset)
     {
         StateGraphAsset targetGraphAsset = _stateGraphes[(int)graphType];
@@ -550,6 +595,49 @@ public class StateContoller : GameCharacterSubScript
     {
         StatedWillBeChanged();
 
+        if (_currState != null)
+        {
+            DoActions(_currState._myState._ExitStateActionTypes);
+        }
+
+        {
+            //중략 ... 상태 전환 성공시 다음 상태에 대한 변수 세팅
+            {
+                //다음상태 변수 세팅
+                _nextComboReady = true;
+                _previousGraphType = _currentGraphType;
+                _currentGraphType = nextGraphType;
+                _currState = nextState;
+
+                _randomStateInstructIndex = -1;
+                _randomStateTryCount = 0;
+                _failedRandomChanceState.Clear();
+            }
+
+
+            //owner에게 시그널 -> 다른 컴포넌트들이 상태 변화를 실행함
+            {
+                if (_currentGraphType == StateGraphType.WeaponState_RightGraph ||
+                    _currentGraphType == StateGraphType.WeaponState_LeftGraph)
+                {
+                    _owner.SetLatestWeaponUse(_currentGraphType == StateGraphType.WeaponState_RightGraph);
+                }
+                _owner.StateChanged(_currState);
+            }
+
+        }
+
+        AllStopCoroutine();
+
+        DoActions(_currState._myState._EnterStateActionTypes);
+
+        AddStateActionCoroutine();
+    }
+
+
+
+    private void ChangeStateContinue(StateGraphType nextGraphType, StateAsset nextState)
+    {
         if (_currState != null)
         {
             DoActions(_currState._myState._ExitStateActionTypes);
@@ -1304,6 +1392,26 @@ public class StateContoller : GameCharacterSubScript
                     }
                     break;
 
+                case StateActionType.PostureReset:
+                    {
+                        StatScript statScript = _owner.GCST<StatScript>();
+                        int currPosture = statScript.GetActiveStat(ActiveStat.PosturePercent);
+                        statScript.ChangeActiveStat(ActiveStat.PosturePercent, -currPosture);
+                        statScript.RemoveBuff(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff"), -1);
+                    }
+                    break;
+
+                case StateActionType.SpuriousDead:
+                    {
+                        if (_owner.GetDead() == true)
+                        {
+                            StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(_currState._myState._stateAnimationClip.length / 1.0f);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(null, upTimer);
+                            AddCoroutine(DeadCallCoroutine, newCoroutineWrapper);
+                        }
+                    }
+                    break;
+
                 default:
                     //Debug.Assert(false, "데이터가 추가됐습니까?" + action);
                     break;
@@ -1316,16 +1424,24 @@ public class StateContoller : GameCharacterSubScript
     {
         foreach (Coroutine coroutine in _stateActionCoroutines)
         {
-            if (coroutine != null)
-            {
-                /*-------------------------------------------
-                |TODO| null이 되는 이유를 반드시 찾아야 합니다.
-                -------------------------------------------*/
-            }
             StopCoroutine(coroutine);
         }
 
         _stateActionCoroutines.Clear();
+    }
+
+
+    private void AddCoroutine(Func<StateActionCoroutineWrapper, IEnumerator> func, StateActionCoroutineWrapper wrapper)
+    {
+        Coroutine targetCoroutine = StartCoroutine(func(wrapper));
+        if (targetCoroutine != null)
+        {
+            _stateActionCoroutines.Add(targetCoroutine);
+            return;
+        }
+
+        //Debug.Assert(false, "코루틴 시작에 실패했습니다");
+        Debug.Log("코루틴 시작에 실패했습니다, 코루틴이 너무 빨리 끝난거 같습니다");
     }
 
 
@@ -1353,7 +1469,7 @@ public class StateContoller : GameCharacterSubScript
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(_currState._myState._stateAnimationClip.length / speed);
                             StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
-                            _stateActionCoroutines.Add(StartCoroutine(ChangeToIdleCoroutine(newCoroutineWrapper)));
+                            AddCoroutine(ChangeToIdleCoroutine, newCoroutineWrapper);
                         }
                         break;
 
@@ -1361,7 +1477,7 @@ public class StateContoller : GameCharacterSubScript
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed);
                             StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
-                            _stateActionCoroutines.Add(StartCoroutine(StateChangeReadyCoroutine(newCoroutineWrapper)));
+                            AddCoroutine(StateChangeReadyCoroutine, newCoroutineWrapper);
                         }
                         break;
 
@@ -1372,7 +1488,7 @@ public class StateContoller : GameCharacterSubScript
 
                             StateActionCoroutineTimer_BetweenTimer upTimer = new StateActionCoroutineTimer_BetweenTimer(upSec, underSec);
                             StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
-                            _stateActionCoroutines.Add(StartCoroutine(NextAttackComboCoroutine(newCoroutineWrapper)));
+                            AddCoroutine(NextAttackComboCoroutine, newCoroutineWrapper);
                         }
                         break;
 
@@ -1387,7 +1503,7 @@ public class StateContoller : GameCharacterSubScript
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(_currState._myState._stateAnimationClip.length / speed);
                             StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
-                            _stateActionCoroutines.Add(StartCoroutine(DeadCallCoroutine(newCoroutineWrapper)));
+                            AddCoroutine(DeadCallCoroutine, newCoroutineWrapper);
                         }
                         break;
 
@@ -1395,7 +1511,7 @@ public class StateContoller : GameCharacterSubScript
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed);
                             StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
-                            _stateActionCoroutines.Add(StartCoroutine(StateAddBuffCoroutine(newCoroutineWrapper)));
+                            AddCoroutine(StateAddBuffCoroutine, newCoroutineWrapper);
                         }
                         break;
 
@@ -1403,7 +1519,12 @@ public class StateContoller : GameCharacterSubScript
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed);
                             StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
-                            _stateActionCoroutines.Add(StartCoroutine(StateRemoveBuffCoroutine(newCoroutineWrapper)));
+                            AddCoroutine(StateRemoveBuffCoroutine, newCoroutineWrapper);
+                        }
+                        break;
+
+                    case FrameDataWorkType.RipositeAttack:
+                        {
                         }
                         break;
 
@@ -1999,6 +2120,12 @@ public class StateContoller : GameCharacterSubScript
                     }
 
                     ret = false;
+                }
+                break;
+
+            case ConditionType.IsDead:
+                {
+                    ret = _owner.GetDead();
                 }
                 break;
 

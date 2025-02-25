@@ -599,6 +599,38 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         }
     }
 
+
+    public void SetAnimationProgress(int layerIndex, float normalizedTime)
+    {
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(layerIndex);
+
+        _animator.Play(stateInfo.fullPathHash, layerIndex, normalizedTime);
+    }
+
+    public float GetAnimationProgress(int layerIndex)
+    {
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(layerIndex);
+
+        //if (stateInfo.IsName(stateInfo.fullPathHash.ToString()))
+        //{
+        //    _animator.Play(stateInfo.fullPathHash, layerIndex, normalizedTime);
+        //}
+
+        return stateInfo.normalizedTime;
+    }
+
+    public int GetCurrFullBodyLayer()
+    {
+        int layer = (_partBlendingDesc[(int)AnimatorLayerTypes.FullBody]._isUsingFirstLayer == true)
+            ? (int)AnimatorLayerTypes.FullBody
+            : (int)AnimatorLayerTypes.FullBody + 1;
+
+        return layer;
+    }
+
+
+
+
     private void TimeChanged(float timeScale)
     {
         _layerMixer.SetSpeed(timeScale);

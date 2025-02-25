@@ -107,9 +107,6 @@ public class StatScript : GameCharacterSubScript
         RuntimeBuffAsset runtimeBuffAsset = null;
         targetDict.TryGetValue(buff, out runtimeBuffAsset);
 
-
-
-
         return runtimeBuffAsset;
     }
 
@@ -333,7 +330,7 @@ public class StatScript : GameCharacterSubScript
 
         if (existRuntimeBuffAsset == null)
         {
-            Debug.Assert(false, "이미 취소됐습니다?");
+            Debug.Assert(false, "이미 취소됐습니다?" + buff.name);
             Debug.Break();
             return;
         }

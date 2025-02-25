@@ -91,7 +91,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
     {
         if (_buffNames.ContainsKey(buffName) == false)
         {
-            Debug.Assert(false, "없는 BuffName을 요청했습니다");
+            Debug.Assert(false, "없는 BuffName을 요청했습니다" + buffName);
             Debug.Break();
             return null;
         }
