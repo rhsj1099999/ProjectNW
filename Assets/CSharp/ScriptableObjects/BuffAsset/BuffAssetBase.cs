@@ -45,6 +45,14 @@ public class BuffAssetBase : ScriptableObject
     //--------------------------------------------------------------
 
 
+    /*----------------------------------------------------
+    |TODO| 이 변수가 없는 구조는 안될까요?
+    ----------------------------------------------------*/
+    [SerializeField] private bool _isNullable = false;
+    public bool _IsNullable => _isNullable;
+    //----------------------------------------------------
+
+
     [SerializeField] private bool _isTemporary = false;
     public bool _IsTemporary => _isTemporary;
 
@@ -57,8 +65,5 @@ public class BuffAssetBase : ScriptableObject
     [SerializeField] private Sprite _buffUIImage = null;
     public Sprite _BuffUIImage => _buffUIImage;
 
-    public virtual void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount)
-    {
-
-    }
+    public virtual void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount) {}
 }

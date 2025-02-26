@@ -330,8 +330,11 @@ public class StatScript : GameCharacterSubScript
 
         if (existRuntimeBuffAsset == null)
         {
-            Debug.Assert(false, "이미 취소됐습니다?" + buff.name);
-            Debug.Break();
+            if (buff._IsNullable == false)
+            {
+                Debug.Assert(false, "이미 취소됐습니다?" + buff.name);
+                Debug.Break();
+            }
             return;
         }
 

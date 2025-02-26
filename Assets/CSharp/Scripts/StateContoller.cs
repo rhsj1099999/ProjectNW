@@ -12,6 +12,7 @@ using MagicaCloth2;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using JetBrains.Annotations;
 using static StateContoller;
+using TMPro.EditorUtilities;
 
 public enum StateActionType
 {
@@ -158,7 +159,11 @@ public enum RepresentStateType
     Hit_Riposte_FrontStab,
     Hit_Riposte_Smash,
 
-    End = 29,
+    Stagger_Parried,
+
+    AttackRecoil,
+
+    End = 31,
 }
 
 [Serializable]
@@ -260,7 +265,7 @@ public class StateDesc
     public DamageDesc _attackDamageMultiply = null;
 
 
-
+    public bool _isGuardState = false;
     public bool _canUseItem = false;
     public bool _isAIState = false;
 
@@ -312,14 +317,17 @@ public class StateContoller : GameCharacterSubScript
 {
     public class StateActionCoroutineWrapper
     {
-        public StateActionCoroutineWrapper(AEachFrameData frameData, StateActionCoroutineTimerBase timer)
+        public StateActionCoroutineWrapper(AEachFrameData frameData, StateActionCoroutineTimerBase timer, FrameDataWorkType workType)
         {
             _frameData = frameData;
+            _workType = workType;
             _timer = timer;
         }
 
         public AEachFrameData _frameData = null;
         public StateActionCoroutineTimerBase _timer = null;
+        public Coroutine _coroutine = null;
+        public FrameDataWorkType _workType = FrameDataWorkType.End;
     }
 
     public abstract class StateActionCoroutineTimerBase 
@@ -485,7 +493,7 @@ public class StateContoller : GameCharacterSubScript
     private List<LinkedStateAssetWrapper> _currLinkedStates = new List<LinkedStateAssetWrapper>();
     public IReadOnlyList<LinkedStateAssetWrapper> _CurrLinkedStated => _currLinkedStates;
 
-    private List<Coroutine> _stateActionCoroutines = new List<Coroutine>();
+    private List<StateActionCoroutineWrapper> _stateActionCoroutines = new List<StateActionCoroutineWrapper>();
     private int _randomStateInstructIndex = -1;
     private int _randomStateTryCount = 0;
     private HashSet<StateAsset> _failedRandomChanceState = new HashSet<StateAsset>();
@@ -594,6 +602,20 @@ public class StateContoller : GameCharacterSubScript
     private void ChangeState(StateGraphType nextGraphType, StateAsset nextState)
     {
         StatedWillBeChanged();
+
+
+        /*------------------------------------------------------------------------------------------------
+        |TODO| Perfect Guard Buff를 Skill/Buff 내에서 처리하고 싶은데...
+        ------------------------------------------------------------------------------------------------*/
+        if (nextState._myState._isGuardState == true &&
+            _currState._myState._isGuardState == false)
+        {
+            StatScript statScript = _owner.GCST<StatScript>();
+            statScript.ApplyBuff(LevelStatInfoManager.Instance.GetBuff("PerfectGuardBuff"), 1);
+        }
+
+
+
 
         if (_currState != null)
         {
@@ -1403,12 +1425,6 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.SpuriousDead:
                     {
-                        if (_owner.GetDead() == true)
-                        {
-                            StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(_currState._myState._stateAnimationClip.length / 1.0f);
-                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(null, upTimer);
-                            AddCoroutine(DeadCallCoroutine, newCoroutineWrapper);
-                        }
                     }
                     break;
 
@@ -1422,9 +1438,27 @@ public class StateContoller : GameCharacterSubScript
 
     private void AllStopCoroutine()
     {
-        foreach (Coroutine coroutine in _stateActionCoroutines)
+        foreach (StateActionCoroutineWrapper coroutineWrapper in _stateActionCoroutines)
         {
-            StopCoroutine(coroutine);
+            if (coroutineWrapper._coroutine == null)
+            {
+                continue;
+            }
+
+            if (coroutineWrapper._workType == FrameDataWorkType.RemoveBuff)
+            {
+                StatScript statScript = _owner.GCST<StatScript>();
+
+                foreach (BuffAssetBase buff in coroutineWrapper._frameData._buffs)
+                {
+                    if (statScript.GetRuntimeBuffAsset(buff) != null)
+                    {
+                        statScript.RemoveBuff(buff, -1);
+                    }
+                }
+            }
+
+            StopCoroutine(coroutineWrapper._coroutine);
         }
 
         _stateActionCoroutines.Clear();
@@ -1433,10 +1467,10 @@ public class StateContoller : GameCharacterSubScript
 
     private void AddCoroutine(Func<StateActionCoroutineWrapper, IEnumerator> func, StateActionCoroutineWrapper wrapper)
     {
-        Coroutine targetCoroutine = StartCoroutine(func(wrapper));
-        if (targetCoroutine != null)
+        wrapper._coroutine = StartCoroutine(func(wrapper));
+        if (wrapper._coroutine != null)
         {
-            _stateActionCoroutines.Add(targetCoroutine);
+            _stateActionCoroutines.Add(wrapper);
             return;
         }
 
@@ -1468,7 +1502,7 @@ public class StateContoller : GameCharacterSubScript
                     case FrameDataWorkType.ChangeToIdle:
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(_currState._myState._stateAnimationClip.length / speed);
-                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer, FrameDataWorkType.ChangeToIdle);
                             AddCoroutine(ChangeToIdleCoroutine, newCoroutineWrapper);
                         }
                         break;
@@ -1476,7 +1510,7 @@ public class StateContoller : GameCharacterSubScript
                     case FrameDataWorkType.StateChangeReady:
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed);
-                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer, FrameDataWorkType.StateChangeReady);
                             AddCoroutine(StateChangeReadyCoroutine, newCoroutineWrapper);
                         }
                         break;
@@ -1487,7 +1521,7 @@ public class StateContoller : GameCharacterSubScript
                             float upSec = eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed;
 
                             StateActionCoroutineTimer_BetweenTimer upTimer = new StateActionCoroutineTimer_BetweenTimer(upSec, underSec);
-                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer, FrameDataWorkType.ChangeToIdle);
                             AddCoroutine(NextAttackComboCoroutine, newCoroutineWrapper);
                         }
                         break;
@@ -1502,7 +1536,7 @@ public class StateContoller : GameCharacterSubScript
                     case FrameDataWorkType.DeadCall:
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(_currState._myState._stateAnimationClip.length / speed);
-                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer, FrameDataWorkType.DeadCall);
                             AddCoroutine(DeadCallCoroutine, newCoroutineWrapper);
                         }
                         break;
@@ -1510,7 +1544,7 @@ public class StateContoller : GameCharacterSubScript
                     case FrameDataWorkType.AddBuff:
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed);
-                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer, FrameDataWorkType.AddBuff);
                             AddCoroutine(StateAddBuffCoroutine, newCoroutineWrapper);
                         }
                         break;
@@ -1518,7 +1552,7 @@ public class StateContoller : GameCharacterSubScript
                     case FrameDataWorkType.RemoveBuff:
                         {
                             StateActionCoroutineTimer_UpTimer upTimer = new StateActionCoroutineTimer_UpTimer(eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed);
-                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer);
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer, FrameDataWorkType.RemoveBuff);
                             AddCoroutine(StateRemoveBuffCoroutine, newCoroutineWrapper);
                         }
                         break;
@@ -1548,6 +1582,7 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timer.Check() == true)
             {
+                target._coroutine = null;
                 ReadyLinkedStates(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState, true);
                 ChangeState(StateGraphType.LocoStateGraph, _stateGraphes[(int)StateGraphType.LocoStateGraph].GetEntryStates()[0]._linkedState);
                 break;
@@ -1564,6 +1599,7 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timer.Check() == true)
             {
+                target._coroutine = null;
                 ReadyLinkedStates(StateGraphType.LocoStateGraph, GetMyIdleStateAsset(), false);
                 break;
             }
@@ -1587,6 +1623,7 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timer.Check() == true)
             {
+                target._coroutine = null;
                 _nextComboReady = true;
                 break;
             }
@@ -1603,6 +1640,7 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timer.Check() == true)
             {
+                target._coroutine = null;
                 _owner.DeadCall();
                 break;
             }
@@ -1618,6 +1656,7 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timer.Check() == true)
             {
+                target._coroutine = null;
                 List<BuffAssetBase> buffs = target._frameData._buffs;
                 foreach (BuffAssetBase buff in buffs)
                 {
@@ -1637,6 +1676,7 @@ public class StateContoller : GameCharacterSubScript
 
             if (target._timer.Check() == true)
             {
+                target._coroutine = null;
                 List<BuffAssetBase> buffs = target._frameData._buffs;
                 foreach (BuffAssetBase buff in buffs)
                 {

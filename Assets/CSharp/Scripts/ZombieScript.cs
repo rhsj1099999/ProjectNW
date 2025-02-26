@@ -61,6 +61,11 @@ public class ZombieScript : CharacterScript, IHitable
     {
         base.DealMe_Final(damage, isWeakPoint, attacker, victim, ref closetPoint, ref hitNormal);
 
+        AfterDealMe();
+    }
+
+    public override void AfterDealMe()
+    {
         if (_dead == false)
         {
             if (_battleUICoroutine == null)

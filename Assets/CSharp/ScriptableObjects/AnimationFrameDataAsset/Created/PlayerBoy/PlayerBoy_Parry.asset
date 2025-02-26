@@ -20,4 +20,20 @@ MonoBehaviour:
       _colliderAttachType: 0
       _frameUp: 60
       _frameUnder: 0
-      _buffKey: 0
+      _buffs: []
+  - _frameWorkType: 5
+    _frameDatas:
+    - _frameCheckType: 0
+      _colliderAttachType: 0
+      _frameUp: 9
+      _frameUnder: 0
+      _buffs:
+      - {fileID: 11400000, guid: a19390426e55b9c48a9e687529b14681, type: 2}
+  - _frameWorkType: 6
+    _frameDatas:
+    - _frameCheckType: 0
+      _colliderAttachType: 0
+      _frameUp: 14
+      _frameUnder: 0
+      _buffs:
+      - {fileID: 11400000, guid: a19390426e55b9c48a9e687529b14681, type: 2}

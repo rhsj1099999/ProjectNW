@@ -9,6 +9,19 @@ using static StatScript;
 
 public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 {
+    /*-------------------------------------------------------
+    |NOTI| 이거 뭐하는 변수냐? = 버프 적용, 해제할때 할 일들
+    -------------------------------------------------------*/
+
+    public enum BuffApplyFSM 
+    {
+        End,
+    }
+
+
+
+
+
     public List<LevelStatAsset> _levelStats_Init = new List<LevelStatAsset>();
     private Dictionary<CharacterType, Dictionary<int, LevelStatAsset>> _levelStats = new Dictionary<CharacterType, Dictionary<int, LevelStatAsset>>();
 

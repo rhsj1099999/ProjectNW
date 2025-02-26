@@ -1926,6 +1926,59 @@ public class CharacterScript : GameActorScript, IHitable
         statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, attacker, victim);
 
 
+        //무적이 걸려있었더라면, 애당초 패링이 성공할 수 없다.
+        //그리고 패링 성공 여부 판정 시작은 피격자에서 시작
+        if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("ParryBuff")) != null &&
+            true /*패링 가능 공격이고  -- 일단 전부 패링 가능합니다. 내 강인도와 상대 공격의 Power의 차이? */ && 
+            true /*타격점이 일정 각도 내 라면*/)
+        {
+            //이펙트 생성
+            {
+                string effectName = "HitSparkEffect";
+
+                //공격에 의한 이펙트가 결정됩니다.
+                switch (damage._hitType)
+                {
+                    case DamageDesc.HitType.Blunt:
+                        {
+                            if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+                            {
+                                effectName = "HitSparkCritical";
+                            }
+                        }
+                        break;
+                    case DamageDesc.HitType.Slash:
+                        effectName = "SlashedSparkEffect";
+                        break;
+                    case DamageDesc.HitType.End:
+                        {
+                            //Debug.Assert(false, "상태 Asset에서 어떻게 때리는지 지정하세요. 기본값 '타격'으로 세팅됩니다");
+                        }
+                        break;
+                }
+
+                GameObject shieldWeapon = (GCST<StateContoller>().GetCurrStateGraphType() == StateGraphType.WeaponState_RightGraph)
+                    ? _tempCurrRightWeapon
+                    : _tempCurrLeftWeapon;
+
+                closetPoint = shieldWeapon.transform.position; //방패피격점
+                EffectManager.Instance.CreateEffect(effectName, hitNormal, closetPoint);
+                EffectManager.Instance.CreateEffect("ConeSparkEffect", hitNormal, closetPoint);
+                EffectManager.Instance.CreateEffect("CartoonSparkEffect", hitNormal, attacker._CharacterHeart.transform.position);
+            }
+
+            //공격자 Stagger_Parried로 바꾸기
+            {
+                StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Stagger_Parried);
+                attacker.AfterDealMe();
+            }
+
+            return;
+        }
+
+
+
         Debug.Log("들어온 데미지" + damage._damage);
         Debug.Log("들어온 스테미나데미지" + damage._damagingStamina);
         Debug.Log("들어온 파워" + damage._damagePower);
@@ -2061,8 +2114,6 @@ public class CharacterScript : GameActorScript, IHitable
                             if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) != null)
                             {
                                 //그로기 상태에서 맞았다 = 찍기가 발동된다
-
-                                //공격자 -> Smash 모션 => 이건 성공했다.
                                 StateContoller attackerStateController = attacker.GCST<StateContoller>();
                                 attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_Smash);
 
@@ -2077,10 +2128,52 @@ public class CharacterScript : GameActorScript, IHitable
                                     StartCoroutine(RipositeCoroutine(isWeakPoint, attacker, victim, closetPoint, hitNormal, time, attackerStateController.GetCurrState()._myState._stateType));
                                 }
                             }
-                            else if (false /*가드 크래시 중입니다*/)
+
+                            else if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("Stagger_Parried")) != null ||
+                                false /*가드크래시다*/)
                             {
                                 //가드 크래시 상태에서 맞았다 = 앞잡기가 발동된다.
+
+                                Vector3 dirAttackerToVictim = (transform.position - attacker.transform.position);
+                                dirAttackerToVictim.y = 0.0f;
+                                dirAttackerToVictim = dirAttackerToVictim.normalized;
+                                float angle = Mathf.Abs(Vector3.Angle(dirAttackerToVictim, transform.forward));
+
+                                if (angle < 150.0f/*피격 위치가 앞잡기 가능 위치다*/)
+                                {
+                                    return;
+                                }
+                                    
+                                StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                                attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_FrontStab);
+
+                                //Victim을 회전시킨다.
+                                //Victim은 먼저 상태를 변경시켜야 한다.
+                                {
+                                    GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(Quaternion.AngleAxis(180f, transform.right) * dirAttackerToVictim));
+                                    GCST<StateContoller>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_FrontStab);
+                                }
+
+
+                                //Attaker를 회전시킨다.
+                                {
+                                    attacker.GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
+                                }
+
+
+                                //공격자의 상태는 Riposite로 바뀌었다.
+                                {
+                                    AnimationClip attackerRipositeStateAnimationClip = attackerStateController.GetCurrState()._myState._stateAnimationClip;
+                                    Dictionary<FrameDataWorkType, List<AEachFrameData>> allFrameDatas = ResourceDataManager.Instance.GetAnimationAllFrameData(attackerRipositeStateAnimationClip);
+                                    List<AEachFrameData> ripositeAttackFrameData = allFrameDatas[FrameDataWorkType.RipositeAttack];
+
+                                    float time = ripositeAttackFrameData[0]._frameUp / attackerRipositeStateAnimationClip.frameRate;
+
+                                    StartCoroutine(RipositeCoroutine(isWeakPoint, attacker, victim, closetPoint, hitNormal, time, attackerStateController.GetCurrState()._myState._stateType));
+                                }
                             }
+
+
                             else
                             {
                                 Vector3 dirAttackerToVictim = (transform.position - attacker.transform.position);
@@ -2192,12 +2285,47 @@ public class CharacterScript : GameActorScript, IHitable
                         guardEffectName = "CartoonSparkEffect";
                     }
 
-                    closetPoint = _tempCurrLeftWeapon.transform.position; //방패피격점
+                    GameObject shieldWeapon = (GCST<StateContoller>().GetCurrStateGraphType() == StateGraphType.WeaponState_RightGraph)
+                        ? _tempCurrRightWeapon
+                        : _tempCurrLeftWeapon;
+
+                    closetPoint = shieldWeapon.transform.position; //방패피격점
 
                     EffectManager.Instance.CreateEffect(guardEffectName, hitNormal, closetPoint); //가드이펙트
                 }
 
                 EffectManager.Instance.CreateEffect(effectName, hitNormal, closetPoint);
+
+                if (victim.GCST<StatScript>().GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PerfectGuardBuff")) != null)
+                {
+                    EffectManager.Instance.CreateEffect("PerfectGuardSparkEffect", hitNormal, closetPoint);
+                    attacker.AfterDealMe();
+
+                    /*----------------------------------------------------
+                    |TOOD| 계산공식 결정하기
+                    ----------------------------------------------------*/
+                    int refelctPower = 25;
+
+
+                    attackerStatScript.ChangeActiveStat(ActiveStat.PosturePercent, refelctPower);
+                    int afterAttackerPosture = attackerStatScript.GetActiveStat(ActiveStat.PosturePercent);
+                    int attackerPosturePhase1 = attackerStatScript.GetPassiveStat(PassiveStat.PostruePercentPhase1);
+
+                    if (afterAttackerPosture == 100)
+                    {
+                        StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                        attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Groggy);
+                        attackerStatScript.ApplyBuff(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff"), 1);
+                        EffectManager.Instance.CreateEffect("CartoonSparkEffect", Vector3.up, attacker._CharacterHeart.transform.position);
+                    }
+
+                    else if (afterAttackerPosture >= attackerPosturePhase1)
+                    {
+                        //attacker의 공격이 튕긴다
+                        StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                        attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.AttackRecoil);
+                    }
+                }
             }
 
 
@@ -2242,5 +2370,11 @@ public class CharacterScript : GameActorScript, IHitable
         피격시 이 충돌체가 WeakPoint였다면 true 입니다. (머리같은거)
         ----------------------------------------------------*/
         TriggerEnterWithWeapon(other, isWeakCollider, ref closetPoint, ref hitNormal);
+    }
+
+
+
+    public virtual void AfterDealMe()
+    {
     }
 }

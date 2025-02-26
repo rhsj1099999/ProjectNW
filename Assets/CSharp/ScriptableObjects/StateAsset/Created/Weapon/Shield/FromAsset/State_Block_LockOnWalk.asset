@@ -21,9 +21,11 @@ MonoBehaviour:
     _isAttackState_effectedBySpeed: 0
     _attackDamageMultiply:
       _damageReason: 1
+      _hitType: 0
       _damage: 1
       _damagePower: 1
       _damagingStamina: 1
+    _isGuardState: 1
     _canUseItem: 0
     _isAIState: 0
     _aiStateDesc:
@@ -37,10 +39,13 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 7b2b4b896f6310e4fb3350306e992654, type: 2}
     _stateBuffs_Remove:
     - {fileID: 11400000, guid: 7b2b4b896f6310e4fb3350306e992654, type: 2}
+    - {fileID: 11400000, guid: 3108410f4dfbd944db67541fd958f5b7, type: 2}
     _EnterStateActionTypes: 0d00000025000000
     _inStateActionTypes: 180000001a000000
     _ExitStateActionTypes: 0e00000026000000
     _checkingBehaves: 
+    _isOverrideStateExsist: 0
+    _overrideStates: []
     _isSubBlendTreeExist: 0
     _subBlendTree: {fileID: 0}
     _isSubAnimationStateMachineExist: 1
