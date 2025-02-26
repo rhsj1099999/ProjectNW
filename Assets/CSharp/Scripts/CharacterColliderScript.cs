@@ -81,7 +81,11 @@ public class CharacterColliderScript : GameCharacterSubScript
             foreach (ColliderWorkDesc colliderWork in colliderWorkList)
             {
                 type = colliderWork._type;
-                StopCoroutine(colliderWork._runningCoroutine);
+
+                if (colliderWork._runningCoroutine != null)
+                {
+                    StopCoroutine(colliderWork._runningCoroutine);
+                }
             }
 
             GameObject colliderObject = null;
@@ -193,8 +197,8 @@ public class CharacterColliderScript : GameCharacterSubScript
 
                 ColliderWorkDesc colliderWorkDesc = new ColliderWorkDesc();
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;
-                colliderWorkDesc._runningCoroutine = StartCoroutine(ActiveColliderCoroutine(colliderWorkDesc));
                 colliderWorkDesc._type = type;
+                colliderWorkDesc._runningCoroutine = StartCoroutine(ActiveColliderCoroutine(colliderWorkDesc));
                 _colliderWorks[(int)type].Add(colliderWorkDesc);
             }
 
@@ -206,8 +210,8 @@ public class CharacterColliderScript : GameCharacterSubScript
 
                 ColliderWorkDesc colliderWorkDesc = new ColliderWorkDesc();
                 colliderWorkDesc._targetTime = (targetFrame / animationFPS) / animationSpeed;
-                colliderWorkDesc._runningCoroutine = StartCoroutine(DeActiveColliderCoroutine(colliderWorkDesc));
                 colliderWorkDesc._type = type;
+                colliderWorkDesc._runningCoroutine = StartCoroutine(DeActiveColliderCoroutine(colliderWorkDesc));
                 _colliderWorks[(int)type].Add(colliderWorkDesc);
             }
         }

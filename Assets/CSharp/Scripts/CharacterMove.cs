@@ -13,6 +13,19 @@ public class CharacterMoveScript2 : CharacterContollerable
         _characterController.Move(position);
     }
 
+    public override void CharacterRootMove_Speed(Vector3 delta, float similarities, float ratio)
+    {
+        _moveTriggerd = true;
+
+        Vector3 desiredMove = delta * similarities * ratio;
+
+        _characterController.Move(desiredMove);
+
+        Debug.Log("Moved" + desiredMove);
+
+        _latestPlaneVelocityDontUseY = _characterController.velocity;
+    }
+
     public override void SubScriptStart()
     {
         _characterController = GetComponent<CharacterController>();

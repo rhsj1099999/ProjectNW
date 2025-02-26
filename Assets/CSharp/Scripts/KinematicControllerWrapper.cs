@@ -313,6 +313,14 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     }
 
 
+    public override void CharacterRootMove_Speed(Vector3 delta, float similarities, float ratio)
+    {
+        _moveTriggerd = true;
+
+        _currentSpeed = (delta / Time.deltaTime) * ratio;
+    }
+
+
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
         /*-------------------------------------------------------------

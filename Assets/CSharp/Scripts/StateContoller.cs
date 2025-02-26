@@ -65,6 +65,8 @@ public enum StateActionType
     PostureReset,
 
     SpuriousDead, //상태 전환시에 죽을지도 모르는 상황... -> 대경직에 쓰고있습니다 ... 누운다음 일어나야되는데 dead가 true가 되버린 상황
+
+    RootMove_Speed,
 }
 
 public enum ConditionType
@@ -615,8 +617,6 @@ public class StateContoller : GameCharacterSubScript
         }
 
 
-
-
         if (_currState != null)
         {
             DoActions(_currState._myState._ExitStateActionTypes);
@@ -1063,7 +1063,22 @@ public class StateContoller : GameCharacterSubScript
         worldDelta.y = 0.0f;
 
         _owner.GCST<CharacterContollerable>().CharacterRootMove(worldDelta, 1.0f, 1.0f);
+    }
 
+
+    private void SwitchFunc_RootMove_Speed()
+    {
+        Vector3 worldDelta = CalculateCurrentRootDelta();
+
+        {
+            Vector3 modelLocalPosition = _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition;
+            modelLocalPosition.y = worldDelta.y;
+            _owner.GCST<CharacterAnimatorScript>().GetCurrActivatedModelObject().transform.localPosition = modelLocalPosition;
+        }
+
+        worldDelta.y = 0.0f;
+
+        _owner.GCST<CharacterContollerable>().CharacterRootMove_Speed(worldDelta, 1.0f, _owner.GCST<StatScript>().GetPassiveStat(PassiveStat.MoveSpeed));
     }
 
     private void SwitchFunc_SimpleMove()
@@ -1428,6 +1443,12 @@ public class StateContoller : GameCharacterSubScript
                     }
                     break;
 
+                case StateActionType.RootMove_Speed:
+                    {
+                        SwitchFunc_RootMove_Speed();
+                    }
+                    break;
+
                 default:
                     //Debug.Assert(false, "데이터가 추가됐습니까?" + action);
                     break;
@@ -1520,8 +1541,28 @@ public class StateContoller : GameCharacterSubScript
                             float underSec = eachFrameData._frameUnder / _currState._myState._stateAnimationClip.frameRate / speed;
                             float upSec = eachFrameData._frameUp / _currState._myState._stateAnimationClip.frameRate / speed;
 
-                            StateActionCoroutineTimer_BetweenTimer upTimer = new StateActionCoroutineTimer_BetweenTimer(upSec, underSec);
-                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, upTimer, FrameDataWorkType.ChangeToIdle);
+                            StateActionCoroutineTimerBase timerBase = null;
+                            switch (eachFrameData._frameCheckType)
+                            {
+                                case FrameCheckType.Up:
+                                    timerBase = new StateActionCoroutineTimer_UpTimer(upSec);
+                                    break;
+                                case FrameCheckType.Under:
+                                    timerBase = new StateActionCoroutineTimer_BetweenTimer(upSec, underSec);
+                                    break;
+                                case FrameCheckType.Between:
+                                    timerBase = new StateActionCoroutineTimer_DownTimer(underSec);
+                                    break;
+
+                                default:
+                                    {
+                                        Debug.Assert(false, "대응이 되지 않습니다");
+                                        Debug.Break();
+                                    }
+                                    break;
+                            }
+                            
+                            StateActionCoroutineWrapper newCoroutineWrapper = new StateActionCoroutineWrapper(eachFrameData, timerBase, FrameDataWorkType.ChangeToIdle);
                             AddCoroutine(NextAttackComboCoroutine, newCoroutineWrapper);
                         }
                         break;

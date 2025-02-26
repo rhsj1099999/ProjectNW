@@ -21,9 +21,11 @@ MonoBehaviour:
     _isAttackState_effectedBySpeed: 1
     _attackDamageMultiply:
       _damageReason: 1
+      _hitType: 0
       _damage: 1
-      _damagePower: 2
+      _damagePower: 10
       _damagingStamina: 1
+    _isGuardState: 0
     _canUseItem: 0
     _isAIState: 0
     _aiStateDesc:
@@ -39,6 +41,8 @@ MonoBehaviour:
     _inStateActionTypes: 1900000006000000
     _ExitStateActionTypes: 0e000000
     _checkingBehaves: 
+    _isOverrideStateExsist: 0
+    _overrideStates: []
     _isSubBlendTreeExist: 0
     _subBlendTree: {fileID: 0}
     _isSubAnimationStateMachineExist: 0
@@ -50,3 +54,7 @@ MonoBehaviour:
       - _statType: 1
         _needAmount: 5
         _isConsume: 1
+    _isNeedStatLoopBreak: 0
+    _needStat_LoopBreak:
+      _needPassiveStatList: []
+      _needActiveStatList: []

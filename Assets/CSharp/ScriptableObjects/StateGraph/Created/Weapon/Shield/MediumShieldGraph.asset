@@ -191,9 +191,30 @@ MonoBehaviour:
   - _isEntryState: 0
     _stateAsset: {fileID: 11400000, guid: 6a0f92af1d9d1e14bb8bfd1d7dede5e4, type: 2}
     _entryCondition: []
-    _linkedStates: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: beedb3af25cdffc48b75a141fea90fba, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+          type: 2}
+        _goal: 1
+      - _conditionAsset: {fileID: 11400000, guid: 91c1d22b2568fb941a1d0d515b64f574,
+          type: 2}
+        _goal: 1
   - _isEntryState: 0
     _stateAsset: {fileID: 11400000, guid: dca7ce320c2360a45b30a77921bb54be, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: beedb3af25cdffc48b75a141fea90fba, type: 2}
+    _entryCondition: []
+    _linkedStates:
+    - _linkedState: {fileID: 11400000, guid: 42f0ed652dbc2394583f7e7a3308d152, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
+          type: 2}
+        _goal: 1
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 42f0ed652dbc2394583f7e7a3308d152, type: 2}
     _entryCondition: []
     _linkedStates: []
   _interactionPointsInitial:
@@ -230,6 +251,11 @@ MonoBehaviour:
           type: 2}
         _goal: 1
     - _linkedState: {fileID: 11400000, guid: 9c2cb8453bb6edc44a2232dd4719d4b4, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
+          type: 2}
+        _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 42f0ed652dbc2394583f7e7a3308d152, type: 2}
       _conditionAsset:
       - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
           type: 2}

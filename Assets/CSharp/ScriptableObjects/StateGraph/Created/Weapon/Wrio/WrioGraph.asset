@@ -117,4 +117,23 @@ MonoBehaviour:
       - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
           type: 2}
         _goal: 1
+  - _isEntryState: 1
+    _stateAsset: {fileID: 11400000, guid: e805d30570f5b0b4bafed4afc960e3b6, type: 2}
+    _entryCondition:
+    - _conditionAsset: {fileID: 11400000, guid: 2c383830c41ff1b42baca45b0ec30504,
+        type: 2}
+      _goal: 1
+    _linkedStates: []
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: 49ba8cfe2d710e148bf4dc4a31583e1f, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: e9b067d27f515ab41b1ea1b8fc188194, type: 2}
+    _entryCondition: []
+    _linkedStates: []
+  - _isEntryState: 0
+    _stateAsset: {fileID: 11400000, guid: fbf51bb24fd04e5488c86b382fa9320c, type: 2}
+    _entryCondition: []
+    _linkedStates: []
   _interactionPointsInitial: []

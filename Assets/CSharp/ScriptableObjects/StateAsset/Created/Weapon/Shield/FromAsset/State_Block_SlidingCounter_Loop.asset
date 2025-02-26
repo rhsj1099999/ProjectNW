@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
-  m_Name: State_WrioAttack_5
+  m_Name: State_Block_SlidingCounter_Loop
   m_EditorClassIdentifier: 
   _myState:
     _stateType: 0
-    _stateAnimationClip: {fileID: 7400000, guid: 52ef7097221b3b64a8172e74739ca52d,
+    _stateAnimationClip: {fileID: 7400000, guid: 014adba2726f41f43af408e5fd18317c,
       type: 2}
     _stateAnimationClipOverride: []
     _isAttackState: 1
-    _isAttackState_effectedBySpeed: 1
+    _isAttackState_effectedBySpeed: 0
     _attackDamageMultiply:
       _damageReason: 1
       _hitType: 0
@@ -26,7 +26,7 @@ MonoBehaviour:
       _damagePower: 10
       _damagingStamina: 1
     _isGuardState: 0
-    _canUseItem: 0
+    _canUseItem: 1
     _isAIState: 0
     _aiStateDesc:
       _coolTime: -1
@@ -35,11 +35,15 @@ MonoBehaviour:
     _aiAttackStateDesc:
       _coolTime: -1
       _range: -1
-    _stateBuffs_Add: []
-    _stateBuffs_Remove: []
-    _EnterStateActionTypes: 0d00000022000000
-    _inStateActionTypes: 1900000006000000
-    _ExitStateActionTypes: 0e000000
+    _stateBuffs_Add:
+    - {fileID: 11400000, guid: 54560a09b45cb2b4c8581a339a9b83ca, type: 2}
+    - {fileID: 11400000, guid: 1548a14e97061af46872eac56f360681, type: 2}
+    _stateBuffs_Remove:
+    - {fileID: 11400000, guid: 54560a09b45cb2b4c8581a339a9b83ca, type: 2}
+    - {fileID: 11400000, guid: 1548a14e97061af46872eac56f360681, type: 2}
+    _EnterStateActionTypes: 0d00000025000000
+    _inStateActionTypes: 2a000000
+    _ExitStateActionTypes: 0e00000026000000
     _checkingBehaves: 
     _isOverrideStateExsist: 0
     _overrideStates: []
@@ -52,7 +56,7 @@ MonoBehaviour:
       _needPassiveStatList: []
       _needActiveStatList:
       - _statType: 1
-        _needAmount: 5
+        _needAmount: 20
         _isConsume: 1
     _isNeedStatLoopBreak: 0
     _needStat_LoopBreak:

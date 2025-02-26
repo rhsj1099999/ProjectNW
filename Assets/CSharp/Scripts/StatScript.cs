@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using static BuffAsset_PassiveStat;
 using static BuffAsset_RegenStat;
@@ -314,6 +315,11 @@ public class StatScript : GameCharacterSubScript
 
     public void RemoveBuff(BuffAssetBase buff, int count)
     {
+        if (buff._BuffName == "SlidingCounterSpeedBuff")
+        {
+            int a = 10;
+        }
+
         if (buff == null)
         {
             return;
@@ -444,9 +450,16 @@ public class StatScript : GameCharacterSubScript
                 {
                     case BuffApplyType.Set:
                         {
-                            _currPassiveStat._PassiveStats[type] = buffAmoint.Value;
-                            nextVar = buffAmoint.Value;
-                            isSet = true;
+                            if (buffAmoint.Value != 0)
+                            {
+                                isSet = true;
+                                _currPassiveStat._PassiveStats[type] = buffAmoint.Value;
+                                nextVar = buffAmoint.Value;
+                            }
+                            else
+                            {
+                                nextVar = baseStat;
+                            }
                         }
                         break;
 
