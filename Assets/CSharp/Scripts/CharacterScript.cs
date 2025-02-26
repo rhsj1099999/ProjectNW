@@ -2304,7 +2304,7 @@ public class CharacterScript : GameActorScript, IHitable
                     /*----------------------------------------------------
                     |TOOD| 계산공식 결정하기
                     ----------------------------------------------------*/
-                    int refelctPower = 25;
+                    int refelctPower = 10;
 
 
                     attackerStatScript.ChangeActiveStat(ActiveStat.PosturePercent, refelctPower);
