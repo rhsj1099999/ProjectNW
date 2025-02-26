@@ -2081,43 +2081,47 @@ public class CharacterScript : GameActorScript, IHitable
                             {
                                 //가드 크래시 상태에서 맞았다 = 앞잡기가 발동된다.
                             }
-
-                            Vector3 dirAttackerToVictim = (transform.position - attacker.transform.position);
-                            dirAttackerToVictim.y = 0.0f;
-                            dirAttackerToVictim = dirAttackerToVictim.normalized;
-                            float angle = Mathf.Abs(Vector3.Angle(dirAttackerToVictim, transform.forward));
-
-                            if (angle <= 15.0f/*피격 위치가 뒤잡기 가능 위치다*/)
+                            else
                             {
-                                //뒤잡기 위치다 = 뒤잡기가 발동된다.
-                                StateContoller attackerStateController = attacker.GCST<StateContoller>();
-                                attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_BackStab);
+                                Vector3 dirAttackerToVictim = (transform.position - attacker.transform.position);
+                                dirAttackerToVictim.y = 0.0f;
+                                dirAttackerToVictim = dirAttackerToVictim.normalized;
+                                float angle = Mathf.Abs(Vector3.Angle(dirAttackerToVictim, transform.forward));
 
-                                //Victim을 회전시킨다.
-                                //Victim은 먼저 상태를 변경시켜야 한다.
+                                if (angle <= 15.0f/*피격 위치가 뒤잡기 가능 위치다*/)
                                 {
-                                    GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
-                                    GCST<StateContoller>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_BackStab);
-                                }
+                                    //뒤잡기 위치다 = 뒤잡기가 발동된다.
+                                    StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                                    attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_BackStab);
+
+                                    //Victim을 회전시킨다.
+                                    //Victim은 먼저 상태를 변경시켜야 한다.
+                                    {
+                                        GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
+                                        GCST<StateContoller>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_BackStab);
+                                    }
 
 
-                                //Attaker를 회전시킨다.
-                                {
-                                    attacker.GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
-                                }
+                                    //Attaker를 회전시킨다.
+                                    {
+                                        attacker.GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
+                                    }
 
 
-                                //공격자의 상태는 Riposite로 바뀌었다.
-                                {
-                                    AnimationClip attackerRipositeStateAnimationClip = attackerStateController.GetCurrState()._myState._stateAnimationClip;
-                                    Dictionary<FrameDataWorkType, List<AEachFrameData>> allFrameDatas = ResourceDataManager.Instance.GetAnimationAllFrameData(attackerRipositeStateAnimationClip);
-                                    List<AEachFrameData> ripositeAttackFrameData = allFrameDatas[FrameDataWorkType.RipositeAttack];
+                                    //공격자의 상태는 Riposite로 바뀌었다.
+                                    {
+                                        AnimationClip attackerRipositeStateAnimationClip = attackerStateController.GetCurrState()._myState._stateAnimationClip;
+                                        Dictionary<FrameDataWorkType, List<AEachFrameData>> allFrameDatas = ResourceDataManager.Instance.GetAnimationAllFrameData(attackerRipositeStateAnimationClip);
+                                        List<AEachFrameData> ripositeAttackFrameData = allFrameDatas[FrameDataWorkType.RipositeAttack];
 
-                                    float time = ripositeAttackFrameData[0]._frameUp / attackerRipositeStateAnimationClip.frameRate;
+                                        float time = ripositeAttackFrameData[0]._frameUp / attackerRipositeStateAnimationClip.frameRate;
 
-                                    StartCoroutine(RipositeCoroutine(isWeakPoint, attacker, victim, closetPoint, hitNormal, time, attackerStateController.GetCurrState()._myState._stateType));
+                                        StartCoroutine(RipositeCoroutine(isWeakPoint, attacker, victim, closetPoint, hitNormal, time, attackerStateController.GetCurrState()._myState._stateType));
+                                    }
                                 }
                             }
+
+
                         }
                         else
                         {

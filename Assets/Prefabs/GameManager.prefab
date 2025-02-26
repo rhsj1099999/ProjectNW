@@ -585,6 +585,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 280f55e7c870cf34ebe29e1f51e7120a, type: 2}
   _buffs_Init:
   - {fileID: 11400000, guid: 92b29754b768785448415d9848d61b36, type: 2}
+  - {fileID: 11400000, guid: 3108410f4dfbd944db67541fd958f5b7, type: 2}
   - {fileID: 11400000, guid: 3ce8ecbdbee6f64469bebaf39471b004, type: 2}
   - {fileID: 11400000, guid: 926b03bfa80020c47991a004ab3942a6, type: 2}
   - {fileID: 11400000, guid: 8ce4ff91ce2c8624db8f199dcba2dc8f, type: 2}
@@ -662,4 +663,7 @@ MonoBehaviour:
       type: 3}
   - _name: HitSparkBeidouDamageACC
     _effectPrefab: {fileID: 9164097373008745509, guid: c0d66ccf38788e44cb4d155a7eede2fc,
+      type: 3}
+  - _name: PerfectGuardSparkEffect
+    _effectPrefab: {fileID: 5344487761571479266, guid: 1c970b84bc846a341ab145d10ab1da2c,
       type: 3}
