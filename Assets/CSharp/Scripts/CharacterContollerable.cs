@@ -65,6 +65,7 @@ public abstract class CharacterContollerable : GameCharacterSubScript
     public abstract void ClearLatestVelocity();
     public abstract void GravityUpdate();
     public abstract void DoJump();
+    public abstract void DoKnuckBack();
     public abstract void CharacterMove(Vector3 inputDirection, float similarities, float ratio);
     public abstract void CharacterRootMove(Vector3 delta, float similarities, float ratio);
     public abstract void CharacterRootMove_Speed(Vector3 delta, float similarities, float ratio);

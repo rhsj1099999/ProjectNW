@@ -289,6 +289,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
             }
 
         }
+
         public override BuffActionClass CopyMe()
         {
             return new BuffActionClass_BeidouDamageACC(_myKey, _myTiming);
@@ -314,7 +315,8 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
 
             BuffActionClass_BeidouDamageACC currDamageAcc = (BuffActionClass_BeidouDamageACC)beidouDamageAccRuntimeBuff._buffActions[LevelStatInfoManager.BuffAction.BeidouElementalArt];
 
-            damage._damage += currDamageAcc._damageACC;
+            damage._damage += (currDamageAcc._damageACC / 2.0f);
+            damage._damagePower = currDamageAcc._damageACC * 3.0f;
 
             Debug.Log("데미지 방출 || 누산돼있던 데미지 : " + currDamageAcc._damageACC + " 데미지 합 : " + damage._damage);
         }

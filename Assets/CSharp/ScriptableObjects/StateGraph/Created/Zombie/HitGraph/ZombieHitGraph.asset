@@ -31,6 +31,11 @@ MonoBehaviour:
       - _conditionAsset: {fileID: 11400000, guid: b710afcb841d8b9408936c0054b068d7,
           type: 2}
         _goal: 1
+    - _linkedState: {fileID: 11400000, guid: 3ea474738abcd8b49b28f87d77345699, type: 2}
+      _conditionAsset:
+      - _conditionAsset: {fileID: 11400000, guid: 0fa7f3cd5e1132a44acb071de60c2dde,
+          type: 2}
+        _goal: 0
   - _isEntryState: 0
     _stateAsset: {fileID: 11400000, guid: ae2ac5437a16f9341bcbf05f6353eeb0, type: 2}
     _entryCondition: []

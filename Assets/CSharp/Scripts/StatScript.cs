@@ -315,13 +315,13 @@ public class StatScript : GameCharacterSubScript
 
     public void RemoveBuff(BuffAssetBase buff, int count)
     {
-        if (buff._BuffName == "SlidingCounterSpeedBuff")
-        {
-            int a = 10;
-        }
-
         if (buff == null)
         {
+            if (buff._IsNullable != true)
+            {
+                Debug.Assert(false, "버프가 없어요" + buff._BuffName);
+                Debug.Break();
+            }
             return;
         }
 
@@ -393,14 +393,20 @@ public class StatScript : GameCharacterSubScript
         }
 
         int applyAmount = buffWork._amout * deltaCount;
-        
-        currAppliedBuffs[applyType] += applyAmount;
 
-        if (currAppliedBuffs[applyType] < 0)
+        if ((currAppliedBuffs[applyType] + applyAmount) < 0)
         {
             Debug.Assert(false, "음수가 나와선 안됩니다");
             Debug.Break();
         }
+
+        currAppliedBuffs[applyType] += applyAmount;
+
+        //if (applyType == BuffApplyType.Set &&
+        //    currAppliedBuffs[applyType] == 0)
+        //{
+        //    currAppliedBuffs.Remove(applyType);
+        //}
     }
 
 
@@ -418,13 +424,19 @@ public class StatScript : GameCharacterSubScript
 
         int applyAmount = buffWork._amout * deltaCount;
 
-        currAppliedBuffs[applyType] += applyAmount;
-
-        if (currAppliedBuffs[applyType] < 0)
+        if ((currAppliedBuffs[applyType] + applyAmount) < 0)
         {
             Debug.Assert(false, "음수가 나와선 안됩니다");
             Debug.Break();
         }
+
+        currAppliedBuffs[applyType] += applyAmount;
+
+        //if (applyType == BuffApplyType.Set &&
+        //    currAppliedBuffs[applyType] == 0)
+        //{
+        //    currAppliedBuffs.Remove(applyType);
+        //}
     }
 
 
@@ -566,10 +578,15 @@ public class StatScript : GameCharacterSubScript
                 switch (applyType)
                 {
                     case BuffApplyType.Set:
+                        if (buffAmoint.Value != 0)
                         {
+                            isSet = true;
                             _currRegenStat._RegenStats[type] = buffAmoint.Value;
                             nextVar = buffAmoint.Value;
-                            isSet = true;
+                        }
+                        else
+                        {
+                            nextVar = baseStat;
                         }
                         break;
 
@@ -686,10 +703,11 @@ public class StatScript : GameCharacterSubScript
 
     public void ChangeActiveStat(ActiveStat type, int amount)
     {
-        int nextVal = (_currActiveStat._ActiveStats[type] + amount);
+        int currVal = _currActiveStat._ActiveStats[type];
+
+        int nextVal = (currVal + amount);
 
         AfterCalculateActiveStat(type);
-
 
         int maxVar = 0;
 
@@ -697,7 +715,15 @@ public class StatScript : GameCharacterSubScript
 
         nextVal = Math.Clamp(nextVal, 0, maxVar);
 
+        int delta = nextVal - currVal;
+
         _currActiveStat._ActiveStats[type] = nextVal;
+
+        if (type == ActiveStat.Stamina &&
+            delta < 0)
+        {
+            ApplyBuff(LevelStatInfoManager.Instance.GetBuff("StopStaminaRegenBuff"), 1);
+        }
 
 
         /*--------------------------------------------------
@@ -760,6 +786,9 @@ public class StatScript : GameCharacterSubScript
         {
             RegenStat currActiveStatRegenType = (RegenStat)i;
 
+
+
+
             switch (currActiveStatRegenType)
             {
                 case RegenStat.HPRegen:
@@ -788,7 +817,22 @@ public class StatScript : GameCharacterSubScript
                     break;
             }
 
-            _activeStatRegenCalculator[currActiveStatRegenType] += Time.deltaTime * GetRegenStat(currActiveStatRegenType);
+            float delta = (Time.deltaTime * GetRegenStat(currActiveStatRegenType));
+
+            /*-----------------------------------------------------------------------------
+            |TODO| 매 프레임마다 Work를 수행할 수 있는 델리게이터를 바인딩하는 방식으로 바꿉시다
+            -----------------------------------------------------------------------------*/
+            {
+                if (currActiveStatRegenType == RegenStat.StaminaRegen &&
+                    GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("StopStaminaRegenBuff")) != null &&
+                    delta > 0)
+                {
+                    _activeStatRegenCalculator[currActiveStatRegenType] = 0.0f;
+                    continue;
+                }
+            }
+
+            _activeStatRegenCalculator[currActiveStatRegenType] += delta;
 
             int ready = (int)_activeStatRegenCalculator[currActiveStatRegenType];
 

@@ -25,7 +25,7 @@ MonoBehaviour:
     _maxStamina: 50
     _maxMp: 50
     _maxSp: 50
-    _roughness: 0
+    _roughness: 7
     _strength: 1
     _isInvincible: 0
     _isParry: 0
@@ -42,6 +42,6 @@ MonoBehaviour:
   _regenStatDesc:
     _hpRegen: 0
     _mpRegen: 10
-    _staminaRegen: 10
+    _staminaRegen: 3
     _spRegen: 10
     _postureRecovery: -100

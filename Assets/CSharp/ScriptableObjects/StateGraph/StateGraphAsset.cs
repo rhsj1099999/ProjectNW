@@ -677,6 +677,9 @@ public class StateGraphAsset : ScriptableObject
                 case StateActionType.RootMove_Speed:
                     break;
 
+                case StateActionType.KnuckBack:
+                    break;
+
                 default:
                     Debug.Assert(false, "데이터가 추가됐습니까?");
                     break;

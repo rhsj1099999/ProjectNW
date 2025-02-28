@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb8685d6aef5b934c91b1d07c924bbe0, type: 3}
+  m_Name: BuffAsset_RegenStat_StopStaminaRegenBuff
+  m_EditorClassIdentifier: 
+  _buffKey: 29
+  _buffName: StopStaminaRegenBuff
+  _maxCount: 1
+  _refresh: 1
+  _durationExpireOnce: 1
+  _specialAction_OnlyOne: 0
+  _isNullable: 0
+  _isTemporary: 0
+  _isDebuff: 1
+  _duration: 1
+  _buffUIImage: {fileID: 21300000, guid: 98ec820ba77af0f4692d4bd62dbd2504, type: 3}
+  _buffList:
+  - _applyType: 0
+    _amout: 0
+    _targetStat: 1

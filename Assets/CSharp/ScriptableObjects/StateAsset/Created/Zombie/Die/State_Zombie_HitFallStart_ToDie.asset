@@ -16,19 +16,17 @@ MonoBehaviour:
     _stateType: 18
     _stateAnimationClip: {fileID: 7400000, guid: e005d365b3bacdf4b8c22ec57ae0ed74,
       type: 2}
-    _rightWeaponOverride: 0
-    _leftWeaponOverride: 0
+    _stateAnimationClipOverride: []
     _isAttackState: 0
+    _isAttackState_effectedBySpeed: 0
     _attackDamageMultiply:
+      _damageReason: 1
+      _hitType: 0
       _damage: 1
       _damagePower: 1
       _damagingStamina: 1
-    _isLocoMotionToAttackAction: 0
-    _isLoopState: 0
+    _isGuardState: 0
     _canUseItem: 0
-    _stateLocked: 0
-    _isBlockState: 0
-    _isAIAttackState: 0
     _isAIState: 0
     _aiStateDesc:
       _coolTime: -1
@@ -37,12 +35,23 @@ MonoBehaviour:
     _aiAttackStateDesc:
       _coolTime: -1
       _range: -1
-    _EnterStateActionTypes: 03000000
+    _stateBuffs_Add: []
+    _stateBuffs_Remove: []
+    _EnterStateActionTypes: 2b000000
     _inStateActionTypes: 
     _ExitStateActionTypes: 
     _checkingBehaves: 
-    _breakLoopStateCondition: []
+    _isOverrideStateExsist: 0
+    _overrideStates: []
     _isSubBlendTreeExist: 0
     _subBlendTree: {fileID: 0}
     _isSubAnimationStateMachineExist: 0
     _subAnimationStateMachine: {fileID: 0}
+    _isNeedStat: 0
+    _needStat:
+      _needPassiveStatList: []
+      _needActiveStatList: []
+    _isNeedStatLoopBreak: 0
+    _needStat_LoopBreak:
+      _needPassiveStatList: []
+      _needActiveStatList: []

@@ -79,14 +79,6 @@ public class PlayerScript : CharacterScript
 
 
 
-        if (Input.GetKeyDown(KeyCode.H) == true)
-        {
-            DamageDesc testDamage = new DamageDesc();
-            testDamage._damage = 100;
-            DealMe_Test(testDamage);
-        }
-
-
         //인벤토리 오픈코드
         {
             if (GCST<InputController>().GetInventoryOpen() == true)

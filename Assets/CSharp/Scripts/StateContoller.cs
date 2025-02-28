@@ -67,6 +67,8 @@ public enum StateActionType
     SpuriousDead, //상태 전환시에 죽을지도 모르는 상황... -> 대경직에 쓰고있습니다 ... 누운다음 일어나야되는데 dead가 true가 되버린 상황
 
     RootMove_Speed,
+
+    KnuckBack,
 }
 
 public enum ConditionType
@@ -951,6 +953,12 @@ public class StateContoller : GameCharacterSubScript
                         {
                             return targetState;
                         }
+
+                        if (targetState._myState._EnterStateActionTypes.Count > 0 &&
+                            targetState._myState._EnterStateActionTypes[0] == StateActionType.KnuckBack)
+                        {
+                            return targetState;
+                        }
                     }
 
                     break;
@@ -1449,6 +1457,12 @@ public class StateContoller : GameCharacterSubScript
                     }
                     break;
 
+                case StateActionType.KnuckBack:
+                    {
+                        _owner.GCST<CharacterContollerable>().DoKnuckBack();
+                    }
+                    break;
+
                 default:
                     //Debug.Assert(false, "데이터가 추가됐습니까?" + action);
                     break;
@@ -1548,10 +1562,10 @@ public class StateContoller : GameCharacterSubScript
                                     timerBase = new StateActionCoroutineTimer_UpTimer(upSec);
                                     break;
                                 case FrameCheckType.Under:
-                                    timerBase = new StateActionCoroutineTimer_BetweenTimer(upSec, underSec);
+                                    timerBase = new StateActionCoroutineTimer_DownTimer(underSec);
                                     break;
                                 case FrameCheckType.Between:
-                                    timerBase = new StateActionCoroutineTimer_DownTimer(underSec);
+                                    timerBase = new StateActionCoroutineTimer_BetweenTimer(upSec, underSec);
                                     break;
 
                                 default:

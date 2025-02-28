@@ -17,6 +17,7 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     private bool _inAir = false;
 
     private bool _jumpRequested = false;
+    private bool _knuckBackRequested = false;
 
     /*-------------------------------------------------------
     |NOTI| 경사각 이하에서 속도가 얼마든 바닥에 붙음을 보장합니다
@@ -208,6 +209,7 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
     private void SafeReArrange()
     {
         _jumpRequested = false;
+        _knuckBackRequested = false;
     }
 
     public override void GravityUpdate() 
@@ -224,6 +226,17 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         _gravitySpeed = new Vector3(0.0f, _jumpForce, 0.0f);
     }
 
+    private void KnuckBackRequestedExcute()
+    {
+        _inAir = true;
+        _knuckBackRequested = false;
+        _motor.ForceUnground(0.1f);
+
+        Vector3 myForward = transform.forward;
+        Vector3 myBackward = Quaternion.AngleAxis(180, transform.right) * myForward;
+        _gravitySpeed = new Vector3(0.0f, _jumpForce / 2.0f, 0.0f) + (myBackward * 3.0f);
+    }
+
 
     public override void DoJump()
     {
@@ -234,6 +247,19 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
 
         _jumpRequested = true;
     }
+
+
+
+    public override void DoKnuckBack()
+    {
+        if (_motor.GroundingStatus.IsStableOnGround == false)
+        {
+            return; //더블 점프 컨텐츠, 스킬 생기면 어떻게할꺼야
+        }
+
+        _knuckBackRequested = true;
+    }
+
 
 
 
@@ -265,6 +291,11 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         if (_jumpRequested == true)
         {
             JumpRequestedExecute();
+        }
+
+        if (_knuckBackRequested == true)
+        {
+            KnuckBackRequestedExcute();
         }
     }
 

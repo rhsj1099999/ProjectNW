@@ -1464,172 +1464,185 @@ public class CharacterScript : GameActorScript, IHitable
     }
 
 
-    private void CalculateNextState_Guard(ref StateGraphType nextGraphType, ref RepresentStateType representType, DamageDesc damage, StatScript statScript, StateAsset currState)
+    private void CalculateNextState_Guard(ref StateGraphType nextGraphType, ref RepresentStateType representType, ref bool reDamageProcess, DamageDesc damage, StatScript statScript, StateAsset currState, CharacterScript attacker)
     {
-        Debug.Log("가드버프 계산을 시작합니다");
-
-        //int currRoughness = statScript.GetPassiveStat(PassiveStat.Roughness);
-        int currRoughness = 7;
-        
-
-
-        //스테미나도 충분하고 강인도도 충분합니다
-        if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
-            currRoughness >= damage._damagePower)
+        if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PerfectGuardBuff")) != null)
         {
-            nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
-            representType = RepresentStateType.Blocked_Reaction;
-        }
+            attacker.AfterDealMe();
 
-        //스테미나는 충분한데 강인도가 부족합니다.
-        else if (statScript.GetActiveStat(ActiveStat.Stamina) >= damage._damagingStamina &&
-            currRoughness < damage._damagePower)
-        {
-            nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
-            representType = RepresentStateType.Blocked_Sliding;
-        }
+            /*----------------------------------------------------
+            |TOOD| 계산공식 결정하기
+            ----------------------------------------------------*/
+            int refelctPower = 10;
 
-        //강인도는 충분한데 스테미나가 부족합니다.
-        else if (statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina &&
-            currRoughness >= damage._damagePower)
-        {
-            nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
-            representType = RepresentStateType.Blocked_Crash;
-        }
+            StatScript attackerStatScript = attacker.GCST<StatScript>();
 
-        //연결된 상태들을 가져와봄
-        StateAsset nextStateAsseet = null;
-        List<LinkedStateAsset> linkedStates = GCST<StateContoller>().GetCurrStateGraph().GetGraphStates()[currState];
-        foreach (LinkedStateAsset linkedState in linkedStates)
-        {
-            if (linkedState._linkedState._myState._stateType == representType)
+            attackerStatScript.ChangeActiveStat(ActiveStat.PosturePercent, refelctPower);
+            int afterAttackerPosture = attackerStatScript.GetActiveStat(ActiveStat.PosturePercent);
+            int attackerPosturePhase1 = attackerStatScript.GetPassiveStat(PassiveStat.PostruePercentPhase1);
+
+            if (afterAttackerPosture == 100)
             {
-                nextStateAsseet = linkedState._linkedState;
-                break;
+                StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Groggy);
+                attackerStatScript.ApplyBuff(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff"), 1);
+            }
+
+            //attacker의 공격이 튕긴다
+            else if (afterAttackerPosture >= attackerPosturePhase1)
+            {
+                StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.AttackRecoil);
             }
         }
 
-        //스테미나가 부족하고 강인도도 부족합니다. 혹은 연결상태가 존재하지 않습니다
-        if ((statScript.GetActiveStat(ActiveStat.Stamina) < damage._damagingStamina && statScript.GetPassiveStat(PassiveStat.Roughness) < damage._damagePower) ||
-            nextStateAsseet == null)
+        nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
+
+        int currVictimStamina = statScript.GetActiveStat(ActiveStat.Stamina);
+        int currVictimRoughness = statScript.GetPassiveStat(PassiveStat.Roughness);
+        int deltaRoughenss = (int)damage._damagePower - currVictimRoughness;
+
+        reDamageProcess = !(currVictimStamina > 0);
+
+        if (currVictimStamina > 0)
         {
-            Debug.Log("가드 버프가 걸렸지만 맞는상태로 갈껍니다");
+            //공격을 막기에 스태미나가 충분합니다
 
-            //맞는 상태로 가긴 할건데
-            nextGraphType = StateGraphType.HitStateGraph;
-
-            float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
-
-            if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //강인도가 조금 부족하다
+            if (deltaRoughenss <= MyUtil.deltaRoughness_lvl0) //내 강인도가 너무 쎈 경우 ... 움찔조차 안한다
             {
-                representType = RepresentStateType.Hit_Lvl_0;
+                representType = RepresentStateType.End;
             }
-            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //강인도가 많이 부족하다
+            else if (deltaRoughenss <= MyUtil.deltaRoughness_lvl1) //움찔모션
             {
-                representType = RepresentStateType.Hit_Lvl_1;
+                representType = RepresentStateType.Blocked_Reaction;
             }
-            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl2) //강인도가 심하게 부족하다
+            else //넉백모션
+            {
+                representType = RepresentStateType.Blocked_Sliding;
+            }
+        }
+        else
+        {
+            //공격을 막기에 스테미나가 부족하다
+
+            if (deltaRoughenss <= MyUtil.deltaRoughness_lvl1) //[강인도가 충분해서 움찔모션까지] 는 => 방패가 깨지는 모션.
+            {
+                representType = RepresentStateType.Blocked_Crash;
+            }
+            else //넉백모션
             {
                 representType = RepresentStateType.Hit_Lvl_2;
+                nextGraphType = StateGraphType.HitStateGraph;
             }
         }
     }
 
 
-    protected void DealMe_Test(DamageDesc damage)
+
+
+    /*----------------------------------
+    |TOOD| 이 함수가 없는 구조는 안될까요?
+    ----------------------------------*/
+    private void DelaMe_Partial_GuardFail(ref bool willDead, ref StateGraphType nextGraphType, ref RepresentStateType representType, StatScript victimStatScript, float prevGuardBuffDamage, CharacterScript attacker)
     {
-        StateGraphType nextGraphType = StateGraphType.HitStateGraph;
-        RepresentStateType representType = RepresentStateType.End;
-        StatScript statScript = GCST<StatScript>();
+        willDead = false;
 
-        //Step3. 데미지 적용
+        if (victimStatScript.GetPassiveStat(PassiveStat.IsInvincible_HP) <= 0)
         {
-            bool willDead = false;
+            victimStatScript.ChangeActiveStat(ActiveStat.Hp, -(int)prevGuardBuffDamage);
+        }
 
-            if (statScript.GetPassiveStat(PassiveStat.IsInvincible_HP) <= 0)
+        if (victimStatScript.GetActiveStat(ActiveStat.Hp) <= 0)
+        {
+            willDead = true;
+
+            ZeroHPCall(attacker);
+
+            nextGraphType = StateGraphType.DieGraph;
+
+            if (GCST<StateContoller>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
             {
-                statScript.ChangeActiveStat(ActiveStat.Hp, -(int)damage._damage);
+                Debug.Assert(false, "죽을건데 죽는 그래프가 없네요?");
+                Debug.Break();
             }
 
-
-            if (statScript.GetActiveStat(ActiveStat.Hp) <= 0)
+            if (representType == RepresentStateType.Hit_Lvl_2)
             {
-                willDead = true;
+                //representType = RepresentStateType.DieThrow;
 
-                ZeroHPCall(this);
+                /*------------------------------------------------------------------------------------------
+                |TODO| Player 경우 씬 재시작 때문에 죽는모션과 부활모션이 연결되는데 Root 정보가 매끄럽지 않습니다
+                ------------------------------------------------------------------------------------------*/
 
-                nextGraphType = StateGraphType.DieGraph;
-
-                if (GCST<StateContoller>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
-                {
-                    Debug.Assert(false, "죽을건데 죽는 그래프가 없네요?");
-                    Debug.Break();
-                }
-
-                if (representType == RepresentStateType.Hit_Lvl_2)
-                {
-                    representType = RepresentStateType.DieThrow;
-                }
-                else
+                if (_characterType == CharacterType.Player)
                 {
                     representType = RepresentStateType.DieNormal;
                 }
-            }
-
-
-
-
-            //데미지 적용하는데, 상태는 어떻게 변경될까요?
-            if (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && //CC면역이 걸려있지 않고,
-                willDead == false) //다음에 죽지 않을 예정이라면 -> 죽을거였으면 죽는모션으로 간다는게 위에 계산돼있다
-            {
-                //다음 상태를 계산합니다.
-
-                if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
-                {
-                    //가드중이였다 = 움찔관련 모션을 계산한다
-                    CalculateNextState_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
-                }
                 else
                 {
-                    float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
-
-                    if (deltaRoughness > 0)
-                    {
-                        if (deltaRoughness <= MyUtil.deltaRoughness_lvl0)
-                        {
-                            representType = RepresentStateType.Hit_Lvl_0;
-                        }
-                        else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1)
-                        {
-                            representType = RepresentStateType.Hit_Lvl_1;
-                        }
-                        else
-                        {
-                            representType = RepresentStateType.Hit_Lvl_2;
-                        }
-                    }
+                    representType = RepresentStateType.DieThrow;
                 }
             }
-
-
-            if (willDead == true || //다음에 죽을 예정이거나
-                (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && representType != RepresentStateType.End)) //CC면역이 걸려있지 않다면
+            else
             {
-                //Vector3 toAttackerDir = (attacker.transform.position - transform.position);
-                //toAttackerDir.y = 0.0f;
-                //toAttackerDir = toAttackerDir.normalized;
-
-                //GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
-                GCST<StateContoller>().TryChangeState(nextGraphType, representType);
+                representType = RepresentStateType.DieNormal;
             }
         }
     }
 
 
-    /*--------------------------------------------------------------------
-    |TOOD| DealMe_Final과 유사합니다. 두 함수의 공통적인 부분이 있지 않을까요?
-    --------------------------------------------------------------------*/
+
+
+
+
+
+
+
+
+
+
+
+    private void DelaMe_Partial_ApplyDamage(ref bool willDead, ref StateGraphType nextGraphType, ref RepresentStateType representType, StatScript victimStatScript, DamageDesc damage, CharacterScript attacker)
+    {
+        willDead = false;
+
+        victimStatScript.ChangeActiveStat(ActiveStat.Stamina, -(int)damage._damagingStamina);
+
+
+        if (victimStatScript.GetPassiveStat(PassiveStat.IsInvincible_HP) <= 0)
+        {
+            victimStatScript.ChangeActiveStat(ActiveStat.Hp, -(int)damage._damage);
+        }
+
+        if (victimStatScript.GetActiveStat(ActiveStat.Hp) <= 0)
+        {
+            willDead = true;
+
+            ZeroHPCall(attacker);
+
+            nextGraphType = StateGraphType.DieGraph;
+
+            if (GCST<StateContoller>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
+            {
+                Debug.Assert(false, "죽을건데 죽는 그래프가 없네요?");
+                Debug.Break();
+            }
+
+            if (representType == RepresentStateType.Hit_Lvl_2)
+            {
+                representType = RepresentStateType.DieThrow;
+            }
+            else
+            {
+                representType = RepresentStateType.DieNormal;
+            }
+        }
+    }
+
+
+
+
+
     private IEnumerator RipositeCoroutine
         (
             bool isWeakPoint,
@@ -1663,7 +1676,9 @@ public class CharacterScript : GameActorScript, IHitable
 
 
 
-
+    /*--------------------------------------------------------------------
+    |TOOD| DealMe_Final과 유사합니다. 두 함수의 공통적인 부분이 있지 않을까요?
+    --------------------------------------------------------------------*/
     public virtual void DealMe_Reposite(bool isWeakPoint, CharacterScript attacker, CharacterScript victim, ref Vector3 closetPoint, ref Vector3 hitNormal, RepresentStateType ripositeType)
     {
         DamageDesc damage = attacker.CalculateAttackerDamage(null, isWeakPoint);
@@ -1769,36 +1784,10 @@ public class CharacterScript : GameActorScript, IHitable
             //다음에 죽지 않을 예정이라면 -> 죽을거였으면 죽는모션으로 간다는게 위에 계산돼있다. 다시 계산하는건 낭비다
             if (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && willDead == false)
             {
-                /*-----------------------------------------------------
-                |NOTI| Ver1... 체간없이 그냥 계산하는 버전 ... 이건 플레이어만 씁니다!!!
-                -----------------------------------------------------*/
                 if (_characterType == CharacterType.Player)
                 {
-                    if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0 &&
-                        true /*가드 범위 내에서 맞았냐? 가드하는데 뒤에서 맞으면 실패임*/)
-                    {
-                        CalculateNextState_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
-                    }
-                    else
-                    {
-                        float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
-
-                        if (deltaRoughness > 0)
-                        {
-                            if (deltaRoughness <= MyUtil.deltaRoughness_lvl0)
-                            {
-                                representType = RepresentStateType.Hit_Lvl_0;
-                            }
-                            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1)
-                            {
-                                representType = RepresentStateType.Hit_Lvl_1;
-                            }
-                            else
-                            {
-                                representType = RepresentStateType.Hit_Lvl_2;
-                            }
-                        }
-                    }
+                    Debug.Assert(false, "플레이어도 Riposite를 당하는 컨텐츠가 추가됐다!");
+                    Debug.Break();
                 }
 
                 /*-----------------------------------------------------
@@ -1866,9 +1855,6 @@ public class CharacterScript : GameActorScript, IHitable
             { //-----------------------------------------------------------------------------------------------------------
 
                 //해당 방향을 바라보면서 다음 결정된 상태를 연출하는 코드일 뿐이다
-
-                
-
                 if (representType != RepresentStateType.Hit_Riposte_BackStab && representType != RepresentStateType.Hit_Riposte_FrontStab)
                 {
                     Vector3 toAttackerDir = (attacker.transform.position - transform.position);
@@ -1878,19 +1864,6 @@ public class CharacterScript : GameActorScript, IHitable
                     GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
                     GCST<StateContoller>().TryChangeState(nextGraphType, representType);
                 }
-                else
-                {
-                    
-                    //CharacterAnimatorScript characterAnimatorScript = GCST<CharacterAnimatorScript>();
-                    //int currFullBodyLayer = characterAnimatorScript.GetCurrFullBodyLayer();
-                    //float currProgress = GCST<CharacterAnimatorScript>().GetAnimationProgress((int)AnimatorLayerTypes.FullBody);
-
-                    //GCST<StateContoller>().TryChangeStateContinue(nextGraphType, representType);
-
-                    //characterAnimatorScript.SetAnimationProgress(currFullBodyLayer, currProgress);
-                }
-
-                
             }
         }
         statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_ApplyDamage, damage, isWeakPoint, attacker, victim);
@@ -1910,26 +1883,27 @@ public class CharacterScript : GameActorScript, IHitable
         StatScript statScript = GCST<StatScript>();
         StatScript attackerStatScript = attacker.GCST<StatScript>();
 
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_InvincibleCheck, damage, isWeakPoint, attacker, victim);
         // Step0 무적체크
         {
-            if (statScript.GetPassiveStat(PassiveStat.IsInvincible) > 0)
+            statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_InvincibleCheck, damage, isWeakPoint, attacker, victim);
             {
-                Debug.Log("무적이라서 씹었다");
-                damage._damage = 0;
-                damage._damagingStamina = 0;
+                if (statScript.GetPassiveStat(PassiveStat.IsInvincible) > 0)
+                {
+                    Debug.Log("무적이라서 씹었다");
+                    damage._damage = 0;
+                    damage._damagingStamina = 0;
 
-                statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, attacker, victim);
-                return;
+                    statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, attacker, victim);
+                    return;
+                }
             }
+            statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, attacker, victim);
         }
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_InvincibleCheck, damage, isWeakPoint, attacker, victim);
-
 
         //무적이 걸려있었더라면, 애당초 패링이 성공할 수 없다.
         //그리고 패링 성공 여부 판정 시작은 피격자에서 시작
         if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("ParryBuff")) != null &&
-            true /*패링 가능 공격이고  -- 일단 전부 패링 가능합니다. 내 강인도와 상대 공격의 Power의 차이? */ && 
+            true /*패링 가능 공격이고  |NOTI| -> 일단 전부 패링 가능합니다. 내 강인도와 상대 공격의 Power의 차이? */ && 
             true /*타격점이 일정 각도 내 라면*/)
         {
             //이펙트 생성
@@ -1987,211 +1961,164 @@ public class CharacterScript : GameActorScript, IHitable
         StateGraphType nextGraphType = StateGraphType.HitStateGraph;
         RepresentStateType representType = RepresentStateType.End;
 
+        float prevGuardBuffDamage = damage._damage;
         // Step1 피격자 버프체크
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_BuffCheck, damage, isWeakPoint, attacker, victim);
         {
-            if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+            statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_BuffCheck, damage, isWeakPoint, attacker, victim);
+
+            //급소에 맞았나??
             {
-                damage._damage *= 10.0f;
-                Debug.Log("---격발 치명타--- || 치명타데미지 : " + damage._damage);
+                if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+                {
+                    damage._damage *= 10.0f;
+                    Debug.Log("---격발 치명타--- || 치명타데미지 : " + damage._damage);
+                }
             }
+
+            //가드중에 맞았나???
+            {
+                if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
+                {
+
+                    /*-----------------------------------------------------------------------
+                    |TODO| 가드버프는 데미지를 올려주는 방식으로 접근할것 => 임시로 데미지 무효화함
+                    -----------------------------------------------------------------------*/
+                    damage._damage = 0;
+
+                    /*----------------------------------------------------
+                    |TODO| 가드가 소모할 스태미나를 결정하는 공식을 생각해볼것
+                    ----------------------------------------------------*/
+                    int guardStaminaDamagePlus = 10;
+                    damage._damagingStamina += guardStaminaDamagePlus;
+                }
+            }
+
+            statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_BuffCheck, damage, isWeakPoint, attacker, victim);
         }
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_BuffCheck, damage, isWeakPoint, attacker, victim);
+
 
         // Step2 대미지 적용
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_ApplyDamage, damage, isWeakPoint, attacker, victim);
         {
-            if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
+            statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.Before_ApplyDamage, damage, isWeakPoint, attacker, victim);
             {
-                /*--------------------------------------------
-                임시로 데미지 무효화함
-                => 가드버프는 데미지를 올려주는 방식으로 접근할것
-                --------------------------------------------*/
-                damage._damage = 0;
-            }
+                bool willDead = false;
 
-            bool willDead = false;
+                DelaMe_Partial_ApplyDamage(ref willDead, ref nextGraphType, ref representType, statScript, damage, attacker);
 
-            //데미지가 적용된다
-            {
-                if (statScript.GetPassiveStat(PassiveStat.IsInvincible_HP) <= 0)
+                bool isPostureOverPhase1 = false; //체간이 Phase1을 넘겼습니다.
+                bool isPostureMax = false; //체간이 꽉 찼습니다.
+
+                //체간 적용
+                /*-------------------------------------------------------
+                |TODO| 특별한 공식이 있으면 하세요. 지금은 바로 적용시킵니다
+                -------------------------------------------------------*/
+                if (willDead == false)
                 {
-                    statScript.ChangeActiveStat(ActiveStat.Hp, -(int)damage._damage);
+                    statScript.ChangeActiveStat(ActiveStat.PosturePercent, (int)damage._damagePower);
+                    isPostureOverPhase1 = (statScript.GetPassiveStat(PassiveStat.PostruePercentPhase1) <= statScript.GetActiveStat(ActiveStat.PosturePercent));
+                    isPostureMax = (statScript.GetActiveStat(ActiveStat.PosturePercent) == 100);
                 }
 
-                if (statScript.GetActiveStat(ActiveStat.Hp) <= 0)
+                bool isRipositeAttack = false;
+                //데미지 적용하는데, 상태는 어떻게 변경될까요?
+                //CC면역이 걸려있지 않고,
+                //다음에 죽지 않을 예정이라면 -> 죽을거였으면 죽는모션으로 간다는게 위에 계산돼있다. 다시 계산하는건 낭비다
+                if (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && willDead == false)
                 {
-                    willDead = true;
-
-                    ZeroHPCall(attacker);
-
-                    nextGraphType = StateGraphType.DieGraph;
-
-                    if (GCST<StateContoller>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
+                    /*-----------------------------------------------------
+                    |NOTI| Ver1... 체간없이 그냥 계산하는 버전 ... 이건 플레이어만 씁니다!!!
+                    -----------------------------------------------------*/
+                    if (_characterType == CharacterType.Player)
                     {
-                        Debug.Assert(false, "죽을건데 죽는 그래프가 없네요?");
-                        Debug.Break();
-                    }
-
-                    if (representType == RepresentStateType.Hit_Lvl_2)
-                    {
-                        representType = RepresentStateType.DieThrow;
-                    }
-                    else
-                    {
-                        representType = RepresentStateType.DieNormal;
-                    }
-                }
-            }
-
-            bool isPostureOverPhase1 = false; //체간이 Phase1을 넘겼습니다.
-            bool isPostureMax = false; //체간이 꽉 찼습니다.
-
-            //체간 적용
-            /*-------------------------------------------------------
-            |TODO| 특별한 공식이 있으면 하세요. 지금은 바로 적용시킵니다
-            -------------------------------------------------------*/
-            if (willDead == false)
-            {
-                statScript.ChangeActiveStat(ActiveStat.PosturePercent, (int)damage._damagePower);
-                isPostureOverPhase1 = (statScript.GetPassiveStat(PassiveStat.PostruePercentPhase1) <= statScript.GetActiveStat(ActiveStat.PosturePercent));
-                isPostureMax = (statScript.GetActiveStat(ActiveStat.PosturePercent) == 100);
-            }
-
-            bool isRipositeAttack = false;
-            //데미지 적용하는데, 상태는 어떻게 변경될까요?
-            //CC면역이 걸려있지 않고,
-            //다음에 죽지 않을 예정이라면 -> 죽을거였으면 죽는모션으로 간다는게 위에 계산돼있다. 다시 계산하는건 낭비다
-            if (statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && willDead == false)
-            {
-                /*-----------------------------------------------------
-                |NOTI| Ver1... 체간없이 그냥 계산하는 버전 ... 이건 플레이어만 씁니다!!!
-                -----------------------------------------------------*/
-                if (_characterType == CharacterType.Player)
-                {
-                    if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0 &&
-                        true /*가드 범위 내에서 맞았냐? 가드하는데 뒤에서 맞으면 실패임*/)
-                    {
-                        CalculateNextState_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
-                    }
-                    else
-                    {
-                        float deltaRoughness = damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
-
-                        if (deltaRoughness > 0)
+                        if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0 &&
+                            true /*가드 범위 내에서 맞았냐? 가드하는데 뒤에서 맞으면 실패임*/)
                         {
-                            if (deltaRoughness <= MyUtil.deltaRoughness_lvl0)
+                            bool reDamageProcess = false;
+                            CalculateNextState_Guard(ref nextGraphType, ref representType, ref reDamageProcess, damage, statScript, GCST<StateContoller>().GetCurrState(), attacker);
+                            if (reDamageProcess == true) 
+                            {
+                                DelaMe_Partial_GuardFail(ref willDead, ref nextGraphType, ref representType, statScript, prevGuardBuffDamage, attacker);
+                            }
+                        }
+                        else
+                        {
+                            int deltaRoughness = (int)damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
+
+                            if (deltaRoughness <= 0) //내 강인도가 너무 쎈 경우 ... 움찔조차 안한다
+                            {
+                                representType = RepresentStateType.End;
+                            }
+                            if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //1차 경직 모션
                             {
                                 representType = RepresentStateType.Hit_Lvl_0;
                             }
-                            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1)
+                            else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //움찔모션
                             {
                                 representType = RepresentStateType.Hit_Lvl_1;
                             }
-                            else
+                            else //넉백모션
                             {
                                 representType = RepresentStateType.Hit_Lvl_2;
                             }
                         }
                     }
-                }
 
-                /*-----------------------------------------------------
-                |NOTI| Ver2... 체간을 계산하는 버전 ... 이건 몬스터 용도 입니다!
-                -----------------------------------------------------*/
-                else
-                {
-                    if (false/*보스입니다*/)
-                    {
-
-                    }
+                    /*-----------------------------------------------------
+                    |NOTI| Ver2... 체간을 계산하는 버전 ... 이건 몬스터 용도 입니다!
+                    -----------------------------------------------------*/
                     else
                     {
-                        if (attackerStatScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("TryRiposite")) != null)
+                        if (false/*보스입니다*/)
                         {
-                            isRipositeAttack = true;
 
-                            if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) != null)
+                        }
+                        else
+                        {
+                            if (attackerStatScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("TryRiposite")) != null)
                             {
-                                //그로기 상태에서 맞았다 = 찍기가 발동된다
-                                StateContoller attackerStateController = attacker.GCST<StateContoller>();
-                                attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_Smash);
+                                isRipositeAttack = true;
 
-                                //공격자의 상태는 Riposite로 바뀌었다.
+                                if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) != null)
                                 {
-                                    AnimationClip attackerRipositeStateAnimationClip = attackerStateController.GetCurrState()._myState._stateAnimationClip;
-                                    Dictionary<FrameDataWorkType, List<AEachFrameData>> allFrameDatas = ResourceDataManager.Instance.GetAnimationAllFrameData(attackerRipositeStateAnimationClip);
-                                    List<AEachFrameData> ripositeAttackFrameData = allFrameDatas[FrameDataWorkType.RipositeAttack];
-
-                                    float time = ripositeAttackFrameData[0]._frameUp / attackerRipositeStateAnimationClip.frameRate;
-
-                                    StartCoroutine(RipositeCoroutine(isWeakPoint, attacker, victim, closetPoint, hitNormal, time, attackerStateController.GetCurrState()._myState._stateType));
-                                }
-                            }
-
-                            else if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("Stagger_Parried")) != null ||
-                                false /*가드크래시다*/)
-                            {
-                                //가드 크래시 상태에서 맞았다 = 앞잡기가 발동된다.
-
-                                Vector3 dirAttackerToVictim = (transform.position - attacker.transform.position);
-                                dirAttackerToVictim.y = 0.0f;
-                                dirAttackerToVictim = dirAttackerToVictim.normalized;
-                                float angle = Mathf.Abs(Vector3.Angle(dirAttackerToVictim, transform.forward));
-
-                                if (angle < 150.0f/*피격 위치가 앞잡기 가능 위치다*/)
-                                {
-                                    return;
-                                }
-                                    
-                                StateContoller attackerStateController = attacker.GCST<StateContoller>();
-                                attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_FrontStab);
-
-                                //Victim을 회전시킨다.
-                                //Victim은 먼저 상태를 변경시켜야 한다.
-                                {
-                                    GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(Quaternion.AngleAxis(180f, transform.right) * dirAttackerToVictim));
-                                    GCST<StateContoller>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_FrontStab);
-                                }
-
-
-                                //Attaker를 회전시킨다.
-                                {
-                                    attacker.GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
-                                }
-
-
-                                //공격자의 상태는 Riposite로 바뀌었다.
-                                {
-                                    AnimationClip attackerRipositeStateAnimationClip = attackerStateController.GetCurrState()._myState._stateAnimationClip;
-                                    Dictionary<FrameDataWorkType, List<AEachFrameData>> allFrameDatas = ResourceDataManager.Instance.GetAnimationAllFrameData(attackerRipositeStateAnimationClip);
-                                    List<AEachFrameData> ripositeAttackFrameData = allFrameDatas[FrameDataWorkType.RipositeAttack];
-
-                                    float time = ripositeAttackFrameData[0]._frameUp / attackerRipositeStateAnimationClip.frameRate;
-
-                                    StartCoroutine(RipositeCoroutine(isWeakPoint, attacker, victim, closetPoint, hitNormal, time, attackerStateController.GetCurrState()._myState._stateType));
-                                }
-                            }
-
-
-                            else
-                            {
-                                Vector3 dirAttackerToVictim = (transform.position - attacker.transform.position);
-                                dirAttackerToVictim.y = 0.0f;
-                                dirAttackerToVictim = dirAttackerToVictim.normalized;
-                                float angle = Mathf.Abs(Vector3.Angle(dirAttackerToVictim, transform.forward));
-
-                                if (angle <= 15.0f/*피격 위치가 뒤잡기 가능 위치다*/)
-                                {
-                                    //뒤잡기 위치다 = 뒤잡기가 발동된다.
+                                    //그로기 상태에서 맞았다 = 찍기가 발동된다
                                     StateContoller attackerStateController = attacker.GCST<StateContoller>();
-                                    attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_BackStab);
+                                    attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_Smash);
+
+                                    //공격자의 상태는 Riposite로 바뀌었다.
+                                    {
+                                        AnimationClip attackerRipositeStateAnimationClip = attackerStateController.GetCurrState()._myState._stateAnimationClip;
+                                        Dictionary<FrameDataWorkType, List<AEachFrameData>> allFrameDatas = ResourceDataManager.Instance.GetAnimationAllFrameData(attackerRipositeStateAnimationClip);
+                                        List<AEachFrameData> ripositeAttackFrameData = allFrameDatas[FrameDataWorkType.RipositeAttack];
+
+                                        float time = ripositeAttackFrameData[0]._frameUp / attackerRipositeStateAnimationClip.frameRate;
+
+                                        StartCoroutine(RipositeCoroutine(isWeakPoint, attacker, victim, closetPoint, hitNormal, time, attackerStateController.GetCurrState()._myState._stateType));
+                                    }
+                                }
+
+                                else if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("Stagger_Parried")) != null ||
+                                    false /*가드크래시다*/)
+                                {
+                                    //가드 크래시 상태에서 맞았다 = 앞잡기가 발동된다.
+
+                                    Vector3 dirAttackerToVictim = (transform.position - attacker.transform.position);
+                                    dirAttackerToVictim.y = 0.0f;
+                                    dirAttackerToVictim = dirAttackerToVictim.normalized;
+                                    float angle = Mathf.Abs(Vector3.Angle(dirAttackerToVictim, transform.forward));
+
+                                    if (angle < 150.0f/*피격 위치가 앞잡기 가능 위치다*/)
+                                    {
+                                        return;
+                                    }
+
+                                    StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                                    attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_FrontStab);
 
                                     //Victim을 회전시킨다.
                                     //Victim은 먼저 상태를 변경시켜야 한다.
                                     {
-                                        GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
-                                        GCST<StateContoller>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_BackStab);
+                                        GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(Quaternion.AngleAxis(180f, transform.right) * dirAttackerToVictim));
+                                        GCST<StateContoller>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_FrontStab);
                                     }
 
 
@@ -2212,147 +2139,182 @@ public class CharacterScript : GameActorScript, IHitable
                                         StartCoroutine(RipositeCoroutine(isWeakPoint, attacker, victim, closetPoint, hitNormal, time, attackerStateController.GetCurrState()._myState._stateType));
                                     }
                                 }
-                            }
 
 
-                        }
-                        else
-                        {
-                            if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0 &&
-                                true /*가드 범위 내에서 맞았냐? 가드하는데 뒤에서 맞으면 실패임*/)
-                            {
-                                //CalculateNextState_Guard(ref nextGraphType, ref representType, damage, statScript, GCST<StateContoller>().GetCurrState());
+                                else
+                                {
+                                    Vector3 dirAttackerToVictim = (transform.position - attacker.transform.position);
+                                    dirAttackerToVictim.y = 0.0f;
+                                    dirAttackerToVictim = dirAttackerToVictim.normalized;
+                                    float angle = Mathf.Abs(Vector3.Angle(dirAttackerToVictim, transform.forward));
+
+                                    if (angle <= 15.0f/*피격 위치가 뒤잡기 가능 위치다*/)
+                                    {
+                                        //뒤잡기 위치다 = 뒤잡기가 발동된다.
+                                        StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                                        attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_BackStab);
+
+                                        //Victim을 회전시킨다.
+                                        //Victim은 먼저 상태를 변경시켜야 한다.
+                                        {
+                                            GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
+                                            GCST<StateContoller>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_BackStab);
+                                        }
+
+
+                                        //Attaker를 회전시킨다.
+                                        {
+                                            attacker.GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
+                                        }
+
+
+                                        //공격자의 상태는 Riposite로 바뀌었다.
+                                        {
+                                            AnimationClip attackerRipositeStateAnimationClip = attackerStateController.GetCurrState()._myState._stateAnimationClip;
+                                            Dictionary<FrameDataWorkType, List<AEachFrameData>> allFrameDatas = ResourceDataManager.Instance.GetAnimationAllFrameData(attackerRipositeStateAnimationClip);
+                                            List<AEachFrameData> ripositeAttackFrameData = allFrameDatas[FrameDataWorkType.RipositeAttack];
+
+                                            float time = ripositeAttackFrameData[0]._frameUp / attackerRipositeStateAnimationClip.frameRate;
+
+                                            StartCoroutine(RipositeCoroutine(isWeakPoint, attacker, victim, closetPoint, hitNormal, time, attackerStateController.GetCurrState()._myState._stateType));
+                                        }
+                                    }
+                                }
+
+
                             }
-                            else if (isPostureMax == true && statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) == null)
+                            else
                             {
-                                //최초로 체간이 Max치를 찍었습니다. 다운됩니다.
+                                if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0 &&
+                                    true /*가드 범위 내에서 맞았냐? 가드하는데 뒤에서 맞으면 실패임*/)
+                                {
+                                    bool reDamageProcess = false;
+                                    CalculateNextState_Guard(ref nextGraphType, ref representType, ref reDamageProcess, damage, statScript, GCST<StateContoller>().GetCurrState(), attacker);
+                                }
+                                else if (isPostureMax == true && statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) == null)
+                                {
+                                    //최초로 체간이 Max치를 찍었습니다. 다운됩니다.
                                     //체간 MaxBuff를 걸고...
                                     //주저앉는 (캐릭터마다 다름) 애니메이션으로 갑니다.
-                                representType = RepresentStateType.Groggy;
-                                statScript.ApplyBuff(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff"), 1);
-                                EffectManager.Instance.CreateEffect("CartoonSparkEffect", Vector3.up, _characterHeart.transform.position);
-                            }
-                            else if (isPostureOverPhase1 == true && statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) == null)
-                            {
-                                //체간이 Phase1을 넘어섰을때 체간 버프가 없다! = 이때 경직이 들어갑니다
-                                representType = RepresentStateType.Hit_Lvl_1;
+                                    representType = RepresentStateType.Groggy;
+                                    statScript.ApplyBuff(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff"), 1);
+                                    EffectManager.Instance.CreateEffect("CartoonSparkEffect", Vector3.up, _characterHeart.transform.position);
+                                }
+                                else if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) == null)
+                                {
+                                    if (gameObject.name.Contains("Zombie") == true)
+                                    {
+                                        int a = 10;
+                                    }
+
+                                    int deltaRoughness = (int)damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
+
+                                    if (deltaRoughness > MyUtil.deltaRoughness_lvl2)
+                                    {
+                                        representType = RepresentStateType.Hit_Lvl_2;
+                                    }
+                                    else if (isPostureOverPhase1 == true)
+                                    {
+                                        if (deltaRoughness <= MyUtil.deltaRoughness_lvl0) //1차 경직 모션
+                                        {
+                                            representType = RepresentStateType.Hit_Lvl_0;
+                                        }
+                                        else if (deltaRoughness <= MyUtil.deltaRoughness_lvl1) //움찔모션
+                                        {
+                                            representType = RepresentStateType.Hit_Lvl_1;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
 
-
-
-
-            
-            attackerStatScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.ApplyDamage_AttackerCallback, damage, isWeakPoint, attacker, victim);
-
-            //이펙트 생성을 위한 코드영역
-            {
-                string effectName = "HitSparkEffect";
-
-                //공격에 의한 이펙트가 결정됩니다.
-                switch (damage._hitType)
+                //이펙트 생성을 위한 코드영역
                 {
-                    case DamageDesc.HitType.Blunt:
+                    //가드에 의한 이펙트가 결정됩니다.
+                    {
+                        if (statScript.GetPassiveStat(PassiveStat.IsGuard) > 0)
                         {
-                            if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+                            string guardEffectName = (representType == RepresentStateType.Blocked_Sliding ||
+                                representType == RepresentStateType.Blocked_Crash ||
+                                representType == RepresentStateType.Hit_Lvl_2)
+                                ? "CartoonSparkEffect"
+                                : "ConeSparkEffect";
+
+                            GameObject shieldWeapon = (GCST<StateContoller>().GetCurrStateGraphType() == StateGraphType.WeaponState_RightGraph)
+                                ? _tempCurrRightWeapon
+                                : _tempCurrLeftWeapon;
+
+                            closetPoint = shieldWeapon.transform.position; //방패피격점
+
+                            EffectManager.Instance.CreateEffect(guardEffectName, hitNormal, closetPoint); //가드이펙트
+
+                            //퍼펙트 가드 성공 = 이펙트 추가생성
+                            if (victim.GCST<StatScript>().GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PerfectGuardBuff")) != null)
                             {
-                                effectName = "HitSparkCritical";
+                                EffectManager.Instance.CreateEffect("CartoonSparkEffect", Vector3.up, attacker._CharacterHeart.transform.position);
                             }
                         }
-                        break;
-                    case DamageDesc.HitType.Slash:
-                        effectName = "SlashedSparkEffect";
-                        break;
-                    case DamageDesc.HitType.End:
+                    }
+
+
+                    //공격에 의한 이펙트가 결정됩니다.
+                    {
+                        string effectName = "HitSparkEffect";
+
+                        switch (damage._hitType)
                         {
-                            //Debug.Assert(false, "상태 Asset에서 어떻게 때리는지 지정하세요. 기본값 '타격'으로 세팅됩니다");
+                            case DamageDesc.HitType.Blunt:
+                                if (isWeakPoint == true && damage._damageReason == DamageDesc.DamageReason.Ray)
+                                {
+                                    effectName = "HitSparkCritical";
+                                }
+                                break;
+                            case DamageDesc.HitType.Slash:
+                                effectName = "SlashedSparkEffect";
+                                break;
+                            case DamageDesc.HitType.End:
+                                {
+                                    //Debug.Assert(false, "상태 Asset에서 어떻게 때리는지 지정하세요. 기본값 '타격'으로 세팅됩니다");
+                                }
+                                break;
+
                         }
-                        break;
+
+                        EffectManager.Instance.CreateEffect(effectName, hitNormal, closetPoint);
+                    }
                 }
 
-                if (representType == RepresentStateType.Blocked_Reaction ||
-                    representType == RepresentStateType.Blocked_Sliding ||
-                    representType == RepresentStateType.Blocked_Crash)
+                /*--------------------------------------------------------------------------
+                |NOTI| 데미지 적용 막바지에 흡혈같은걸 위해서 공격자에게 다시 알려줍니다.
+                --------------------------------------------------------------------------*/
+                attackerStatScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.ApplyDamage_AttackerCallback, damage, isWeakPoint, attacker, victim);
+
+                if (isRipositeAttack == true)
                 {
-                    string guardEffectName = "ConeSparkEffect";
-
-                    if (representType == RepresentStateType.Blocked_Sliding ||
-                        representType == RepresentStateType.Blocked_Crash)
-                    {
-                        guardEffectName = "CartoonSparkEffect";
-                    }
-
-                    GameObject shieldWeapon = (GCST<StateContoller>().GetCurrStateGraphType() == StateGraphType.WeaponState_RightGraph)
-                        ? _tempCurrRightWeapon
-                        : _tempCurrLeftWeapon;
-
-                    closetPoint = shieldWeapon.transform.position; //방패피격점
-
-                    EffectManager.Instance.CreateEffect(guardEffectName, hitNormal, closetPoint); //가드이펙트
+                    return;
                 }
 
-                EffectManager.Instance.CreateEffect(effectName, hitNormal, closetPoint);
+                //-------------------------------------------------------------------------------------------------------------
+                if (willDead == true || //-----------------------------------------------------다음에 죽을 예정이거나,
+                    statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && //-----CC면역이 걸려있지 않거나,
+                    representType != RepresentStateType.End) //-------------------------------최소 한번은 상태변경이 성공했다면,
+                { //-----------------------------------------------------------------------------------------------------------
 
-                if (victim.GCST<StatScript>().GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PerfectGuardBuff")) != null)
-                {
-                    EffectManager.Instance.CreateEffect("PerfectGuardSparkEffect", hitNormal, closetPoint);
-                    attacker.AfterDealMe();
+                    //해당 방향을 바라보면서 다음 결정된 상태를 연출하는 코드일 뿐이다
 
-                    /*----------------------------------------------------
-                    |TOOD| 계산공식 결정하기
-                    ----------------------------------------------------*/
-                    int refelctPower = 10;
+                    Vector3 toAttackerDir = (attacker.transform.position - transform.position);
+                    toAttackerDir.y = 0.0f;
+                    toAttackerDir = toAttackerDir.normalized;
 
-
-                    attackerStatScript.ChangeActiveStat(ActiveStat.PosturePercent, refelctPower);
-                    int afterAttackerPosture = attackerStatScript.GetActiveStat(ActiveStat.PosturePercent);
-                    int attackerPosturePhase1 = attackerStatScript.GetPassiveStat(PassiveStat.PostruePercentPhase1);
-
-                    if (afterAttackerPosture == 100)
-                    {
-                        StateContoller attackerStateController = attacker.GCST<StateContoller>();
-                        attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Groggy);
-                        attackerStatScript.ApplyBuff(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff"), 1);
-                        EffectManager.Instance.CreateEffect("CartoonSparkEffect", Vector3.up, attacker._CharacterHeart.transform.position);
-                    }
-
-                    else if (afterAttackerPosture >= attackerPosturePhase1)
-                    {
-                        //attacker의 공격이 튕긴다
-                        StateContoller attackerStateController = attacker.GCST<StateContoller>();
-                        attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.AttackRecoil);
-                    }
+                    GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
+                    GCST<StateContoller>().TryChangeState(nextGraphType, representType);
                 }
             }
 
-
-            if (isRipositeAttack == true)
-            {
-                return;
-            }
-
-
-
-            //-------------------------------------------------------------------------------------------------------------
-            if (willDead == true || //-----------------------------------------------------다음에 죽을 예정이거나,
-                statScript.GetPassiveStat(PassiveStat.IsInvincible_Stance) <= 0 && //-----CC면역이 걸려있지 않거나,
-                representType != RepresentStateType.End) //-------------------------------최소 한번은 상태변경이 성공했다면,
-            { //-----------------------------------------------------------------------------------------------------------
-
-                //해당 방향을 바라보면서 다음 결정된 상태를 연출하는 코드일 뿐이다
-
-                Vector3 toAttackerDir = (attacker.transform.position - transform.position);
-                toAttackerDir.y = 0.0f;
-                toAttackerDir = toAttackerDir.normalized;
-
-                GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
-                GCST<StateContoller>().TryChangeState(nextGraphType, representType);
-            }
+            statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_ApplyDamage, damage, isWeakPoint, attacker, victim);
         }
-        statScript.InvokeDamagingProcessDelegate(DamagingProcessDelegateType.After_ApplyDamage, damage, isWeakPoint, attacker, victim);
     }
 
     public void WhenTriggerEnterWithWeaponCollider(Collider other, bool isWeakCollider, Vector3 closetPoint, Vector3 hitNormal)

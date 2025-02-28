@@ -124,6 +124,22 @@ public class CharacterMoveScript2 : CharacterContollerable
     }
 
 
+
+    public override void DoKnuckBack()
+    {
+        if (_characterController.isGrounded == false)
+        {
+            return; //더블 점프 컨텐츠, 스킬 생기면 어떻게할꺼야
+        }
+
+        Vector3 myForward = transform.forward;
+        Vector3 myBackward = Quaternion.AngleAxis(180, transform.right) * myForward;
+        _gravitySpeed = new Vector3(0.0f, _jumpForce/2.0f, 0.0f) + myBackward;
+
+        //_characterController.Move(new Vector3(0.0f, 0.1f, 0.0f));
+    }
+
+
     public override void CharacterInertiaMove(float ratio)
     {
         Vector3 planeVelocity = _latestPlaneVelocityDontUseY;
