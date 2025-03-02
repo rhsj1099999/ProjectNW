@@ -2202,11 +2202,6 @@ public class CharacterScript : GameActorScript, IHitable
                                 }
                                 else if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) == null)
                                 {
-                                    if (gameObject.name.Contains("Zombie") == true)
-                                    {
-                                        int a = 10;
-                                    }
-
                                     int deltaRoughness = (int)damage._damagePower - statScript.GetPassiveStat(PassiveStat.Roughness);
 
                                     if (deltaRoughness > MyUtil.deltaRoughness_lvl2)
