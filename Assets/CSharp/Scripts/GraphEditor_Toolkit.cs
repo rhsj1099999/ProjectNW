@@ -1,17 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.PackageManager.UI;
-using UnityEditor.Search;
+using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
-using static UnityEditor.Rendering.FilterWindow;
 
 public enum Direction_2D
 {
@@ -26,10 +19,36 @@ public enum Direction_2D
     End
 }
 
+public class HierarchycalWindow : EditorWindow
+{
+    public enum Layer
+    {
+        Layer_BackGround,
+
+        Layer_Start,
+        Layer_Object_One,
+        Layer_Object_Two,
+        Layer_Object_Three,
+        Layer_Object_Four,
+        Layer_End,
 
 
+        Layer_One,
+        Layer_Two,
+        Layer_Three,
+        Layer_Four,
 
-public class GraphEditorWithUIToolkit : EditorWindow
+        End = 11,
+    }
+
+    public void AddElement(Layer layer, VisualElement element)
+    {
+        rootVisualElement.Insert((int)layer, element);
+    }
+}
+
+
+public class GraphEditorWithUIToolkit : HierarchycalWindow
 {
     [MenuItem("Window/Graph Editor UIToolkit")]
     public static void ShowWindow()
@@ -41,7 +60,7 @@ public class GraphEditorWithUIToolkit : EditorWindow
     public void CreateGUI()
     {
         Label label = new Label("StateGraphTool");
-        rootVisualElement.Add(label);
+        AddElement(Layer.Layer_BackGround, label);
 
         VisualElement rootElementBackGroud = new VisualElement()
         {
@@ -51,18 +70,18 @@ public class GraphEditorWithUIToolkit : EditorWindow
                 backgroundColor = Color.clear,
             }
         };
-        rootVisualElement.Add(rootElementBackGroud);
+        AddElement(Layer.Layer_BackGround, rootElementBackGroud);
 
 
         for (int i = 0; i < 3; i++)
         {
             StateNode node = new StateNode(rootVisualElement, this);
-            rootVisualElement.Add(node);
+            AddElement(Layer.Layer_Object_One, node);
         }
 
         //for (int i = 0; i < 1; i++)
         //{
-        //    TestNode node = new TestNode(rootVisualElement);
+        //    TestNode node = new TestNode(rootVisualElement, this);
         //    rootVisualElement.Add(node);
         //}
     }
@@ -115,6 +134,14 @@ public class MyVisualElement : VisualElement
     protected VisualElement _root = null;
     protected GraphEditorWithUIToolkit _window = null;
     protected Action _actions = null;
+
+    //protected Dictionary<Type, List<EventCallback<EventBase>>> _safeStops = new Dictionary<Type, List<EventCallback<EventBase>>>();
+    //protected void AddSafeStop(Type eventType, EventCallback<EventBase> func)
+    //{
+    //    List<EventCallback<EventBase>> targetList = _safeStops.GetOrAdd(eventType);
+    //    targetList.Add(func);
+    //}
+
 
     public virtual void Update() {}
     public virtual void DoRayCast(Vector2 position, MyVisualElement caller) { }
@@ -173,6 +200,28 @@ public class MyVisualElement : VisualElement
         transform.position = (position) - new Vector2(style.width.value.value, style.height.value.value);
     }
 
+
+    public Vector2 GetPosition_RotatedOffset_C(float radius, float angle)
+    {
+        Vector2 offset = new Vector2(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
+        return GetPosition_C() + offset;
+    }
+    public Vector2 GetPosition_RotatedOffset_LT(float radius, float angle)
+    {
+        return GetPosition_LT() + new Vector2(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
+    }
+    public Vector2 GetPosition_RotatedOffset_RT(float radius, float angle)
+    {
+        return GetPosition_RT() + new Vector2(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
+    }
+    public Vector2 GetPosition_RotatedOffset_RB(float radius, float angle)
+    {
+        return GetPosition_RB() + new Vector2(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
+    }
+    public Vector2 GetPosition_RotatedOffset_LB(float radius, float angle)
+    {
+        return GetPosition_LB() + new Vector2(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
+    }
 
     public Vector2 GetPosition_C()
     {
@@ -321,6 +370,25 @@ public class MyVisualElement : VisualElement
 
 }
 #endregion MyVisualElement
+
+
+#region Move_Extension
+public static class MoveExtensions
+{
+    public static void Default_OnMouseDown_MoveEx(this VisualElement moveable, ref bool trigger) {trigger = true;}
+    public static void Default_OnMouseUp_MoveEx(this VisualElement moveable, ref bool trigger) {trigger = false;}
+    public static void Default_OnMouseMove_MoveEx(this VisualElement moveable, MouseMoveEvent mouseMoveEvent, ref bool trigger)
+    {
+        if (trigger == false)
+        {
+            return;
+        }
+
+        moveable.transform.position += new Vector3(mouseMoveEvent.mouseDelta.x, mouseMoveEvent.mouseDelta.y, 0.0f);
+    }
+}
+#endregion Move_Extension
+
 
 
 
@@ -483,13 +551,6 @@ public class TestNode : MyVisualElement
 
         Focus();
         RegisterCallback<KeyDownEvent>(OnKeyDown);
-
-
-        schedule.Execute(() =>
-        {
-            _actions?.Invoke();
-        }).Every(25);
-
     }
 
     private EventMode _evnetMode = EventMode.End;
@@ -633,9 +694,8 @@ public class StateNode : MyVisualElement
 {
     public StateNode(VisualElement root, GraphEditorWithUIToolkit window) : base(root, window)
     {
-        pickingMode = PickingMode.Ignore;
-
-        style.backgroundColor = new Color(0.2f, 0.2f, 0.2f);
+        //style.backgroundColor = new Color(0.2f, 0.2f, 0.2f);
+        style.backgroundColor = Color.white;
 
         style.width = 150;
         style.height = 100;
@@ -666,31 +726,12 @@ public class StateNode : MyVisualElement
         Resizer resizer_Bottom = new Resizer(_root, _window, this, _id, Direction_2D.Bottom, border);
         Resizer resizer_BottomLeft = new Resizer(_root, _window, this, _id, Direction_2D.BottomLeft, border);
 
-
-        Mover mover = new Mover(_root, _window, this, _id);
-
-
-        VisualElement contentBox = new VisualElement()
-        {
-            style =
-            {
-                flexGrow = 1,
-            }
-        };
-        contentBox.pickingMode = PickingMode.Ignore;
-        Add(contentBox);
-
-        contentBox.AddManipulator(new ContextualMenuManipulator(menuEvent =>
+        this.AddManipulator(new ContextualMenuManipulator(menuEvent =>
         {
             menuEvent.menu.AppendAction("Link Node", _ => LinkNode(this, menuEvent.mousePosition));
             menuEvent.menu.AppendAction("Something Menu1", _ => Menu_Somthing1());
             menuEvent.menu.AppendAction("Something Menu2", _ => Menu_Somthing2());
         }));
-
-
-
-
-
 
         VisualElement objectFieldSet = new VisualElement()
         {
@@ -701,24 +742,29 @@ public class StateNode : MyVisualElement
                 flexShrink = 1,
             }
         };
-        contentBox.Add(objectFieldSet);
+        Add(objectFieldSet);
 
-        Label objectFieldLabel = new Label("StateAsset :");
-        objectFieldSet.Add(objectFieldLabel);
+        //Label objectFieldLabel = new Label("StateAsset :");
+        //objectFieldSet.Add(objectFieldLabel);
 
         _objectField = new ObjectField()
         {
+            objectType = typeof(StateAsset),
+            allowSceneObjects = false,
             style =
             {
                 flexDirection = FlexDirection.Row,
                 flexShrink = 1,
             }
         };
+        
         objectFieldSet.Add(_objectField);
 
         _id++;
 
 
+        RegisterCallback<MouseDownEvent>(OnMouseDown_Move);
+        RegisterCallback<MouseUpEvent>(OnMouseUp_Move);
         RegisterCallback<DetachFromPanelEvent>(OnDetach);
     }
 
@@ -741,6 +787,33 @@ public class StateNode : MyVisualElement
     private Arrow_NotReady _arrow_NotReady = null;
     private bool _rayCastReady = false;
 
+    private bool _trigger_move = false;
+
+    private void OnMouseDown_RayCast(MouseDownEvent mouseDown)
+    {
+        _window.RaycastElement(mouseDown.mousePosition, this);
+        _rayCastReady = false;
+        UnRegister_AbsCallBack(OnMouseDown_RayCast);
+
+        _root.Remove(_arrow_NotReady);
+        _arrow_NotReady = null;
+    }
+
+    private void OnMouseDown_Move(MouseDownEvent mouseDownEvent)
+    {
+        this.Default_OnMouseDown_MoveEx(ref _trigger_move);
+        RegisterCallback<MouseMoveEvent>(OnMouseMove_Move);
+    }
+    private void OnMouseMove_Move(MouseMoveEvent mouseMoveEvent)
+    {
+        this.Default_OnMouseMove_MoveEx(mouseMoveEvent, ref _trigger_move);
+    }
+    private void OnMouseUp_Move(MouseUpEvent mouseUpEvent)
+    {
+        this.Default_OnMouseUp_MoveEx(ref _trigger_move);
+        UnregisterCallback<MouseMoveEvent>(OnMouseMove_Move);
+    }
+
     public override void DoRayCast(Vector2 position, MyVisualElement caller)
     {
         StateNode stateNode = caller as StateNode;
@@ -750,8 +823,10 @@ public class StateNode : MyVisualElement
             return;
         }
 
-        LinkingNode_From(stateNode);
-        stateNode.LinkingNode_To(this);
+        Arrow_Ready newReadyArrow = new Arrow_Ready(_root, _window, stateNode, this);
+
+        LinkingNode_From(stateNode, newReadyArrow);
+        stateNode.LinkingNode_To(this, newReadyArrow);
     }
 
 
@@ -769,31 +844,16 @@ public class StateNode : MyVisualElement
     }
 
 
-    private void OnMouseDown_RayCast(MouseDownEvent mouseDown)
+
+    public void LinkingNode_From(StateNode from, Arrow_Ready arrow)
     {
-        _window.RaycastElement(mouseDown.mousePosition, this);
-        _rayCastReady = false;
-        UnRegister_AbsCallBack(OnMouseDown_RayCast);
-
-        _root.Remove(_arrow_NotReady);
-        _arrow_NotReady = null;
-    }
-
-    public void LinkingNode_From(StateNode from)
-    {
-        Arrow_Ready newReadyArrow = new Arrow_Ready(_root, _window, from, this);
-        _root.Insert(0, newReadyArrow);
-        LinkedStateNodeDesc newLinked = new LinkedStateNodeDesc(from, newReadyArrow);
-
+        LinkedStateNodeDesc newLinked = new LinkedStateNodeDesc(from, arrow);
         _fromStateNodes.Add(newLinked);
     }
 
-    public void LinkingNode_To(StateNode to)
+    public void LinkingNode_To(StateNode to, Arrow_Ready arrow)
     {
-        Arrow_Ready newReadyArrow = new Arrow_Ready(_root, _window, to, this);
-        _root.Insert(0, newReadyArrow);
-        LinkedStateNodeDesc newLinked = new LinkedStateNodeDesc(to, newReadyArrow);
-
+        LinkedStateNodeDesc newLinked = new LinkedStateNodeDesc(to, arrow);
         _toStateNodes.Add(newLinked);
     }
 
@@ -825,6 +885,8 @@ public class Arrow_Head : MyVisualElement
         style.borderLeftColor = Color.clear;
         style.borderRightColor = Color.clear;
         style.borderBottomColor = Color.green; // 화살표 색
+
+        _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
     }
 }
 #endregion Arrow_Head
@@ -844,12 +906,11 @@ public class Arrow_NotReady : MyVisualElement
         style.height = 2.0f;
 
         Register_AbsCallBack(OnMouseMove);
-        _root.Insert(0, this);
+        _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
 
         ////중간에 꽃힐 화살표 비쥬얼 엘리먼트 생성
         {
             _arrowHead = new Arrow_Head(_root, _window, Vector2.zero);
-            _root.Insert(0, _arrowHead);
         }
 
         RegisterCallback<DetachFromPanelEvent>(OnDetached);
@@ -945,22 +1006,159 @@ public class Arrow_NotReady : MyVisualElement
 #region Arrow_Ready
 public class Arrow_Ready : MyVisualElement
 {
-    public Arrow_Ready(VisualElement root, GraphEditorWithUIToolkit window, StateNode fromNode, StateNode toNode) : base(root, window)
+
+
+    public class SubEditorWindow_ConditionModify : HierarchycalWindow
     {
-        //style 설정
+        public static void ShowWindow()
         {
-            style.backgroundColor = Color.green;
+            SubEditorWindow_ConditionModify window = GetWindow<SubEditorWindow_ConditionModify>();
+            window.titleContent = new GUIContent("SubEditorWindow_ConditionModify");
         }
 
+        private SerializedObject serializedObject;
+        private SerializedProperty listProperty;
+        private ScriptableObject targetSO;
+        
+
+        public void CreateGUI()
+        {
+            Label label = new Label("ConditionModifier");
+            AddElement(Layer.Layer_BackGround, label);
+
+            VisualElement rootElementBackGroud = new VisualElement()
+            {
+                style =
+                {
+                    flexGrow = 1,
+                    backgroundColor = Color.clear,
+                    position = Position.Absolute,
+                }
+                
+            };
+
+            rootElementBackGroud.pickingMode = PickingMode.Ignore;
+            AddElement(Layer.Layer_BackGround, rootElementBackGroud);
+
+            // ScriptableObject를 선택할 수 있도록 ObjectField 추가
+            ObjectField objectField = new ObjectField("Target ScriptableObject")
+            {
+                objectType = typeof(ConditionAsset),
+                allowSceneObjects = false,
+            };
+
+            objectField.RegisterValueChangedCallback(evt =>
+            {
+                targetSO = evt.newValue as ScriptableObject;
+                if (targetSO != null)
+                {
+                    serializedObject = new SerializedObject(targetSO);
+                    listProperty = serializedObject.FindProperty("gameObjects");
+                    RefreshUI();
+                }
+            });
+
+            rootVisualElement.Add(objectField);
+        }
+
+        private void RefreshUI()
+        {
+            rootVisualElement.Clear();
+
+            // 다시 ObjectField 추가 (유저가 ScriptableObject를 변경할 수 있도록)
+            CreateGUI();
+
+            if (targetSO == null) return;
+
+            // 리스트를 편집할 수 있도록 PropertyField 추가
+            PropertyField propertyField = new PropertyField(listProperty);
+            rootVisualElement.Add(propertyField);
+        }
+
+        private void OnInspectorUpdate()
+        {
+            if (serializedObject != null)
+            {
+                serializedObject.Update();
+            }
+        }
+    }
+
+    public class ListTest : HierarchycalWindow
+    {
+        [Serializable]
+        public class Test
+        {
+            public List<GameObject> _listTest = new List<GameObject>();
+        }
+
+        [SerializeField] Test _test = new Test();
+        private SerializedObject serializedObjectTest;
+        private SerializedProperty listProperty;
+
+        public static void ShowWindow()
+        {
+            ListTest window = GetWindow<ListTest>();
+            window.titleContent = new GUIContent("ListTest");
+        }
+
+        public void CreateGUI()
+        {
+            Label label = new Label("ListTest");
+            AddElement(Layer.Layer_BackGround, label);
+
+            VisualElement rootElementBackGroud = new VisualElement()
+            {
+                style =
+                {
+                    flexGrow = 1,
+                    backgroundColor = Color.clear,
+                    position = Position.Absolute,
+                }
+
+            };
+
+            rootElementBackGroud.pickingMode = PickingMode.Ignore;
+            AddElement(Layer.Layer_BackGround, rootElementBackGroud);
+        }
+
+        private void OnInspectorUpdate()
+        {
+            serializedObjectTest?.Update();
+        }
+    }
+
+
+    public Arrow_Ready(VisualElement root, GraphEditorWithUIToolkit window, StateNode fromNode, StateNode toNode) : base(root, window)
+    {
         _fromNode = fromNode;
         _toNode = toNode;
 
+        //style 설정
+        {
+            style.position = Position.Absolute;
+            style.backgroundColor = Color.green;
+            style.height = 2.0f;
+        }
+
+        ////중간에 꽃힐 화살표 비쥬얼 엘리먼트 생성
+        {
+            _arrowHead = new Arrow_Head(_root, _window, Vector2.zero);
+        }
+
         _actions += ArrowPositionUpdate;
+
+        _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
+
+        RegisterCallback<DetachFromPanelEvent>(OnDetach);
+        RegisterCallback<MouseDownEvent>(OnMouseDown_ModifyCondition);
+        RegisterCallback<MouseMoveEvent>(OnMouseMove_ModifyCondition);
     }
+
 
     private StateNode _fromNode = null;
     private StateNode _toNode = null;
-    private Arrow_Head _arrow_Head = null;
+    private Arrow_Head _arrowHead = null;
 
 
     /*----------------------------------------------------
@@ -969,12 +1167,45 @@ public class Arrow_Ready : MyVisualElement
     ----------------------------------------------------*/
     private void ArrowPositionUpdate()
     {
+        Vector2 direction = _toNode.GetPosition_C() - _fromNode.GetPosition_C();
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
+        Vector2 fromNodeRatedOffsetPosition = _fromNode.GetPosition_RotatedOffset_C(15.0f, (angle + 90.0f) * Mathf.Deg2Rad);
+        Vector2 toNodeRatedOffsetPosition = _toNode.GetPosition_RotatedOffset_C(15.0f, (angle + 180.0f) * Mathf.Deg2Rad);
+
+        style.width = Vector2.Distance(fromNodeRatedOffsetPosition, toNodeRatedOffsetPosition);
+
+        Vector2 centerPosition = (fromNodeRatedOffsetPosition + toNodeRatedOffsetPosition) / 2.0f;
+
+
+
+        //화살표 몸통이 업데이트 된다
+        {
+            MoveTo(centerPosition);
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
+
+        //화살표 중간 삼각형이 업데이트 된다
+        {
+            _arrowHead.MoveTo_IfArrow(centerPosition);
+            _arrowHead.transform.rotation = Quaternion.Euler(0, 0, angle + 90);
+        }
     }
 
-    public void ReadyToDelete()
+    private void OnDetach(DetachFromPanelEvent detachEvent)
     {
         _actions = null;
+    }
+
+    private void OnMouseDown_ModifyCondition(MouseDownEvent mouseDownEvent)
+    {
+        //ListTest.ShowWindow();
+        SubEditorWindow_ConditionModify.ShowWindow();
+    }
+
+    private void OnMouseMove_ModifyCondition(MouseMoveEvent mouseDownEvent)
+    {
+        Debug.Log("KK");
     }
 }
 #endregion Arrow_Ready
@@ -1001,60 +1232,60 @@ public class ChildElement : MyVisualElement
 
 
 
-#region Mover
-public class Mover : ChildElement
-{
-    public Mover(VisualElement root, GraphEditorWithUIToolkit window, VisualElement parent, int id) : base(root, window, parent, id)
-    {
-        style.left = 2;
-        style.top = 2;
-        style.right = 2;
-        style.bottom = 2;
-        style.backgroundColor = Color.white;
+//#region Mover
+//public class Mover : ChildElement
+//{
+//    public Mover(VisualElement root, GraphEditorWithUIToolkit window, VisualElement parent, int id) : base(root, window, parent, id)
+//    {
+//        style.left = 2;
+//        style.top = 2;
+//        style.right = 2;
+//        style.bottom = 2;
+//        style.backgroundColor = Color.white;
 
 
 
-        RegisterCallback<MouseDownEvent>(evt =>
-        {
-            _isDragging = true;
-            this.CaptureMouse();
-            AfterMouseDown();
-        });
+//        RegisterCallback<MouseDownEvent>(evt =>
+//        {
+//            _isDragging = true;
+//            //this.CaptureMouse();
+//            AfterMouseDown();
+//        });
 
 
-        RegisterCallback<MouseUpEvent>(evt =>
-        {
-            _isDragging = false;
-            this.ReleaseMouse();
-            AfterMouseUp();
-        });
+//        RegisterCallback<MouseUpEvent>(evt =>
+//        {
+//            _isDragging = false;
+//            //this.ReleaseMouse();
+//            AfterMouseUp();
+//        });
 
-        _parent.Add(this);
-    }
+//        _parent.Add(this);
+//    }
 
-    private bool _isDragging = false;
+//    private bool _isDragging = false;
 
-    private void AfterMouseDown()
-    {
-        RegisterCallback<MouseMoveEvent>(OnMouseMove);
-    }
+//    private void AfterMouseDown()
+//    {
+//        RegisterCallback<MouseMoveEvent>(OnMouseMove);
+//    }
 
-    private void OnMouseMove(MouseMoveEvent moveEvent)
-    {
-        if (_isDragging == false)
-        {
-            return;
-        }
+//    private void OnMouseMove(MouseMoveEvent moveEvent)
+//    {
+//        if (_isDragging == false)
+//        {
+//            return;
+//        }
 
-        _parent.transform.position += new Vector3(moveEvent.mouseDelta.x, moveEvent.mouseDelta.y, 0.0f);
-    }
+//        _parent.transform.position += new Vector3(moveEvent.mouseDelta.x, moveEvent.mouseDelta.y, 0.0f);
+//    }
 
-    private void AfterMouseUp()
-    {
-        UnregisterCallback<MouseMoveEvent>(OnMouseMove);
-    }
-}
-#endregion Mover
+//    private void AfterMouseUp()
+//    {
+//        UnregisterCallback<MouseMoveEvent>(OnMouseMove);
+//    }
+//}
+//#endregion Mover
 
 
 
@@ -1196,7 +1427,6 @@ public class Resizer : ChildElement
         RegisterCallback<MouseDownEvent>(evt =>
         {
             _isResizing = true;
-            this.CaptureMouse();
             AfterMouseDown();
         });
 
@@ -1205,7 +1435,6 @@ public class Resizer : ChildElement
         RegisterCallback<MouseUpEvent>(evt =>
         {
             _isResizing = false;
-            this.ReleaseMouse();
             AfterMouseUp();
         });
 
