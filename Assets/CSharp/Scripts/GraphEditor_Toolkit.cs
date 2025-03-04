@@ -1,16 +1,12 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.PackageManager.UI;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
-using static GraphEditorWithUIToolkit.GraphEditorBackGroundElement;
-using System.Linq;
-using UnityEditor.Experimental.GraphView;
+using static StateGraphAsset;
 
 public enum Direction_2D
 {
@@ -82,8 +78,8 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
                 _graphEditorVisualElement = graphEditorRootElement;
             }
 
-            private GraphEditorWithUIToolkit _graphEditorWindow = null;
-            private VisualElement _graphEditorVisualElement = null;
+            protected GraphEditorWithUIToolkit _graphEditorWindow = null;
+            protected VisualElement _graphEditorVisualElement = null;
         }
 
 
@@ -245,7 +241,11 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
                             }
                         }
 
-                        StateGraphAsset graphData = StateGraphAsset.Create(null);
+                        //StateGraphAsset graphData = Create(_graphEditorWindow._stateNodes);
+                        StateGraphAsset graphData = CreateInstance<StateGraphAsset>();
+                        graphData.InitData(_graphEditorWindow._stateNodes);
+
+                        assetPath = FileUtil.GetProjectRelativePath(assetPath);
 
                         AssetDatabase.CreateAsset(graphData, assetPath);
                         AssetDatabase.SaveAssets();
@@ -283,7 +283,7 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
 
                 //비쥬얼 컨테이너 묶음 생성
                 {
-                    VisualElement backGround = new VisualElement()
+                    VisualElement backGround = new()
                     {
                         style =
                         {
@@ -1046,9 +1046,9 @@ public class StateNode : MyVisualElement, IConditionExist
 {
     private bool _isWindowShow = false;
     private EditorWindow _conditionModifierWindow = null;
-    public List<ConditionDataWrapper> _entryConditionDatas = new List<ConditionDataWrapper>();
+    public List<ConditionAssetWrapper> _entryConditionDatas = new List<ConditionAssetWrapper>();
 
-    public List<ConditionDataWrapper> GetCondition()
+    public List<ConditionAssetWrapper> GetCondition()
     {
         return _entryConditionDatas;
     }
@@ -1154,12 +1154,12 @@ public class StateNode : MyVisualElement, IConditionExist
         Label entryToggleLabel = new Label("isEntry : ");
         toggleContainer.Add(entryToggleLabel);
 
-        Toggle entryStateToggle = new Toggle();
-        toggleContainer.Add(entryStateToggle);
+        _isEntryState = new Toggle();
+        toggleContainer.Add(_isEntryState);
 
         Action entryConditionModiClicked = () => 
         {
-            if (entryStateToggle.value == false)
+            if (_isEntryState.value == false)
             {
                 return;
             }
@@ -1209,8 +1209,10 @@ public class StateNode : MyVisualElement, IConditionExist
     private Dictionary<StateNode, Arrow_Ready> _fromStateNodes = new Dictionary<StateNode, Arrow_Ready>();
     public IReadOnlyDictionary<StateNode, Arrow_Ready> _FromStateNodes => _fromStateNodes;
 
-    public ObjectField _objectField = null;
-    public Toggle _isEntryState = null;
+    private Toggle _isEntryState = null;
+    public bool _IsEntryState { get { return _isEntryState.value; } }
+    private ObjectField _objectField = null;
+    public StateAsset _StateAsset { get { return (StateAsset)_objectField.value; } }
     private Arrow_NotReady _arrow_NotReady = null;
     
     private bool _rayCastReady = false;
@@ -1507,17 +1509,17 @@ public class Arrow_NotReady : MyVisualElement
 #endregion Arrow_NotReady
 
 
-[Serializable]
-public class ConditionDataWrapper
-{
-    public ConditionAsset _conditionAsset = null;
-    public bool _goal = false;
-}
+//[Serializable]
+//public class ConditionAssetWrapper
+//{
+//    public ConditionAsset _conditionAsset = null;
+//    public bool _goal = false;
+//}
 
 
 public interface IConditionExist
 {
-    public abstract List<ConditionDataWrapper> GetCondition();
+    public abstract List<ConditionAssetWrapper> GetCondition();
     public abstract void WindowOff();
     public abstract void TurnOnConditionModifyWindow(EditorWindow window);
     public abstract void OnDetach_ConditionModifyWindow();
@@ -1734,6 +1736,11 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
                 objectType = typeof(ConditionAsset),
                 allowSceneObjects = false,
             };
+
+            _objectField.RegisterValueChangedCallback(evt =>
+            {
+                _targetList[(int)_objectField.userData]._conditionAsset = (ConditionAsset)_objectField.value;
+            });
             Add(_objectField);
 
             VisualElement goalToggleContainer = new VisualElement()
@@ -1767,16 +1774,27 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
                 name = "_goal",
                 value = false,
             };
+
+            _goalToggle.RegisterValueChangedCallback(evt =>
+            {
+                _targetList[(int)_goalToggle.userData]._goal = _goalToggle.value;
+            });
             goalToggleContainer.Add(_goalToggle);
+        }
+
+        public void Init(List<ConditionAssetWrapper> targetList)
+        {
+            _targetList = targetList;
         }
 
         private ObjectField _objectField = null;
         private Toggle _goalToggle = null;
+        private List<ConditionAssetWrapper> _targetList = null;
     }
 
     private ListView _conditionDataListView = null;
     private VisualElement _buttons = null;
-    private List<ConditionDataWrapper> _conditionData = null;
+    private List<ConditionAssetWrapper> _conditionData = null;
     private IConditionExist _hasConditionElement = null;
 
     private void OnDisable()
@@ -1784,7 +1802,7 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
         _hasConditionElement?.WindowOff();
     }
 
-    public void Init(List<ConditionDataWrapper> dataTarget, IConditionExist canHaveCondition)
+    public void Init(List<ConditionAssetWrapper> dataTarget, IConditionExist canHaveCondition)
     {
         //데이터 설정
         {
@@ -1822,27 +1840,14 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
             Func<ConditionDataVisualElement> createListElelemt = () =>
             {
                 ConditionDataVisualElement newElement = new ConditionDataVisualElement();
+                newElement.Init(_conditionData);
                 return newElement;
             };
-            _conditionDataListView.makeItem = createListElelemt;
 
+            _conditionDataListView.makeItem = createListElelemt;
 
             Action<VisualElement, int> dataChanged = (VisualElement element, int index) =>
             {
-                ConditionDataWrapper target = _conditionData[index];
-                if (index >= _conditionData.Count)
-                {
-                    Debug.Assert(false, "데이터 개수를 넘은 인덱스? 심각하다");
-                    Debug.Break();
-                    return;
-                }
-                if (index < 0)
-                {
-                    Debug.Assert(false, "음수의 인덱스? 심각하다");
-                    Debug.Break();
-                    return;
-                }
-
                 ConditionDataVisualElement casted = (ConditionDataVisualElement)element;
 
                 ObjectField conditionAssetField = casted.Q<ObjectField>("_conditionAsset");
@@ -1852,7 +1857,8 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
                     Debug.Break();
                     return;
                 }
-                target._conditionAsset = (ConditionAsset)conditionAssetField.value;
+                conditionAssetField.userData = index;
+                conditionAssetField.value = _conditionData[index]._conditionAsset;
 
                 Toggle goalField = casted.Q<Toggle>("_goal");
                 if (goalField == null)
@@ -1861,9 +1867,12 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
                     Debug.Break();
                     return;
                 }
-                target._goal = goalField.value;
+                goalField.userData = index;
+                goalField.value = _conditionData[index]._goal;
+                //_conditionDataListView.RefreshItem(index);
             };
 
+            
             _conditionDataListView.bindItem = dataChanged;
             _conditionDataListView.fixedItemHeight = 50;
             _conditionDataListView.reorderable = true;
@@ -1887,7 +1896,7 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
 
             Action plusButtonClickAction = () =>
             {
-                _conditionData.Add(new ConditionDataWrapper());
+                _conditionData.Add(new ConditionAssetWrapper());
                 RefreshUI();
             };
             Button plusButton = new Button(plusButtonClickAction)
@@ -1926,7 +1935,8 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
 
     private void RefreshUI()
     {
-        _conditionDataListView.Rebuild();
+        //_conditionDataListView.Rebuild();
+        _conditionDataListView.RefreshItems();
     }
 }//----
 //----------------------------------------------------
@@ -1941,7 +1951,7 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
 {
     private bool _isWindowShow = false;
     private EditorWindow _conditionModifierWindow = null;
-    public List<ConditionDataWrapper> GetCondition()
+    public List<ConditionAssetWrapper> GetCondition()
     {
         return _conditionData;
     }
@@ -1995,8 +2005,8 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
     private StateNode _fromNode = null;
     private StateNode _toNode = null;
     private Arrow_Head _arrowHead = null;
-    private List<ConditionDataWrapper> _conditionData = new List<ConditionDataWrapper>();
-    public List<ConditionDataWrapper> _ConditionDatas => _conditionData;
+    private List<ConditionAssetWrapper> _conditionData = new List<ConditionAssetWrapper>();
+    public List<ConditionAssetWrapper> _ConditionDatas => _conditionData;
 
 
 

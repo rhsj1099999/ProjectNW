@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "StateGraphAsset", menuName = "Scriptable Object/CreateStateGraphAsset", order = int.MinValue)]
@@ -16,16 +17,43 @@ public class StateGraphAsset : ScriptableObject
         return newStateGraph;
     }
 
-    private void InitData(HashSet<StateNode> data)
+    public void InitData(HashSet<StateNode> data)
     {
         /*--------------------------------------------------
         |NOTI| 순회하고 데이터 만드는 작업은 클래스 본인이 직접?
         --------------------------------------------------*/
-
+        Dictionary<StateAsset, StateAssetWrapper> stateAssets = new Dictionary<StateAsset, StateAssetWrapper>();
+        
         foreach (StateNode stateNode in data) 
         {
             IReadOnlyDictionary<StateNode, Arrow_Ready> toStateNodes = stateNode._ToStateNodes;
-            //IReadOnlyDictionary<StateNode, Arrow_Ready> fromStateNodes = stateNode._FromStateNodes;
+
+            StateAssetWrapper wrapper = null;
+            if (stateAssets.ContainsKey(stateNode._StateAsset) == false)
+            {
+                wrapper = new StateAssetWrapper();
+
+                stateAssets.Add(stateNode._StateAsset, wrapper);
+
+                wrapper._stateAsset = stateNode._StateAsset;
+                wrapper._isEntryState = stateNode._IsEntryState;
+                wrapper._entryCondition = stateNode._entryConditionDatas;
+
+                foreach (KeyValuePair<StateNode, Arrow_Ready> pair in toStateNodes)
+                {
+                    LinkedStateAsset newLinkedStateAsset = new LinkedStateAsset
+                    (
+                        pair.Key._StateAsset,
+                        pair.Value._ConditionDatas
+                    );
+                    wrapper._linkedStates.Add(newLinkedStateAsset);
+                }
+            }
+        }
+
+        foreach (KeyValuePair<StateAsset, StateAssetWrapper> pair in stateAssets)
+        {
+            _usingStates.Add(pair.Value);
         }
     }
 
