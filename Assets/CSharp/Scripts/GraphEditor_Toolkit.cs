@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -8,6 +9,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using static GraphEditorWithUIToolkit.GraphEditorBackGroundElement;
+using System.Linq;
+using UnityEditor.Experimental.GraphView;
 
 public enum Direction_2D
 {
@@ -65,25 +68,38 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
 
     public class GraphEditorBackGroundElement : MyVisualElement
     {
-        public class IOWindowBase : HierarchycalWindow
+        public class GraphEditor_SubWindow_IO : HierarchycalWindow
         {
-            public IOWindowBase()
+            public GraphEditor_SubWindow_IO()
             {
                 minSize = new Vector2(500.0f, 300.0f);
                 maxSize = new Vector2(500.0f, 300.0f);
             }
+
+            public virtual void Init(GraphEditorWithUIToolkit graphEditorWindow, VisualElement graphEditorRootElement)
+            {
+                _graphEditorWindow = graphEditorWindow;
+                _graphEditorVisualElement = graphEditorRootElement;
+            }
+
+            private GraphEditorWithUIToolkit _graphEditorWindow = null;
+            private VisualElement _graphEditorVisualElement = null;
         }
 
-        public class SavingWindow : IOWindowBase
+
+        public class SavingWindow : GraphEditor_SubWindow_IO
         {
-            public static void OpenWindow()
+            public static SavingWindow OpenWindow()
             {
                 SavingWindow window = GetWindow<SavingWindow>();
                 window.titleContent = new GUIContent("Save...");
+                return window;
             }
 
-            private void CreateGUI()
+            public override void Init(GraphEditorWithUIToolkit graphEditorWindow, VisualElement graphEditorRootElement)
             {
+                base.Init(graphEditorWindow, graphEditorRootElement);
+
                 //비쥬얼 컨테이너 묶음 생성
                 {
                     VisualElement backGround = new VisualElement()
@@ -94,6 +110,7 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
                         }
                     };
                     rootVisualElement.Add(backGround);
+
 
 
                     VisualElement saveUIContainer = new VisualElement()
@@ -122,7 +139,7 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
 
                     VisualElement nameContaioner = new VisualElement()
                     {
-                        style = 
+                        style =
                         {
                             flexDirection = FlexDirection.Row,
                         }
@@ -137,13 +154,103 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
                         style =
                         {
                             flexDirection = FlexDirection.Row,
+                            flexGrow = 1,
                             flexShrink = 1,
                         }
                     };
                     nameInputField.value = _basicName;
                     nameContaioner.Add(nameInputField);
 
-                    Action saveButtonClicked = () => { };
+
+                    VisualElement pathNameContainer = new VisualElement()
+                    {
+                        style =
+                        {
+                            flexDirection = FlexDirection.Row,
+                        }
+                    };
+                    saveUIContainer.Add(pathNameContainer);
+
+                    TextField pathNameInputField = new TextField()
+                    {
+                        style =
+                        {
+                            flexDirection = FlexDirection.Row,
+                            flexGrow = 1,
+                            flexShrink = 1,
+                        }
+                    };
+                    pathNameInputField.value = _basicPathName;
+
+
+                    Action directoryButtonPushed = () =>
+                    {
+                        string path = EditorUtility.OpenFolderPanel("폴더 선택", "Assets", "");
+
+                        if (string.IsNullOrEmpty(path) == true)
+                        {
+                            pathNameInputField.value = _basicPathName;
+                        }
+                        else
+                        {
+                            pathNameInputField.value = path;
+
+                            if (pathNameInputField.value.EndsWith("/") == false)
+                            {
+                                pathNameInputField.value += "/";
+                            }
+                        }
+                    };
+                    Button directoryButton = new Button(directoryButtonPushed)
+                    {
+                        style =
+                        {
+                            marginRight = 1,
+                        },
+                        text = "Path..."
+                    };
+                    pathNameContainer.Add(directoryButton);
+                    pathNameContainer.Add(pathNameInputField);
+
+
+
+                    Action saveButtonClicked = () =>
+                    {
+                        if (string.IsNullOrEmpty(nameInputField.value) == true)
+                        {
+                            return;
+                        }
+
+                        if (Directory.Exists(pathNameInputField.value) == false)
+                        {
+                            Directory.CreateDirectory(pathNameInputField.value);  // 폴더가 없으면 생성
+                        }
+
+                        string assetPath = pathNameInputField.value + nameInputField.value + ".asset";
+
+                        if (File.Exists(assetPath) == true)
+                        {
+                            //경고문
+                            bool overwrite = EditorUtility.DisplayDialog
+                            (
+                                    "파일이 존재합니다",
+                                    "덮어씌웁니까?",
+                                    "예",
+                                    "아니요"
+                            );
+
+                            if (overwrite == false)
+                            {
+                                return;
+                            }
+                        }
+
+                        StateGraphAsset graphData = StateGraphAsset.Create(null);
+
+                        AssetDatabase.CreateAsset(graphData, assetPath);
+                        AssetDatabase.SaveAssets();
+                        AssetDatabase.Refresh();
+                    };
 
                     Button saveButton = new Button(saveButtonClicked)
                     {
@@ -158,18 +265,22 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
             }
 
             private string _basicName = "StateGraph_";
+            private string _basicPathName = "Assets/";
         }
 
-        public class LoadingWindow : IOWindowBase
+        public class LoadingWindow : GraphEditor_SubWindow_IO
         {
-            public static void OpenWindow()
+            public static LoadingWindow OpenWindow()
             {
                 LoadingWindow window = GetWindow<LoadingWindow>();
                 window.titleContent = new GUIContent("Load...");
+                return window;
             }
 
-            private void CreateGUI()
+            public override void Init(GraphEditorWithUIToolkit graphEditorWindow, VisualElement graphEditorRootElement)
             {
+                base.Init(graphEditorWindow, graphEditorRootElement);
+
                 //비쥬얼 컨테이너 묶음 생성
                 {
                     VisualElement backGround = new VisualElement()
@@ -265,13 +376,14 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
             StateNode node = new StateNode(_root, _window, _lastMousePosition);
             _window.AddElement(Layer.Layer_Object_One, node);
         }
+
         private void SaveStateGraph() 
         {
-            SavingWindow.OpenWindow();
+            SavingWindow.OpenWindow().Init(_window, _root);
         }
         private void LoadStateGraph() 
         {
-            LoadingWindow.OpenWindow();
+            LoadingWindow.OpenWindow().Init(_window, _root);
         }
     }
 
@@ -289,8 +401,6 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
         }
     }
 
-
-
     public void RaycastElement(Vector2 position, MyVisualElement caller)
     {
         VisualElement pickedElement = rootVisualElement.panel.Pick(position);
@@ -303,6 +413,37 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
         }
 
         casted.DoRayCast(position, caller);
+    }
+
+
+    /*------------------------------------------------------------------
+    |NOTI| 그래프를 읽기 시작할 노드들입니다. 최초 추가시에만 여기 보관됩니다.
+    ------------------------------------------------------------------*/
+
+    private HashSet<StateNode> _stateNodes = new HashSet<StateNode>();
+
+    public void StateNodeAdded(StateNode stateNode)
+    {
+        if (_stateNodes.Contains(stateNode) == true)
+        {
+            Debug.Assert(false, "이미 있다고?  심각한 오류다");
+            Debug.Break();
+            return;
+        }
+
+        _stateNodes.Add(stateNode);
+    }
+
+    public void DeleteStateNode(StateNode stateNode)
+    {
+        if (_stateNodes.Contains(stateNode) == false)
+        {
+            Debug.Assert(false, "존재하지 않았다고? 심각한 오류다");
+            Debug.Break();
+            return;
+        }
+
+        _stateNodes.Remove(stateNode);
     }
 }
 
@@ -348,14 +489,6 @@ public class MyVisualElement : VisualElement
     protected VisualElement _root = null;
     protected GraphEditorWithUIToolkit _window = null;
     protected Action _actions = null;
-
-    //protected Dictionary<Type, List<EventCallback<EventBase>>> _safeStops = new Dictionary<Type, List<EventCallback<EventBase>>>();
-    //protected void AddSafeStop(Type eventType, EventCallback<EventBase> func)
-    //{
-    //    List<EventCallback<EventBase>> targetList = _safeStops.GetOrAdd(eventType);
-    //    targetList.Add(func);
-    //}
-
 
     public virtual void Update() {}
     public virtual void DoRayCast(Vector2 position, MyVisualElement caller) { }
@@ -908,14 +1041,39 @@ public class TestNode : MyVisualElement
 
 
 
-
 #region StateNode
-public class StateNode : MyVisualElement
+public class StateNode : MyVisualElement, IConditionExist
 {
+    private bool _isWindowShow = false;
+    private EditorWindow _conditionModifierWindow = null;
+    public List<ConditionDataWrapper> _entryConditionDatas = new List<ConditionDataWrapper>();
+
+    public List<ConditionDataWrapper> GetCondition()
+    {
+        return _entryConditionDatas;
+    }
+    public void WindowOff()
+    {
+        _isWindowShow = false;
+    }
+    public void TurnOnConditionModifyWindow(EditorWindow window)
+    {
+        _isWindowShow = true;
+        _conditionModifierWindow = window;
+    }
+    public void OnDetach_ConditionModifyWindow()
+    {
+        if (_isWindowShow == true)
+        {
+            _conditionModifierWindow.Close();
+        }
+    }
+
     public StateNode(VisualElement root, GraphEditorWithUIToolkit window, Vector3 position) : base(root, window)
     {
         //style.backgroundColor = new Color(0.2f, 0.2f, 0.2f);
-        style.backgroundColor = Color.white;
+        style.backgroundColor = Color.gray;
+        //style.backgroundColor = Color.clear;
 
         style.width = 150;
         style.height = 100;
@@ -934,14 +1092,18 @@ public class StateNode : MyVisualElement
         style.borderBottomWidth = border;
 
 
-        Resizer resizer_Left = new Resizer(_root, _window, this, _id, Direction_2D.Left, border);
-        Resizer resizer_LeftTop = new Resizer(_root, _window, this, _id, Direction_2D.LeftTop, border);
-        Resizer resizer_Top = new Resizer(_root, _window, this, _id, Direction_2D.Top, border);
-        Resizer resizer_TopRight = new Resizer(_root, _window, this, _id, Direction_2D.TopRight, border);
-        Resizer resizer_Right = new Resizer(_root, _window, this, _id, Direction_2D.Right, border);
-        Resizer resizer_RightBottom = new Resizer(_root, _window, this, _id, Direction_2D.RightBottom, border);
-        Resizer resizer_Bottom = new Resizer(_root, _window, this, _id, Direction_2D.Bottom, border);
-        Resizer resizer_BottomLeft = new Resizer(_root, _window, this, _id, Direction_2D.BottomLeft, border);
+        //Resizers...
+        {
+            Resizer resizer_Left = new Resizer(_root, _window, this, _id, Direction_2D.Left, border);
+            Resizer resizer_LeftTop = new Resizer(_root, _window, this, _id, Direction_2D.LeftTop, border);
+            Resizer resizer_Top = new Resizer(_root, _window, this, _id, Direction_2D.Top, border);
+            Resizer resizer_TopRight = new Resizer(_root, _window, this, _id, Direction_2D.TopRight, border);
+            Resizer resizer_Right = new Resizer(_root, _window, this, _id, Direction_2D.Right, border);
+            Resizer resizer_RightBottom = new Resizer(_root, _window, this, _id, Direction_2D.RightBottom, border);
+            Resizer resizer_Bottom = new Resizer(_root, _window, this, _id, Direction_2D.Bottom, border);
+            Resizer resizer_BottomLeft = new Resizer(_root, _window, this, _id, Direction_2D.BottomLeft, border);
+        }
+
 
         this.AddManipulator(new ContextualMenuManipulator(menuEvent =>
         {
@@ -950,12 +1112,17 @@ public class StateNode : MyVisualElement
             menuEvent.menu.AppendAction("Something Menu2", _ => Menu_Somthing2());
         }));
 
+
+
         VisualElement objectFieldSet = new VisualElement()
         {
             style =
             {
-                flexDirection = FlexDirection.Row,
-                backgroundColor = Color.black,
+                marginLeft = 0,
+                marginRight = 0,
+                marginTop = 0,
+                marginBottom = 0,
+
                 flexShrink = 1,
             }
         };
@@ -974,13 +1141,58 @@ public class StateNode : MyVisualElement
         
         objectFieldSet.Add(_objectField);
 
+        VisualElement toggleContainer = new VisualElement()
+        {
+            style =
+            {
+                flexDirection = FlexDirection.Row,
+                marginRight = 0,
+            }
+        };
+        objectFieldSet.Add(toggleContainer);
+
+        Label entryToggleLabel = new Label("isEntry : ");
+        toggleContainer.Add(entryToggleLabel);
+
+        Toggle entryStateToggle = new Toggle();
+        toggleContainer.Add(entryStateToggle);
+
+        Action entryConditionModiClicked = () => 
+        {
+            if (entryStateToggle.value == false)
+            {
+                return;
+            }
+
+            SubEditorWindow_ConditionModify window = EditorWindow.CreateInstance<SubEditorWindow_ConditionModify>();
+
+            window.titleContent = new GUIContent("SubEditorWindow_ConditionModify");
+            window.Show();
+            window.Init(_entryConditionDatas, this);
+
+            TurnOnConditionModifyWindow(window);
+        };
+        Button entryConditionModiButton = new Button(entryConditionModiClicked)
+        {
+            text = "Conditions",
+            style = 
+            { 
+                flexShrink = 1,
+                flexGrow = 1,
+                marginRight = 0,
+            }
+        };
+        toggleContainer.Add(entryConditionModiButton);
 
 
         RegisterCallback<MouseDownEvent>(OnMouseDown_Move);
         RegisterCallback<MouseUpEvent>(OnMouseUp_Move);
         RegisterCallback<DetachFromPanelEvent>(OnDetach);
 
+        _window.StateNodeAdded(this);
+
         MoveTo(position);
+
         _id++;
     }
 
@@ -990,10 +1202,15 @@ public class StateNode : MyVisualElement
 
     public static int _id = 0;
 
+    
     private Dictionary<StateNode, Arrow_Ready> _toStateNodes = new Dictionary<StateNode, Arrow_Ready>();
+    public IReadOnlyDictionary<StateNode, Arrow_Ready> _ToStateNodes => _toStateNodes;
+
     private Dictionary<StateNode, Arrow_Ready> _fromStateNodes = new Dictionary<StateNode, Arrow_Ready>();
+    public IReadOnlyDictionary<StateNode, Arrow_Ready> _FromStateNodes => _fromStateNodes;
 
     public ObjectField _objectField = null;
+    public Toggle _isEntryState = null;
     private Arrow_NotReady _arrow_NotReady = null;
     
     private bool _rayCastReady = false;
@@ -1035,6 +1252,8 @@ public class StateNode : MyVisualElement
             UnRegister_AbsCallBack(OnMouseDown_RayCast);
         }
 
+        OnDetach_ConditionModifyWindow();
+
         //내가 갈 수 있는 노드들의 Arrow들 삭제
         {
             foreach (KeyValuePair<StateNode, Arrow_Ready> pair in _toStateNodes)
@@ -1053,6 +1272,8 @@ public class StateNode : MyVisualElement
             }
             _toStateNodes.Clear();
         }
+
+        _window.DeleteStateNode(this);
     }
 
     public override void DoRayCast(Vector2 position, MyVisualElement caller)
@@ -1060,6 +1281,11 @@ public class StateNode : MyVisualElement
         StateNode stateNode = caller as StateNode;
 
         if (stateNode == null)
+        {
+            return;
+        }
+
+        if (_fromStateNodes.ContainsKey(stateNode) == true)
         {
             return;
         }
@@ -1090,13 +1316,11 @@ public class StateNode : MyVisualElement
 
     public void LinkingNode_From(StateNode from, Arrow_Ready arrow)
     {
-        //LinkedStateNodeDesc newLinked = new LinkedStateNodeDesc(from, arrow);
         _fromStateNodes.Add(from, arrow);
     }
 
     public void LinkingNode_To(StateNode to, Arrow_Ready arrow)
     {
-        LinkedStateNodeDesc newLinked = new LinkedStateNodeDesc(to, arrow);
         _toStateNodes.Add(to, arrow);
     }
 
@@ -1291,424 +1515,455 @@ public class ConditionDataWrapper
 }
 
 
-/*--------------------------------------------------
-|NOTI| 드래그 완료된, 준비된 화살표
---------------------------------------------------*/
-#region Arrow_Ready
-public class Arrow_Ready : MyVisualElement
+public interface IConditionExist
 {
-    /*----------------------------------------------------
-    |NOTI| 닥스에서 가져왔어요 분석하면서 만들기-------------
-    ----------------------------------------------------*/
-    public class ListViewExample : HierarchycalWindow
+    public abstract List<ConditionDataWrapper> GetCondition();
+    public abstract void WindowOff();
+    public abstract void TurnOnConditionModifyWindow(EditorWindow window);
+    public abstract void OnDetach_ConditionModifyWindow();
+}
+
+/*----------------------------------------------------
+|NOTI|닥스에서 가져왔어요. 분석하면서 만들기-------------
+----------------------------------------------------*/
+public class ListViewExample : HierarchycalWindow
+{
+    // Gradient used for the HP color indicator.
+    private Gradient hpGradient;
+    private GradientColorKey[] hpColorKey;
+    private GradientAlphaKey[] hpAlphaKey;
+    // Sets up the gradient.
+    private void SetGradient()
     {
-        // Gradient used for the HP color indicator.
-        private Gradient hpGradient;
-        private GradientColorKey[] hpColorKey;
-        private GradientAlphaKey[] hpAlphaKey;
-        // Sets up the gradient.
-        private void SetGradient()
+        hpGradient = new Gradient();
+
+        // HP at 0%: Red. At 10%: Dark orange. At 40%: Yellow. At 100%: Green.
+        hpColorKey = new GradientColorKey[4];
+        hpColorKey[0] = new GradientColorKey(Color.red, 0f);
+        hpColorKey[1] = new GradientColorKey(new Color(1f, 0.55f, 0f), 0.1f); // Dark orange
+        hpColorKey[2] = new GradientColorKey(Color.yellow, 0.4f);
+        hpColorKey[3] = new GradientColorKey(Color.green, 1f);
+
+        // Alpha is always full.
+        hpAlphaKey = new GradientAlphaKey[2];
+        hpAlphaKey[0] = new GradientAlphaKey(1f, 0f);
+        hpAlphaKey[1] = new GradientAlphaKey(1f, 1f);
+        hpGradient.SetKeys(hpColorKey, hpAlphaKey);
+    }
+
+
+
+
+    public static void OpenWindow()
+    {
+        GetWindow<ListViewExample>().Show();
+    }
+
+
+
+
+    // ListView is kept for easy reference.
+    private ListView listView;
+
+    [Serializable]
+    public class CharacterInfo
+    {
+        public string name;
+        public int maxHp;
+        public int currentHp;
+    }
+    private List<CharacterInfo> items;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void CreateGUI()
+    {
+        SetGradient();
+
+        // Create and populate the list of CharacterInfo objects.
+        const int itemCount = 50;
+        items = new List<CharacterInfo>(itemCount);
+
+        //단순히 데이터 보관용 컨테이너에 저장만 합니다...50번 반복합니다.
         {
-            hpGradient = new Gradient();
-
-            // HP at 0%: Red. At 10%: Dark orange. At 40%: Yellow. At 100%: Green.
-            hpColorKey = new GradientColorKey[4];
-            hpColorKey[0] = new GradientColorKey(Color.red, 0f);
-            hpColorKey[1] = new GradientColorKey(new Color(1f, 0.55f, 0f), 0.1f); // Dark orange
-            hpColorKey[2] = new GradientColorKey(Color.yellow, 0.4f);
-            hpColorKey[3] = new GradientColorKey(Color.green, 1f);
-
-            // Alpha is always full.
-            hpAlphaKey = new GradientAlphaKey[2];
-            hpAlphaKey[0] = new GradientAlphaKey(1f, 0f);
-            hpAlphaKey[1] = new GradientAlphaKey(1f, 1f);
-            hpGradient.SetKeys(hpColorKey, hpAlphaKey);
-        }
-
-
-
-
-        public static void OpenWindow()
-        {
-            GetWindow<ListViewExample>().Show();
-        }
-
-
-
-
-        // ListView is kept for easy reference.
-        private ListView listView;
-
-        [Serializable]
-        public class CharacterInfo
-        {
-            public string name;
-            public int maxHp;
-            public int currentHp;
-        }
-        private List<CharacterInfo> items;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public void CreateGUI()
-        {
-            SetGradient();
-
-            // Create and populate the list of CharacterInfo objects.
-            const int itemCount = 50;
-            items = new List<CharacterInfo>(itemCount);
-
-            //단순히 데이터 보관용 컨테이너에 저장만 합니다...50번 반복합니다.
+            for (int i = 1; i <= itemCount; i++)
             {
-                for (int i = 1; i <= itemCount; i++)
-                {
-                    CharacterInfo character = new CharacterInfo { name = $"Character {i}", maxHp = 100 };
-                    character.currentHp = character.maxHp;
-                    items.Add(character);
-                }
+                CharacterInfo character = new CharacterInfo { name = $"Character {i}", maxHp = 100 };
+                character.currentHp = character.maxHp;
+                items.Add(character);
             }
+        }
 
-            // The ListView calls this to add visible items to the scroller.
-            Func<VisualElement> makeItem = () =>
+        // The ListView calls this to add visible items to the scroller.
+        Func<VisualElement> makeItem = () =>
+        {
+            var characterInfoVisualElement = new CharacterInfoVisualElement();
+            var slider = characterInfoVisualElement.Q<SliderInt>(name: "hp");
+            slider.RegisterValueChangedCallback(evt =>
             {
-                var characterInfoVisualElement = new CharacterInfoVisualElement();
-                var slider = characterInfoVisualElement.Q<SliderInt>(name: "hp");
-                slider.RegisterValueChangedCallback(evt =>
-                {
-                    var hpColor = characterInfoVisualElement.Q<VisualElement>("hpColor");
-                    var i = (int)slider.userData;
-                    var characterInfo = items[i];
-                    characterInfo.currentHp = evt.newValue;
-                    SetHp(slider, hpColor, characterInfo);
-                });
-                return characterInfoVisualElement;
+                var hpColor = characterInfoVisualElement.Q<VisualElement>("hpColor");
+                var i = (int)slider.userData;
+                var characterInfo = items[i];
+                characterInfo.currentHp = evt.newValue;
+                SetHp(slider, hpColor, characterInfo);
+            });
+            return characterInfoVisualElement;
+        };
+
+
+        // The ListView calls this if a new item becomes visible when the item first appears on the screen, 
+        // when a user scrolls, or when the dimensions of the scroller are changed.
+        Action<VisualElement, int> bindItem = (e, i) => BindItem(e as CharacterInfoVisualElement, i);
+
+        // Height used by the ListView to determine the total height of items in the list.
+        int itemHeight = 55;
+
+        // Use the constructor with initial values to create the ListView.
+        listView = new ListView(items, itemHeight, makeItem, bindItem);
+        listView.reorderable = false;
+        listView.style.flexGrow = 1f; // Fills the window, at least until the toggle below.
+        listView.showBorder = true;
+        rootVisualElement.Add(listView);
+
+        // Add a toggle to switch the reorderable property of the ListView.
+        var reorderToggle = new Toggle("Reorderable");
+        reorderToggle.style.marginTop = 10f;
+        reorderToggle.value = false;
+        reorderToggle.RegisterValueChangedCallback(evt => listView.reorderable = evt.newValue);
+        rootVisualElement.Add(reorderToggle);
+    }
+
+
+
+    // Bind the data (characterInfo) to the display (elem).
+    private void BindItem(CharacterInfoVisualElement elem, int i)
+    {
+        CharacterInfo characterInfo = items[i];
+
+        var label = elem.Q<Label>(name: "nameLabel");
+        label.text = characterInfo.name;
+
+        var slider = elem.Q<SliderInt>(name: "hp");
+        slider.userData = i;
+
+        var hpColor = elem.Q<VisualElement>("hpColor");
+        SetHp(slider, hpColor, characterInfo);
+    }
+
+    private void SetHp(SliderInt slider, VisualElement colorIndicator, CharacterInfo characterInfo)
+    {
+        slider.highValue = characterInfo.maxHp;
+        slider.SetValueWithoutNotify(characterInfo.currentHp);
+        float ratio = (float)characterInfo.currentHp / characterInfo.maxHp;
+        colorIndicator.style.backgroundColor = hpGradient.Evaluate(ratio);
+    }
+
+    // This class inherits from VisualElement to display and modify data to and from a CharacterInfo.
+    public class CharacterInfoVisualElement : VisualElement
+    {
+        // Use Constructor when the ListView uses makeItem and returns a VisualElement to be 
+        // bound to a CharacterInfo data class.
+        public CharacterInfoVisualElement()
+        {
+            var root = new VisualElement();
+
+            // The code below to style the ListView is for demo purpose. It's better to use a USS file
+            // to style a visual element. 
+            root.style.paddingTop = 3f;
+            root.style.paddingRight = 0f;
+            root.style.paddingBottom = 15f;
+            root.style.paddingLeft = 3f;
+            root.style.borderBottomColor = Color.gray;
+            root.style.borderBottomWidth = 1f;
+            var nameLabel = new Label() { name = "nameLabel" };
+            nameLabel.style.fontSize = 14f;
+            var hpContainer = new VisualElement();
+            hpContainer.style.flexDirection = FlexDirection.Row;
+            hpContainer.style.paddingLeft = 15f;
+            hpContainer.style.paddingRight = 15f;
+            hpContainer.Add(new Label("HP:"));
+            var hpSlider = new SliderInt { name = "hp", lowValue = 0, highValue = 100 };
+            hpSlider.style.flexGrow = 1f;
+            hpContainer.Add(hpSlider);
+            var hpColor = new VisualElement();
+            hpColor.name = "hpColor";
+            hpColor.style.height = 15f;
+            hpColor.style.width = 15f;
+            hpColor.style.marginRight = 5f;
+            hpColor.style.marginBottom = 5f;
+            hpColor.style.marginLeft = 5f;
+            hpColor.style.backgroundColor = Color.black;
+            hpContainer.Add(hpColor);
+            root.Add(nameLabel);
+            root.Add(hpContainer);
+            Add(root);
+        }
+    }
+} //-------------------
+//----------------------------------------------------
+public class SubEditorWindow_ConditionModify : HierarchycalWindow
+{
+    public class ConditionDataVisualElement : VisualElement
+    {
+        public ConditionDataVisualElement()
+        {
+            style.borderTopWidth = 3f;
+            style.borderLeftWidth = 3f;
+            style.borderRightWidth = 3f;
+            style.borderBottomWidth = 3f;
+
+            style.borderTopColor = Color.gray;
+            style.borderLeftColor = Color.gray;
+            style.borderRightColor = Color.gray;
+            style.borderBottomColor = Color.gray;
+
+            _objectField = new ObjectField()
+            {
+                name = "_conditionAsset",
+                objectType = typeof(ConditionAsset),
+                allowSceneObjects = false,
             };
+            Add(_objectField);
 
-
-            // The ListView calls this if a new item becomes visible when the item first appears on the screen, 
-            // when a user scrolls, or when the dimensions of the scroller are changed.
-            Action<VisualElement, int> bindItem = (e, i) => BindItem(e as CharacterInfoVisualElement, i);
-
-            // Height used by the ListView to determine the total height of items in the list.
-            int itemHeight = 55;
-
-            // Use the constructor with initial values to create the ListView.
-            listView = new ListView(items, itemHeight, makeItem, bindItem);
-            listView.reorderable = false;
-            listView.style.flexGrow = 1f; // Fills the window, at least until the toggle below.
-            listView.showBorder = true;
-            rootVisualElement.Add(listView);
-
-            // Add a toggle to switch the reorderable property of the ListView.
-            var reorderToggle = new Toggle("Reorderable");
-            reorderToggle.style.marginTop = 10f;
-            reorderToggle.value = false;
-            reorderToggle.RegisterValueChangedCallback(evt => listView.reorderable = evt.newValue);
-            rootVisualElement.Add(reorderToggle);
-        }
-
-
-
-        // Bind the data (characterInfo) to the display (elem).
-        private void BindItem(CharacterInfoVisualElement elem, int i)
-        {
-            CharacterInfo characterInfo = items[i];
-
-            var label = elem.Q<Label>(name: "nameLabel");
-            label.text = characterInfo.name;
-
-            var slider = elem.Q<SliderInt>(name: "hp");
-            slider.userData = i;
-
-            var hpColor = elem.Q<VisualElement>("hpColor");
-            SetHp(slider, hpColor, characterInfo);
-        }
-
-        private void SetHp(SliderInt slider, VisualElement colorIndicator, CharacterInfo characterInfo)
-        {
-            slider.highValue = characterInfo.maxHp;
-            slider.SetValueWithoutNotify(characterInfo.currentHp);
-            float ratio = (float)characterInfo.currentHp / characterInfo.maxHp;
-            colorIndicator.style.backgroundColor = hpGradient.Evaluate(ratio);
-        }
-
-        // This class inherits from VisualElement to display and modify data to and from a CharacterInfo.
-        public class CharacterInfoVisualElement : VisualElement
-        {
-            // Use Constructor when the ListView uses makeItem and returns a VisualElement to be 
-            // bound to a CharacterInfo data class.
-            public CharacterInfoVisualElement()
+            VisualElement goalToggleContainer = new VisualElement()
             {
-                var root = new VisualElement();
-
-                // The code below to style the ListView is for demo purpose. It's better to use a USS file
-                // to style a visual element. 
-                root.style.paddingTop = 3f;
-                root.style.paddingRight = 0f;
-                root.style.paddingBottom = 15f;
-                root.style.paddingLeft = 3f;
-                root.style.borderBottomColor = Color.gray;
-                root.style.borderBottomWidth = 1f;
-                var nameLabel = new Label() { name = "nameLabel" };
-                nameLabel.style.fontSize = 14f;
-                var hpContainer = new VisualElement();
-                hpContainer.style.flexDirection = FlexDirection.Row;
-                hpContainer.style.paddingLeft = 15f;
-                hpContainer.style.paddingRight = 15f;
-                hpContainer.Add(new Label("HP:"));
-                var hpSlider = new SliderInt { name = "hp", lowValue = 0, highValue = 100 };
-                hpSlider.style.flexGrow = 1f;
-                hpContainer.Add(hpSlider);
-                var hpColor = new VisualElement();
-                hpColor.name = "hpColor";
-                hpColor.style.height = 15f;
-                hpColor.style.width = 15f;
-                hpColor.style.marginRight = 5f;
-                hpColor.style.marginBottom = 5f;
-                hpColor.style.marginLeft = 5f;
-                hpColor.style.backgroundColor = Color.black;
-                hpContainer.Add(hpColor);
-                root.Add(nameLabel);
-                root.Add(hpContainer);
-                Add(root);
-            }
-        }
-
-
-    } //-------------------
-    //----------------------------------------------------
-    public class SubEditorWindow_ConditionModify : HierarchycalWindow
-    {
-        public class ConditionDataVisualElement : VisualElement
-        {
-            public ConditionDataVisualElement() 
-            {
-                style.borderTopWidth = 3f;
-                style.borderLeftWidth = 3f;
-                style.borderRightWidth = 3f;
-                style.borderBottomWidth = 3f;
-
-                style.borderTopColor = Color.gray;
-                style.borderLeftColor = Color.gray;
-                style.borderRightColor = Color.gray;
-                style.borderBottomColor = Color.gray;
-
-                _objectField = new ObjectField()
-                {
-                    name = "_conditionAsset",
-                    objectType = typeof(ConditionAsset),
-                    allowSceneObjects = false,
-                };
-                Add(_objectField);
-
-                VisualElement goalToggleContainer = new VisualElement()
-                {
-                    style =
+                style =
                     {
                         flexDirection = FlexDirection.Row,
                         flexGrow = 1,
                     }
-                };
-                Add(goalToggleContainer);
+            };
+            Add(goalToggleContainer);
 
-                Label goalToggleName = new Label("Goal : ")
-                {
-                    style =
+            Label goalToggleName = new Label("Goal : ")
+            {
+                style =
                     {
                         alignContent = Align.Center,
                     },
 
-                    name = "_nameLabel_goal",
-                };
-                goalToggleContainer.Add(goalToggleName);
+                name = "_nameLabel_goal",
+            };
+            goalToggleContainer.Add(goalToggleName);
 
-                _goalToggle = new Toggle()
-                {
-                    style =
+            _goalToggle = new Toggle()
+            {
+                style =
                     {
                         alignContent = Align.Center,
                     },
 
-                    name = "_goal",
-                    value = false,
-                };
-                goalToggleContainer.Add(_goalToggle);
-            }
-
-            private ObjectField _objectField = null;
-            private Toggle _goalToggle = null;
+                name = "_goal",
+                value = false,
+            };
+            goalToggleContainer.Add(_goalToggle);
         }
 
-        private ListView _conditionDataListView = null;
-        private VisualElement _buttons = null;
-        private List<ConditionDataWrapper> _conditionData = null;
-        private Arrow_Ready _arrow_ready = null;
+        private ObjectField _objectField = null;
+        private Toggle _goalToggle = null;
+    }
 
-        private void OnDisable()
+    private ListView _conditionDataListView = null;
+    private VisualElement _buttons = null;
+    private List<ConditionDataWrapper> _conditionData = null;
+    private IConditionExist _hasConditionElement = null;
+
+    private void OnDisable()
+    {
+        _hasConditionElement?.WindowOff();
+    }
+
+    public void Init(List<ConditionDataWrapper> dataTarget, IConditionExist canHaveCondition)
+    {
+        //데이터 설정
         {
-            _arrow_ready?.WindowOff();
+            _conditionData = dataTarget;
+            _hasConditionElement = canHaveCondition;
         }
 
-        public void Init(List<ConditionDataWrapper> dataTarget, Arrow_Ready fromArrow)
+
+        //제목 및 배경 설정
         {
-            //데이터 설정
-            {
-                _conditionData = dataTarget;
-                _arrow_ready = fromArrow;
-            }
-            
+            Label label = new Label("ConditionModifier");
+            AddElement(Layer.Layer_BackGround, label);
 
-            //제목 및 배경 설정
+            VisualElement rootElementBackGroud = new VisualElement()
             {
-                Label label = new Label("ConditionModifier");
-                AddElement(Layer.Layer_BackGround, label);
-
-                VisualElement rootElementBackGroud = new VisualElement()
-                {
-                    style =
+                style =
                     {
                         flexGrow = 1,
                         backgroundColor = Color.clear,
                         position = Position.Absolute,
                     }
 
-                };
+            };
 
-                rootElementBackGroud.pickingMode = PickingMode.Ignore;
-                AddElement(Layer.Layer_BackGround, rootElementBackGroud);
-            }
+            rootElementBackGroud.pickingMode = PickingMode.Ignore;
+            AddElement(Layer.Layer_BackGround, rootElementBackGroud);
+        }
 
-            //리스트 뷰 세팅
+        //리스트 뷰 세팅
+        {
+            _conditionDataListView = new ListView();
+
+            _conditionDataListView.itemsSource = _conditionData;
+
+            Func<ConditionDataVisualElement> createListElelemt = () =>
             {
-                _conditionDataListView = new ListView();
-
-                _conditionDataListView.itemsSource = _conditionData;
-
-                Func<ConditionDataVisualElement> createListElelemt = () =>
-                {
-                    ConditionDataVisualElement newElement = new ConditionDataVisualElement();
-                    return newElement;
-                };
-                _conditionDataListView.makeItem = createListElelemt;
+                ConditionDataVisualElement newElement = new ConditionDataVisualElement();
+                return newElement;
+            };
+            _conditionDataListView.makeItem = createListElelemt;
 
 
-                Action<VisualElement, int> dataChanged = (VisualElement element, int index) =>
-                {
-                    ConditionDataWrapper target = _conditionData[index];
-                    if (index >= _conditionData.Count)
-                    {
-                        Debug.Assert(false, "데이터 개수를 넘은 인덱스? 심각하다");
-                        Debug.Break();
-                        return;
-                    }
-                    if (index < 0)
-                    {
-                        Debug.Assert(false, "음수의 인덱스? 심각하다");
-                        Debug.Break();
-                        return;
-                    }
-
-                    ConditionDataVisualElement casted = (ConditionDataVisualElement)element;
-
-                    ObjectField conditionAssetField = casted.Q<ObjectField>("_conditionAsset");
-                    if (conditionAssetField == null)
-                    {
-                        Debug.Assert(false, "conditionAssetField 없다고?");
-                        Debug.Break();
-                        return;
-                    }
-                    target._conditionAsset = (ConditionAsset)conditionAssetField.value;
-
-                    Toggle goalField = casted.Q<Toggle>("_goal");
-                    if (goalField == null)
-                    {
-                        Debug.Assert(false, "goalField 없다고?");
-                        Debug.Break();
-                        return;
-                    }
-                    target._goal = goalField.value;
-                };
-
-                _conditionDataListView.bindItem = dataChanged;
-                _conditionDataListView.fixedItemHeight = 50;
-                _conditionDataListView.reorderable = true;
-                _conditionDataListView.showBorder = true;
-
-                AddElement(Layer.Layer_Object_One, _conditionDataListView);
-            }
-
-            //버튼들
+            Action<VisualElement, int> dataChanged = (VisualElement element, int index) =>
             {
-                _buttons = new VisualElement()
+                ConditionDataWrapper target = _conditionData[index];
+                if (index >= _conditionData.Count)
                 {
-                    style =
+                    Debug.Assert(false, "데이터 개수를 넘은 인덱스? 심각하다");
+                    Debug.Break();
+                    return;
+                }
+                if (index < 0)
+                {
+                    Debug.Assert(false, "음수의 인덱스? 심각하다");
+                    Debug.Break();
+                    return;
+                }
+
+                ConditionDataVisualElement casted = (ConditionDataVisualElement)element;
+
+                ObjectField conditionAssetField = casted.Q<ObjectField>("_conditionAsset");
+                if (conditionAssetField == null)
+                {
+                    Debug.Assert(false, "conditionAssetField 없다고?");
+                    Debug.Break();
+                    return;
+                }
+                target._conditionAsset = (ConditionAsset)conditionAssetField.value;
+
+                Toggle goalField = casted.Q<Toggle>("_goal");
+                if (goalField == null)
+                {
+                    Debug.Assert(false, "goalField 없다고?");
+                    Debug.Break();
+                    return;
+                }
+                target._goal = goalField.value;
+            };
+
+            _conditionDataListView.bindItem = dataChanged;
+            _conditionDataListView.fixedItemHeight = 50;
+            _conditionDataListView.reorderable = true;
+            _conditionDataListView.showBorder = true;
+
+            AddElement(Layer.Layer_Object_One, _conditionDataListView);
+        }
+
+        //버튼들
+        {
+            _buttons = new VisualElement()
+            {
+                style =
                     {
                         flexDirection = FlexDirection.Row,
                         height = 50,
                         width = 100,
                     }
-                };
-                AddElement(Layer.Layer_Object_Two, _buttons);
+            };
+            AddElement(Layer.Layer_Object_Two, _buttons);
 
-                Action plusButtonClickAction = () =>
-                {
-                    _conditionData.Add(new ConditionDataWrapper());
-                    RefreshUI();
-                };
-                Button plusButton = new Button(plusButtonClickAction)
-                {
-                    style =
+            Action plusButtonClickAction = () =>
+            {
+                _conditionData.Add(new ConditionDataWrapper());
+                RefreshUI();
+            };
+            Button plusButton = new Button(plusButtonClickAction)
+            {
+                style =
                     {
                         width = 40,
                         height = 40,
                     },
-                    text = "+",
-                };
-                _buttons.Add(plusButton);
+                text = "+",
+            };
+            _buttons.Add(plusButton);
 
 
-                Action minusButtonClickAction = () =>
+            Action minusButtonClickAction = () =>
+            {
+                if (_conditionData.Count <= 0)
                 {
-                    if (_conditionData.Count <= 0)
-                    {
-                        return;
-                    }
-                    _conditionData.RemoveAt(_conditionData.Count - 1);
-                    RefreshUI();
-                };
-                Button minusButton = new Button(minusButtonClickAction)
-                {
-                    style =
+                    return;
+                }
+                _conditionData.RemoveAt(_conditionData.Count - 1);
+                RefreshUI();
+            };
+            Button minusButton = new Button(minusButtonClickAction)
+            {
+                style =
                     {
                         width = 40,
                         height = 40,
                     },
-                    text = "-",
-                };
-                _buttons.Add(minusButton);
-            }
+                text = "-",
+            };
+            _buttons.Add(minusButton);
         }
+    }
 
-        private void RefreshUI()
+    private void RefreshUI()
+    {
+        _conditionDataListView.Rebuild();
+    }
+}//----
+//----------------------------------------------------
+
+
+
+/*--------------------------------------------------
+|NOTI| 드래그 완료된, 준비된 화살표
+--------------------------------------------------*/
+#region Arrow_Ready
+public class Arrow_Ready : MyVisualElement, IConditionExist
+{
+    private bool _isWindowShow = false;
+    private EditorWindow _conditionModifierWindow = null;
+    public List<ConditionDataWrapper> GetCondition()
+    {
+        return _conditionData;
+    }
+
+    public void WindowOff()
+    {
+        _isWindowShow = false;
+    }
+
+    public void TurnOnConditionModifyWindow(EditorWindow window)
+    {
+        _isWindowShow = true;
+        _conditionModifierWindow = window;
+    }
+
+    public void OnDetach_ConditionModifyWindow()
+    {
+        if (_isWindowShow == true)
         {
-            _conditionDataListView.Rebuild();
+            _conditionModifierWindow.Close();
         }
-    }//----
-    //----------------------------------------------------
-
-
-
+    }
 
 
     public Arrow_Ready(VisualElement root, GraphEditorWithUIToolkit window, StateNode fromNode, StateNode toNode) : base(root, window)
@@ -1737,12 +1992,12 @@ public class Arrow_Ready : MyVisualElement
     }
 
 
-    private bool _isWindowShow = false;
     private StateNode _fromNode = null;
     private StateNode _toNode = null;
     private Arrow_Head _arrowHead = null;
     private List<ConditionDataWrapper> _conditionData = new List<ConditionDataWrapper>();
-    private EditorWindow _conditionModifierWindow = null;
+    public List<ConditionDataWrapper> _ConditionDatas => _conditionData;
+
 
 
     /*----------------------------------------------------
@@ -1778,10 +2033,6 @@ public class Arrow_Ready : MyVisualElement
 
 
 
-    public void WindowOff()
-    {
-        _isWindowShow = false;
-    }
 
     private void OnMouseDown_ModifyCondition(MouseDownEvent mouseDownEvent)
     {
@@ -1796,18 +2047,14 @@ public class Arrow_Ready : MyVisualElement
         window.Show();
         window.Init(_conditionData, this);
 
-        _isWindowShow = true;
-        _conditionModifierWindow = window;
+        TurnOnConditionModifyWindow(window);
     }
 
     private void OnDetach(DetachFromPanelEvent detachEvent)
     {
         _actions = null;
 
-        if (_isWindowShow == true)
-        {
-            _conditionModifierWindow.Close();
-        }
+        OnDetach_ConditionModifyWindow();
 
         if (_arrowHead != null)
         {

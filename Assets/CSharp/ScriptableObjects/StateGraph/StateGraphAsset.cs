@@ -1,14 +1,34 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
-using static StateContoller;
 
 [CreateAssetMenu(fileName = "StateGraphAsset", menuName = "Scriptable Object/CreateStateGraphAsset", order = int.MinValue)]
 public class StateGraphAsset : ScriptableObject
 {
+    public static StateGraphAsset Create(HashSet<StateNode> data)
+    {
+        /*--------------------------------------------------
+        |NOTI| graph tool 에서 data를 주면 만들어서 반환합니다
+        --------------------------------------------------*/
+
+        StateGraphAsset newStateGraph = new StateGraphAsset();
+        newStateGraph.InitData(data);
+        return newStateGraph;
+    }
+
+    private void InitData(HashSet<StateNode> data)
+    {
+        /*--------------------------------------------------
+        |NOTI| 순회하고 데이터 만드는 작업은 클래스 본인이 직접?
+        --------------------------------------------------*/
+
+        foreach (StateNode stateNode in data) 
+        {
+            IReadOnlyDictionary<StateNode, Arrow_Ready> toStateNodes = stateNode._ToStateNodes;
+            //IReadOnlyDictionary<StateNode, Arrow_Ready> fromStateNodes = stateNode._FromStateNodes;
+        }
+    }
+
     /*---------------------------------------------------
     |TODO| 어느정도 몬스터 완료되면 그래프 툴 만들어서 하나의
     그래프로 펼쳐놓고 작업하는게 좋을듯
@@ -30,7 +50,6 @@ public class StateGraphAsset : ScriptableObject
     };
 
 
-
     [Serializable]
     public class ConditionAssetWrapper
     {
@@ -38,7 +57,9 @@ public class StateGraphAsset : ScriptableObject
         public bool _goal = false;
     }
 
-    [Serializable] public class LinkedStateAsset
+
+    [Serializable]
+    public class LinkedStateAsset
     {
         public LinkedStateAsset(StateAsset stateAsset, List<ConditionAssetWrapper> conditionAssetsWrapper)
         {
@@ -50,7 +71,9 @@ public class StateGraphAsset : ScriptableObject
         public List<ConditionAssetWrapper> _conditionAsset = new List<ConditionAssetWrapper>();
     }
 
-    [Serializable] public class StateAssetWrapper
+
+    [Serializable]
+    public class StateAssetWrapper
     {
         public bool _isEntryState = false;
         public StateAsset _stateAsset = null;
@@ -58,7 +81,9 @@ public class StateGraphAsset : ScriptableObject
         public List<LinkedStateAsset> _linkedStates = new List<LinkedStateAsset>();
     }
 
-    [Serializable] public class InteractionPoint
+
+    [Serializable]
+    public class InteractionPoint
     {
         public StateGraphType _anotherType = StateGraphType.End;
         public List<LinkedStateAsset> _interactionStates = new List<LinkedStateAsset>();
