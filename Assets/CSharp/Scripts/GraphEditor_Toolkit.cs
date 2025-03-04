@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.PackageManager.UI;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using static GraphEditorWithUIToolkit.GraphEditorBackGroundElement;
 
 public enum Direction_2D
 {
@@ -48,6 +51,8 @@ public class HierarchycalWindow : EditorWindow
 }
 
 
+
+
 public class GraphEditorWithUIToolkit : HierarchycalWindow
 {
     [MenuItem("Window/Graph Editor UIToolkit")]
@@ -57,34 +62,234 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
         window.titleContent = new GUIContent("Graph Editor UIToolkit");
     }
 
+
+    public class GraphEditorBackGroundElement : MyVisualElement
+    {
+        public class IOWindowBase : HierarchycalWindow
+        {
+            public IOWindowBase()
+            {
+                minSize = new Vector2(500.0f, 300.0f);
+                maxSize = new Vector2(500.0f, 300.0f);
+            }
+        }
+
+        public class SavingWindow : IOWindowBase
+        {
+            public static void OpenWindow()
+            {
+                SavingWindow window = GetWindow<SavingWindow>();
+                window.titleContent = new GUIContent("Save...");
+            }
+
+            private void CreateGUI()
+            {
+                //ë¹„ì¥¬ì–¼ ì»¨í…Œì´ë„ˆ ë¬¶ìŒ ìƒì„±
+                {
+                    VisualElement backGround = new VisualElement()
+                    {
+                        style =
+                        {
+                            flexGrow = 1,
+                        }
+                    };
+                    rootVisualElement.Add(backGround);
+
+
+                    VisualElement saveUIContainer = new VisualElement()
+                    {
+                        style =
+                        {
+                            borderLeftWidth = 2.0f,
+                            borderTopWidth = 2.0f,
+                            borderRightWidth = 2.0f,
+                            borderBottomWidth = 2.0f,
+
+                            borderLeftColor = Color.gray,
+                            borderTopColor = Color.gray,
+                            borderRightColor = Color.gray,
+                            borderBottomColor = Color.gray,
+
+                            flexGrow = 1,
+                            marginLeft = 30.0f,
+                            marginRight = 30.0f,
+                            marginBottom = 30.0f,
+                            marginTop = 30.0f,
+                        }
+                    };
+                    backGround.Add(saveUIContainer);
+
+
+                    VisualElement nameContaioner = new VisualElement()
+                    {
+                        style = 
+                        {
+                            flexDirection = FlexDirection.Row,
+                        }
+                    };
+                    saveUIContainer.Add(nameContaioner);
+
+                    Label nameLabel = new Label("File Name : ");
+                    nameContaioner.Add(nameLabel);
+
+                    TextField nameInputField = new TextField()
+                    {
+                        style =
+                        {
+                            flexDirection = FlexDirection.Row,
+                            flexShrink = 1,
+                        }
+                    };
+                    nameInputField.value = _basicName;
+                    nameContaioner.Add(nameInputField);
+
+                    Action saveButtonClicked = () => { };
+
+                    Button saveButton = new Button(saveButtonClicked)
+                    {
+                        text = "Save",
+                        style =
+                        {
+                            flexGrow = 1,
+                        }
+                    };
+                    saveUIContainer.Add(saveButton);
+                }
+            }
+
+            private string _basicName = "StateGraph_";
+        }
+
+        public class LoadingWindow : IOWindowBase
+        {
+            public static void OpenWindow()
+            {
+                LoadingWindow window = GetWindow<LoadingWindow>();
+                window.titleContent = new GUIContent("Load...");
+            }
+
+            private void CreateGUI()
+            {
+                //ë¹„ì¥¬ì–¼ ì»¨í…Œì´ë„ˆ ë¬¶ìŒ ìƒì„±
+                {
+                    VisualElement backGround = new VisualElement()
+                    {
+                        style =
+                        {
+                            flexGrow = 1,
+                        }
+                    };
+                    rootVisualElement.Add(backGround);
+
+
+                    VisualElement loadUIContainer = new VisualElement()
+                    {
+                        style =
+                        {
+                            borderLeftWidth = 2.0f,
+                            borderTopWidth = 2.0f,
+                            borderRightWidth = 2.0f,
+                            borderBottomWidth = 2.0f,
+
+                            borderLeftColor = Color.gray,
+                            borderTopColor = Color.gray,
+                            borderRightColor = Color.gray,
+                            borderBottomColor = Color.gray,
+
+                            flexGrow = 1,
+
+                            marginLeft = 30.0f,
+                            marginRight = 30.0f,
+                            marginBottom = 30.0f,
+                            marginTop = 30.0f,
+                        }
+                    };
+                    backGround.Add(loadUIContainer);
+
+
+                    _objectField = new ObjectField()
+                    {
+                        style =
+                        {
+                            flexDirection = FlexDirection.Row,
+                        },
+                        objectType = typeof(StateAsset),
+                        allowSceneObjects = false,
+                    };
+
+                    loadUIContainer.Add(_objectField);
+
+                    Action loadButtonClicked = () => { };
+
+                    Button loadButton = new Button(loadButtonClicked)
+                    {
+                        text = "Load",
+                        style =
+                        {
+                            flexGrow = 1,
+                        }
+                    };
+                    loadUIContainer.Add(loadButton);
+                }
+            }
+
+            private ObjectField _objectField = null;
+        }
+
+        public GraphEditorBackGroundElement(VisualElement root, GraphEditorWithUIToolkit window) : base(root, window)
+        {
+            style.flexGrow = 1;
+            style.backgroundColor = Color.clear;
+
+            this.AddManipulator(new ContextualMenuManipulator(menuEvent =>
+            {
+                menuEvent.menu.AppendAction("Create StateNode", _ => CreateStateNode(menuEvent.originalMousePosition));
+                menuEvent.menu.AppendAction("Save_StateGraph", _ => SaveStateGraph());
+                menuEvent.menu.AppendAction("Load_StateGraph", _ => LoadStateGraph());
+            }));
+
+            RegisterCallback<MouseDownEvent>(OnMouseDown);
+
+            window.AddElement(Layer.Layer_BackGround, this);
+        }
+
+        private Vector2 _lastMousePosition = Vector2.zero;
+
+        private void OnMouseDown(MouseDownEvent mouseDownEvent)
+        {
+            _lastMousePosition = mouseDownEvent.mousePosition;
+        }
+
+        private void CreateStateNode(Vector2 mousePosition)
+        {
+            StateNode node = new StateNode(_root, _window, _lastMousePosition);
+            _window.AddElement(Layer.Layer_Object_One, node);
+        }
+        private void SaveStateGraph() 
+        {
+            SavingWindow.OpenWindow();
+        }
+        private void LoadStateGraph() 
+        {
+            LoadingWindow.OpenWindow();
+        }
+    }
+
     public void CreateGUI()
     {
         Label label = new Label("StateGraphTool");
         AddElement(Layer.Layer_BackGround, label);
 
-        VisualElement rootElementBackGroud = new VisualElement()
-        {
-            style =
-            {
-                flexGrow = 1,
-                backgroundColor = Color.clear,
-            }
-        };
-        AddElement(Layer.Layer_BackGround, rootElementBackGroud);
-
+        new GraphEditorBackGroundElement(rootVisualElement, this);
 
         for (int i = 0; i < 3; i++)
         {
-            StateNode node = new StateNode(rootVisualElement, this);
+            StateNode node = new StateNode(rootVisualElement, this, Vector2.zero);
             AddElement(Layer.Layer_Object_One, node);
         }
-
-        //for (int i = 0; i < 1; i++)
-        //{
-        //    TestNode node = new TestNode(rootVisualElement, this);
-        //    rootVisualElement.Add(node);
-        //}
     }
+
+
 
     public void RaycastElement(Vector2 position, MyVisualElement caller)
     {
@@ -102,6 +307,11 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
 }
 
 
+
+
+
+
+
 public class LinkedStateNodeDesc
 {
     public LinkedStateNodeDesc(StateNode target, Arrow_Ready arrow)
@@ -112,6 +322,10 @@ public class LinkedStateNodeDesc
     public StateNode _target = null;
     public Arrow_Ready _arrow = null;
 }
+
+
+
+
 
 
 
@@ -320,22 +534,22 @@ public class MyVisualElement : VisualElement
 
         
 
-        // 1. EditorWindowÀÇ position Á¤º¸ °¡Á®¿À±â
+        // 1. EditorWindowì˜ position ì •ë³´ ê°€ì ¸ì˜¤ê¸°
         Rect windowRect = _window.position;
 
-        // 2. ÇöÀç EditorWindow ³»¿¡¼­ÀÇ »ó´ë ÁÂÇ¥·Î º¯È¯
+        // 2. í˜„ì¬ EditorWindow ë‚´ì—ì„œì˜ ìƒëŒ€ ì¢Œí‘œë¡œ ë³€í™˜
         float xInWindow = position.x - windowRect.x;
         float yInWindow = position.y - windowRect.y;
 
-        // 3. UI ToolkitÀÇ worldBound¸¦ ±âÁØÀ¸·Î ÁÂÇ¥ º¯È¯
+        // 3. UI Toolkitì˜ worldBoundë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì¢Œí‘œ ë³€í™˜
         Rect worldBounds = _root.worldBound;
 
-        // 4. DPI ½ºÄÉÀÏ Àû¿ë (Editor ½ºÄÉÀÏ ¿µÇâ º¸Á¤)
+        // 4. DPI ìŠ¤ì¼€ì¼ ì ìš© (Editor ìŠ¤ì¼€ì¼ ì˜í–¥ ë³´ì •)
         float scale = EditorGUIUtility.pixelsPerPoint;
         xInWindow /= scale;
         yInWindow /= scale;
 
-        // 5. UI ToolkitÀÇ ÁÂÇ¥°è·Î º¯È¯ (YÃà µÚÁı±â)
+        // 5. UI Toolkitì˜ ì¢Œí‘œê³„ë¡œ ë³€í™˜ (Yì¶• ë’¤ì§‘ê¸°)
         float uiX = xInWindow - worldBounds.xMin;
         float uiY = worldBounds.yMax - yInWindow;
 
@@ -370,6 +584,9 @@ public class MyVisualElement : VisualElement
 
 }
 #endregion MyVisualElement
+
+
+
 
 
 #region Move_Extension
@@ -689,10 +906,13 @@ public class TestNode : MyVisualElement
 
 
 
+
+
+
 #region StateNode
 public class StateNode : MyVisualElement
 {
-    public StateNode(VisualElement root, GraphEditorWithUIToolkit window) : base(root, window)
+    public StateNode(VisualElement root, GraphEditorWithUIToolkit window, Vector3 position) : base(root, window)
     {
         //style.backgroundColor = new Color(0.2f, 0.2f, 0.2f);
         style.backgroundColor = Color.white;
@@ -701,13 +921,10 @@ public class StateNode : MyVisualElement
         style.height = 100;
 
         /*------------------------------------------------------
-        |NOTI| ÀÌ°Ô Rel °ªÀÌ¸é ÇÏ³ª°¡ º¯°æµÉ¶§ ´Ù¸¥°Íµµ º¯°æµÇ³×¿ä??
+        |NOTI| ì´ê²Œ Rel ê°’ì´ë©´ í•˜ë‚˜ê°€ ë³€ê²½ë ë•Œ ë‹¤ë¥¸ê²ƒë„ ë³€ê²½ë˜ë„¤ìš”??
         ------------------------------------------------------*/
         style.position = Position.Absolute; //------------------
         //------------------------------------------------------
-
-
-
 
         int border = 4;
 
@@ -729,7 +946,7 @@ public class StateNode : MyVisualElement
         this.AddManipulator(new ContextualMenuManipulator(menuEvent =>
         {
             menuEvent.menu.AppendAction("Link Node", _ => LinkNode(this, menuEvent.mousePosition));
-            menuEvent.menu.AppendAction("Something Menu1", _ => Menu_Somthing1());
+            menuEvent.menu.AppendAction("Delete Node", _ => DeleteMe());
             menuEvent.menu.AppendAction("Something Menu2", _ => Menu_Somthing2());
         }));
 
@@ -744,9 +961,6 @@ public class StateNode : MyVisualElement
         };
         Add(objectFieldSet);
 
-        //Label objectFieldLabel = new Label("StateAsset :");
-        //objectFieldSet.Add(objectFieldLabel);
-
         _objectField = new ObjectField()
         {
             objectType = typeof(StateAsset),
@@ -760,32 +974,30 @@ public class StateNode : MyVisualElement
         
         objectFieldSet.Add(_objectField);
 
-        _id++;
 
 
         RegisterCallback<MouseDownEvent>(OnMouseDown_Move);
         RegisterCallback<MouseUpEvent>(OnMouseUp_Move);
         RegisterCallback<DetachFromPanelEvent>(OnDetach);
+
+        MoveTo(position);
+        _id++;
     }
 
 
-    private void OnDetach(DetachFromPanelEvent detachEvent)
-    {
-        if (_rayCastReady == true)
-        {
-            UnRegister_AbsCallBack(OnMouseDown_RayCast);
-        }
-    }
+
 
 
     public static int _id = 0;
 
-    private HashSet<LinkedStateNodeDesc> _toStateNodes = new HashSet<LinkedStateNodeDesc>();
-    private HashSet<LinkedStateNodeDesc> _fromStateNodes = new HashSet<LinkedStateNodeDesc>();
+    private Dictionary<StateNode, Arrow_Ready> _toStateNodes = new Dictionary<StateNode, Arrow_Ready>();
+    private Dictionary<StateNode, Arrow_Ready> _fromStateNodes = new Dictionary<StateNode, Arrow_Ready>();
 
     public ObjectField _objectField = null;
     private Arrow_NotReady _arrow_NotReady = null;
+    
     private bool _rayCastReady = false;
+
 
     private bool _trigger_move = false;
 
@@ -804,14 +1016,43 @@ public class StateNode : MyVisualElement
         this.Default_OnMouseDown_MoveEx(ref _trigger_move);
         RegisterCallback<MouseMoveEvent>(OnMouseMove_Move);
     }
+
     private void OnMouseMove_Move(MouseMoveEvent mouseMoveEvent)
     {
         this.Default_OnMouseMove_MoveEx(mouseMoveEvent, ref _trigger_move);
     }
+
     private void OnMouseUp_Move(MouseUpEvent mouseUpEvent)
     {
         this.Default_OnMouseUp_MoveEx(ref _trigger_move);
         UnregisterCallback<MouseMoveEvent>(OnMouseMove_Move);
+    }
+
+    private void OnDetach(DetachFromPanelEvent detachEvent)
+    {
+        if (_rayCastReady == true)
+        {
+            UnRegister_AbsCallBack(OnMouseDown_RayCast);
+        }
+
+        //ë‚´ê°€ ê°ˆ ìˆ˜ ìˆëŠ” ë…¸ë“œë“¤ì˜ Arrowë“¤ ì‚­ì œ
+        {
+            foreach (KeyValuePair<StateNode, Arrow_Ready> pair in _toStateNodes)
+            {
+                pair.Key.DeleteFriendNode_From(this);
+
+            }
+            _toStateNodes.Clear();
+        }
+
+        //ë‚˜ì—ê²Œë¡œ ì˜¬ ìˆ˜ ìˆëŠ” ë…¸ë“œë“¤ì˜ Arrowë“¤ ì‚­ì œ
+        {
+            foreach (KeyValuePair<StateNode, Arrow_Ready> pair in _fromStateNodes)
+            {
+                pair.Key.DeleteFriendNode_To(this);
+            }
+            _toStateNodes.Clear();
+        }
     }
 
     public override void DoRayCast(Vector2 position, MyVisualElement caller)
@@ -834,7 +1075,7 @@ public class StateNode : MyVisualElement
     {
         if (_arrow_NotReady != null)
         {
-            Debug.Assert(false, "¾Æ±î ¸µÅ·ÁßÀÌ¿³³ª¿ä? ÀÛ¾÷ÀÌ ¿Ï·áµÇÁö ¾Ê¾Ò³ª¿ä? nullÀÌ ¾Æ´Ï³×¿ä?");
+            Debug.Assert(false, "ì•„ê¹Œ ë§í‚¹ì¤‘ì´ì—¿ë‚˜ìš”? ì‘ì—…ì´ ì™„ë£Œë˜ì§€ ì•Šì•˜ë‚˜ìš”? nullì´ ì•„ë‹ˆë„¤ìš”?");
             Debug.Break();
         }
 
@@ -843,21 +1084,63 @@ public class StateNode : MyVisualElement
         Register_AbsCallBack(OnMouseDown_RayCast);
     }
 
+    
+
 
 
     public void LinkingNode_From(StateNode from, Arrow_Ready arrow)
     {
-        LinkedStateNodeDesc newLinked = new LinkedStateNodeDesc(from, arrow);
-        _fromStateNodes.Add(newLinked);
+        //LinkedStateNodeDesc newLinked = new LinkedStateNodeDesc(from, arrow);
+        _fromStateNodes.Add(from, arrow);
     }
 
     public void LinkingNode_To(StateNode to, Arrow_Ready arrow)
     {
         LinkedStateNodeDesc newLinked = new LinkedStateNodeDesc(to, arrow);
-        _toStateNodes.Add(newLinked);
+        _toStateNodes.Add(to, arrow);
     }
 
-    void Menu_Somthing1() {}
+
+    void DeleteMe() 
+    {
+        _root.Remove(this);
+    }
+
+
+    private void DeleteFriendNode_From(StateNode stateNode)
+    {
+        Arrow_Ready deleteArrow = null;
+        _fromStateNodes.TryGetValue(stateNode, out deleteArrow);
+
+        if (deleteArrow == null)
+        {
+            Debug.Assert(false, "ì‚­ì œí• ê±´ë° ì—†ë‹¤ê³ ?");
+            Debug.Break();
+            return;
+        }
+
+        _root.Remove(deleteArrow);
+
+        _fromStateNodes.Remove(stateNode);
+    }
+
+    private void DeleteFriendNode_To(StateNode stateNode)
+    {
+        Arrow_Ready deleteArrow = null;
+        _toStateNodes.TryGetValue(stateNode, out deleteArrow);
+
+        if (deleteArrow == null)
+        {
+            Debug.Assert(false, "ì‚­ì œí• ê±´ë° ì—†ë‹¤ê³ ?");
+            Debug.Break();
+            return;
+        }
+
+        _root.Remove(deleteArrow);
+
+        _toStateNodes.Remove(stateNode);
+    }
+
     void Menu_Somthing2() {}
 }
 #endregion StateNode
@@ -872,19 +1155,19 @@ public class Arrow_Head : MyVisualElement
     {
         style.width = 0;
         style.height = 0;
-        style.position = Position.Absolute; // ¿øÇÏ´Â À§Ä¡ ¼³Á¤
+        style.position = Position.Absolute; // ì›í•˜ëŠ” ìœ„ì¹˜ ì„¤ì •
 
         /*----------------------------------------------------
-        |TODO| »ï°¢Çü È¸ÀüÀÌ ÀÌ»óÇØ¿ä
+        |TODO| ì‚¼ê°í˜• íšŒì „ì´ ì´ìƒí•´ìš”
         ----------------------------------------------------*/
 
-        style.borderLeftWidth = 10;  // ¿ŞÂÊ »ï°¢Çü
-        style.borderRightWidth = 10; // ¿À¸¥ÂÊ »ï°¢Çü
-        style.borderBottomWidth = 20; // ¾Æ·¡ »ï°¢Çü (È­»ìÇ¥ ¸ğ¾ç)
+        style.borderLeftWidth = 10;  // ì™¼ìª½ ì‚¼ê°í˜•
+        style.borderRightWidth = 10; // ì˜¤ë¥¸ìª½ ì‚¼ê°í˜•
+        style.borderBottomWidth = 20; // ì•„ë˜ ì‚¼ê°í˜• (í™”ì‚´í‘œ ëª¨ì–‘)
 
         style.borderLeftColor = Color.clear;
         style.borderRightColor = Color.clear;
-        style.borderBottomColor = Color.green; // È­»ìÇ¥ »ö
+        style.borderBottomColor = Color.green; // í™”ì‚´í‘œ ìƒ‰
 
         _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
     }
@@ -893,7 +1176,7 @@ public class Arrow_Head : MyVisualElement
 
 
 /*--------------------------------------------------
-|NOTI| ½ÃÀÛÁ¡¿¡¼­ µå·¡±× ÇÏ´ÂÁßÀÎ, ÁØºñµÇÁö ¾ÊÀº È­»ìÇ¥
+|NOTI| ì‹œì‘ì ì—ì„œ ë“œë˜ê·¸ í•˜ëŠ”ì¤‘ì¸, ì¤€ë¹„ë˜ì§€ ì•Šì€ í™”ì‚´í‘œ
 --------------------------------------------------*/
 #region Arrow_NotReady
 public class Arrow_NotReady : MyVisualElement
@@ -908,7 +1191,7 @@ public class Arrow_NotReady : MyVisualElement
         Register_AbsCallBack(OnMouseMove);
         _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
 
-        ////Áß°£¿¡ ²ÉÈú È­»ìÇ¥ ºñÁê¾ó ¿¤¸®¸ÕÆ® »ı¼º
+        ////ì¤‘ê°„ì— ê½ƒí í™”ì‚´í‘œ ë¹„ì¥¬ì–¼ ì—˜ë¦¬ë¨¼íŠ¸ ìƒì„±
         {
             _arrowHead = new Arrow_Head(_root, _window, Vector2.zero);
         }
@@ -938,13 +1221,13 @@ public class Arrow_NotReady : MyVisualElement
         Vector2 direction = mousePositionConverted - startNodeCenterPositionConverted;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        //È­»ìÇ¥ ¸öÅëÀÌ ¾÷µ¥ÀÌÆ® µÈ´Ù
+        //í™”ì‚´í‘œ ëª¸í†µì´ ì—…ë°ì´íŠ¸ ëœë‹¤
         {
             MoveTo(mouseAndStateNodeCenter);
             transform.rotation = Quaternion.Euler(0, 0, angle);
         }
 
-        //È­»ìÇ¥ Áß°£ »ï°¢ÇüÀÌ ¾÷µ¥ÀÌÆ® µÈ´Ù
+        //í™”ì‚´í‘œ ì¤‘ê°„ ì‚¼ê°í˜•ì´ ì—…ë°ì´íŠ¸ ëœë‹¤
         {
             _arrowHead.MoveTo_IfArrow(mouseAndStateNodeCenter);
             _arrowHead.transform.rotation = Quaternion.Euler(0, 0, angle + 90);
@@ -955,7 +1238,7 @@ public class Arrow_NotReady : MyVisualElement
 
 
     /*----------------------------------------------------------------------------------------------
-    |NOTI| Mouse.current.positionÀÇ °ª°ú EventÀÇ position°ªÀº ´Ù¸£´Ù. ÀÌÀ¯¸¦ Ã£°í °íÄ¡¸é ´õ ½±°Ô ÀÛ¾÷°¡´É
+    |NOTI| Mouse.current.positionì˜ ê°’ê³¼ Eventì˜ positionê°’ì€ ë‹¤ë¥´ë‹¤. ì´ìœ ë¥¼ ì°¾ê³  ê³ ì¹˜ë©´ ë” ì‰½ê²Œ ì‘ì—…ê°€ëŠ¥
     ----------------------------------------------------------------------------------------------*/
     private void UpdateArrowPosition_Pointer(PointerMoveEvent pointerMove)
     {
@@ -1000,133 +1283,432 @@ public class Arrow_NotReady : MyVisualElement
 #endregion Arrow_NotReady
 
 
+[Serializable]
+public class ConditionDataWrapper
+{
+    public ConditionAsset _conditionAsset = null;
+    public bool _goal = false;
+}
+
+
 /*--------------------------------------------------
-|NOTI| µå·¡±× ¿Ï·áµÈ, ÁØºñµÈ È­»ìÇ¥
+|NOTI| ë“œë˜ê·¸ ì™„ë£Œëœ, ì¤€ë¹„ëœ í™”ì‚´í‘œ
 --------------------------------------------------*/
 #region Arrow_Ready
 public class Arrow_Ready : MyVisualElement
 {
-
-
-    public class SubEditorWindow_ConditionModify : HierarchycalWindow
+    /*----------------------------------------------------
+    |NOTI| ë‹¥ìŠ¤ì—ì„œ ê°€ì ¸ì™”ì–´ìš” ë¶„ì„í•˜ë©´ì„œ ë§Œë“¤ê¸°-------------
+    ----------------------------------------------------*/
+    public class ListViewExample : HierarchycalWindow
     {
-        public static void ShowWindow()
+        // Gradient used for the HP color indicator.
+        private Gradient hpGradient;
+        private GradientColorKey[] hpColorKey;
+        private GradientAlphaKey[] hpAlphaKey;
+        // Sets up the gradient.
+        private void SetGradient()
         {
-            SubEditorWindow_ConditionModify window = GetWindow<SubEditorWindow_ConditionModify>();
-            window.titleContent = new GUIContent("SubEditorWindow_ConditionModify");
+            hpGradient = new Gradient();
+
+            // HP at 0%: Red. At 10%: Dark orange. At 40%: Yellow. At 100%: Green.
+            hpColorKey = new GradientColorKey[4];
+            hpColorKey[0] = new GradientColorKey(Color.red, 0f);
+            hpColorKey[1] = new GradientColorKey(new Color(1f, 0.55f, 0f), 0.1f); // Dark orange
+            hpColorKey[2] = new GradientColorKey(Color.yellow, 0.4f);
+            hpColorKey[3] = new GradientColorKey(Color.green, 1f);
+
+            // Alpha is always full.
+            hpAlphaKey = new GradientAlphaKey[2];
+            hpAlphaKey[0] = new GradientAlphaKey(1f, 0f);
+            hpAlphaKey[1] = new GradientAlphaKey(1f, 1f);
+            hpGradient.SetKeys(hpColorKey, hpAlphaKey);
         }
 
-        private SerializedObject serializedObject;
-        private SerializedProperty listProperty;
-        private ScriptableObject targetSO;
-        
+
+
+
+        public static void OpenWindow()
+        {
+            GetWindow<ListViewExample>().Show();
+        }
+
+
+
+
+        // ListView is kept for easy reference.
+        private ListView listView;
+
+        [Serializable]
+        public class CharacterInfo
+        {
+            public string name;
+            public int maxHp;
+            public int currentHp;
+        }
+        private List<CharacterInfo> items;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public void CreateGUI()
         {
-            Label label = new Label("ConditionModifier");
-            AddElement(Layer.Layer_BackGround, label);
+            SetGradient();
 
-            VisualElement rootElementBackGroud = new VisualElement()
+            // Create and populate the list of CharacterInfo objects.
+            const int itemCount = 50;
+            items = new List<CharacterInfo>(itemCount);
+
+            //ë‹¨ìˆœíˆ ë°ì´í„° ë³´ê´€ìš© ì»¨í…Œì´ë„ˆì— ì €ì¥ë§Œ í•©ë‹ˆë‹¤...50ë²ˆ ë°˜ë³µí•©ë‹ˆë‹¤.
             {
-                style =
+                for (int i = 1; i <= itemCount; i++)
                 {
-                    flexGrow = 1,
-                    backgroundColor = Color.clear,
-                    position = Position.Absolute,
+                    CharacterInfo character = new CharacterInfo { name = $"Character {i}", maxHp = 100 };
+                    character.currentHp = character.maxHp;
+                    items.Add(character);
                 }
-                
-            };
+            }
 
-            rootElementBackGroud.pickingMode = PickingMode.Ignore;
-            AddElement(Layer.Layer_BackGround, rootElementBackGroud);
-
-            // ScriptableObject¸¦ ¼±ÅÃÇÒ ¼ö ÀÖµµ·Ï ObjectField Ãß°¡
-            ObjectField objectField = new ObjectField("Target ScriptableObject")
+            // The ListView calls this to add visible items to the scroller.
+            Func<VisualElement> makeItem = () =>
             {
-                objectType = typeof(ConditionAsset),
-                allowSceneObjects = false,
-            };
-
-            objectField.RegisterValueChangedCallback(evt =>
-            {
-                targetSO = evt.newValue as ScriptableObject;
-                if (targetSO != null)
+                var characterInfoVisualElement = new CharacterInfoVisualElement();
+                var slider = characterInfoVisualElement.Q<SliderInt>(name: "hp");
+                slider.RegisterValueChangedCallback(evt =>
                 {
-                    serializedObject = new SerializedObject(targetSO);
-                    listProperty = serializedObject.FindProperty("gameObjects");
+                    var hpColor = characterInfoVisualElement.Q<VisualElement>("hpColor");
+                    var i = (int)slider.userData;
+                    var characterInfo = items[i];
+                    characterInfo.currentHp = evt.newValue;
+                    SetHp(slider, hpColor, characterInfo);
+                });
+                return characterInfoVisualElement;
+            };
+
+
+            // The ListView calls this if a new item becomes visible when the item first appears on the screen, 
+            // when a user scrolls, or when the dimensions of the scroller are changed.
+            Action<VisualElement, int> bindItem = (e, i) => BindItem(e as CharacterInfoVisualElement, i);
+
+            // Height used by the ListView to determine the total height of items in the list.
+            int itemHeight = 55;
+
+            // Use the constructor with initial values to create the ListView.
+            listView = new ListView(items, itemHeight, makeItem, bindItem);
+            listView.reorderable = false;
+            listView.style.flexGrow = 1f; // Fills the window, at least until the toggle below.
+            listView.showBorder = true;
+            rootVisualElement.Add(listView);
+
+            // Add a toggle to switch the reorderable property of the ListView.
+            var reorderToggle = new Toggle("Reorderable");
+            reorderToggle.style.marginTop = 10f;
+            reorderToggle.value = false;
+            reorderToggle.RegisterValueChangedCallback(evt => listView.reorderable = evt.newValue);
+            rootVisualElement.Add(reorderToggle);
+        }
+
+
+
+        // Bind the data (characterInfo) to the display (elem).
+        private void BindItem(CharacterInfoVisualElement elem, int i)
+        {
+            CharacterInfo characterInfo = items[i];
+
+            var label = elem.Q<Label>(name: "nameLabel");
+            label.text = characterInfo.name;
+
+            var slider = elem.Q<SliderInt>(name: "hp");
+            slider.userData = i;
+
+            var hpColor = elem.Q<VisualElement>("hpColor");
+            SetHp(slider, hpColor, characterInfo);
+        }
+
+        private void SetHp(SliderInt slider, VisualElement colorIndicator, CharacterInfo characterInfo)
+        {
+            slider.highValue = characterInfo.maxHp;
+            slider.SetValueWithoutNotify(characterInfo.currentHp);
+            float ratio = (float)characterInfo.currentHp / characterInfo.maxHp;
+            colorIndicator.style.backgroundColor = hpGradient.Evaluate(ratio);
+        }
+
+        // This class inherits from VisualElement to display and modify data to and from a CharacterInfo.
+        public class CharacterInfoVisualElement : VisualElement
+        {
+            // Use Constructor when the ListView uses makeItem and returns a VisualElement to be 
+            // bound to a CharacterInfo data class.
+            public CharacterInfoVisualElement()
+            {
+                var root = new VisualElement();
+
+                // The code below to style the ListView is for demo purpose. It's better to use a USS file
+                // to style a visual element. 
+                root.style.paddingTop = 3f;
+                root.style.paddingRight = 0f;
+                root.style.paddingBottom = 15f;
+                root.style.paddingLeft = 3f;
+                root.style.borderBottomColor = Color.gray;
+                root.style.borderBottomWidth = 1f;
+                var nameLabel = new Label() { name = "nameLabel" };
+                nameLabel.style.fontSize = 14f;
+                var hpContainer = new VisualElement();
+                hpContainer.style.flexDirection = FlexDirection.Row;
+                hpContainer.style.paddingLeft = 15f;
+                hpContainer.style.paddingRight = 15f;
+                hpContainer.Add(new Label("HP:"));
+                var hpSlider = new SliderInt { name = "hp", lowValue = 0, highValue = 100 };
+                hpSlider.style.flexGrow = 1f;
+                hpContainer.Add(hpSlider);
+                var hpColor = new VisualElement();
+                hpColor.name = "hpColor";
+                hpColor.style.height = 15f;
+                hpColor.style.width = 15f;
+                hpColor.style.marginRight = 5f;
+                hpColor.style.marginBottom = 5f;
+                hpColor.style.marginLeft = 5f;
+                hpColor.style.backgroundColor = Color.black;
+                hpContainer.Add(hpColor);
+                root.Add(nameLabel);
+                root.Add(hpContainer);
+                Add(root);
+            }
+        }
+
+
+    } //-------------------
+    //----------------------------------------------------
+    public class SubEditorWindow_ConditionModify : HierarchycalWindow
+    {
+        public class ConditionDataVisualElement : VisualElement
+        {
+            public ConditionDataVisualElement() 
+            {
+                style.borderTopWidth = 3f;
+                style.borderLeftWidth = 3f;
+                style.borderRightWidth = 3f;
+                style.borderBottomWidth = 3f;
+
+                style.borderTopColor = Color.gray;
+                style.borderLeftColor = Color.gray;
+                style.borderRightColor = Color.gray;
+                style.borderBottomColor = Color.gray;
+
+                _objectField = new ObjectField()
+                {
+                    name = "_conditionAsset",
+                    objectType = typeof(ConditionAsset),
+                    allowSceneObjects = false,
+                };
+                Add(_objectField);
+
+                VisualElement goalToggleContainer = new VisualElement()
+                {
+                    style =
+                    {
+                        flexDirection = FlexDirection.Row,
+                        flexGrow = 1,
+                    }
+                };
+                Add(goalToggleContainer);
+
+                Label goalToggleName = new Label("Goal : ")
+                {
+                    style =
+                    {
+                        alignContent = Align.Center,
+                    },
+
+                    name = "_nameLabel_goal",
+                };
+                goalToggleContainer.Add(goalToggleName);
+
+                _goalToggle = new Toggle()
+                {
+                    style =
+                    {
+                        alignContent = Align.Center,
+                    },
+
+                    name = "_goal",
+                    value = false,
+                };
+                goalToggleContainer.Add(_goalToggle);
+            }
+
+            private ObjectField _objectField = null;
+            private Toggle _goalToggle = null;
+        }
+
+        private ListView _conditionDataListView = null;
+        private VisualElement _buttons = null;
+        private List<ConditionDataWrapper> _conditionData = null;
+        private Arrow_Ready _arrow_ready = null;
+
+        private void OnDisable()
+        {
+            _arrow_ready?.WindowOff();
+        }
+
+        public void Init(List<ConditionDataWrapper> dataTarget, Arrow_Ready fromArrow)
+        {
+            //ë°ì´í„° ì„¤ì •
+            {
+                _conditionData = dataTarget;
+                _arrow_ready = fromArrow;
+            }
+            
+
+            //ì œëª© ë° ë°°ê²½ ì„¤ì •
+            {
+                Label label = new Label("ConditionModifier");
+                AddElement(Layer.Layer_BackGround, label);
+
+                VisualElement rootElementBackGroud = new VisualElement()
+                {
+                    style =
+                    {
+                        flexGrow = 1,
+                        backgroundColor = Color.clear,
+                        position = Position.Absolute,
+                    }
+
+                };
+
+                rootElementBackGroud.pickingMode = PickingMode.Ignore;
+                AddElement(Layer.Layer_BackGround, rootElementBackGroud);
+            }
+
+            //ë¦¬ìŠ¤íŠ¸ ë·° ì„¸íŒ…
+            {
+                _conditionDataListView = new ListView();
+
+                _conditionDataListView.itemsSource = _conditionData;
+
+                Func<ConditionDataVisualElement> createListElelemt = () =>
+                {
+                    ConditionDataVisualElement newElement = new ConditionDataVisualElement();
+                    return newElement;
+                };
+                _conditionDataListView.makeItem = createListElelemt;
+
+
+                Action<VisualElement, int> dataChanged = (VisualElement element, int index) =>
+                {
+                    ConditionDataWrapper target = _conditionData[index];
+                    if (index >= _conditionData.Count)
+                    {
+                        Debug.Assert(false, "ë°ì´í„° ê°œìˆ˜ë¥¼ ë„˜ì€ ì¸ë±ìŠ¤? ì‹¬ê°í•˜ë‹¤");
+                        Debug.Break();
+                        return;
+                    }
+                    if (index < 0)
+                    {
+                        Debug.Assert(false, "ìŒìˆ˜ì˜ ì¸ë±ìŠ¤? ì‹¬ê°í•˜ë‹¤");
+                        Debug.Break();
+                        return;
+                    }
+
+                    ConditionDataVisualElement casted = (ConditionDataVisualElement)element;
+
+                    ObjectField conditionAssetField = casted.Q<ObjectField>("_conditionAsset");
+                    if (conditionAssetField == null)
+                    {
+                        Debug.Assert(false, "conditionAssetField ì—†ë‹¤ê³ ?");
+                        Debug.Break();
+                        return;
+                    }
+                    target._conditionAsset = (ConditionAsset)conditionAssetField.value;
+
+                    Toggle goalField = casted.Q<Toggle>("_goal");
+                    if (goalField == null)
+                    {
+                        Debug.Assert(false, "goalField ì—†ë‹¤ê³ ?");
+                        Debug.Break();
+                        return;
+                    }
+                    target._goal = goalField.value;
+                };
+
+                _conditionDataListView.bindItem = dataChanged;
+                _conditionDataListView.fixedItemHeight = 50;
+                _conditionDataListView.reorderable = true;
+                _conditionDataListView.showBorder = true;
+
+                AddElement(Layer.Layer_Object_One, _conditionDataListView);
+            }
+
+            //ë²„íŠ¼ë“¤
+            {
+                _buttons = new VisualElement()
+                {
+                    style =
+                    {
+                        flexDirection = FlexDirection.Row,
+                        height = 50,
+                        width = 100,
+                    }
+                };
+                AddElement(Layer.Layer_Object_Two, _buttons);
+
+                Action plusButtonClickAction = () =>
+                {
+                    _conditionData.Add(new ConditionDataWrapper());
                     RefreshUI();
-                }
-            });
+                };
+                Button plusButton = new Button(plusButtonClickAction)
+                {
+                    style =
+                    {
+                        width = 40,
+                        height = 40,
+                    },
+                    text = "+",
+                };
+                _buttons.Add(plusButton);
 
-            rootVisualElement.Add(objectField);
+
+                Action minusButtonClickAction = () =>
+                {
+                    if (_conditionData.Count <= 0)
+                    {
+                        return;
+                    }
+                    _conditionData.RemoveAt(_conditionData.Count - 1);
+                    RefreshUI();
+                };
+                Button minusButton = new Button(minusButtonClickAction)
+                {
+                    style =
+                    {
+                        width = 40,
+                        height = 40,
+                    },
+                    text = "-",
+                };
+                _buttons.Add(minusButton);
+            }
         }
 
         private void RefreshUI()
         {
-            rootVisualElement.Clear();
-
-            // ´Ù½Ã ObjectField Ãß°¡ (À¯Àú°¡ ScriptableObject¸¦ º¯°æÇÒ ¼ö ÀÖµµ·Ï)
-            CreateGUI();
-
-            if (targetSO == null) return;
-
-            // ¸®½ºÆ®¸¦ ÆíÁıÇÒ ¼ö ÀÖµµ·Ï PropertyField Ãß°¡
-            PropertyField propertyField = new PropertyField(listProperty);
-            rootVisualElement.Add(propertyField);
+            _conditionDataListView.Rebuild();
         }
+    }//----
+    //----------------------------------------------------
 
-        private void OnInspectorUpdate()
-        {
-            if (serializedObject != null)
-            {
-                serializedObject.Update();
-            }
-        }
-    }
 
-    public class ListTest : HierarchycalWindow
-    {
-        [Serializable]
-        public class Test
-        {
-            public List<GameObject> _listTest = new List<GameObject>();
-        }
 
-        [SerializeField] Test _test = new Test();
-        private SerializedObject serializedObjectTest;
-        private SerializedProperty listProperty;
-
-        public static void ShowWindow()
-        {
-            ListTest window = GetWindow<ListTest>();
-            window.titleContent = new GUIContent("ListTest");
-        }
-
-        public void CreateGUI()
-        {
-            Label label = new Label("ListTest");
-            AddElement(Layer.Layer_BackGround, label);
-
-            VisualElement rootElementBackGroud = new VisualElement()
-            {
-                style =
-                {
-                    flexGrow = 1,
-                    backgroundColor = Color.clear,
-                    position = Position.Absolute,
-                }
-
-            };
-
-            rootElementBackGroud.pickingMode = PickingMode.Ignore;
-            AddElement(Layer.Layer_BackGround, rootElementBackGroud);
-        }
-
-        private void OnInspectorUpdate()
-        {
-            serializedObjectTest?.Update();
-        }
-    }
 
 
     public Arrow_Ready(VisualElement root, GraphEditorWithUIToolkit window, StateNode fromNode, StateNode toNode) : base(root, window)
@@ -1134,14 +1716,14 @@ public class Arrow_Ready : MyVisualElement
         _fromNode = fromNode;
         _toNode = toNode;
 
-        //style ¼³Á¤
+        //style ì„¤ì •
         {
             style.position = Position.Absolute;
             style.backgroundColor = Color.green;
             style.height = 2.0f;
         }
 
-        ////Áß°£¿¡ ²ÉÈú È­»ìÇ¥ ºñÁê¾ó ¿¤¸®¸ÕÆ® »ı¼º
+        ////ì¤‘ê°„ì— ê½ƒí í™”ì‚´í‘œ ë¹„ì¥¬ì–¼ ì—˜ë¦¬ë¨¼íŠ¸ ìƒì„±
         {
             _arrowHead = new Arrow_Head(_root, _window, Vector2.zero);
         }
@@ -1152,18 +1734,20 @@ public class Arrow_Ready : MyVisualElement
 
         RegisterCallback<DetachFromPanelEvent>(OnDetach);
         RegisterCallback<MouseDownEvent>(OnMouseDown_ModifyCondition);
-        RegisterCallback<MouseMoveEvent>(OnMouseMove_ModifyCondition);
     }
 
 
+    private bool _isWindowShow = false;
     private StateNode _fromNode = null;
     private StateNode _toNode = null;
     private Arrow_Head _arrowHead = null;
+    private List<ConditionDataWrapper> _conditionData = new List<ConditionDataWrapper>();
+    private EditorWindow _conditionModifierWindow = null;
 
 
     /*----------------------------------------------------
-    |TODO| ¸Å ÇÁ·¹ÀÓ¸¶´Ù ¿òÁ÷ÀÌÁö ¾Ê¾Æµµ ÀÌ°É ¾÷µ¥ÀÌÆ® ÇÏ³×¿ä?
-    Àü¿¡ ¸¸µé¾îµĞ ³ëµå À§Ä¡°¡ º¯°æµÉ¶§¸¸ ÇÏ´Â°Ô ÁÁÀ»°Å°°¾Æ¿ä.
+    |TODO| ë§¤ í”„ë ˆì„ë§ˆë‹¤ ì›€ì§ì´ì§€ ì•Šì•„ë„ ì´ê±¸ ì—…ë°ì´íŠ¸ í•˜ë„¤ìš”?
+    ì „ì— ë§Œë“¤ì–´ë‘” ë…¸ë“œ ìœ„ì¹˜ê°€ ë³€ê²½ë ë•Œë§Œ í•˜ëŠ”ê²Œ ì¢‹ì„ê±°ê°™ì•„ìš”.
     ----------------------------------------------------*/
     private void ArrowPositionUpdate()
     {
@@ -1179,33 +1763,57 @@ public class Arrow_Ready : MyVisualElement
 
 
 
-        //È­»ìÇ¥ ¸öÅëÀÌ ¾÷µ¥ÀÌÆ® µÈ´Ù
+        //í™”ì‚´í‘œ ëª¸í†µì´ ì—…ë°ì´íŠ¸ ëœë‹¤
         {
             MoveTo(centerPosition);
             transform.rotation = Quaternion.Euler(0, 0, angle);
         }
 
-        //È­»ìÇ¥ Áß°£ »ï°¢ÇüÀÌ ¾÷µ¥ÀÌÆ® µÈ´Ù
+        //í™”ì‚´í‘œ ì¤‘ê°„ ì‚¼ê°í˜•ì´ ì—…ë°ì´íŠ¸ ëœë‹¤
         {
             _arrowHead.MoveTo_IfArrow(centerPosition);
             _arrowHead.transform.rotation = Quaternion.Euler(0, 0, angle + 90);
         }
     }
 
-    private void OnDetach(DetachFromPanelEvent detachEvent)
+
+
+    public void WindowOff()
     {
-        _actions = null;
+        _isWindowShow = false;
     }
 
     private void OnMouseDown_ModifyCondition(MouseDownEvent mouseDownEvent)
     {
-        //ListTest.ShowWindow();
-        SubEditorWindow_ConditionModify.ShowWindow();
+        if (_isWindowShow == true)
+        {
+            return;
+        }
+
+        SubEditorWindow_ConditionModify window = EditorWindow.CreateInstance<SubEditorWindow_ConditionModify>();
+
+        window.titleContent = new GUIContent("SubEditorWindow_ConditionModify");
+        window.Show();
+        window.Init(_conditionData, this);
+
+        _isWindowShow = true;
+        _conditionModifierWindow = window;
     }
 
-    private void OnMouseMove_ModifyCondition(MouseMoveEvent mouseDownEvent)
+    private void OnDetach(DetachFromPanelEvent detachEvent)
     {
-        Debug.Log("KK");
+        _actions = null;
+
+        if (_isWindowShow == true)
+        {
+            _conditionModifierWindow.Close();
+        }
+
+        if (_arrowHead != null)
+        {
+            _root.Remove(_arrowHead);
+            _arrowHead = null;
+        }
     }
 }
 #endregion Arrow_Ready
@@ -1228,8 +1836,6 @@ public class ChildElement : MyVisualElement
     protected int _id = 0;
 }
 #endregion ChildElement
-
-
 
 
 //#region Mover
@@ -1406,7 +2012,7 @@ public class Resizer : ChildElement
                 break;
             case Direction_2D.End:
                 {
-                    Debug.Assert(false, "´ëÀÀÀÌ µÇÁö ¾Ê´Â´Ù");
+                    Debug.Assert(false, "ëŒ€ì‘ì´ ë˜ì§€ ì•ŠëŠ”ë‹¤");
                     Debug.Break();
                 }
                 break;
@@ -1417,7 +2023,7 @@ public class Resizer : ChildElement
 
         {
             /*-------------------------------------------------
-            |TODO| Ä¿¼­ ¾î¶»°Ô ¹Ù²Ù³Ä°í1!!!
+            |TODO| ì»¤ì„œ ì–´ë–»ê²Œ ë°”ê¾¸ëƒê³ 1!!!
             -------------------------------------------------*/
             //resizeHandle.style.cursor =
             //UnityEngine.UIElements.Cursor cursor2 = new UnityEngine.UIElements.Cursor();
@@ -1456,11 +2062,11 @@ public class Resizer : ChildElement
     {
         if (_isResizing == false)
         {
-            Debug.Log("Å©±â°¡ º¯°æÀÌ È£ÃâµÆÁö¸¸ ¾ÃÇû´Ù" + _id);
+            Debug.Log("í¬ê¸°ê°€ ë³€ê²½ì´ í˜¸ì¶œëì§€ë§Œ ì”¹í˜”ë‹¤" + _id);
             return;
         }
 
-        Debug.Log("Å©±â°¡ º¯°æµÆ´Ù" + _id);
+        Debug.Log("í¬ê¸°ê°€ ë³€ê²½ëë‹¤" + _id);
 
         if (_myDirection == Direction_2D.Left || _myDirection == Direction_2D.Right)
         {
