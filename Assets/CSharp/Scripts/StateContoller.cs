@@ -559,26 +559,26 @@ public class StateContoller : GameCharacterSubScript
     }
 
 
-    public void TryChangeStateContinue(StateGraphType graphType, RepresentStateType representType)
-    {
-        StateGraphAsset targetGraphAsset = _stateGraphes[(int)graphType];
+    //public void TryChangeStateContinue(StateGraphType graphType, RepresentStateType representType)
+    //{
+    //    StateGraphAsset targetGraphAsset = _stateGraphes[(int)graphType];
 
-        if (targetGraphAsset == null)
-        {
-            return; //해당 그래프가 없다.
-        }
+    //    if (targetGraphAsset == null)
+    //    {
+    //        return; //해당 그래프가 없다.
+    //    }
 
-        StateAsset targetAsset = targetGraphAsset.GetRepresentStateAsset(representType);
+    //    StateAsset targetAsset = targetGraphAsset.GetRepresentStateAsset(representType);
 
-        if (targetAsset == null)
-        {
-            return; //그래프에 해당 상태가 없다.
-        }
+    //    if (targetAsset == null)
+    //    {
+    //        return; //그래프에 해당 상태가 없다.
+    //    }
 
-        ChangeStateContinue(graphType, targetAsset);
+    //    ChangeStateContinue(graphType, targetAsset);
 
-        ReadyLinkedStates(graphType, targetAsset, true);
-    }
+    //    ReadyLinkedStates(graphType, targetAsset, true);
+    //}
 
 
     public void TryChangeState(StateGraphType graphType, StateAsset targetAsset)
@@ -601,6 +601,10 @@ public class StateContoller : GameCharacterSubScript
         _prevStateTime = 0.0f;
         _failedRandomChanceState.Clear();
         _stateDeeper = false;
+
+
+
+        _nextComboReady = false;
     }
 
     private void ChangeState(StateGraphType nextGraphType, StateAsset nextState)
@@ -636,6 +640,28 @@ public class StateContoller : GameCharacterSubScript
                 _randomStateInstructIndex = -1;
                 _randomStateTryCount = 0;
                 _failedRandomChanceState.Clear();
+            }
+
+
+            /*-----------------------------------------------
+            |TODO| 지우는 구조를 생각해봅시다
+            -----------------------------------------------*/
+            {
+                if (_currState._myState._isAttackState == true)
+                {
+                    CustomKeyManager.Instance.ClearKeyRecord();
+                }
+
+                if (_currState._myState._isNeedStat == true)
+                {
+                    foreach (var item in _currState._myState._needStat._needActiveStatList)
+                    {
+                        if (item._isConsume == true)
+                        {
+                            _owner.GCST<StatScript>().ChangeActiveStat(item._statType, -item._needAmount);
+                        }
+                    }
+                }
             }
 
 
@@ -679,6 +705,7 @@ public class StateContoller : GameCharacterSubScript
                 _randomStateInstructIndex = -1;
                 _randomStateTryCount = 0;
                 _failedRandomChanceState.Clear();
+                
             }
 
 
@@ -931,14 +958,6 @@ public class StateContoller : GameCharacterSubScript
                     if (isSuccess == false)
                     {
                         continue;
-                    }
-
-                    foreach (var item in nextState._myState._needStat._needActiveStatList)
-                    {
-                        if (item._isConsume == true)
-                        {
-                            ownerStatScript.ChangeActiveStat(item._statType, -item._needAmount);
-                        }
                     }
                 }
 
@@ -2335,7 +2354,6 @@ public class StateContoller : GameCharacterSubScript
             index++;
         }
 
-        CustomKeyManager.Instance.ClearKeyRecord();
         return true;
     }
     

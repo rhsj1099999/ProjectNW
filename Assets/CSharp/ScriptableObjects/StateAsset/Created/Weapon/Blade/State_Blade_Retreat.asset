@@ -14,16 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myState:
     _stateType: 0
-    _stateAnimationClip: {fileID: 7400000, guid: dce8bbaea36e6c74f99e4979abc73688,
+    _stateAnimationClip: {fileID: 7400000, guid: 0d97dc014dfb42440b5ead384cb7e294,
       type: 2}
     _stateAnimationClipOverride: []
     _isAttackState: 1
     _isAttackState_effectedBySpeed: 1
     _attackDamageMultiply:
       _damageReason: 1
+      _hitType: 1
       _damage: 1
-      _damagePower: 10
+      _damagePower: 25
       _damagingStamina: 1
+    _isGuardState: 0
     _canUseItem: 0
     _isAIState: 0
     _aiStateDesc:
@@ -36,10 +38,23 @@ MonoBehaviour:
     _stateBuffs_Add: []
     _stateBuffs_Remove: []
     _EnterStateActionTypes: 0d00000022000000
-    _inStateActionTypes: 1900000006000000
+    _inStateActionTypes: 06000000
     _ExitStateActionTypes: 0e000000
     _checkingBehaves: 
+    _isOverrideStateExsist: 0
+    _overrideStates: []
     _isSubBlendTreeExist: 0
     _subBlendTree: {fileID: 0}
     _isSubAnimationStateMachineExist: 0
     _subAnimationStateMachine: {fileID: 0}
+    _isNeedStat: 1
+    _needStat:
+      _needPassiveStatList: []
+      _needActiveStatList:
+      - _statType: 1
+        _needAmount: 5
+        _isConsume: 1
+    _isNeedStatLoopBreak: 0
+    _needStat_LoopBreak:
+      _needPassiveStatList: []
+      _needActiveStatList: []
