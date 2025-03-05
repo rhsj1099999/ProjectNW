@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d678d35fdf8465741b6a7c391a488198, type: 3}
+  m_Name: StateGraphProjects
+  m_EditorClassIdentifier: 
+  _projects:
+  - _loadData:
+      _nodeDatas:
+      - _position: {x: 439, y: 231, z: 0}
+        _asset: {fileID: 11400000, guid: f923e62d221855940be8afbb1694c9d5, type: 2}
+        _isEntry: 1
+        _entryConditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+      - _position: {x: 724, y: 245, z: 0}
+        _asset: {fileID: 11400000, guid: ffef36518d5924d489fd2c0e50c22278, type: 2}
+        _isEntry: 0
+        _entryConditions: []
+      - _position: {x: 524, y: 449, z: 0}
+        _asset: {fileID: 11400000, guid: 4b8e46e17fd182942959b9da48c8064b, type: 2}
+        _isEntry: 0
+        _entryConditions: []
+      - _position: {x: 306, y: 465, z: 0}
+        _asset: {fileID: 11400000, guid: 3247c4a465725ba4d8ec11b96631fb44, type: 2}
+        _isEntry: 0
+        _entryConditions: []
+      - _position: {x: 189, y: 301, z: 0}
+        _asset: {fileID: 11400000, guid: d0826422c33c20340b750a09ccd2cb6a, type: 2}
+        _isEntry: 0
+        _entryConditions: []
+      _arrowDatas:
+      - _fromAsset: {fileID: 11400000, guid: f923e62d221855940be8afbb1694c9d5, type: 2}
+        _toAsset: {fileID: 11400000, guid: ffef36518d5924d489fd2c0e50c22278, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+      - _fromAsset: {fileID: 11400000, guid: ffef36518d5924d489fd2c0e50c22278, type: 2}
+        _toAsset: {fileID: 11400000, guid: 4b8e46e17fd182942959b9da48c8064b, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+      - _fromAsset: {fileID: 11400000, guid: 3247c4a465725ba4d8ec11b96631fb44, type: 2}
+        _toAsset: {fileID: 11400000, guid: d0826422c33c20340b750a09ccd2cb6a, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+      - _fromAsset: {fileID: 11400000, guid: d0826422c33c20340b750a09ccd2cb6a, type: 2}
+        _toAsset: {fileID: 11400000, guid: f923e62d221855940be8afbb1694c9d5, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+      - _fromAsset: {fileID: 11400000, guid: 4b8e46e17fd182942959b9da48c8064b, type: 2}
+        _toAsset: {fileID: 11400000, guid: 3247c4a465725ba4d8ec11b96631fb44, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+    _graphAssetTag: {fileID: 11400000, guid: fcdd31c8796133c4eaa38ed8af486a74, type: 2}

@@ -48,6 +48,8 @@ public class ResourceDataManagerCustomInspector : Editor
         }
 
         manager._stateGraphAssets = foundObjects;
+
+        EditorUtility.SetDirty(manager);
     }
 
 

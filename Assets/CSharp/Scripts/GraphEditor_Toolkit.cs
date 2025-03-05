@@ -7,6 +7,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using static StateGraphAsset;
+using System.Linq;
+using static StateGraphToolSaveData;
+using UnityEditor.Experimental.GraphView;
 
 public enum Direction_2D
 {
@@ -23,29 +26,50 @@ public enum Direction_2D
 
 public class HierarchycalWindow : EditorWindow
 {
+    public void ReadyHierarchy()
+    {
+        for (int i = 0; i < (int)Layer.End; i++)
+        {
+            VisualElement hierarchyElement = new VisualElement();
+            rootVisualElement.Add(hierarchyElement);
+            _hierarchyElement.Add(hierarchyElement);
+        }
+    }
+
     public enum Layer
     {
         Layer_BackGround,
 
-        Layer_Start,
         Layer_Object_One,
         Layer_Object_Two,
         Layer_Object_Three,
-        Layer_Object_Four,
-        Layer_End,
 
 
         Layer_One,
         Layer_Two,
         Layer_Three,
-        Layer_Four,
 
-        End = 11,
+
+
+        Layer_EditorHUD_One,
+        Layer_EditorHUD_Two,
+        Layer_EditorHUD_Three,
+
+        End,
     }
+
+    List<VisualElement> _hierarchyElement = new List<VisualElement>();
+
 
     public void AddElement(Layer layer, VisualElement element)
     {
         rootVisualElement.Insert((int)layer, element);
+        //_hierarchyElement[(int)layer].Add(element);
+    }
+
+    public void RemoveElement(Layer layer, VisualElement element)
+    {
+        //_hierarchyElement[(int)layer].Remove(element);
     }
 }
 
@@ -60,6 +84,22 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
         GraphEditorWithUIToolkit window = GetWindow<GraphEditorWithUIToolkit>();
         window.titleContent = new GUIContent("Graph Editor UIToolkit");
     }
+
+    private void Clear_All_New_Paper()
+    {
+        /*------------------------------------------------------------------------
+        |NOTI|아직까지는 이 에디터의 핵심정보들은 노드이다. 노드만 다 지우면 깨끗해진다.
+        ------------------------------------------------------------------------*/
+
+        foreach (var item in _stateNodes.ToList())
+        {
+            rootVisualElement.Remove(item);
+        }
+
+        _arrowViewMode = ArrowViewMode.ShowAll;
+        ReadyHierarchy();
+    }
+
 
 
     public class GraphEditorBackGroundElement : MyVisualElement
@@ -81,7 +121,6 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
             protected GraphEditorWithUIToolkit _graphEditorWindow = null;
             protected VisualElement _graphEditorVisualElement = null;
         }
-
 
         public class SavingWindow : GraphEditor_SubWindow_IO
         {
@@ -212,44 +251,117 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
 
                     Action saveButtonClicked = () =>
                     {
-                        if (string.IsNullOrEmpty(nameInputField.value) == true)
+                        StateGraphAsset savedGraphAsset = null;
+
+                        //graphAsset 세이브
                         {
-                            return;
-                        }
-
-                        if (Directory.Exists(pathNameInputField.value) == false)
-                        {
-                            Directory.CreateDirectory(pathNameInputField.value);  // 폴더가 없으면 생성
-                        }
-
-                        string assetPath = pathNameInputField.value + nameInputField.value + ".asset";
-
-                        if (File.Exists(assetPath) == true)
-                        {
-                            //경고문
-                            bool overwrite = EditorUtility.DisplayDialog
-                            (
-                                    "파일이 존재합니다",
-                                    "덮어씌웁니까?",
-                                    "예",
-                                    "아니요"
-                            );
-
-                            if (overwrite == false)
+                            if (string.IsNullOrEmpty(nameInputField.value) == true)
                             {
                                 return;
                             }
+
+                            if (Directory.Exists(pathNameInputField.value) == false)
+                            {
+                                Directory.CreateDirectory(pathNameInputField.value);  // 폴더가 없으면 생성
+                            }
+
+                            string assetPath = pathNameInputField.value + nameInputField.value + ".asset";
+
+                            bool isFileExist = File.Exists(assetPath);
+
+                            assetPath = FileUtil.GetProjectRelativePath(assetPath);
+
+                            if (isFileExist == true)
+                            {
+                                //경고문
+                                bool overwrite = EditorUtility.DisplayDialog
+                                (
+                                        "파일이 존재합니다",
+                                        "덮어씌웁니까?",
+                                        "예",
+                                        "아니요"
+                                );
+
+                                if (overwrite == false)
+                                {
+                                    return;
+                                }
+
+                                savedGraphAsset = AssetDatabase.LoadAssetAtPath<StateGraphAsset>(assetPath);
+                            }
+                            else
+                            {
+                                savedGraphAsset = CreateInstance<StateGraphAsset>();
+                                AssetDatabase.CreateAsset(savedGraphAsset, assetPath);
+
+                            }
+
+                            savedGraphAsset.InitData(_graphEditorWindow._stateNodes);
+
+                            EditorUtility.SetDirty(savedGraphAsset);
+
+                            AssetDatabase.SaveAssets();
+
+                            AssetDatabase.Refresh();
                         }
 
-                        //StateGraphAsset graphData = Create(_graphEditorWindow._stateNodes);
-                        StateGraphAsset graphData = CreateInstance<StateGraphAsset>();
-                        graphData.InitData(_graphEditorWindow._stateNodes);
+                        if (savedGraphAsset == null)
+                        {
+                            Debug.Assert(false, "savedGraphAsset이 null이다");
+                            Debug.Break();
+                            return;
+                        }
 
-                        assetPath = FileUtil.GetProjectRelativePath(assetPath);
+                        //기존 노드 정보들 세이브
+                        {
+                            //graphAsset 세이브
+                            {
+                                if (Directory.Exists(_graphEditorDataPath) == false)
+                                {
+                                    Directory.CreateDirectory(_graphEditorDataPath);  // 폴더가 없으면 생성
+                                }
 
-                        AssetDatabase.CreateAsset(graphData, assetPath);
-                        AssetDatabase.SaveAssets();
-                        AssetDatabase.Refresh();
+                                if (_graphEditorDataPath.EndsWith("/") == false)
+                                {
+                                    _graphEditorDataPath += "/";
+                                }
+
+                                string assetPath = _graphEditorDataPath + "StateGraphProjects" + ".asset";
+
+                                StateGraphToolSaveData projectData = null;
+
+                                string[] guids = AssetDatabase.FindAssets("t:" + typeof(StateGraphToolSaveData).Name, new[] { _graphEditorDataPath });
+
+                                if (guids.Length > 2)
+                                {
+                                    Debug.Assert(false, "2개 이상의 프로젝트 데이터가 있다고요? 하나만 있어야합니다");
+                                    Debug.Break();
+                                    return;
+                                }
+                                else if (guids.Length <= 0)
+                                {
+                                    projectData = CreateInstance<StateGraphToolSaveData>();
+                                    AssetDatabase.CreateAsset(projectData, assetPath);
+                                }
+                                else
+                                {
+                                    projectData = AssetDatabase.LoadAssetAtPath<StateGraphToolSaveData>(assetPath);
+                                }
+                                StateGraphToolProjectSaveDesc newSaveData = new StateGraphToolProjectSaveDesc()
+                                {
+                                    _nodeDatas = _graphEditorWindow._stateNodes,
+                                    _arrowDatas = _graphEditorWindow._arrows,
+                                };
+
+                                projectData.InitData(savedGraphAsset, newSaveData);
+
+                                EditorUtility.SetDirty(projectData);
+
+                                AssetDatabase.SaveAssets();
+
+                                AssetDatabase.Refresh();
+                            }
+                        }
                     };
 
                     Button saveButton = new Button(saveButtonClicked)
@@ -266,6 +378,7 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
 
             private string _basicName = "StateGraph_";
             private string _basicPathName = "Assets/";
+            private string _graphEditorDataPath = "Assets/Editor/StateGraphEditor/ProjectData/Created";
         }
 
         public class LoadingWindow : GraphEditor_SubWindow_IO
@@ -324,13 +437,92 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
                         {
                             flexDirection = FlexDirection.Row,
                         },
-                        objectType = typeof(StateAsset),
+                        objectType = typeof(StateGraphAsset),
                         allowSceneObjects = false,
                     };
 
                     loadUIContainer.Add(_objectField);
 
-                    Action loadButtonClicked = () => { };
+                    Action loadButtonClicked = () => 
+                    {
+                        if (_objectField.value == null)
+                        {
+                            bool overwrite = EditorUtility.DisplayDialog
+                            (
+                                "경고",
+                                "필드에 그래프를 선택하고 로드해주세요",
+                                "예"
+                            );
+
+                            return;
+                        }
+
+
+                        //기존 노드 정보들 세이브
+                        {
+                            //graphAsset 세이브
+                            {
+                                if (Directory.Exists(_graphEditorDataPath) == false)
+                                {
+                                    bool overwrite = EditorUtility.DisplayDialog
+                                    (
+                                        "알림",
+                                        "해당 그래프 에셋은 프로젝트가 없습니다. 만들고 저장해주세요.",
+                                        "예"
+                                    );
+                                }
+
+                                if (_graphEditorDataPath.EndsWith("/") == false)
+                                {
+                                    _graphEditorDataPath += "/";
+                                }
+
+                                string assetPath = _graphEditorDataPath + "StateGraphProjects" + ".asset";
+
+                                StateGraphToolSaveData projectData = null;
+
+                                string[] guids = AssetDatabase.FindAssets("t:" + typeof(StateGraphToolSaveData).Name, new[] { _graphEditorDataPath });
+
+                                if (guids.Length > 2)
+                                {
+                                    Debug.Assert(false, "2개 이상의 프로젝트 데이터가 있다고요? 하나만 있어야합니다");
+                                    Debug.Break();
+                                    return;
+                                }
+                                else if (guids.Length <= 0)
+                                {
+                                    bool overwrite = EditorUtility.DisplayDialog
+                                    (
+                                        "알림",
+                                        "해당 그래프 에셋은 프로젝트가 없습니다. 만들고 저장해주세요.",
+                                        "예"
+                                    );
+
+                                    return;
+                                }
+
+                                projectData = AssetDatabase.LoadAssetAtPath<StateGraphToolSaveData>(assetPath);
+
+                                StateGraphToolProjectLoadDesc existData = projectData.GetLoadDesc((StateGraphAsset)_objectField.value);
+
+                                if (existData == null)
+                                {
+                                    bool overwrite = EditorUtility.DisplayDialog
+                                    (
+                                        "알림",
+                                        "해당 그래프 에셋은 프로젝트가 없습니다. 만들고 저장해주세요.",
+                                        "예"
+                                    );
+
+                                    return;
+                                }
+
+                                _graphEditorWindow.Clear_All_New_Paper();
+
+                                _graphEditorWindow.LoadProject(existData);
+                            }   
+                        }
+                    };
 
                     Button loadButton = new Button(loadButtonClicked)
                     {
@@ -345,6 +537,7 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
             }
 
             private ObjectField _objectField = null;
+            private string _graphEditorDataPath = "Assets/Editor/StateGraphEditor/ProjectData/Created";
         }
 
         public GraphEditorBackGroundElement(VisualElement root, GraphEditorWithUIToolkit window) : base(root, window)
@@ -357,6 +550,7 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
                 menuEvent.menu.AppendAction("Create StateNode", _ => CreateStateNode(menuEvent.originalMousePosition));
                 menuEvent.menu.AppendAction("Save_StateGraph", _ => SaveStateGraph());
                 menuEvent.menu.AppendAction("Load_StateGraph", _ => LoadStateGraph());
+                menuEvent.menu.AppendAction("Clear_All", _ => ClearAll());
             }));
 
             RegisterCallback<MouseDownEvent>(OnMouseDown);
@@ -385,14 +579,115 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
         {
             LoadingWindow.OpenWindow().Init(_window, _root);
         }
+        private void ClearAll()
+        {
+            _window.Clear_All_New_Paper();
+        }
+    }
+
+    public class GraphEditorViewRadioButton : MyVisualElement
+    {
+        public GraphEditorViewRadioButton(VisualElement root, GraphEditorWithUIToolkit window) : base(root, window)
+        {
+            style.position = Position.Absolute;
+            style.width = 170.0f;
+            style.height = 50.0f;
+            style.backgroundColor = Color.gray;
+            style.top = 0;
+            style.right = 0;
+
+
+            // 라디오 버튼 그룹 생성
+            RadioButtonGroup radioGroup_Button = new RadioButtonGroup()
+            {
+                style = 
+                {
+                    position = Position.Absolute,
+                    top = 0,
+                    right = 0,
+                },
+            };
+            Add(radioGroup_Button);
+
+            RadioButton eachButton_ShowAll = new RadioButton();
+            eachButton_ShowAll.value = true;
+            radioGroup_Button.Add(eachButton_ShowAll);
+
+            RadioButton eachButton_Hide = new RadioButton();
+            radioGroup_Button.Add(eachButton_Hide);
+
+            RadioButton eachButton_Show_OnlyFocused = new RadioButton();
+            radioGroup_Button.Add(eachButton_Show_OnlyFocused);
+
+            // 라디오 버튼 추가
+            RadioButtonGroup radioGroup_Label = new RadioButtonGroup()
+            {
+                style =
+                {
+                    position = Position.Absolute,
+                    top = 0,
+                    right = 20,
+                },
+
+            };
+
+            radioGroup_Button.RegisterValueChangedCallback(evt =>
+            {
+                _window.ArrowShowValueChanged(evt.newValue);
+            });
+
+            Add(radioGroup_Label);
+
+            //라벨들 추가
+            {
+                Label eachButtonLabel_ShowAll = new Label("Show_All")
+                {
+                    style =
+                {
+                    unityTextAlign = TextAnchor.UpperRight,
+                },
+                };
+                radioGroup_Label.Add(eachButtonLabel_ShowAll);
+
+                Label eachButtonLabel_Show_OnlyFocused = new Label("Show_OnlyFocused")
+                {
+                    style =
+                {
+                    unityTextAlign = TextAnchor.UpperRight,
+                },
+                };
+                radioGroup_Label.Add(eachButtonLabel_Show_OnlyFocused);
+
+                Label eachButtonLabel_Hide = new Label("Hide")
+                {
+                    style =
+                {
+                    unityTextAlign = TextAnchor.UpperRight,
+                },
+                };
+                radioGroup_Label.Add(eachButtonLabel_Hide);
+            }
+
+            _window.AddElement(Layer.Layer_EditorHUD_One, this);
+        }
     }
 
     public void CreateGUI()
     {
-        Label label = new Label("StateGraphTool");
+        ReadyHierarchy();
+
+        Label label = new Label("StateGraphTool")
+        {
+            style =
+            {
+                position = Position.Absolute,
+            }
+        };
         AddElement(Layer.Layer_BackGround, label);
 
         new GraphEditorBackGroundElement(rootVisualElement, this);
+
+        new GraphEditorViewRadioButton(rootVisualElement, this);
 
         for (int i = 0; i < 3; i++)
         {
@@ -419,8 +714,180 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
     /*------------------------------------------------------------------
     |NOTI| 그래프를 읽기 시작할 노드들입니다. 최초 추가시에만 여기 보관됩니다.
     ------------------------------------------------------------------*/
-
     private HashSet<StateNode> _stateNodes = new HashSet<StateNode>();
+    private HashSet<Arrow_Ready> _arrows = new HashSet<Arrow_Ready>();
+
+
+    public enum ArrowViewMode
+    {
+        ShowAll,
+        Show_OnlyFocused,
+        Hide,
+        End,
+    }
+
+    private ArrowViewMode _arrowViewMode = ArrowViewMode.ShowAll;
+
+    private void ArrowShowValueChanged(int index)
+    {
+        _arrowViewMode = (ArrowViewMode)index;
+
+        foreach (Arrow_Ready arrow in _arrows)
+        {
+            bool isShowCheck = IsArrowShow(arrow);
+
+            if (isShowCheck == true)
+            {
+                arrow.ShowMe();
+            }
+            else
+            {
+                arrow.HideMe();
+            }
+        }
+    }
+
+    public bool IsArrowShow(Arrow_Ready arrowReady)
+    {
+        bool ret = false;
+        switch (_arrowViewMode)
+        {
+            case ArrowViewMode.ShowAll:
+                ret = true;
+                break;
+
+            case ArrowViewMode.Show_OnlyFocused:
+                ret = (arrowReady._ToNode == _focusedNode || arrowReady._FromNode == _focusedNode);
+                break;
+
+            case ArrowViewMode.Hide:
+                ret = false;
+                break;
+
+            default:
+                {
+                    Debug.Assert(false, "대응이 되지 않습니다");
+                    Debug.Break();
+                }
+                break;
+        }
+        return ret;
+    }
+
+    public void SetFocusedNode(StateNode focusedNode)
+    {
+        _focusedNode = focusedNode;
+
+        if (_arrowViewMode != ArrowViewMode.Show_OnlyFocused)
+        {
+            return;
+        }
+
+        foreach (Arrow_Ready arrow in _arrows)
+        {
+            bool isShowCheck = IsArrowShow(arrow);
+
+            if (isShowCheck == true)
+            {
+                arrow.ShowMe();
+            }
+            else
+            {
+                arrow.HideMe();
+            }
+        }
+    }
+
+    public void LoadProject(StateGraphToolProjectLoadDesc loadData)
+    {
+        foreach (StateGraphToolProjectLoadDesc.LoadData_StateNode stateLoadData in loadData._nodeDatas)
+        {
+            StateNode node = new StateNode(rootVisualElement, this, stateLoadData._position);
+            AddElement(Layer.Layer_Object_One, node);
+
+            {
+                node._StateAsset = stateLoadData._asset;
+                node._IsEntryState = stateLoadData._isEntry;
+
+                node._entryConditionDatas.Clear();
+                node._entryConditionDatas.AddRange(stateLoadData._entryConditions);
+            }
+            
+            //node.
+        }
+
+        foreach (StateGraphToolProjectLoadDesc.LoadData_ArrowNode arrowLoadData in loadData._arrowDatas)
+        {
+            StateNode fromNode = null;
+            StateNode toNode = null;
+
+            foreach (StateNode stateNode in _stateNodes)
+            {
+                if (stateNode._StateAsset == arrowLoadData._fromAsset)
+                {
+                    fromNode = stateNode;
+                    break;
+                }
+            }
+
+            foreach (StateNode stateNode in _stateNodes)
+            {
+                if (stateNode._StateAsset == arrowLoadData._toAsset)
+                {
+                    toNode = stateNode;
+                    break;
+                }
+            }
+
+            if (toNode == null || fromNode == null)
+            {
+                Debug.Assert(false, "로딩중에 못찾았다고?");
+                Debug.Break();
+                return;
+            }
+
+
+            Arrow_Ready node = new Arrow_Ready(rootVisualElement, this, fromNode, toNode);
+
+            {
+                node.GetCondition().Clear();
+                node.GetCondition().AddRange(arrowLoadData._conditions);
+            }
+        }
+    }
+
+
+
+    private StateNode _focusedNode = null;
+
+
+    public void ArrowAdded(Arrow_Ready arrow)
+    {
+        if (_arrows.Contains(arrow) == true)
+        {
+            Debug.Assert(false, "이미 있다고?  심각한 오류다");
+            Debug.Break();
+            return;
+        }
+
+        _arrows.Add(arrow);
+    }
+
+    public void DeleteArrow(Arrow_Ready arrow)
+    {
+        if (_arrows.Contains(arrow) == false)
+        {
+            /*--------------------------------------------------------
+            |TODO|지워지는 순서 파악하고 이거 고쳐야한다.
+            --------------------------------------------------------*/
+            //Debug.Assert(false, "존재하지 않았다고? 심각한 오류다");
+            //Debug.Break();
+            return;
+        }
+
+        _arrows.Remove(arrow);
+    }
+ 
 
     public void StateNodeAdded(StateNode stateNode)
     {
@@ -434,8 +901,14 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
         _stateNodes.Add(stateNode);
     }
 
+
     public void DeleteStateNode(StateNode stateNode)
     {
+        if (_focusedNode == stateNode)
+        {
+            _focusedNode = null;
+        }
+
         if (_stateNodes.Contains(stateNode) == false)
         {
             Debug.Assert(false, "존재하지 않았다고? 심각한 오류다");
@@ -1004,9 +1477,6 @@ public class TestNode : MyVisualElement
     {
         Vector2 targetPosition = Mouse.current.position.value;
 
-
-        
-
         if (_isConvert == true)
         {
             //targetPosition = ConvertToWindowPosition(targetPosition);
@@ -1069,7 +1539,14 @@ public class StateNode : MyVisualElement, IConditionExist
         }
     }
 
+
+
     public StateNode(VisualElement root, GraphEditorWithUIToolkit window, Vector3 position) : base(root, window)
+    {
+        Init(position);
+    }
+
+    public void Init(Vector3 position)
     {
         //style.backgroundColor = new Color(0.2f, 0.2f, 0.2f);
         style.backgroundColor = Color.gray;
@@ -1138,7 +1615,18 @@ public class StateNode : MyVisualElement, IConditionExist
                 flexShrink = 1,
             }
         };
-        
+        _objectField.RegisterValueChangedCallback(changedValue =>
+        {
+            string displayName = ((StateAsset)changedValue.newValue).name;
+            if (displayName.Contains("State_") == true)
+            {
+                displayName = displayName.Replace("State_", "");
+            }
+
+            _displayNameField.value = displayName;
+        });
+
+
         objectFieldSet.Add(_objectField);
 
         VisualElement toggleContainer = new VisualElement()
@@ -1157,7 +1645,7 @@ public class StateNode : MyVisualElement, IConditionExist
         _isEntryState = new Toggle();
         toggleContainer.Add(_isEntryState);
 
-        Action entryConditionModiClicked = () => 
+        Action entryConditionModiClicked = () =>
         {
             if (_isEntryState.value == false)
             {
@@ -1175,8 +1663,8 @@ public class StateNode : MyVisualElement, IConditionExist
         Button entryConditionModiButton = new Button(entryConditionModiClicked)
         {
             text = "Conditions",
-            style = 
-            { 
+            style =
+            {
                 flexShrink = 1,
                 flexGrow = 1,
                 marginRight = 0,
@@ -1185,6 +1673,26 @@ public class StateNode : MyVisualElement, IConditionExist
         toggleContainer.Add(entryConditionModiButton);
 
 
+
+        _displayNameField = new TextField()
+        {
+            style =
+            {
+                marginLeft = 0,
+                marginRight = 0,
+                marginTop = 0,
+                marginBottom = 0,
+                flexShrink = 1,
+                whiteSpace = WhiteSpace.Normal,
+                overflow = Overflow.Hidden,
+                maxHeight = 2 * 18,
+            },
+            multiline = true,
+        };
+        Add(_displayNameField);
+
+
+        RegisterCallback<MouseDownEvent>(OnMouseFocusMe);
         RegisterCallback<MouseDownEvent>(OnMouseDown_Move);
         RegisterCallback<MouseUpEvent>(OnMouseUp_Move);
         RegisterCallback<DetachFromPanelEvent>(OnDetach);
@@ -1196,8 +1704,7 @@ public class StateNode : MyVisualElement, IConditionExist
         _id++;
     }
 
-
-
+    private TextField _displayNameField = null;
 
 
     public static int _id = 0;
@@ -1210,9 +1717,17 @@ public class StateNode : MyVisualElement, IConditionExist
     public IReadOnlyDictionary<StateNode, Arrow_Ready> _FromStateNodes => _fromStateNodes;
 
     private Toggle _isEntryState = null;
-    public bool _IsEntryState { get { return _isEntryState.value; } }
+    public bool _IsEntryState 
+    {
+        get { return _isEntryState.value; }
+        set { _isEntryState.value = value; }
+    }
     private ObjectField _objectField = null;
-    public StateAsset _StateAsset { get { return (StateAsset)_objectField.value; } }
+    public StateAsset _StateAsset 
+    {
+        get { return (StateAsset)_objectField.value; }
+        set { _objectField.value = value; }
+    }
     private Arrow_NotReady _arrow_NotReady = null;
     
     private bool _rayCastReady = false;
@@ -1228,6 +1743,16 @@ public class StateNode : MyVisualElement, IConditionExist
 
         _root.Remove(_arrow_NotReady);
         _arrow_NotReady = null;
+    }
+
+    private void OnMouseFocusMe(MouseDownEvent mouseDownEvent)
+    {
+        if (mouseDownEvent.pressedButtons != 4)
+        {
+            return;
+        }
+
+        _window.SetFocusedNode(this);
     }
 
     private void OnMouseDown_Move(MouseDownEvent mouseDownEvent)
@@ -1287,15 +1812,17 @@ public class StateNode : MyVisualElement, IConditionExist
             return;
         }
 
+        if (stateNode == this)
+        {
+            return;
+        }
+
         if (_fromStateNodes.ContainsKey(stateNode) == true)
         {
             return;
         }
 
         Arrow_Ready newReadyArrow = new Arrow_Ready(_root, _window, stateNode, this);
-
-        LinkingNode_From(stateNode, newReadyArrow);
-        stateNode.LinkingNode_To(this, newReadyArrow);
     }
 
 
@@ -1331,6 +1858,33 @@ public class StateNode : MyVisualElement, IConditionExist
     {
         _root.Remove(this);
     }
+
+
+
+    public void DeleteFriendNode_From_FromArror(StateNode stateNode)
+    {
+        if (_fromStateNodes.ContainsKey(stateNode) == false)
+        {
+            Debug.Assert(false, "삭제할건데 없다고?");
+            Debug.Break();
+            return;
+        }
+
+        _fromStateNodes.Remove(stateNode);
+    }
+
+    public void DeleteFriendNode_To_FromArror(StateNode stateNode)
+    {
+        if (_toStateNodes.ContainsKey(stateNode) == false)
+        {
+            Debug.Assert(false, "삭제할건데 없다고?");
+            Debug.Break();
+            return;
+        }
+
+        _toStateNodes.Remove(stateNode);
+    }
+
 
 
     private void DeleteFriendNode_From(StateNode stateNode)
@@ -1397,6 +1951,35 @@ public class Arrow_Head : MyVisualElement
 
         _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
     }
+
+    public void ShowMe()
+    {
+        style.borderBottomColor = Color.green; // 화살표 색
+    }
+
+    public void HideMe()
+    {
+        style.borderBottomColor = Color.clear; // 화살표 색
+    }
+}
+
+
+public class Arrow_Head_Ready : Arrow_Head
+{
+    public Arrow_Head_Ready(VisualElement root, GraphEditorWithUIToolkit window, Arrow_Ready arrow, Vector3 mousePosition) : base(root, window, mousePosition)
+    {
+        _arrow = arrow;
+
+        this.AddManipulator(new ContextualMenuManipulator(menuEvent =>
+        {
+            menuEvent.menu.AppendAction("Edit_Condition", _ => _arrow.EditCondition());
+            menuEvent.menu.AppendAction("Delete_Line", _ => _arrow.DeleteLine());
+            menuEvent.menu.AppendAction("Copy_Conditions", _ => _arrow.CopyToClipboard());
+            menuEvent.menu.AppendAction("Paste_Conditions", _ => _arrow.PasteFromClipboard());
+        }));
+    }
+
+    private Arrow_Ready _arrow = null;
 }
 #endregion Arrow_Head
 
@@ -1978,8 +2561,18 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
 
     public Arrow_Ready(VisualElement root, GraphEditorWithUIToolkit window, StateNode fromNode, StateNode toNode) : base(root, window)
     {
+        Init(fromNode, toNode);
+    }
+
+    public void Init(StateNode fromNode, StateNode toNode)
+    {
         _fromNode = fromNode;
         _toNode = toNode;
+
+
+        _toNode.LinkingNode_From(_fromNode, this);
+        _fromNode.LinkingNode_To(_toNode, this);
+
 
         //style 설정
         {
@@ -1988,25 +2581,100 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
             style.height = 2.0f;
         }
 
-        ////중간에 꽃힐 화살표 비쥬얼 엘리먼트 생성
+        //중간에 꽃힐 화살표 비쥬얼 엘리먼트 생성
         {
-            _arrowHead = new Arrow_Head(_root, _window, Vector2.zero);
+            _arrowHead = new Arrow_Head_Ready(_root, _window, this, Vector2.zero);
         }
 
-        _actions += ArrowPositionUpdate;
 
         _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
 
+        _window.ArrowAdded(this);
+
+
+        this.AddManipulator(new ContextualMenuManipulator(menuEvent =>
+        {
+            menuEvent.menu.AppendAction("Edit_Condition", _ => EditCondition());
+            menuEvent.menu.AppendAction("Delete_Line", _ => DeleteLine());
+            menuEvent.menu.AppendAction("Copy_Conditions", _ => CopyToClipboard());
+            menuEvent.menu.AppendAction("Paste_Conditions", _ => PasteFromClipboard());
+        }));
+
         RegisterCallback<DetachFromPanelEvent>(OnDetach);
-        RegisterCallback<MouseDownEvent>(OnMouseDown_ModifyCondition);
+
+        if (_window.IsArrowShow(this) == false)
+        {
+            HideMe();
+        }
+
+        //그래도 일단 한번 업데이트는 해준다
+        {
+            ArrowPositionUpdate();
+        }
+
+        _actions += ArrowPositionUpdate;
     }
 
 
     private StateNode _fromNode = null;
+    public StateNode _FromNode => _fromNode;
+
     private StateNode _toNode = null;
-    private Arrow_Head _arrowHead = null;
+    public StateNode _ToNode => _toNode;
+
+    private Arrow_Head_Ready _arrowHead = null;
+
     private List<ConditionAssetWrapper> _conditionData = new List<ConditionAssetWrapper>();
     public List<ConditionAssetWrapper> _ConditionDatas => _conditionData;
+
+    private bool CheckInvocation(Action target)
+    {
+        foreach (var invokList in _actions.GetInvocationList())
+        {
+            if (invokList.Method == target.Method)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void ShowMe()
+    {
+        {
+            //날 화면상에 보여준다
+            //if (CheckInvocation(ArrowPositionUpdate) == true)
+            //{
+            //    Debug.Assert(false, "이미 화면에 보여주고있었나요? 심각한 오류다");
+            //    Debug.Break();
+            //    return;
+            //}
+        }
+
+        _actions += ArrowPositionUpdate;
+        style.backgroundColor = Color.green;
+
+        _arrowHead.ShowMe();
+    }
+
+    public void HideMe()
+    {
+        {
+            //날 화면상에 보여준다
+            //if (CheckInvocation(ArrowPositionUpdate) == false)
+            //{
+            //    Debug.Assert(false, "이미 안보여주고있었나요? 심각한 오류다");
+            //    Debug.Break();
+            //    return;
+            //}
+        }
+
+        _actions -= ArrowPositionUpdate;
+        style.backgroundColor = Color.clear;
+
+        _arrowHead.HideMe();
+    }
+
 
 
 
@@ -2044,7 +2712,7 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
 
 
 
-    private void OnMouseDown_ModifyCondition(MouseDownEvent mouseDownEvent)
+    public void EditCondition()
     {
         if (_isWindowShow == true)
         {
@@ -2060,8 +2728,62 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
         TurnOnConditionModifyWindow(window);
     }
 
+    [System.Serializable]
+    private class Wrapper<T>
+    {
+        public List<T> Items;
+    }
+
+
+    public void CopyToClipboard()
+    {
+        string json = JsonUtility.ToJson(new Wrapper<ConditionAssetWrapper> { Items = _conditionData });
+        GUIUtility.systemCopyBuffer = json;
+    }
+
+    public List<T> GetDataFromClipboard<T>()
+    {
+        string json = GUIUtility.systemCopyBuffer;
+
+        if (string.IsNullOrEmpty(json) == true)
+        {
+            return new List<T>();
+        }
+
+        Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
+        return wrapper.Items;
+    }
+
+
+    public void PasteFromClipboard()
+    {
+        List<ConditionAssetWrapper> beforeList = new List<ConditionAssetWrapper>();
+        beforeList.Clear();
+        beforeList.AddRange(_conditionData);
+
+
+        List<ConditionAssetWrapper> coppied = GetDataFromClipboard<ConditionAssetWrapper>();
+        if (coppied.Count <= 0)
+        {
+            return;
+        }
+
+        _conditionData.Clear();
+        _conditionData.AddRange(coppied);
+    }
+
+
+    public void DeleteLine()
+    {
+        _toNode.DeleteFriendNode_From_FromArror(_fromNode);
+        _fromNode.DeleteFriendNode_To_FromArror(_toNode);
+        _root.Remove(this);
+    }
+
     private void OnDetach(DetachFromPanelEvent detachEvent)
     {
+        _window.DeleteArrow(this);
+
         _actions = null;
 
         OnDetach_ConditionModifyWindow();

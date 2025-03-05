@@ -6,48 +6,46 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StateGraphAsset", menuName = "Scriptable Object/CreateStateGraphAsset", order = int.MinValue)]
 public class StateGraphAsset : ScriptableObject
 {
-    public static StateGraphAsset Create(HashSet<StateNode> data)
-    {
-        /*--------------------------------------------------
-        |NOTI| graph tool 에서 data를 주면 만들어서 반환합니다
-        --------------------------------------------------*/
-
-        StateGraphAsset newStateGraph = new StateGraphAsset();
-        newStateGraph.InitData(data);
-        return newStateGraph;
-    }
-
     public void InitData(HashSet<StateNode> data)
     {
         /*--------------------------------------------------
         |NOTI| 순회하고 데이터 만드는 작업은 클래스 본인이 직접?
         --------------------------------------------------*/
         Dictionary<StateAsset, StateAssetWrapper> stateAssets = new Dictionary<StateAsset, StateAssetWrapper>();
-        
+
+        _graphType = StateGraphType.WeaponState_RightGraph;
+        _usingStates = new List<StateAssetWrapper>();
+        _interactionPointsInitial = new List<InteractionPoint>();
+
         foreach (StateNode stateNode in data) 
         {
-            IReadOnlyDictionary<StateNode, Arrow_Ready> toStateNodes = stateNode._ToStateNodes;
-
             StateAssetWrapper wrapper = null;
-            if (stateAssets.ContainsKey(stateNode._StateAsset) == false)
+            stateAssets.TryGetValue(stateNode._StateAsset, out wrapper);
+            if (wrapper == null) 
             {
                 wrapper = new StateAssetWrapper();
-
                 stateAssets.Add(stateNode._StateAsset, wrapper);
+            }
 
-                wrapper._stateAsset = stateNode._StateAsset;
-                wrapper._isEntryState = stateNode._IsEntryState;
-                wrapper._entryCondition = stateNode._entryConditionDatas;
+            IReadOnlyDictionary<StateNode, Arrow_Ready> toStateNodes = stateNode._ToStateNodes;
 
-                foreach (KeyValuePair<StateNode, Arrow_Ready> pair in toStateNodes)
-                {
-                    LinkedStateAsset newLinkedStateAsset = new LinkedStateAsset
-                    (
-                        pair.Key._StateAsset,
-                        pair.Value._ConditionDatas
-                    );
-                    wrapper._linkedStates.Add(newLinkedStateAsset);
-                }
+
+            wrapper._stateAsset = stateNode._StateAsset;
+            wrapper._isEntryState = stateNode._IsEntryState;
+            wrapper._entryCondition.Clear();
+            wrapper._entryCondition.AddRange(stateNode._entryConditionDatas);
+
+
+            foreach (KeyValuePair<StateNode, Arrow_Ready> pair in toStateNodes)
+            {
+                LinkedStateAsset newLinkedStateAsset = new LinkedStateAsset();
+
+                newLinkedStateAsset._linkedState = pair.Key._StateAsset;
+
+                newLinkedStateAsset._conditionAsset.Clear();
+                newLinkedStateAsset._conditionAsset.AddRange(pair.Value._ConditionDatas);
+
+                wrapper._linkedStates.Add(newLinkedStateAsset);
             }
         }
 
@@ -89,6 +87,8 @@ public class StateGraphAsset : ScriptableObject
     [Serializable]
     public class LinkedStateAsset
     {
+        public LinkedStateAsset() {}
+
         public LinkedStateAsset(StateAsset stateAsset, List<ConditionAssetWrapper> conditionAssetsWrapper)
         {
             _linkedState = stateAsset;

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _itemType: 3
   _equipType: 32
-  _ItemKey: 13
+  _ItemKey: 32
   _itemName: WolfMound
   _sizeX: 1
   _sizeY: 3
@@ -26,9 +26,11 @@ MonoBehaviour:
   _weaponType: 3
   _weaponDamageDesc:
     _damageReason: 1
+    _hitType: 0
     _damage: 1
     _damagePower: 1
     _damagingStamina: 1
-  _weaponStateGraph: {fileID: 11400000, guid: ede97883f6fef9447bab500229123844, type: 2}
+  _weaponStateGraph: {fileID: 11400000, guid: fcdd31c8796133c4eaa38ed8af486a74, type: 2}
+  _buffs: []
   _usingBulletType: 0
   _isAutomaticGun: 1
