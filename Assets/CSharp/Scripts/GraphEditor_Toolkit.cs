@@ -10,6 +10,8 @@ using static StateGraphAsset;
 using System.Linq;
 using static StateGraphToolSaveData;
 using UnityEditor.Experimental.GraphView;
+using static GraphEditorWithUIToolkit;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public enum Direction_2D
 {
@@ -853,6 +855,14 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
                 node.GetCondition().Clear();
                 node.GetCondition().AddRange(arrowLoadData._conditions);
             }
+
+            {
+                node.GetCondition().Clear();
+                node.GetCondition().AddRange(arrowLoadData._conditions);
+
+                CounterLabel counter = node._ArrowHead._Count;
+                counter.SetCount(node.GetCondition().Count);
+            }
         }
     }
 
@@ -1645,7 +1655,7 @@ public class StateNode : MyVisualElement, IConditionExist
 
             window.titleContent = new GUIContent("SubEditorWindow_ConditionModify");
             window.Show();
-            window.Init(_entryConditionDatas, this);
+            window.Init(_entryConditionDatas, this, null);
 
             TurnOnConditionModifyWindow(window);
         };
@@ -1932,7 +1942,6 @@ public class Arrow_Head : MyVisualElement
         {
             style =
                 {
-                    position = Position.Absolute,
                     width = 0,
                     height = 0,
 
@@ -1950,17 +1959,17 @@ public class Arrow_Head : MyVisualElement
         _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
     }
 
-    public void ShowMe()
+    public virtual void ShowMe()
     {
-        style.borderBottomColor = Color.green; // 화살표 색
+        _arrowHead.style.borderBottomColor = Color.green; // 화살표 색
     }
 
-    public void HideMe()
+    public virtual void HideMe()
     {
-        style.borderBottomColor = Color.clear; // 화살표 색
+        _arrowHead.style.borderBottomColor = Color.clear; // 화살표 색
     }
 
-    private VisualElement _arrowHead = null;
+    protected VisualElement _arrowHead = null;
 }
 
 
@@ -1977,9 +1986,33 @@ public class Arrow_Head_Ready : Arrow_Head
             menuEvent.menu.AppendAction("Copy_Conditions", _ => _arrow.CopyToClipboard());
             menuEvent.menu.AppendAction("Paste_Conditions", _ => _arrow.PasteFromClipboard());
         }));
+
+        _count = new CounterLabel();
+
+        Add(_count);
+    }
+
+    public void SetCount(int count)
+    {
+        _count.text = count.ToString();
+    }
+
+    public override void ShowMe()
+    {
+        _arrowHead.style.borderBottomColor = Color.green; // 화살표 색
+        _count.ShowMe();
+    }
+
+    public override void HideMe()
+    {
+        _arrowHead.style.borderBottomColor = Color.clear; // 화살표 색
+        _count.HideMe();
     }
 
     private Arrow_Ready _arrow = null;
+
+    private CounterLabel _count = null;
+    public CounterLabel _Count => _count;
 }
 #endregion Arrow_Head
 
@@ -2299,6 +2332,10 @@ public class ListViewExample : HierarchycalWindow
 //----------------------------------------------------
 public class SubEditorWindow_ConditionModify : HierarchycalWindow
 {
+    public SubEditorWindow_ConditionModify()
+    {
+    }
+
     public class ConditionDataVisualElement : VisualElement
     {
         public ConditionDataVisualElement()
@@ -2375,6 +2412,7 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
         private List<ConditionAssetWrapper> _targetList = null;
     }
 
+    private CounterLabel _counterUI = null;
     private ListView _conditionDataListView = null;
     private VisualElement _buttons = null;
     private List<ConditionAssetWrapper> _conditionData = null;
@@ -2385,8 +2423,13 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
         _hasConditionElement?.WindowOff();
     }
 
-    public void Init(List<ConditionAssetWrapper> dataTarget, IConditionExist canHaveCondition)
+    public void Init(List<ConditionAssetWrapper> dataTarget, IConditionExist canHaveCondition, CounterLabel counterUINullable)
     {
+        //카운터설정
+        {
+            _counterUI = counterUINullable;
+        }
+
         //데이터 설정
         {
             _conditionData = dataTarget;
@@ -2481,6 +2524,12 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
             {
                 _conditionData.Add(new ConditionAssetWrapper());
                 RefreshUI();
+
+                int currCount = _conditionData.Count;
+                if (_counterUI != null)
+                {
+                    _counterUI.SetCount(currCount);
+                }
             };
             Button plusButton = new Button(plusButtonClickAction)
             {
@@ -2502,6 +2551,12 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
                 }
                 _conditionData.RemoveAt(_conditionData.Count - 1);
                 RefreshUI();
+
+                int currCount = _conditionData.Count;
+                if (_counterUI != null)
+                {
+                    _counterUI.SetCount(currCount);
+                }
             };
             Button minusButton = new Button(minusButtonClickAction)
             {
@@ -2523,6 +2578,41 @@ public class SubEditorWindow_ConditionModify : HierarchycalWindow
     }
 }//----
 //----------------------------------------------------
+
+
+public class CounterLabel : Label
+{
+
+    public CounterLabel()
+    {
+        text = 0.ToString();
+
+        style.alignContent = Align.Center;
+        style.width = 10;
+        style.height = 10;
+        style.unityFontStyleAndWeight = FontStyle.Bold;
+
+        style.backgroundColor = Color.gray;
+        style.color = Color.yellow;
+    }
+
+    public void HideMe()
+    {
+        style.backgroundColor = Color.clear;
+        style.color = Color.clear;
+    }
+
+    public void ShowMe()
+    {
+        style.backgroundColor = Color.gray;
+        style.color = Color.yellow;
+    }
+
+    public void SetCount(int count)
+    {
+        text = count.ToString();
+    }
+}
 
 
 
@@ -2623,6 +2713,7 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
     public StateNode _ToNode => _toNode;
 
     private Arrow_Head_Ready _arrowHead = null;
+    public Arrow_Head_Ready _ArrowHead => _arrowHead;
 
     private List<ConditionAssetWrapper> _conditionData = new List<ConditionAssetWrapper>();
     public List<ConditionAssetWrapper> _ConditionDatas => _conditionData;
@@ -2723,7 +2814,7 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
 
         window.titleContent = new GUIContent("SubEditorWindow_ConditionModify");
         window.Show();
-        window.Init(_conditionData, this);
+        window.Init(_conditionData, this, _arrowHead._Count);
 
         TurnOnConditionModifyWindow(window);
     }
@@ -2770,6 +2861,8 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
 
         _conditionData.Clear();
         _conditionData.AddRange(coppied);
+
+        _arrowHead._Count.SetCount(_conditionData.Count);
     }
 
 

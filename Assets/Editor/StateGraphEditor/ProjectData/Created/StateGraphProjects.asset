@@ -208,3 +208,95 @@ MonoBehaviour:
             type: 2}
           _goal: 1
     _graphAssetTag: {fileID: 11400000, guid: 58c508e3cf685bb468674396a84dacb0, type: 2}
+  - _loadData:
+      _nodeDatas:
+      - _position: {x: 84, y: 110, z: 0}
+        _asset: {fileID: 11400000, guid: 699a35f93aa843141a03bf91c842fcde, type: 2}
+        _isEntry: 1
+        _entryConditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+      - _position: {x: 598, y: 117, z: 0}
+        _asset: {fileID: 11400000, guid: cc2a82ae02e7e3048a5670593ff80631, type: 2}
+        _isEntry: 0
+        _entryConditions: []
+      - _position: {x: 312, y: 349, z: 0}
+        _asset: {fileID: 11400000, guid: 91ce837d63bf6384a97a777c8206eb35, type: 2}
+        _isEntry: 0
+        _entryConditions: []
+      _arrowDatas:
+      - _fromAsset: {fileID: 11400000, guid: 699a35f93aa843141a03bf91c842fcde, type: 2}
+        _toAsset: {fileID: 11400000, guid: cc2a82ae02e7e3048a5670593ff80631, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+      - _fromAsset: {fileID: 11400000, guid: cc2a82ae02e7e3048a5670593ff80631, type: 2}
+        _toAsset: {fileID: 11400000, guid: 91ce837d63bf6384a97a777c8206eb35, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+      - _fromAsset: {fileID: 11400000, guid: 91ce837d63bf6384a97a777c8206eb35, type: 2}
+        _toAsset: {fileID: 11400000, guid: 699a35f93aa843141a03bf91c842fcde, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+    _graphAssetTag: {fileID: 11400000, guid: 7a7ed9fce9d1d5d488ac9933174189f6, type: 2}
+  - _loadData:
+      _nodeDatas:
+      - _position: {x: 391, y: 98, z: 0}
+        _asset: {fileID: 11400000, guid: cc2a82ae02e7e3048a5670593ff80631, type: 2}
+        _isEntry: 0
+        _entryConditions: []
+      - _position: {x: 237, y: 270, z: 0}
+        _asset: {fileID: 11400000, guid: 91ce837d63bf6384a97a777c8206eb35, type: 2}
+        _isEntry: 0
+        _entryConditions: []
+      - _position: {x: 88, y: 93, z: 0}
+        _asset: {fileID: 11400000, guid: 699a35f93aa843141a03bf91c842fcde, type: 2}
+        _isEntry: 1
+        _entryConditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+      _arrowDatas:
+      - _fromAsset: {fileID: 11400000, guid: 699a35f93aa843141a03bf91c842fcde, type: 2}
+        _toAsset: {fileID: 11400000, guid: cc2a82ae02e7e3048a5670593ff80631, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+      - _fromAsset: {fileID: 11400000, guid: cc2a82ae02e7e3048a5670593ff80631, type: 2}
+        _toAsset: {fileID: 11400000, guid: 91ce837d63bf6384a97a777c8206eb35, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+      - _fromAsset: {fileID: 11400000, guid: 91ce837d63bf6384a97a777c8206eb35, type: 2}
+        _toAsset: {fileID: 11400000, guid: 699a35f93aa843141a03bf91c842fcde, type: 2}
+        _conditions:
+        - _conditionAsset: {fileID: 11400000, guid: b8a5e7ed6ee72d74eb094595759dcf2c,
+            type: 2}
+          _goal: 1
+        - _conditionAsset: {fileID: 11400000, guid: 16b1b7fead335154798c9d5f8d152b94,
+            type: 2}
+          _goal: 1
+    _graphAssetTag: {fileID: 11400000, guid: 8924ac67e1078784e8a9918a3d5952e3, type: 2}

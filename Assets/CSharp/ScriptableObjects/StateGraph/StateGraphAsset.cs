@@ -733,6 +733,12 @@ public class StateGraphAsset : ScriptableObject
                 case StateActionType.KnuckBack:
                     break;
 
+                case StateActionType.TurnOnGhost:
+                    break;
+
+                case StateActionType.TurnOffGhost:
+                    break;
+
                 default:
                     Debug.Assert(false, "데이터가 추가됐습니까?");
                     break;

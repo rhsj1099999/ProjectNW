@@ -588,7 +588,6 @@ public class InventoryBoard : BoardUIBaseScript
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("M16"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("AK47"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("D_Eagle"), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Narukami"), 1);
         }
 
 
@@ -609,9 +608,10 @@ public class InventoryBoard : BoardUIBaseScript
 
         if (Input.GetKeyDown(KeyCode.Alpha6) == true)
         {
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("WolfMound"), 1);
+            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("Narukami"), 1);
             AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("BeidouArmor"), 1);
-            AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("AatroxSword"), 1);
+            //AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("WolfMound"), 1);
+            //AddItemAutomatic(ItemInfoManager.Instance.GetItemInfo("AatroxSword"), 1);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha7) == true)

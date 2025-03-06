@@ -99,6 +99,18 @@ public class KinematicControllerWrapper : CharacterContollerable, ICharacterCont
         _motor.CollidableLayers = _motor.Capsule.includeLayers;
     }
 
+    public override void TurnOnGhost()
+    {
+        _motor.Capsule.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer"));
+        _motor.CollidableLayers = _motor.Capsule.includeLayers;
+    }
+
+    public override void TurnOffGhost()
+    {
+        _motor.Capsule.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("CharacterVolume"));
+        _motor.CollidableLayers = _motor.Capsule.includeLayers;
+    }
+
     public override void SubScriptStart() {}
 
 

@@ -72,6 +72,16 @@ public class CharacterMoveScript2 : CharacterContollerable
         _characterController.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer"));
     }
 
+    public override void TurnOnGhost()
+    {
+        _characterController.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer"));
+    }
+
+    public override void TurnOffGhost()
+    {
+        _characterController.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("CharacterVolume"));
+    }
+
     public override void GravityUpdate() //매 프레임마다 호출될 함수니까
     {
         _gravitySpeed += new Vector3(0.0f, Time.deltaTime * Physics.gravity.y * _mass, 0.0f);

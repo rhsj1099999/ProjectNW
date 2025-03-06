@@ -69,6 +69,9 @@ public enum StateActionType
     RootMove_Speed,
 
     KnuckBack,
+
+    TurnOnGhost,
+    TurnOffGhost,
 }
 
 public enum ConditionType
@@ -1479,6 +1482,30 @@ public class StateContoller : GameCharacterSubScript
                 case StateActionType.KnuckBack:
                     {
                         _owner.GCST<CharacterContollerable>().DoKnuckBack();
+                    }
+                    break;
+
+                case StateActionType.TurnOnGhost:
+                    {
+                        if (_currState.name != "State_Blade_SpritThrust")
+                        {
+                            Debug.Assert(false, "잘못쓰였다");
+                            Debug.Break();
+                        }
+
+                        _owner.GCST<CharacterContollerable>().TurnOnGhost();
+                    }
+                    break;
+
+                case StateActionType.TurnOffGhost:
+                    {
+                        if (_currState.name != "State_Blade_SpritThrust")
+                        {
+                            Debug.Assert(false, "잘못쓰였다");
+                            Debug.Break();
+                        }
+
+                        _owner.GCST<CharacterContollerable>().TurnOffGhost();
                     }
                     break;
 

@@ -55,6 +55,8 @@ public abstract class CharacterContollerable : GameCharacterSubScript
         return (Quaternion.LookRotation(cameraLook) * inputDirection);
     }
 
+    public abstract void TurnOnGhost();
+    public abstract void TurnOffGhost();
     public abstract void CharacterDie();
     public abstract void CharacterRevive();
     public abstract void MoverUpdate();

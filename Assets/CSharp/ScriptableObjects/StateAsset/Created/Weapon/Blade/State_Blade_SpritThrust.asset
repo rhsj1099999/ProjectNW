@@ -35,11 +35,15 @@ MonoBehaviour:
     _aiAttackStateDesc:
       _coolTime: -1
       _range: -1
-    _stateBuffs_Add: []
-    _stateBuffs_Remove: []
-    _EnterStateActionTypes: 0d000000220000002c000000
-    _inStateActionTypes: 06000000
-    _ExitStateActionTypes: 2d000000
+    _stateBuffs_Add:
+    - {fileID: 11400000, guid: c3e6e071676b0454595aee49b5de60ea, type: 2}
+    - {fileID: 11400000, guid: eb483f874cc5c264899263f452bacf4a, type: 2}
+    _stateBuffs_Remove:
+    - {fileID: 11400000, guid: c3e6e071676b0454595aee49b5de60ea, type: 2}
+    - {fileID: 11400000, guid: eb483f874cc5c264899263f452bacf4a, type: 2}
+    _EnterStateActionTypes: 0d000000220000002c00000025000000
+    _inStateActionTypes: 2a000000
+    _ExitStateActionTypes: 260000002d000000
     _checkingBehaves: 
     _isOverrideStateExsist: 0
     _overrideStates: []
