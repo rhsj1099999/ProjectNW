@@ -967,17 +967,6 @@ public class MyVisualElement : VisualElement
     public virtual void DoRayCast(Vector2 position, MyVisualElement caller) { }
 
 
-    public void MoveTo_IfArrow(Vector2 position)
-    {
-        Vector2 localPosition = position - _root.worldBound.position;
-
-        float centerX = style.borderLeftWidth.value + style.borderRightWidth.value;
-        float centerY = style.borderBottomWidth.value / 2.0f;
-        Vector2 borderCenter = new Vector2(centerX, centerY);
-
-        transform.position = localPosition - borderCenter;
-    }
-
     public void MoveTo(Vector2 position)
     {
         transform.position = ConvertToWindowPosition(position) - new Vector2(style.width.value.value / 2.0f, style.height.value.value / 2.0f);
@@ -1933,21 +1922,30 @@ public class Arrow_Head : MyVisualElement
 {
     public Arrow_Head(VisualElement root, GraphEditorWithUIToolkit window, Vector3 mousePosition) : base(root, window)
     {
-        style.width = 0;
-        style.height = 0;
-        style.position = Position.Absolute; // 원하는 위치 설정
+        style.position = Position.Absolute;
+        style.width = 20;
+        style.height = 20;
 
-        /*----------------------------------------------------
-        |TODO| 삼각형 회전이 이상해요
-        ----------------------------------------------------*/
+        _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
 
-        style.borderLeftWidth = 10;  // 왼쪽 삼각형
-        style.borderRightWidth = 10; // 오른쪽 삼각형
-        style.borderBottomWidth = 20; // 아래 삼각형 (화살표 모양)
+        _arrowHead = new VisualElement()
+        {
+            style =
+                {
+                    position = Position.Absolute,
+                    width = 0,
+                    height = 0,
 
-        style.borderLeftColor = Color.clear;
-        style.borderRightColor = Color.clear;
-        style.borderBottomColor = Color.green; // 화살표 색
+                    borderLeftWidth = 10,
+                    borderRightWidth = 10,
+                    borderBottomWidth = 20,
+
+                    borderLeftColor = Color.clear,
+                    borderRightColor = Color.clear,
+                    borderBottomColor = Color.green,
+                }
+        };
+        Add(_arrowHead);
 
         _window.AddElement(HierarchycalWindow.Layer.Layer_Object_One, this);
     }
@@ -1961,6 +1959,8 @@ public class Arrow_Head : MyVisualElement
     {
         style.borderBottomColor = Color.clear; // 화살표 색
     }
+
+    private VisualElement _arrowHead = null;
 }
 
 
@@ -2038,7 +2038,7 @@ public class Arrow_NotReady : MyVisualElement
 
         //화살표 중간 삼각형이 업데이트 된다
         {
-            _arrowHead.MoveTo_IfArrow(mouseAndStateNodeCenter);
+            _arrowHead.MoveTo(mouseAndStateNodeCenter);
             _arrowHead.transform.rotation = Quaternion.Euler(0, 0, angle + 90);
         }
     }
@@ -2704,7 +2704,7 @@ public class Arrow_Ready : MyVisualElement, IConditionExist
 
         //화살표 중간 삼각형이 업데이트 된다
         {
-            _arrowHead.MoveTo_IfArrow(centerPosition);
+            _arrowHead.MoveTo(centerPosition);
             _arrowHead.transform.rotation = Quaternion.Euler(0, 0, angle + 90);
         }
     }
