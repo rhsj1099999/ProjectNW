@@ -650,11 +650,6 @@ public class StateContoller : GameCharacterSubScript
             |TODO| 지우는 구조를 생각해봅시다
             -----------------------------------------------*/
             {
-                if (_currState._myState._isAttackState == true)
-                {
-                    CustomKeyManager.Instance.ClearKeyRecord();
-                }
-
                 if (_currState._myState._isNeedStat == true)
                 {
                     foreach (var item in _currState._myState._needStat._needActiveStatList)
@@ -866,6 +861,7 @@ public class StateContoller : GameCharacterSubScript
         {
             StatedWillBeChanged();
             stateChangeGraunted = true;
+            CustomKeyManager.Instance.ClearKeyRecord();
         }
 
         targetState = nextState;
