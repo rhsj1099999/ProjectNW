@@ -10,22 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ad2de68ba504b24e84273b222c9f9c9, type: 3}
-  m_Name: Diluc_ElementalArt_lvl3
+  m_Name: Diluc_ElementalArt_lvl3_AS
   m_EditorClassIdentifier: 
-  _animationClip: {fileID: 7400000, guid: a0c0a35029044c548bf24efa02859a78, type: 2}
+  _animationClip: {fileID: 7400000, guid: 36d79d7e17c386747a2ea15f7b9b4272, type: 2}
   _frameDataList:
-  - _frameWorkType: 3
+  - _frameWorkType: 2
+    _frameDatas:
+    - _frameCheckType: 2
+      _colliderAttachType: 0
+      _frameUp: 32
+      _frameUnder: 72
+      _buffs: []
+  - _frameWorkType: 1
+    _frameDatas:
+    - _frameCheckType: 0
+      _colliderAttachType: 0
+      _frameUp: 50
+      _frameUnder: 0
+      _buffs: []
+  - _frameWorkType: 0
     _frameDatas:
     - _frameCheckType: 2
       _colliderAttachType: 5
-      _frameUp: 30
-      _frameUnder: 50
+      _frameUp: 35
+      _frameUnder: 60
       _buffs: []
-  - _frameWorkType: 6
-    _frameDatas:
-    - _frameCheckType: 0
-      _colliderAttachType: 7
-      _frameUp: 1
-      _frameUnder: 0
-      _buffs:
-      - {fileID: 11400000, guid: 92b29754b768785448415d9848d61b36, type: 2}

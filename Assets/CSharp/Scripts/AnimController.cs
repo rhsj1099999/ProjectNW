@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 
-public class AnimContoller : MonoBehaviour
+public class AnimController : MonoBehaviour
 {
     public void UpdateParameter(string valName, int val)
     {

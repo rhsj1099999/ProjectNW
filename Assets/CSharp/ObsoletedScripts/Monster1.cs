@@ -51,7 +51,7 @@ public class Monster1 : MonoBehaviour
 //    private int _debuggingDistanceMax = 0;
 
 //    //Animator Section
-//    [SerializeField] private AnimContoller _AnimController = null;
+//    [SerializeField] private AnimController _AnimController = null;
 
 
 

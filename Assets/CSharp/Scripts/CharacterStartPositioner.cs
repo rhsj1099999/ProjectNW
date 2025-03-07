@@ -7,6 +7,6 @@ public class CharacterStartPositioner : MonoBehaviour
     void Start()
     {
         PlayerScript playerScript = FindFirstObjectByType<PlayerScript>();
-        playerScript.GCST<CharacterContollerable>().CharacterTeleport(transform.position);
+        playerScript.GCST<CharacterControllerable>().CharacterTeleport(transform.position);
     }
 }

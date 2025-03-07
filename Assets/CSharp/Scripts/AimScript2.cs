@@ -561,7 +561,7 @@ public class AimScript2 : GameCharacterSubScript
             //타겟값이 갱신됐다. 따라서 적용할 값을 댐핑한다
             currentAimRotation.y = Mathf.SmoothDamp(currentAimRotation.y, _calaculatedVal.y, ref currentVelocity.y, smoothTime.x);
 
-            _owner.GCST<CharacterContollerable>().CharacterRotate(Quaternion.Euler(transform.rotation.x, currentAimRotation.y, 0f));
+            _owner.GCST<CharacterControllerable>().CharacterRotate(Quaternion.Euler(transform.rotation.x, currentAimRotation.y, 0f));
         }
 
         //캐릭터 x축 회전 (수직회전 = 리깅회전)
@@ -580,7 +580,7 @@ public class AimScript2 : GameCharacterSubScript
         //    //타겟값이 갱신됐다. 따라서 적용할 값을 댐핑한다
         //    currentAimRotation.y = _calaculatedVal.y;
 
-        //    _owner.GCST<CharacterContollerable>().CharacterRotate(Quaternion.Euler(transform.rotation.x, currentAimRotation.y, 0f));
+        //    _owner.GCST<CharacterControllerable>().CharacterRotate(Quaternion.Euler(transform.rotation.x, currentAimRotation.y, 0f));
         //}
 
         ////캐릭터 x축 회전 (수직회전 = 리깅회전)

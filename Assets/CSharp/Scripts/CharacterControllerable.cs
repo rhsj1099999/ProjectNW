@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class CharacterContollerable : GameCharacterSubScript
+public abstract class CharacterControllerable : GameCharacterSubScript
 {
     [SerializeField] protected float _mass = 2.0f;
     [SerializeField] protected bool _logMe = false;
@@ -38,7 +38,7 @@ public abstract class CharacterContollerable : GameCharacterSubScript
     public override sealed void Init(CharacterScript owner)
     {
         _owner = owner;
-        _myType = typeof(CharacterContollerable);
+        _myType = typeof(CharacterControllerable);
     }
 
 

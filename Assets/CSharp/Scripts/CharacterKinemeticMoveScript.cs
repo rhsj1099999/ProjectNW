@@ -7,7 +7,7 @@ public class CharacterKinemeticMoveScript : MonoBehaviour
 }
 
 //[RequireComponent(typeof(KinematicControllerWrapper))]
-//public class CharacterKinemeticMoveScript : CharacterContollerable
+//public class CharacterKinemeticMoveScript : CharacterControllerable
 //{
 //    public override void CharacterInertiaMove(float ratio)
 //    {

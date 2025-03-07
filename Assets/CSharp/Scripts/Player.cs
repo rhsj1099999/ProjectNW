@@ -32,5 +32,5 @@ public class Player : MonoBehaviour
             skinnedMeshRenderer.updateWhenOffscreen = true;
         }
     }
-    [SerializeField] private AnimContoller _AnimController = null;
+    [SerializeField] private AnimController _AnimController = null;
 }

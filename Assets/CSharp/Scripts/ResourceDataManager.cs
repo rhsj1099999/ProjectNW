@@ -4,12 +4,22 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
 using static AnimationFrameDataAsset;
+using static StateGraphAsset;
 
 public class ResourceDataManager : SubManager<ResourceDataManager>
 {
+    /*------------------------------------------------------------------
+    |TODO||NOTI| 구르기 강제사출때문에 있는 코드입니다. 없애야 합니다.
+    ------------------------------------------------------------------*/
+    public StateAsset _rollState_MustDel = null;
+    public List<ConditionAssetWrapper> _rollCondition_MustDel = null;
 
     public override void SubManagerInit()
     {
+        /*------------------------------------------------------------------
+        |TODO||NOTI| 구르기 강제사출때문에 있는 코드입니다. 없애야 합니다.
+        ------------------------------------------------------------------*/
+
         SingletonAwake();
 
         ReadyAnimationHipCurve();

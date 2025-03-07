@@ -316,7 +316,7 @@ public class StateGraphAsset : ScriptableObject
 
 
 
-    public void SettingOwnerComponent(StateContollerComponentDesc ownerComponent, CharacterScript caller)
+    public void SettingOwnerComponent(StateControllerComponentDesc ownerComponent, CharacterScript caller)
     {
         foreach (StateAssetWrapper stateAssetWrapper in _usingStates)
         {
@@ -328,7 +328,7 @@ public class StateGraphAsset : ScriptableObject
 
 
 
-    private void InitPartial(StateContollerComponentDesc _ownerActionComponent, List<StateActionType> list, CharacterScript owner)
+    private void InitPartial(StateControllerComponentDesc _ownerActionComponent, List<StateActionType> list, CharacterScript owner)
     {
         foreach (var actions in list)
         {
@@ -338,7 +338,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -360,7 +360,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "SaveLatestVelocity행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
@@ -370,7 +370,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Jump행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
@@ -380,7 +380,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "ForcedMove행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -396,7 +396,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "ResetLatestVelocity행동이 있는데 이 컴포넌트가 없습니다");
                         }
                     }
@@ -487,7 +487,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -503,7 +503,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -519,7 +519,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "AI_CharacterRotateToEnemy행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -569,7 +569,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -585,7 +585,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -601,7 +601,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -655,7 +655,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "Move_WithOutRotate행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -671,7 +671,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "LookAtLockOnTarget_Gun행동이 있는데 이 컴포넌트가 없습니다");
                         }
 
@@ -697,7 +697,7 @@ public class StateGraphAsset : ScriptableObject
                     {
                         if (_ownerActionComponent._ownerCharacterControllable == null)
                         {
-                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterContollerable>();
+                            _ownerActionComponent._ownerCharacterControllable = owner.GetComponent<CharacterControllerable>();
                             Debug.Assert(_ownerActionComponent._ownerCharacterControllable != null, "LookAtLockOnTarget_Gun행동이 있는데 이 컴포넌트가 없습니다");
                         }
 

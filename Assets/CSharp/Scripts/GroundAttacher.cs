@@ -11,7 +11,7 @@ public class GroundAttacher : MonoBehaviour
     //[SerializeField] private GameObject _downRayPoint1 = null;
     //[SerializeField] private GameObject _downRayPoint2 = null;
     //[SerializeField] private GameObject _massCenter = null;
-    //[SerializeField] private CharacterContollerable _controller = null;
+    //[SerializeField] private CharacterControllerable _controller = null;
 
 
 

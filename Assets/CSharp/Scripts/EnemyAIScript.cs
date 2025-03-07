@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static StateContoller;
+using static StateController;
 using static StateGraphAsset;
 
 public class EnemyAIScript : GameCharacterSubScript
@@ -265,7 +265,7 @@ public class EnemyAIScript : GameCharacterSubScript
 
 
 
-    virtual public void ReArrangeStateGraph(List<LinkedStateAssetWrapper> currLinkedState, StateContoller stateController, StateAsset currState)
+    virtual public void ReArrangeStateGraph(List<LinkedStateAssetWrapper> currLinkedState, StateController stateController, StateAsset currState)
     {
         float eachStepOffset = 1.0f / (float)_aggressiveMaxStep;
 
@@ -304,7 +304,7 @@ public class EnemyAIScript : GameCharacterSubScript
         _prevAggressiveStep = _currAggressiveStep;
     }
 
-    private void ReArrangeStateGraphPartial(List<LinkedStateAssetWrapper> currLinkedState, StateContoller stateController, List<StateGraphType> targetGraphTypes, StateAsset currState)
+    private void ReArrangeStateGraphPartial(List<LinkedStateAssetWrapper> currLinkedState, StateController stateController, List<StateGraphType> targetGraphTypes, StateAsset currState)
     {
         //Interaction Point를 먼저 검사해야하기 때문에 먼저 담는다.
         List<StateGraphAsset> stateGraphes = stateController.GetStateGraphes();

@@ -12,6 +12,7 @@ using static StateGraphToolSaveData;
 using UnityEditor.Experimental.GraphView;
 using static GraphEditorWithUIToolkit;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
+using Unity.VisualScripting;
 
 public enum Direction_2D
 {
@@ -507,21 +508,23 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
 
                                 StateGraphToolProjectLoadDesc existData = projectData.GetLoadDesc((StateGraphAsset)_objectField.value);
 
+                                _graphEditorWindow.Clear_All_New_Paper();
+
                                 if (existData == null)
                                 {
                                     bool overwrite = EditorUtility.DisplayDialog
                                     (
                                         "알림",
-                                        "해당 그래프 에셋은 프로젝트가 없습니다. 만들고 저장해주세요.",
+                                        "해당 그래프 에셋은 프로젝트가 없습니다.'\'생성은 되지만 모든 노드가 0,0에 배치됩니다.'\'가급적 툴을 이용해 그래프를 생성해주세요.",
                                         "예"
                                     );
 
-                                    return;
+                                    _graphEditorWindow.LoadProject((StateGraphAsset)_objectField.value);
                                 }
-
-                                _graphEditorWindow.Clear_All_New_Paper();
-
-                                _graphEditorWindow.LoadProject(existData);
+                                else
+                                {
+                                    _graphEditorWindow.LoadProject(existData);
+                                }
                             }   
                         }
                     };
@@ -800,6 +803,81 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
         }
     }
 
+    public void LoadProject(StateGraphAsset stateGraphAsset)
+    {
+        foreach (StateAssetWrapper assetWrpaaer in stateGraphAsset._usingStates)
+        {
+            StateNode node = new StateNode(rootVisualElement, this, Vector2.zero);
+            AddElement(Layer.Layer_Object_One, node);
+
+            {
+                node._StateAsset = assetWrpaaer._stateAsset;
+                node._IsEntryState = assetWrpaaer._isEntryState;
+
+                node._entryConditionDatas.Clear();
+                node._entryConditionDatas.AddRange(assetWrpaaer._entryCondition);
+            }
+        }
+
+
+        foreach (StateAssetWrapper assetWrpaaer in stateGraphAsset._usingStates)
+        {
+            StateNode fromNode = null;
+            foreach (StateNode stateNode in _stateNodes)
+            {
+                if (stateNode._StateAsset == assetWrpaaer._stateAsset)
+                {
+                    fromNode = stateNode;
+                    break;
+                }
+            }
+
+            if (fromNode == null)
+            {
+                Debug.Assert(false, "로딩중에 못찾았다고?");
+                Debug.Break();
+                return;
+            }
+
+
+            foreach (LinkedStateAsset linkedStateAsset in assetWrpaaer._linkedStates)
+            {
+                StateNode toNode = null;
+                foreach (StateNode stateNode in _stateNodes)
+                {
+                    if (stateNode._StateAsset == linkedStateAsset._linkedState)
+                    {
+                        toNode = stateNode;
+                        break;
+                    }
+                }
+
+                if (toNode == null)
+                {
+                    StateNode tempNode = new StateNode(rootVisualElement, this, Vector2.zero);
+                    AddElement(Layer.Layer_Object_One, tempNode);
+
+                    {
+                        tempNode._StateAsset = linkedStateAsset._linkedState;
+                        tempNode._entryConditionDatas.Clear();
+                        toNode = tempNode;
+                    }
+                }
+
+                Arrow_Ready node = new Arrow_Ready(rootVisualElement, this, fromNode, toNode);
+
+                {
+                    node.GetCondition().Clear();
+                    node.GetCondition().AddRange(linkedStateAsset._conditionAsset);
+
+                    CounterLabel counter = node._ArrowHead._Count;
+                    counter.SetCount(node.GetCondition().Count);
+                }
+            }
+        }
+    }
+
+
     public void LoadProject(StateGraphToolProjectLoadDesc loadData)
     {
         foreach (StateGraphToolProjectLoadDesc.LoadData_StateNode stateLoadData in loadData._nodeDatas)
@@ -850,11 +928,6 @@ public class GraphEditorWithUIToolkit : HierarchycalWindow
 
 
             Arrow_Ready node = new Arrow_Ready(rootVisualElement, this, fromNode, toNode);
-
-            {
-                node.GetCondition().Clear();
-                node.GetCondition().AddRange(arrowLoadData._conditions);
-            }
 
             {
                 node.GetCondition().Clear();

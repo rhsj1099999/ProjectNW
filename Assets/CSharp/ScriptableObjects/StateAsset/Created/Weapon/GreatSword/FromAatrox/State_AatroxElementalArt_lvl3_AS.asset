@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19d7f5bbe5729f44b88d86835abc5dd3, type: 3}
-  m_Name: State_AatroxElementalArt_lvl2
+  m_Name: State_AatroxElementalArt_lvl3_AS
   m_EditorClassIdentifier: 
   _myState:
     _stateType: 0
-    _stateAnimationClip: {fileID: 7400000, guid: feb14e4c2b73776408b3902628931852,
+    _stateAnimationClip: {fileID: 7400000, guid: 36d79d7e17c386747a2ea15f7b9b4272,
       type: 2}
     _stateAnimationClipOverride: []
-    _isAttackState: 1
+    _isAttackState: 0
     _isAttackState_effectedBySpeed: 0
     _attackDamageMultiply:
       _damageReason: 1
-      _hitType: 1
+      _hitType: 0
       _damage: 1
-      _damagePower: 15
+      _damagePower: 1
       _damagingStamina: 1
     _isGuardState: 0
     _canUseItem: 0
@@ -35,14 +35,12 @@ MonoBehaviour:
     _aiAttackStateDesc:
       _coolTime: -1
       _range: -1
-    _stateBuffs_Add:
-    - {fileID: 11400000, guid: de602d8dd4b7e2e4a8e6769806f9a905, type: 2}
-    - {fileID: 11400000, guid: 92b29754b768785448415d9848d61b36, type: 2}
+    _stateBuffs_Add: []
     _stateBuffs_Remove:
     - {fileID: 11400000, guid: de602d8dd4b7e2e4a8e6769806f9a905, type: 2}
-    _EnterStateActionTypes: 0d0000002200000025000000
-    _inStateActionTypes: 1900000006000000
-    _ExitStateActionTypes: 0e00000026000000
+    _EnterStateActionTypes: 0d000000
+    _inStateActionTypes: 06000000
+    _ExitStateActionTypes: 0e000000
     _checkingBehaves: 
     _isOverrideStateExsist: 0
     _overrideStates: []

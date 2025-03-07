@@ -644,7 +644,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
             return;
         }
 
-        int animationIndex = _owner.GCST<StateContoller>().SubAnimationStateIndex(_currStateAsset);
+        int animationIndex = _owner.GCST<StateController>().SubAnimationStateIndex(_currStateAsset);
 
         if (animationIndex == _currAnimIndex)
         {
@@ -1022,7 +1022,7 @@ public class CharacterAnimatorScript : GameCharacterSubScript
         {
             //애니메이션을 다시 결정해야한다.
 
-            int animationIndex = _owner.GCST<StateContoller>().SubAnimationStateIndex(nextState);
+            int animationIndex = _owner.GCST<StateController>().SubAnimationStateIndex(nextState);
             _currAnimIndex = animationIndex;
             nextAnimation = nextState._myState._subAnimationStateMachine._animations[animationIndex];
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static StateContoller;
+using static StateController;
 
 [CreateAssetMenu(fileName = "SubBlendTreeAsset_1D", menuName = "Scriptable Object/CreateSubBlendTree_1D", order = int.MinValue)]
 public class SubBlendTreeAsset_1D : ScriptableObject

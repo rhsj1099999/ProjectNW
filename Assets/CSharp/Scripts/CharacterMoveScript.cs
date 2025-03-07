@@ -33,7 +33,7 @@
 
 
 //    [SerializeField] private InputController _inputController = null;
-//    [SerializeField] private AnimContoller _AnimController = null;
+//    [SerializeField] private AnimController _AnimController = null;
 //    [SerializeField] private CharacterController _physics = null;
 
 //    [SerializeField] private string _aimKey = "Fire2";

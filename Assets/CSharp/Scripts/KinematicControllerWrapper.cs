@@ -10,7 +10,7 @@ using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
 [RequireComponent(typeof(KinematicCharacterMotor))]
-public class KinematicControllerWrapper : CharacterContollerable, ICharacterController
+public class KinematicControllerWrapper : CharacterControllerable, ICharacterController
 {
     [SerializeField] private KinematicCharacterMotor _motor = null;
 

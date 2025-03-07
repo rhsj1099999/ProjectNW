@@ -285,7 +285,7 @@ public class LevelStatInfoManager : SubManager<LevelStatInfoManager>
             if (beforeACCLvl != afterACCLvl)
             {
                 Debug.Log("북두 뎀 누산 버프 || 레벨 증가 : " + afterACCLvl);
-                victim.GCST<StateContoller>().OverrideAnimationClip(afterACCLvl - 1);
+                victim.GCST<StateController>().OverrideAnimationClip(afterACCLvl - 1);
             }
 
         }

@@ -13,11 +13,11 @@ using static UnityEditor.Rendering.InspectorCurveEditor;
 using UnityEngine.Animations.Rigging;
 using UnityEditor.Experimental.GraphView;
 
-public class StateContollerComponentDesc
+public class StateControllerComponentDesc
 {
     public CharacterScript _owner = null;
     public InputController _ownerInputController = null;
-    public CharacterContollerable _ownerCharacterControllable = null;
+    public CharacterControllerable _ownerCharacterControllable = null;
     public CharacterAnimatorScript _ownerCharacterAnimatorScript = null;
     public AINavigationScript _ownerNavigationScript = null;
     public EnemyAIScript _ownerEnemyAIScript = null;
@@ -328,17 +328,17 @@ public class CharacterScript : GameActorScript, IHitable
     public virtual void DeadCall()
     {
         // State Controller를 비활성화 한다.
-        GetCharacterSubcomponent<StateContoller>().enabled = false;
+        GetCharacterSubcomponent<StateController>().enabled = false;
         gameObject.layer = LayerMask.NameToLayer("DeadObject");
 
-        GCST<CharacterContollerable>().CharacterDie();
+        GCST<CharacterControllerable>().CharacterDie();
     }
 
 
     public virtual void CharacterRevive(int hp = 0)
     {
         _dead = false;
-        StateContoller stateController = GCST<StateContoller>();
+        StateController stateController = GCST<StateController>();
         stateController.enabled = true;
 
         //뒤로 누웠으면 뒤에서 누웠다 일어나는 자세로 연결, 앞으로 누웠으면 앞으로 누웠다 일어나는 자세로 연결
@@ -568,13 +568,13 @@ public class CharacterScript : GameActorScript, IHitable
         }
 
 
-        StateGraphAsset basicAsset = GetCharacterSubcomponent<StateContoller>().GetBasicStateGraphes(targetType);
+        StateGraphAsset basicAsset = GetCharacterSubcomponent<StateController>().GetBasicStateGraphes(targetType);
         if (basicAsset == null)
         {
             return;
         }
 
-        GetCharacterSubcomponent<StateContoller>().EquipStateGraph(basicAsset, targetType);
+        GetCharacterSubcomponent<StateController>().EquipStateGraph(basicAsset, targetType);
 
 
         //충돌체 업데이트
@@ -749,7 +749,7 @@ public class CharacterScript : GameActorScript, IHitable
                     : StateGraphType.WeaponState_LeftGraph;
 
                 //장착한 후, 상태그래프를 교체한다.
-                GCST<StateContoller>().EquipStateGraph(stateGraphAsset, stateGraphType);
+                GCST<StateController>().EquipStateGraph(stateGraphAsset, stateGraphType);
 
 
                 //장착한 후, 콜라이더를 업데이트 한다.
@@ -926,14 +926,14 @@ public class CharacterScript : GameActorScript, IHitable
         }
 
         //현재 상태 업데이트
-        if (GCST<StateContoller>().enabled == true)
+        if (GCST<StateController>().enabled == true)
         {
-            GCST<StateContoller>().DoWork();
+            GCST<StateController>().DoWork();
         }
 
         //기본적으로 중력은 계속 업데이트 한다
         {
-            GCST<CharacterContollerable>().MoverUpdate();
+            GCST<CharacterControllerable>().MoverUpdate();
         }
     }
 
@@ -986,7 +986,7 @@ public class CharacterScript : GameActorScript, IHitable
 
 
         GCST<CharacterColliderScript>().StateChanged();
-        GCST<CharacterContollerable>().StateChanged();
+        GCST<CharacterControllerable>().StateChanged();
     }
 
 
@@ -1428,7 +1428,7 @@ public class CharacterScript : GameActorScript, IHitable
         애니메이션 배수
         -------------------------------------------------------*/
         {
-            StateContoller myStateController = GCST<StateContoller>();
+            StateController myStateController = GCST<StateController>();
             if (myStateController != null &&
                 myStateController.GetCurrState()._myState._isAttackState == true)
             {
@@ -1483,7 +1483,7 @@ public class CharacterScript : GameActorScript, IHitable
 
             if (afterAttackerPosture == 100)
             {
-                StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                StateController attackerStateController = attacker.GCST<StateController>();
                 attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Groggy);
                 attackerStatScript.ApplyBuff(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff"), 1);
             }
@@ -1491,12 +1491,12 @@ public class CharacterScript : GameActorScript, IHitable
             //attacker의 공격이 튕긴다
             else if (afterAttackerPosture >= attackerPosturePhase1)
             {
-                StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                StateController attackerStateController = attacker.GCST<StateController>();
                 attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.AttackRecoil);
             }
         }
 
-        nextGraphType = GCST<StateContoller>().GetCurrStateGraphType();
+        nextGraphType = GCST<StateController>().GetCurrStateGraphType();
 
         int currVictimStamina = statScript.GetActiveStat(ActiveStat.Stamina);
         int currVictimRoughness = statScript.GetPassiveStat(PassiveStat.Roughness);
@@ -1560,7 +1560,7 @@ public class CharacterScript : GameActorScript, IHitable
 
             nextGraphType = StateGraphType.DieGraph;
 
-            if (GCST<StateContoller>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
+            if (GCST<StateController>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
             {
                 Debug.Assert(false, "죽을건데 죽는 그래프가 없네요?");
                 Debug.Break();
@@ -1622,7 +1622,7 @@ public class CharacterScript : GameActorScript, IHitable
 
             nextGraphType = StateGraphType.DieGraph;
 
-            if (GCST<StateContoller>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
+            if (GCST<StateController>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
             {
                 Debug.Assert(false, "죽을건데 죽는 그래프가 없네요?");
                 Debug.Break();
@@ -1737,7 +1737,7 @@ public class CharacterScript : GameActorScript, IHitable
 
                     nextGraphType = StateGraphType.DieGraph;
 
-                    if (GCST<StateContoller>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
+                    if (GCST<StateController>().GetStateGraphes()[(int)StateGraphType.DieGraph] == null)
                     {
                         Debug.Assert(false, "죽을건데 죽는 그래프가 없네요?");
                         Debug.Break();
@@ -1861,8 +1861,8 @@ public class CharacterScript : GameActorScript, IHitable
                     toAttackerDir.y = 0.0f;
                     toAttackerDir = toAttackerDir.normalized;
 
-                    GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
-                    GCST<StateContoller>().TryChangeState(nextGraphType, representType);
+                    GCST<CharacterControllerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
+                    GCST<StateController>().TryChangeState(nextGraphType, representType);
                 }
             }
         }
@@ -1931,7 +1931,7 @@ public class CharacterScript : GameActorScript, IHitable
                         break;
                 }
 
-                GameObject shieldWeapon = (GCST<StateContoller>().GetCurrStateGraphType() == StateGraphType.WeaponState_RightGraph)
+                GameObject shieldWeapon = (GCST<StateController>().GetCurrStateGraphType() == StateGraphType.WeaponState_RightGraph)
                     ? _tempCurrRightWeapon
                     : _tempCurrLeftWeapon;
 
@@ -1943,7 +1943,7 @@ public class CharacterScript : GameActorScript, IHitable
 
             //공격자 Stagger_Parried로 바꾸기
             {
-                StateContoller attackerStateController = attacker.GCST<StateContoller>();
+                StateController attackerStateController = attacker.GCST<StateController>();
                 attackerStateController.TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Stagger_Parried);
                 attacker.AfterDealMe();
             }
@@ -2034,7 +2034,7 @@ public class CharacterScript : GameActorScript, IHitable
                             true /*가드 범위 내에서 맞았냐? 가드하는데 뒤에서 맞으면 실패임*/)
                         {
                             bool reDamageProcess = false;
-                            CalculateNextState_Guard(ref nextGraphType, ref representType, ref reDamageProcess, damage, statScript, GCST<StateContoller>().GetCurrState(), attacker);
+                            CalculateNextState_Guard(ref nextGraphType, ref representType, ref reDamageProcess, damage, statScript, GCST<StateController>().GetCurrState(), attacker);
                             if (reDamageProcess == true) 
                             {
                                 DelaMe_Partial_GuardFail(ref willDead, ref nextGraphType, ref representType, statScript, prevGuardBuffDamage, attacker);
@@ -2081,8 +2081,8 @@ public class CharacterScript : GameActorScript, IHitable
                                 if (statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) != null)
                                 {
                                     //그로기 상태에서 맞았다 = 찍기가 발동된다
-                                    StateContoller attackerStateController = attacker.GCST<StateContoller>();
-                                    attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_Smash);
+                                    StateController attackerStateController = attacker.GCST<StateController>();
+                                    attacker.GCST<StateController>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_Smash);
 
                                     //공격자의 상태는 Riposite로 바뀌었다.
                                     {
@@ -2111,20 +2111,20 @@ public class CharacterScript : GameActorScript, IHitable
                                         return;
                                     }
 
-                                    StateContoller attackerStateController = attacker.GCST<StateContoller>();
-                                    attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_FrontStab);
+                                    StateController attackerStateController = attacker.GCST<StateController>();
+                                    attacker.GCST<StateController>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_FrontStab);
 
                                     //Victim을 회전시킨다.
                                     //Victim은 먼저 상태를 변경시켜야 한다.
                                     {
-                                        GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(Quaternion.AngleAxis(180f, transform.right) * dirAttackerToVictim));
-                                        GCST<StateContoller>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_FrontStab);
+                                        GCST<CharacterControllerable>().CharacterRotate(Quaternion.LookRotation(Quaternion.AngleAxis(180f, transform.right) * dirAttackerToVictim));
+                                        GCST<StateController>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_FrontStab);
                                     }
 
 
                                     //Attaker를 회전시킨다.
                                     {
-                                        attacker.GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
+                                        attacker.GCST<CharacterControllerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
                                     }
 
 
@@ -2151,20 +2151,20 @@ public class CharacterScript : GameActorScript, IHitable
                                     if (angle <= 15.0f/*피격 위치가 뒤잡기 가능 위치다*/)
                                     {
                                         //뒤잡기 위치다 = 뒤잡기가 발동된다.
-                                        StateContoller attackerStateController = attacker.GCST<StateContoller>();
-                                        attacker.GCST<StateContoller>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_BackStab);
+                                        StateController attackerStateController = attacker.GCST<StateController>();
+                                        attacker.GCST<StateController>().TryChangeState(attackerStateController.GetCurrStateGraphType(), RepresentStateType.Riposte_BackStab);
 
                                         //Victim을 회전시킨다.
                                         //Victim은 먼저 상태를 변경시켜야 한다.
                                         {
-                                            GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
-                                            GCST<StateContoller>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_BackStab);
+                                            GCST<CharacterControllerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
+                                            GCST<StateController>().TryChangeState(StateGraphType.HitStateGraph, RepresentStateType.Hit_Riposte_BackStab);
                                         }
 
 
                                         //Attaker를 회전시킨다.
                                         {
-                                            attacker.GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
+                                            attacker.GCST<CharacterControllerable>().CharacterRotate(Quaternion.LookRotation(dirAttackerToVictim));
                                         }
 
 
@@ -2189,7 +2189,7 @@ public class CharacterScript : GameActorScript, IHitable
                                     true /*가드 범위 내에서 맞았냐? 가드하는데 뒤에서 맞으면 실패임*/)
                                 {
                                     bool reDamageProcess = false;
-                                    CalculateNextState_Guard(ref nextGraphType, ref representType, ref reDamageProcess, damage, statScript, GCST<StateContoller>().GetCurrState(), attacker);
+                                    CalculateNextState_Guard(ref nextGraphType, ref representType, ref reDamageProcess, damage, statScript, GCST<StateController>().GetCurrState(), attacker);
                                 }
                                 else if (isPostureMax == true && statScript.GetRuntimeBuffAsset(LevelStatInfoManager.Instance.GetBuff("PostureMaxBuff")) == null)
                                 {
@@ -2237,7 +2237,7 @@ public class CharacterScript : GameActorScript, IHitable
                                 ? "CartoonSparkEffect"
                                 : "ConeSparkEffect";
 
-                            GameObject shieldWeapon = (GCST<StateContoller>().GetCurrStateGraphType() == StateGraphType.WeaponState_RightGraph)
+                            GameObject shieldWeapon = (GCST<StateController>().GetCurrStateGraphType() == StateGraphType.WeaponState_RightGraph)
                                 ? _tempCurrRightWeapon
                                 : _tempCurrLeftWeapon;
 
@@ -2303,8 +2303,8 @@ public class CharacterScript : GameActorScript, IHitable
                     toAttackerDir.y = 0.0f;
                     toAttackerDir = toAttackerDir.normalized;
 
-                    GCST<CharacterContollerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
-                    GCST<StateContoller>().TryChangeState(nextGraphType, representType);
+                    GCST<CharacterControllerable>().CharacterRotate(Quaternion.LookRotation(toAttackerDir));
+                    GCST<StateController>().TryChangeState(nextGraphType, representType);
                 }
             }
 

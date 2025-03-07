@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class CharacterMoveScript2 : CharacterContollerable
+public class CharacterMoveScript2 : CharacterControllerable
 {
     private CharacterController _characterController = null;
 

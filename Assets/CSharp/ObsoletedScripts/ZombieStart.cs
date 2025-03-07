@@ -76,7 +76,7 @@ public class ZombieStart : MonoBehaviour
 //    private Animator _animator = null;
 //    private AnimatorOverrideController _overrideController = null;
 //    private bool _currAnimNode = true; //true = State1;
-//    [SerializeField] private AnimContoller _AnimController = null;
+//    [SerializeField] private AnimController _AnimController = null;
 //    [SerializeField] private List<string> _enemyTags =  new List<string>();
 //    private float _crossFadeTime = 0.1f;
 //    private string _targetName1 = "Zombie Idle";

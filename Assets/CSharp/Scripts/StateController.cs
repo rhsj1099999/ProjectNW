@@ -11,7 +11,7 @@ using UnityEngine.Playables;
 using MagicaCloth2;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using JetBrains.Annotations;
-using static StateContoller;
+using static StateController;
 using TMPro.EditorUtilities;
 
 public enum StateActionType
@@ -320,7 +320,7 @@ public class StateInitialPair
     public StateAsset _stateAsset = null;
 }
 
-public class StateContoller : GameCharacterSubScript
+public class StateController : GameCharacterSubScript
 {
     public class StateActionCoroutineWrapper
     {
@@ -421,7 +421,7 @@ public class StateContoller : GameCharacterSubScript
     public override void Init(CharacterScript owner)
     {
         _owner = owner;
-        _myType = typeof(StateContoller);
+        _myType = typeof(StateController);
 
         for (int i = 0; i < (int)StateGraphType.End; i++)
         {
@@ -1072,7 +1072,7 @@ public class StateContoller : GameCharacterSubScript
         Vector3 deltaLocalHip = (currentUnityLocalHip - prevUnityLocalHip);
 
 
-        //return _owner.GCST<CharacterContollerable>().transform.localToWorldMatrix * deltaLocalHip;
+        //return _owner.GCST<CharacterControllerable>().transform.localToWorldMatrix * deltaLocalHip;
         return Matrix4x4.TRS(Vector3.zero, transform.localToWorldMatrix.rotation, transform.localToWorldMatrix.lossyScale) * deltaLocalHip;
     }
 
@@ -1088,7 +1088,7 @@ public class StateContoller : GameCharacterSubScript
 
         worldDelta.y = 0.0f;
 
-        _owner.GCST<CharacterContollerable>().CharacterRootMove(worldDelta, 1.0f, 1.0f);
+        _owner.GCST<CharacterControllerable>().CharacterRootMove(worldDelta, 1.0f, 1.0f);
     }
 
 
@@ -1104,20 +1104,20 @@ public class StateContoller : GameCharacterSubScript
 
         worldDelta.y = 0.0f;
 
-        _owner.GCST<CharacterContollerable>().CharacterRootMove_Speed(worldDelta, 1.0f, _owner.GCST<StatScript>().GetPassiveStat(PassiveStat.MoveSpeed));
+        _owner.GCST<CharacterControllerable>().CharacterRootMove_Speed(worldDelta, 1.0f, _owner.GCST<StatScript>().GetPassiveStat(PassiveStat.MoveSpeed));
     }
 
     private void SwitchFunc_SimpleMove()
     {
         Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
-        characterInputDir = _owner.GCST<CharacterContollerable>().GetDirectionConvertedByCamera(characterInputDir);
-        _owner.GCST<CharacterContollerable>().CharacterMove(characterInputDir, 1.0f, 1.0f);
+        characterInputDir = _owner.GCST<CharacterControllerable>().GetDirectionConvertedByCamera(characterInputDir);
+        _owner.GCST<CharacterControllerable>().CharacterMove(characterInputDir, 1.0f, 1.0f);
     }
 
     private void SwitchFunc_SimpleRotate()
     {
         Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
-        CharacterContollerable ownerCharacterControllerable = _owner.GCST<CharacterContollerable>();
+        CharacterControllerable ownerCharacterControllerable = _owner.GCST<CharacterControllerable>();
         characterInputDir = ownerCharacterControllerable.GetDirectionConvertedByCamera(characterInputDir);
         ownerCharacterControllerable.CharacterRotate(characterInputDir, 1.0f);
     }
@@ -1138,13 +1138,13 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.Jump:
                     {
-                        _owner.GCST<CharacterContollerable>().DoJump();
+                        _owner.GCST<CharacterControllerable>().DoJump();
                     }
                     break;
 
                 case StateActionType.ForcedMove:
                     {
-                        _owner.GCST<CharacterContollerable>().CharacterInertiaMove(1.0f);
+                        _owner.GCST<CharacterControllerable>().CharacterInertiaMove(1.0f);
                     }
                     break;
 
@@ -1156,8 +1156,8 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.RotateWithoutInterpolate:
                     {
-                        Vector3 convertedDirection = _owner.GCST<CharacterContollerable>().GetDirectionConvertedByCamera(_owner.GCST<InputController>()._pr_directionByInput);
-                        _owner.GCST<CharacterContollerable>().LookAt_Plane(convertedDirection);
+                        Vector3 convertedDirection = _owner.GCST<CharacterControllerable>().GetDirectionConvertedByCamera(_owner.GCST<InputController>()._pr_directionByInput);
+                        _owner.GCST<CharacterControllerable>().LookAt_Plane(convertedDirection);
                     }
                     break;
 
@@ -1214,7 +1214,7 @@ public class StateContoller : GameCharacterSubScript
                         Vector3 enemyPosition = _owner.GCST<EnemyAIScript>().GetCurrentEnemy().gameObject.transform.position;
                         Vector3 myPosition = transform.position;
                         Vector3 toEnemyDir = (enemyPosition - myPosition).normalized;
-                        _owner.GCST<CharacterContollerable>().CharacterRotate(toEnemyDir, 1.0f);
+                        _owner.GCST<CharacterControllerable>().CharacterRotate(toEnemyDir, 1.0f);
                     }
                     break;
 
@@ -1224,10 +1224,10 @@ public class StateContoller : GameCharacterSubScript
                         Vector3 enemyPosition = _owner.GCST<EnemyAIScript>().GetCurrentEnemy().gameObject.transform.position;
                         Vector3 toEnemyPosition = (enemyPosition - myPosition).normalized;
 
-                        CharacterContollerable characterContollerable = _owner.GCST<CharacterContollerable>();
+                        CharacterControllerable characterControllerable = _owner.GCST<CharacterControllerable>();
 
-                        characterContollerable.CharacterRotate(toEnemyPosition, 1.0f);
-                        characterContollerable.CharacterMove(toEnemyPosition, characterContollerable.CalculateMoveDirSimilarities(toEnemyPosition), 1.0f);
+                        characterControllerable.CharacterRotate(toEnemyPosition, 1.0f);
+                        characterControllerable.CharacterMove(toEnemyPosition, characterControllerable.CalculateMoveDirSimilarities(toEnemyPosition), 1.0f);
                         
                     }
                     break;
@@ -1238,7 +1238,7 @@ public class StateContoller : GameCharacterSubScript
                         Vector3 enemyPosition = _owner.GCST<EnemyAIScript>().GetCurrentEnemy().gameObject.transform.position;
                         Vector3 dirToEnemy = (enemyPosition - myPosition).normalized;
 
-                        _owner.GCST<CharacterContollerable>().LookAt_Plane(dirToEnemy);
+                        _owner.GCST<CharacterControllerable>().LookAt_Plane(dirToEnemy);
                     }
                     break;
 
@@ -1266,8 +1266,8 @@ public class StateContoller : GameCharacterSubScript
                 case StateActionType.Move_WithOutRotate:
                     {
                         Vector3 characterInputDir = _owner.GCST<InputController>()._pr_directionByInput;
-                        characterInputDir = _owner.GCST<CharacterContollerable>().GetDirectionConvertedByCamera(characterInputDir);
-                        _owner.GCST<CharacterContollerable>().CharacterMove(characterInputDir, 1.0f, 1.0f);
+                        characterInputDir = _owner.GCST<CharacterControllerable>().GetDirectionConvertedByCamera(characterInputDir);
+                        _owner.GCST<CharacterControllerable>().CharacterMove(characterInputDir, 1.0f, 1.0f);
                     }
                     break;
 
@@ -1287,7 +1287,7 @@ public class StateContoller : GameCharacterSubScript
                         ownerToTargetPlaneVector.y = 0.0f;
                         ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
 
-                        _owner.GCST<CharacterContollerable>().LookAt_Plane(ownerToTargetPlaneVector);
+                        _owner.GCST<CharacterControllerable>().LookAt_Plane(ownerToTargetPlaneVector);
                     }
                     break;
 
@@ -1300,7 +1300,7 @@ public class StateContoller : GameCharacterSubScript
                         ownerToTargetPlaneVector.y = 0.0f;
                         ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
 
-                        _owner.GCST<CharacterContollerable>().CharacterRotate(ownerToTargetPlaneVector, 1.0f);
+                        _owner.GCST<CharacterControllerable>().CharacterRotate(ownerToTargetPlaneVector, 1.0f);
                     }
                     break;
 
@@ -1314,7 +1314,7 @@ public class StateContoller : GameCharacterSubScript
                     {
                         Vector3 cameraLook = Camera.main.transform.forward;
                         cameraLook.y = 0.0f;
-                        _owner.GCST<CharacterContollerable>().CharacterRotate(cameraLook.normalized, 1.0f);
+                        _owner.GCST<CharacterControllerable>().CharacterRotate(cameraLook.normalized, 1.0f);
                     }
                     break;
 
@@ -1358,7 +1358,7 @@ public class StateContoller : GameCharacterSubScript
                     {
                         Vector3 cameraLook = Camera.main.transform.forward;
                         cameraLook.y = 0.0f;
-                        _owner.GCST<CharacterContollerable>().CharacterRotate(cameraLook.normalized, 1.0f);
+                        _owner.GCST<CharacterControllerable>().CharacterRotate(cameraLook.normalized, 1.0f);
                     }
                     break;
 
@@ -1376,12 +1376,12 @@ public class StateContoller : GameCharacterSubScript
 
                         if (lockOnTarget == null)
                         {
-                            Vector3 convertedDirection = _owner.GCST<CharacterContollerable>().GetDirectionConvertedByCamera(_owner.GCST<InputController>()._pr_directionByInput);
+                            Vector3 convertedDirection = _owner.GCST<CharacterControllerable>().GetDirectionConvertedByCamera(_owner.GCST<InputController>()._pr_directionByInput);
                             if (convertedDirection == Vector3.zero)
                             {
                                 convertedDirection = transform.forward;
                             }
-                            _owner.GCST<CharacterContollerable>().LookAt_Plane(convertedDirection);
+                            _owner.GCST<CharacterControllerable>().LookAt_Plane(convertedDirection);
                         }
                         else
                         {
@@ -1390,7 +1390,7 @@ public class StateContoller : GameCharacterSubScript
                             Vector3 ownerToTargetPlaneVector = (targetPosition - ownerPosition);
                             ownerToTargetPlaneVector.y = 0.0f;
                             ownerToTargetPlaneVector = ownerToTargetPlaneVector.normalized;
-                            _owner.GCST<CharacterContollerable>().LookAt_Plane(ownerToTargetPlaneVector);
+                            _owner.GCST<CharacterControllerable>().LookAt_Plane(ownerToTargetPlaneVector);
                         }
                     }
                     break;
@@ -1451,7 +1451,7 @@ public class StateContoller : GameCharacterSubScript
                         }
                         gameObject.layer = myLayer;
 
-                        _owner.GCST<CharacterContollerable>().CharacterRevive();
+                        _owner.GCST<CharacterControllerable>().CharacterRevive();
                     }
                     break;
 
@@ -1477,7 +1477,7 @@ public class StateContoller : GameCharacterSubScript
 
                 case StateActionType.KnuckBack:
                     {
-                        _owner.GCST<CharacterContollerable>().DoKnuckBack();
+                        _owner.GCST<CharacterControllerable>().DoKnuckBack();
                     }
                     break;
 
@@ -1489,7 +1489,7 @@ public class StateContoller : GameCharacterSubScript
                             Debug.Break();
                         }
 
-                        _owner.GCST<CharacterContollerable>().TurnOnGhost();
+                        _owner.GCST<CharacterControllerable>().TurnOnGhost();
                     }
                     break;
 
@@ -1501,7 +1501,7 @@ public class StateContoller : GameCharacterSubScript
                             Debug.Break();
                         }
 
-                        _owner.GCST<CharacterContollerable>().TurnOffGhost();
+                        _owner.GCST<CharacterControllerable>().TurnOffGhost();
                     }
                     break;
 
@@ -1722,6 +1722,31 @@ public class StateContoller : GameCharacterSubScript
             {
                 target._coroutine = null;
                 _nextComboReady = true;
+
+
+                /*------------------------------------------------------------------------------------------
+                |NOTI| [선딜/후딜] 규칙이 너무 애매해서, 다음 공격 콤보를 이어갈 수 있다 = 구르기로 사출할 수 있다
+                로 통일해서 작업하는 중입니다.
+
+                |TODO| 그래서 구르기는 어떻게 사출할 규칙을 찾을 수 있을까요
+                ------------------------------------------------------------------------------------------*/
+                {
+                    if (_owner._CharacterType != CharacterType.Player)
+                    {
+                        Debug.Assert(false, "조작이 가능한 플레이어가 아닌데, 이 코루틴이 있다고?");
+                        Debug.Break();
+                        yield return null;
+                    }
+
+                    LinkedStateAssetWrapper newLinkedStateAssetWrapper = new LinkedStateAssetWrapper
+                    (
+                        _currentGraphType,
+                        StateGraphType.LocoStateGraph,
+                        new LinkedStateAsset(ResourceDataManager.Instance._rollState_MustDel, ResourceDataManager.Instance._rollCondition_MustDel),
+                        null
+                    );
+                    _currLinkedStates.Add(newLinkedStateAssetWrapper);
+                }
                 break;
             }
 
@@ -1818,7 +1843,7 @@ public class StateContoller : GameCharacterSubScript
 
             case ConditionType.InAir:
                 {
-                    if (_owner.GCST<CharacterContollerable>().GetIsInAir() == true)
+                    if (_owner.GCST<CharacterControllerable>().GetIsInAir() == true)
                     {
                         ret = true;
                     }
@@ -2051,7 +2076,7 @@ public class StateContoller : GameCharacterSubScript
                         break;
                     }
 
-                    StateContoller enemyStateController = _owner.GCST<StateContoller>();
+                    StateController enemyStateController = _owner.GCST<StateController>();
                     if (enemyStateController == null)
                     {
                         ret = false;
