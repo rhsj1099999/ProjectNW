@@ -3,13 +3,48 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static LevelStatAsset;
-using static LevelStatInfoManager;
 using static StatScript;
 
 [CreateAssetMenu(fileName = "BuffAsset_Normal", menuName = "Scriptable Object/Create_BuffAsset_Normal", order = (int)MyUtil.CustomToolOrder.CreateBuffs)]
 public class BuffAssetBase : ScriptableObject
 {
+
+    public class RAIITest : IDisposable
+    {
+        private bool disposedValue;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    //나를 다시 객체 풀에 등록한다
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        ~RAIITest()
+        {
+            Dispose(disposing: false);
+        }
+
+        void IDisposable.Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    public void DoSomeThing()
+    {
+        using var raiiTest = new RAIITest();
+        using RAIITest test = new RAIITest();
+    }
+
+
     //[SerializeField] private int _buffKey = 0;
     //public int _BuffKey => _buffKey;
     public int _buffKey = 0;
@@ -19,7 +54,7 @@ public class BuffAssetBase : ScriptableObject
     public string _BuffName => _buffName;
 
 
-
+    
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     //
@@ -65,5 +100,7 @@ public class BuffAssetBase : ScriptableObject
     [SerializeField] private Sprite _buffUIImage = null;
     public Sprite _BuffUIImage => _buffUIImage;
 
-    public virtual void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount) {}
+    public virtual void DoWork(StatScript usingThisBuffStatScript, RuntimeBuffAsset runtimeBuffAsset, int deltaCount)
+    {
+    }
 }

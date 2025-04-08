@@ -10,6 +10,11 @@ using static BuffAsset_StatBase;
 using static LevelStatAsset;
 using static LevelStatInfoManager;
 
+public enum Test
+{
+    E1, E2, E3, E4, E5, E6,
+};
+
 public class StatScript : GameCharacterSubScript
 {
     public enum DamagingProcessDelegateType
