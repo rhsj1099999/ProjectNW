@@ -180,6 +180,12 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
         float checkRadius = _motor.Capsule.radius + _inAirCheckRadiusModify;
 
+        if (_motor.GroundingStatus.FoundAnyGround == true)
+        {
+            _inAir = false;
+            return;
+        }
+
         _inAir = !(Physics.OverlapCapsule
         (
             currentPosition + _motor.CharacterTransformToCapsuleTopHemi + (Vector3.down * _inAirCheckHeightModify),
@@ -305,8 +311,9 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
         {
             
             Quaternion rotateMatrix = Quaternion.AngleAxis(nextDeltaDEG, Vector3.up);
-            _currentRotation.SetLookRotation(inputDirection);
+            //_currentRotation.SetLookRotation(inputDirection);
             //_motor.SetRotation(transform.rotation * rotateMatrix);
+            _currentRotation *= rotateMatrix;
         }
     }
 
