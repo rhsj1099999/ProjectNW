@@ -180,25 +180,16 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
         float checkRadius = _motor.Capsule.radius + _inAirCheckRadiusModify;
 
-        if (_motor.GroundingStatus.FoundAnyGround == true)
-        {
-            _inAir = false;
-            return;
-        }
+        _inAir = !_motor.GroundingStatus.FoundAnyGround;
 
-        _inAir = !(Physics.OverlapCapsule
-        (
-            currentPosition + _motor.CharacterTransformToCapsuleTopHemi + (Vector3.down * _inAirCheckHeightModify),
-            currentPosition + _motor.CharacterTransformToCapsuleBottomHemi + (Vector3.down * _inAirCheckHeightModify),
-            checkRadius,
-            LayerMask.GetMask("StaticNavMeshLayer"),
-            QueryTriggerInteraction.Ignore
-        ).Length > 0);
-
-        if (_inAir == true)
-        {
-            int a = 10;
-        }
+        //_inAir = !(Physics.OverlapCapsule
+        //(
+        //    currentPosition + _motor.CharacterTransformToCapsuleTopHemi + (Vector3.down * _inAirCheckHeightModify),
+        //    currentPosition + _motor.CharacterTransformToCapsuleBottomHemi + (Vector3.down * _inAirCheckHeightModify),
+        //    checkRadius,
+        //    LayerMask.GetMask("StaticNavMeshLayer"),
+        //    QueryTriggerInteraction.Ignore
+        //).Length > 0);
 
         return;
     }
