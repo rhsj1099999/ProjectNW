@@ -5,9 +5,6 @@ using UnityEngine;
 
 namespace KinematicCharacterController
 {
-    /// <summary>
-    /// The system that manages the simulation of KinematicCharacterMotor and PhysicsMover
-    /// </summary>
     [DefaultExecutionOrder(-100)]
     public class KinematicCharacterSystem : MMonoBehaviour
     {
@@ -149,10 +146,10 @@ namespace KinematicCharacterController
 
         private void LateUpdate()
         {
-            //if (Settings.Interpolate)
-            //{
-            //    CustomInterpolationUpdate();
-            //}
+            if (Settings.Interpolate)
+            {
+                CustomInterpolationUpdate();
+            }
         }
 
         public static void PreSimulationInterpolationUpdate(float deltaTime)

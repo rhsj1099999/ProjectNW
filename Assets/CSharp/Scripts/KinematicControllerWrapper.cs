@@ -13,6 +13,8 @@ using static UnityEngine.Rendering.DebugUI;
 public class KinematicControllerWrapper : CharacterControllerable, ICharacterController
 {
     [SerializeField] private KinematicCharacterMotor _motor = null;
+    [SerializeField] private float _inAirCheckRadiusModify = 0.000f;
+    [SerializeField] private float _inAirCheckHeightModify = -0.001f;
 
     private bool _inAir = false;
 
@@ -25,20 +27,20 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
     -------------------------------------------------------*/
     private bool _isAttachedMove = true; 
     
-    private Vector3 _capsuleCheckLocal_High = Vector3.zero;
-    private Vector3 _capsuleCheckLocal_Low = Vector3.zero;
 
     private Vector3 _currentSpeed = Vector3.zero;
     private Quaternion _currentRotation = Quaternion.identity;
     private RaycastHit _hit;
 
-    //[SerializeField] private float _maxDownHillDeg = 60.0f;
+    [SerializeField] private GameObject _spherePrefab = null;
+    [SerializeField] private GameObject _cylinderPrefab = null;
+    private List<GameObject> _debuggCapsules = new List<GameObject>();
+
 
 
     public override void CharacterTeleport(Vector3 position)
     {
         _motor.SetPosition(position);
-        //CharacterRootMove(position - transform.position, 1.0f, 1.0f);
     }
 
     public override void LookAt_Plane(Vector3 dir)
@@ -59,6 +61,44 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
         transform.localRotation = Quaternion.identity;
         transform.localPosition = Vector3.zero;
         transform.localScale = Vector3.one;
+
+        if (Input.GetKeyDown(KeyCode.T) == true &&
+            _spherePrefab != null &&
+            _cylinderPrefab != null)
+        {
+            float radius = _motor.Capsule.radius + _inAirCheckRadiusModify;
+
+            GameObject topSphere = Instantiate(_spherePrefab);
+            GameObject bottomSphere = Instantiate(_spherePrefab);
+            GameObject middleCylinder = Instantiate(_cylinderPrefab);
+
+            Vector3 currentPosition = transform.position;
+
+            topSphere.transform.position = currentPosition + _motor.CharacterTransformToCapsuleTopHemi + (Vector3.down * _inAirCheckHeightModify);
+            bottomSphere.transform.position = currentPosition + _motor.CharacterTransformToCapsuleBottomHemi + (Vector3.down * _inAirCheckHeightModify);
+
+            topSphere.transform.localScale = new(radius, radius, radius);
+            bottomSphere.transform.localScale = new(radius, radius, radius);
+
+            middleCylinder.transform.position = (topSphere.transform.position + bottomSphere.transform.position) / 2.0f;
+
+            float length = (topSphere.transform.position - bottomSphere.transform.position).magnitude;
+            middleCylinder.transform.localScale = new(radius, length/2.0f, radius);
+
+            _debuggCapsules.Add(topSphere);
+            _debuggCapsules.Add(bottomSphere);
+            _debuggCapsules.Add(middleCylinder);
+        }
+
+        if (Input.GetKeyDown(KeyCode.G) == true)
+        {
+            foreach (var item in _debuggCapsules)
+            {
+                Destroy(item);
+            }
+
+            _debuggCapsules.Clear();
+        }
     }
 
 
@@ -92,9 +132,6 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
     private void Start()
     {
-        _capsuleCheckLocal_High = _motor.Capsule.center + Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
-        _capsuleCheckLocal_Low = _motor.Capsule.center - Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
-
         _motor.Capsule.includeLayers = (LayerMask.GetMask("StaticNavMeshLayer") | LayerMask.GetMask("CharacterVolume"));
         _motor.CollidableLayers = _motor.Capsule.includeLayers;
     }
@@ -121,8 +158,6 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
     }
 
 
-
-
     public override bool GetIsInAir()
     {
         /*------------------------------------------------------------------
@@ -139,58 +174,27 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
     }
 
 
-    private void InAirCheck_Capsule(CapsuleCollider collider, ref Vector3 currentCharacterPosition)
-    {
-
-    }
-
-    private void InAirCheck_Sphere(SphereCollider collider, ref Vector3 currentCharacterPosition)
-    {
-
-    }
-
-    private void InAirCheck_Box(BoxCollider collider, ref Vector3 currentCharacterPosition)
-    {
-        _inAir = !Physics.BoxCast
-            (
-            currentCharacterPosition + collider.center,
-            collider.size / 2.0f * 0.98f,
-            Vector3.down,
-            transform.rotation,
-            0.2f,
-            LayerMask.GetMask("StaticNavMeshLayer")
-            );
-    }
-
     private void InAircheck()
     {
         Vector3 currentPosition = transform.position;
 
-        Collider finalCollider = _motor._PenetrationCollider;
+        float checkRadius = _motor.Capsule.radius + _inAirCheckRadiusModify;
 
-        if (finalCollider == null)
+        _inAir = !(Physics.OverlapCapsule
+        (
+            currentPosition + _motor.CharacterTransformToCapsuleTopHemi + (Vector3.down * _inAirCheckHeightModify),
+            currentPosition + _motor.CharacterTransformToCapsuleBottomHemi + (Vector3.down * _inAirCheckHeightModify),
+            checkRadius,
+            LayerMask.GetMask("StaticNavMeshLayer"),
+            QueryTriggerInteraction.Ignore
+        ).Length > 0);
+
+        if (_inAir == true)
         {
-            //뭔가를 탑승하고있지 않아요
-            float checkDistance = 0.2f;
-            float checkRadius = _motor.Capsule.radius - 0.005f;
-            _inAir = !Physics.CapsuleCast(currentPosition + _motor.CharacterTransformToCapsuleTopHemi, currentPosition + _motor.CharacterTransformToCapsuleBottomHemi, checkRadius, Vector3.down, out _hit, checkDistance, LayerMask.GetMask("StaticNavMeshLayer"));
-            return;
+            int a = 10;
         }
 
-        System.Type colliderType = finalCollider.GetType();
-
-        if (colliderType == typeof(CapsuleCollider))
-        {
-            InAirCheck_Capsule(finalCollider as CapsuleCollider, ref currentPosition);
-        }
-        else if (colliderType == typeof(BoxCollider))
-        {
-            InAirCheck_Box(finalCollider as BoxCollider, ref currentPosition);
-        }
-        else if (colliderType == typeof(SphereCollider))
-        {
-            InAirCheck_Sphere(finalCollider as SphereCollider, ref currentPosition);
-        }
+        return;
     }
 
 
@@ -226,7 +230,8 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
     public override void GravityUpdate() 
     {
-        _gravitySpeed += (_mass * 9.81f * Vector3.down) * Time.deltaTime;
+        //_gravitySpeed += (_mass * 9.81f * Vector3.down) * Time.deltaTime;
+        _gravitySpeed += (9.81f * Vector3.down) * Time.deltaTime;
         InAircheck();
     }
 
@@ -287,14 +292,21 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
         float nextDeltaDEG = _rotatingSpeed_DEG * Time.deltaTime * ratio * isRightRotate;
 
+        //_currentRotation = rotation;
+        //_motor.SetRotation(rotation);
+
+        //Quaternion nextRotation = _currentRotation;
+
         if (Mathf.Abs(nextDeltaDEG) >= deltaDEG)
         {
             _currentRotation.SetLookRotation(inputDirection);
         }
         else
         {
+            
             Quaternion rotateMatrix = Quaternion.AngleAxis(nextDeltaDEG, Vector3.up);
-            _currentRotation *= rotateMatrix;
+            _currentRotation.SetLookRotation(inputDirection);
+            //_motor.SetRotation(transform.rotation * rotateMatrix);
         }
     }
 
@@ -391,12 +403,17 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
             return; 
         }
 
-        bool isGrounded = _motor.GroundingStatus.IsStableOnGround;
+        //bool isGrounded = _motor.GroundingStatus.IsStableOnGround;
 
-        //바닥에 안붙어있다
-        if (isGrounded == false)
+        ////바닥에 안붙어있다
+        //if (isGrounded == false)
+        //{
+        //    return;
+        //}
+
+
+        if (_inAir == true)
         {
-            
             return;
         }
 

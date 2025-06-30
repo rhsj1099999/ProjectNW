@@ -979,6 +979,8 @@ public class CharacterScript : GameActorScript, IHitable
 
     public void StateChanged(StateAsset nextState)
     {
+        Debug.Log("StateChanging" + nextState.name);
+
         /*-------------------------------------------------------
         |NOTI| AnimationSpeed가 엮여있음으로 가장먼저 업데이트합니다
         -------------------------------------------------------*/
