@@ -70,6 +70,7 @@ public abstract class CharacterControllerable : GameCharacterSubScript
     public abstract void CharacterRotate(Quaternion rotation);
     public abstract void CharacterRotateDirectly(Quaternion rotation);
 
+    #region IfNeedCapsuleDebug
     //[SerializeField] private float _inAirCheckHeightModify = 0.02f;
     //[SerializeField] private GameObject _spherePrefab = null;
     //[SerializeField] private GameObject _cylinderPrefab = null;
@@ -112,4 +113,5 @@ public abstract class CharacterControllerable : GameCharacterSubScript
     //        _debuggCapsules.Clear();
     //    }
     //}
+    #endregion
 }

@@ -27,14 +27,9 @@ public class KinematicControllerWrapper2 : CharacterControllerable, ICharacterCo
         _currentRotation = Quaternion.LookRotation(dir);
     }
 
-    private void Update()
-    {
-        MoverUpdate();
-    }
-
     public override void MoverUpdate() 
     {
-       
+        ClearLatestVelocity();
     }
 
     public override void CharacterRevive()
@@ -224,7 +219,6 @@ public class KinematicControllerWrapper2 : CharacterControllerable, ICharacterCo
         }
 
         GravityUpdate();
-        ClearLatestVelocity();
     }
 
 
@@ -272,10 +266,6 @@ public class KinematicControllerWrapper2 : CharacterControllerable, ICharacterCo
         |NOTI| 쓸데없는 y축 속도가 있으면 안된다(이미 바닥인데 중력같은거)
         -------------------------------------------------------------*/
 
-        //CurrentVelocity = 조작에 의한 속도가 담겨있다
-
-        float test = Vector3.Angle(_motor.GroundingStatus.GroundNormal, transform.up);
-
         if (Vector3.Angle(_motor.GroundingStatus.GroundNormal, transform.up) > (_risingSlope) &&
             Vector3.Dot(_motor.GroundingStatus.GroundNormal, _desiredSpeed) < 0.0f)
         {
@@ -292,7 +282,6 @@ public class KinematicControllerWrapper2 : CharacterControllerable, ICharacterCo
         Vector3 planeSpeed = (_motor.GroundingStatus.FoundAnyGround == false)
         ? _desiredSpeed
         : _motor.GetDirectionTangentToSurface(_desiredSpeed, _motor.GroundingStatus.GroundNormal) * _desiredSpeed.magnitude;
-
 
         currentVelocity = planeSpeed + verticalSpeed;
     }

@@ -11,6 +11,7 @@ public class MMonoBehaviour : MonoBehaviour
         {
             Debug.Assert(false, "Fixed Update 단계에서 호출하면 안된다");
             Debug.Break();
+            return;
         }
 
         int count = Mathf.FloorToInt(Time.deltaTime / Time.fixedDeltaTime);

@@ -77,8 +77,6 @@ public class PlayerScript : CharacterScript
             CheckUseableItemChange();
         }
 
-
-
         //인벤토리 오픈코드
         {
             if (GCST<InputController>().GetInventoryOpen() == true)
@@ -106,11 +104,11 @@ public class PlayerScript : CharacterScript
                 }
             }
         }
-        Vector3 delta = transform.position - _prevPosition;
+        //Vector3 delta = transform.position - _prevPosition;
 
-        Debug.Log(delta.magnitude / Time.deltaTime);
+        //Debug.Log(delta.magnitude / Time.deltaTime);
 
-        _prevPosition = transform.position;
+        //_prevPosition = transform.position;
     }
 
 
