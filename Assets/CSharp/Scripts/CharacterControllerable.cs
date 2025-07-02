@@ -6,18 +6,12 @@ public abstract class CharacterControllerable : GameCharacterSubScript
 {
     [SerializeField] protected float _mass = 2.0f;
     [SerializeField] protected bool _logMe = false;
-
-    /*----------------------------------------
-    |NOTI| speed = 이제 Stat 에서 관리합니다
-    ----------------------------------------*/
-    //[SerializeField] protected float _speed = 5.0f;
+    [SerializeField] protected float _risingSlope = 60.0f;
 
     [SerializeField] protected float _rotatingSpeed_DEG = 720.0f;
     [SerializeField] protected float _jumpForce = 3.0f;
     protected Vector3 _latestPlaneVelocityDontUseY = Vector3.zero;
     protected List<Vector3> _roots = new List<Vector3>();
-
-    //protected bool _isInAir = false;
 
     protected bool _moveTriggerd = false;
 
@@ -75,4 +69,47 @@ public abstract class CharacterControllerable : GameCharacterSubScript
     public abstract void CharacterRotate(Vector3 inputDirection, float ratio);
     public abstract void CharacterRotate(Quaternion rotation);
     public abstract void CharacterRotateDirectly(Quaternion rotation);
+
+    //[SerializeField] private float _inAirCheckHeightModify = 0.02f;
+    //[SerializeField] private GameObject _spherePrefab = null;
+    //[SerializeField] private GameObject _cylinderPrefab = null;
+    //private List<GameObject> _debuggCapsules = new List<GameObject>();
+    //protected void DebugCheck()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.T) == true &&
+    //       _spherePrefab != null &&
+    //       _cylinderPrefab != null)
+    //    {
+    //        float radius = _motor.Capsule.radius * 2;
+
+    //        GameObject topSphere = Instantiate(_spherePrefab);
+    //        GameObject bottomSphere = Instantiate(_spherePrefab);
+    //        GameObject middleCylinder = Instantiate(_cylinderPrefab);
+
+    //        topSphere.transform.position = transform.position + _motor.CharacterTransformToCapsuleTopHemi;
+    //        bottomSphere.transform.position = transform.position + _motor.CharacterTransformToCapsuleBottomHemi + (Vector3.down * _inAirCheckHeightModify);
+
+    //        topSphere.transform.localScale = new(radius, radius, radius);
+    //        bottomSphere.transform.localScale = new(radius, radius, radius);
+
+    //        middleCylinder.transform.position = (topSphere.transform.position + bottomSphere.transform.position) / 2.0f;
+
+    //        float length = (topSphere.transform.position - bottomSphere.transform.position).magnitude;
+    //        middleCylinder.transform.localScale = new(radius, length / 2.0f, radius);
+
+    //        _debuggCapsules.Add(topSphere);
+    //        _debuggCapsules.Add(bottomSphere);
+    //        _debuggCapsules.Add(middleCylinder);
+    //    }
+
+    //    if (Input.GetKeyDown(KeyCode.G) == true)
+    //    {
+    //        foreach (var item in _debuggCapsules)
+    //        {
+    //            Destroy(item);
+    //        }
+
+    //        _debuggCapsules.Clear();
+    //    }
+    //}
 }

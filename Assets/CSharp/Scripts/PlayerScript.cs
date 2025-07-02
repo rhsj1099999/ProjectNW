@@ -8,7 +8,7 @@ public class PlayerScript : CharacterScript
 
     [SerializeField] protected GameObject _interactionUIPrefab = null;
 
-
+    private Vector3 _prevPosition = Vector3.zero;
 
     protected override void Awake()
     {
@@ -106,6 +106,11 @@ public class PlayerScript : CharacterScript
                 }
             }
         }
+        Vector3 delta = transform.position - _prevPosition;
+
+        Debug.Log(delta.magnitude / Time.deltaTime);
+
+        _prevPosition = transform.position;
     }
 
 

@@ -2,41 +2,18 @@ using KinematicCharacterController;
 using MagicaCloth2;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Xml.Xsl;
-using Unity.VisualScripting;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 [RequireComponent(typeof(KinematicCharacterMotor))]
-public class KinematicControllerWrapper : CharacterControllerable, ICharacterController
+public class KinematicControllerWrapper2 : CharacterControllerable, ICharacterController
 {
     [SerializeField] private KinematicCharacterMotor _motor = null;
-    [SerializeField] private float _inAirCheckRadiusModify = 0.000f;
-    [SerializeField] private float _inAirCheckHeightModify = -0.001f;
-
-    private bool _inAir = false;
 
     private bool _jumpRequested = false;
     private bool _knuckBackRequested = false;
 
-    /*-------------------------------------------------------
-    |NOTI| 경사각 이하에서 속도가 얼마든 바닥에 붙음을 보장합니다
-    오토바이같은거 타면 끄세요
-    -------------------------------------------------------*/
-    private bool _isAttachedMove = true; 
-    
-
-    private Vector3 _currentSpeed = Vector3.zero;
+    private Vector3 _desiredSpeed = Vector3.zero;
     private Quaternion _currentRotation = Quaternion.identity;
-    private RaycastHit _hit;
-
-    [SerializeField] private GameObject _spherePrefab = null;
-    [SerializeField] private GameObject _cylinderPrefab = null;
-    private List<GameObject> _debuggCapsules = new List<GameObject>();
-
-
 
     public override void CharacterTeleport(Vector3 position)
     {
@@ -50,57 +27,15 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
         _currentRotation = Quaternion.LookRotation(dir);
     }
 
-    public override void MoverUpdate()
+    private void Update()
     {
-        //_owner.transform.rotation = transform.rotation;
-        //_owner.transform.position = transform.position;
-
-        //GravityUpdate();
-        //ClearLatestVelocity();
-
-        transform.localRotation = Quaternion.identity;
-        transform.localPosition = Vector3.zero;
-        transform.localScale = Vector3.one;
-
-        if (Input.GetKeyDown(KeyCode.T) == true &&
-            _spherePrefab != null &&
-            _cylinderPrefab != null)
-        {
-            float radius = _motor.Capsule.radius + _inAirCheckRadiusModify;
-
-            GameObject topSphere = Instantiate(_spherePrefab);
-            GameObject bottomSphere = Instantiate(_spherePrefab);
-            GameObject middleCylinder = Instantiate(_cylinderPrefab);
-
-            Vector3 currentPosition = transform.position;
-
-            topSphere.transform.position = currentPosition + _motor.CharacterTransformToCapsuleTopHemi + (Vector3.down * _inAirCheckHeightModify);
-            bottomSphere.transform.position = currentPosition + _motor.CharacterTransformToCapsuleBottomHemi + (Vector3.down * _inAirCheckHeightModify);
-
-            topSphere.transform.localScale = new(radius, radius, radius);
-            bottomSphere.transform.localScale = new(radius, radius, radius);
-
-            middleCylinder.transform.position = (topSphere.transform.position + bottomSphere.transform.position) / 2.0f;
-
-            float length = (topSphere.transform.position - bottomSphere.transform.position).magnitude;
-            middleCylinder.transform.localScale = new(radius, length/2.0f, radius);
-
-            _debuggCapsules.Add(topSphere);
-            _debuggCapsules.Add(bottomSphere);
-            _debuggCapsules.Add(middleCylinder);
-        }
-
-        if (Input.GetKeyDown(KeyCode.G) == true)
-        {
-            foreach (var item in _debuggCapsules)
-            {
-                Destroy(item);
-            }
-
-            _debuggCapsules.Clear();
-        }
+        MoverUpdate();
     }
 
+    public override void MoverUpdate() 
+    {
+       
+    }
 
     public override void CharacterRevive()
     {
@@ -117,7 +52,6 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
     }
 
     
-
     public override void CharacterRotate(Quaternion rotation)
     {
         _currentRotation = rotation;
@@ -160,30 +94,9 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
     public override bool GetIsInAir()
     {
-        /*------------------------------------------------------------------
-        |NOTI| 난간에서 _motor.GroundingStatus.IsStableOnGround 가 불안정해서
-        CapsuleCast를 씁니다
-        ------------------------------------------------------------------*/
-
-        if (_gravitySpeed.y > 0.0f)
-        {
-            return true;
-        }
-
-        return _inAir;
+        return !_motor.GroundingStatus.FoundAnyGround;
     }
 
-
-    private void InAircheck()
-    {
-        Vector3 currentPosition = transform.position;
-
-        float checkRadius = _motor.Capsule.radius + _inAirCheckRadiusModify;
-
-        _inAir = !_motor.GroundingStatus.FoundAnyGround;
-
-        return;
-    }
 
 
     public override void StateChanged()
@@ -196,7 +109,7 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
     {
         Vector3 planeVelocity = _latestPlaneVelocityDontUseY;
         planeVelocity.y = 0.0f;
-        _currentSpeed = (planeVelocity) * ratio;
+        _desiredSpeed = (planeVelocity) * ratio;
         _moveTriggerd = true;
     }
 
@@ -204,7 +117,7 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
     {
         if (_moveTriggerd == false)
         {
-            _currentSpeed = Vector3.zero;
+            _desiredSpeed = Vector3.zero;
         }
 
         _moveTriggerd = false;
@@ -219,12 +132,10 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
     public override void GravityUpdate() 
     {
         _gravitySpeed += (9.81f * Vector3.down) * Time.deltaTime;
-        InAircheck();
     }
 
     private void JumpRequestedExecute()
     {
-        _inAir = true;
         _jumpRequested = false;
         _motor.ForceUnground(0.1f);
         _gravitySpeed = new Vector3(0.0f, _jumpForce, 0.0f);
@@ -232,7 +143,6 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
     private void KnuckBackRequestedExcute()
     {
-        _inAir = true;
         _knuckBackRequested = false;
         _motor.ForceUnground(0.1f);
 
@@ -244,9 +154,9 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
     public override void DoJump()
     {
-        if (_motor.GroundingStatus.IsStableOnGround == false)
+        if (_motor.GroundingStatus.FoundAnyGround == false)
         {
-            return; //더블 점프 컨텐츠, 스킬 생기면 어떻게할꺼야
+            return;
         }
 
         _jumpRequested = true;
@@ -256,11 +166,6 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
     public override void DoKnuckBack()
     {
-        if (_motor.GroundingStatus.IsStableOnGround == false)
-        {
-            return; //더블 점프 컨텐츠, 스킬 생기면 어떻게할꺼야
-        }
-
         _knuckBackRequested = true;
     }
 
@@ -285,7 +190,6 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
         }
         else
         {
-            
             Quaternion rotateMatrix = Quaternion.AngleAxis(nextDeltaDEG, Vector3.up);
             _currentRotation *= rotateMatrix;
         }
@@ -314,13 +218,10 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
         _latestPlaneVelocityDontUseY = _motor.Velocity;
         _jumpRequested = false;
 
-        if (_motor.GroundingStatus.IsStableOnGround == true)
+        if (_motor.GroundingStatus.FoundAnyGround == true)
         {
             _gravitySpeed = Vector3.zero;
         }
-
-        //_owner.transform.rotation = transform.rotation;
-        //_owner.transform.position = transform.position;
 
         GravityUpdate();
         ClearLatestVelocity();
@@ -346,14 +247,14 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
     {
         _moveTriggerd = true;
 
-        _currentSpeed = inputDirection * _owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.MoveSpeed) * similarities * ratio;
+        _desiredSpeed = inputDirection * _owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.MoveSpeed) * similarities * ratio;
     }
 
     public override void CharacterRootMove(Vector3 delta, float similarities, float ratio)
     {
         _moveTriggerd = true;
 
-        _currentSpeed = delta / Time.deltaTime;
+        _desiredSpeed = delta / Time.deltaTime;
     }
 
 
@@ -361,7 +262,7 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
     {
         _moveTriggerd = true;
 
-        _currentSpeed = (delta / Time.deltaTime) * ratio;
+        _desiredSpeed = (delta / Time.deltaTime) * ratio;
     }
 
 
@@ -371,79 +272,28 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
         |NOTI| 쓸데없는 y축 속도가 있으면 안된다(이미 바닥인데 중력같은거)
         -------------------------------------------------------------*/
 
-        Vector3 verticalSpeed = Vector3.zero;
-        Vector3 planeSpeed = _currentSpeed;
+        //CurrentVelocity = 조작에 의한 속도가 담겨있다
 
-        if (_motor.GroundingStatus.IsStableOnGround == false) 
+        float test = Vector3.Angle(_motor.GroundingStatus.GroundNormal, transform.up);
+
+        if (Vector3.Angle(_motor.GroundingStatus.GroundNormal, transform.up) > (_risingSlope) &&
+            Vector3.Dot(_motor.GroundingStatus.GroundNormal, _desiredSpeed) < 0.0f)
+        {
+            _desiredSpeed = Vector3.zero;
+        }
+
+        Vector3 verticalSpeed = Vector3.zero;
+
+        if (_motor.GroundingStatus.FoundAnyGround == false)
         {
             verticalSpeed = _gravitySpeed;
         }
 
-        ReArrangePlaneSpeedVector(ref planeSpeed);
+        Vector3 planeSpeed = (_motor.GroundingStatus.FoundAnyGround == false)
+        ? _desiredSpeed
+        : _motor.GetDirectionTangentToSurface(_desiredSpeed, _motor.GroundingStatus.GroundNormal) * _desiredSpeed.magnitude;
+
 
         currentVelocity = planeSpeed + verticalSpeed;
     }
-
-    private void ReArrangePlaneSpeedVector(ref Vector3 planeSpeedVector)
-    {
-        //슬라이딩 모드가 아니다
-        if (_isAttachedMove == false)
-        {
-            return; 
-        }
-
-
-        if (_inAir == true)
-        {
-            return;
-        }
-
-        planeSpeedVector = _motor.GetDirectionTangentToSurface(planeSpeedVector, _motor.GroundingStatus.GroundNormal) * planeSpeedVector.magnitude;
-    }
 }
-
-
-
-//private void PrivateGravityUpdate()
-//{
-//    bool prevInAir = _inAir;
-//    bool currInAir = false;
-
-//    Vector3 currentPosition = transform.position;
-//    Vector3 point1 = currentPosition + _motor.Capsule.center + Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
-//    Vector3 point2 = currentPosition + _motor.Capsule.center - Vector3.up * (_motor.Capsule.height / 2 - _motor.Capsule.radius);
-
-//    float checkDistance = 0.2f;
-//    float checkRadius = _motor.Capsule.radius - 0.01f;
-
-//    if (prevInAir == true && _gravitySpeed.y > 0.0f)
-//    {
-//        _gravitySpeed += (_mass * 9.81f * Vector3.down) * Time.deltaTime;
-//        return;
-//    }
-
-//    currInAir = !Physics.CapsuleCast(point1, point2, checkRadius, Vector3.down, out _hit, checkDistance, LayerMask.GetMask("StaticNavMeshLayer"));
-
-//    _inAir = currInAir;
-
-//    if (currInAir == true)
-//    {
-//        _gravitySpeed += (_mass * 9.81f * Vector3.down) * Time.deltaTime;
-//        return;
-//    }
-
-//    _gravitySpeed = Vector3.zero;
-
-//    float moveDistance = (currInAir != prevInAir)
-//        ? _hit.distance
-//        : _hit.distance - checkRadius;
-
-//    //float moveDistance = _hit.distance;
-
-//    if (moveDistance <= 0)
-//    {
-//        return;
-//    }
-
-//    _motor.SetPosition(transform.position + Vector3.down * moveDistance);
-//}

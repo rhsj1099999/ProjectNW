@@ -931,10 +931,10 @@ public class CharacterScript : GameActorScript, IHitable
             GCST<StateController>().DoWork();
         }
 
-        //기본적으로 중력은 계속 업데이트 한다
-        {
-            GCST<CharacterControllerable>().MoverUpdate();
-        }
+        ////기본적으로 중력은 계속 업데이트 한다
+        //{
+        //    GCST<CharacterControllerable>().MoverUpdate();
+        //}
     }
 
     protected void CheckUseableItemChange()
