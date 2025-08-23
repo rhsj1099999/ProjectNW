@@ -1,7 +1,4 @@
 using KinematicCharacterController;
-using MagicaCloth2;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(KinematicCharacterMotor))]
@@ -237,12 +234,7 @@ public class KinematicControllerWrapper2 : CharacterControllerable, ICharacterCo
 
 
 
-    public override void CharacterMove(Vector3 inputDirection, float similarities, float ratio)
-    {
-        _moveTriggerd = true;
 
-        _desiredSpeed = inputDirection * _owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.MoveSpeed) * similarities * ratio;
-    }
 
     public override void CharacterRootMove(Vector3 delta, float similarities, float ratio)
     {
@@ -259,6 +251,16 @@ public class KinematicControllerWrapper2 : CharacterControllerable, ICharacterCo
         _desiredSpeed = (delta / Time.deltaTime) * ratio;
     }
 
+    /*---------------------------------------------------------------------
+    |NOTI| 작업영역
+    ---------------------------------------------------------------------*/
+
+    public override void CharacterMove(Vector3 inputDirection, float similarities, float ratio)
+    {
+        _moveTriggerd = true;
+
+        _desiredSpeed = inputDirection * _owner.GCST<StatScript>().GetPassiveStat(LevelStatAsset.PassiveStat.MoveSpeed) * similarities * ratio;
+    }
 
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
@@ -266,23 +268,24 @@ public class KinematicControllerWrapper2 : CharacterControllerable, ICharacterCo
         |NOTI| 쓸데없는 y축 속도가 있으면 안된다(이미 바닥인데 중력같은거)
         -------------------------------------------------------------*/
 
-        if (Vector3.Angle(_motor.GroundingStatus.GroundNormal, transform.up) > (_risingSlope) &&
-            Vector3.Dot(_motor.GroundingStatus.GroundNormal, _desiredSpeed) < 0.0f)
-        {
-            _desiredSpeed = Vector3.zero;
-        }
-
-        Vector3 verticalSpeed = Vector3.zero;
-
-        if (_motor.GroundingStatus.FoundAnyGround == false)
-        {
-            verticalSpeed = _gravitySpeed;
-        }
+        //if (Vector3.Angle(_motor.GroundingStatus.GroundNormal, transform.up) > (_risingSlope) &&
+        //    Vector3.Dot(_motor.GroundingStatus.GroundNormal, _desiredSpeed) < 0.0f)
+        //{
+        //    _desiredSpeed = Vector3.zero;
+        //}
 
         Vector3 planeSpeed = (_motor.GroundingStatus.FoundAnyGround == false)
         ? _desiredSpeed
         : _motor.GetDirectionTangentToSurface(_desiredSpeed, _motor.GroundingStatus.GroundNormal) * _desiredSpeed.magnitude;
 
+        Vector3 verticalSpeed = (_motor.GroundingStatus.FoundAnyGround == false)
+            ? _gravitySpeed
+            : Vector3.zero;
+
         currentVelocity = planeSpeed + verticalSpeed;
     }
+
+    /*---------------------------------------------------------------------
+    |NOTI| 작업영역
+    ---------------------------------------------------------------------*/
 }

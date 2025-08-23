@@ -52,11 +52,11 @@ public class KinematicControllerWrapper : CharacterControllerable, ICharacterCon
 
     public override void MoverUpdate()
     {
-        //_owner.transform.rotation = transform.rotation;
-        //_owner.transform.position = transform.position;
+        _owner.transform.rotation = transform.rotation;
+        _owner.transform.position = transform.position;
 
-        //GravityUpdate();
-        //ClearLatestVelocity();
+        GravityUpdate();
+        ClearLatestVelocity();
 
         transform.localRotation = Quaternion.identity;
         transform.localPosition = Vector3.zero;
